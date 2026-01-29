@@ -55,6 +55,9 @@
     <Filter Include="ThirdParty">
       <UniqueIdentifier>{8dd5a05d-f390-4de8-bf47-ff62b3b9c090}</UniqueIdentifier>
     </Filter>
+    <Filter Include="00. System\11. Event">
+      <UniqueIdentifier>{acde2ad1-9ea6-454d-abdf-9fc4ca1c3f91}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -153,6 +156,24 @@
     <ClInclude Include="..\Public\CComponent_Proxy_Base.h">
       <Filter>04. Component\ComponentSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\imconfig.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\imgui.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\imgui_impl_dx11.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\imgui_impl_win32.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\imgui_internal.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Event.h">
+      <Filter>00. System\11. Event</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -208,6 +229,24 @@
     </ClCompile>
     <ClCompile Include="..\Private\Component_System.cpp">
       <Filter>04. Component\ComponentSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui.cpp">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_draw.cpp">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_impl_dx11.cpp">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_impl_win32.cpp">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_tables.cpp">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_widgets.cpp">
+      <Filter>ThirdParty</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

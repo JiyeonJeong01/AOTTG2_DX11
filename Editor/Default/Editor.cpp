@@ -142,20 +142,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
-    case WM_CREATE:
-    {
-        AllocConsole();
-
-        _tfreopen_s(&debug, _T("CONOUT$"), _T("w"), stdout);
-        _tfreopen_s(&debug, _T("CONOUT$"), _T("r"), stdin);
-        _tfreopen_s(&debug, _T("CONOUT$"), _T("w"), stderr);
-
-        HWND hConsole = GetConsoleWindow();
-        MoveWindow(hWnd, 0, 0, g_iWinSizeX, g_iWinSizeY, TRUE);
-        MoveWindow(hConsole, 0, g_iWinSizeY, g_iWinSizeX, 400, TRUE);
-    }
-    break;
-
     case WM_CLOSE:
     {
         FreeConsole();

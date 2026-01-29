@@ -106,7 +106,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../Client/Public/;../../EngineSDK/inc/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Client/Public/;../../EngineSDK/inc/;../../ThirdParty/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -128,12 +128,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\ThirdParty\imconfig.h" />
+    <ClInclude Include="..\..\ThirdParty\imgui.h" />
+    <ClInclude Include="..\..\ThirdParty\imgui_impl_dx11.h" />
+    <ClInclude Include="..\..\ThirdParty\imgui_impl_win32.h" />
+    <ClInclude Include="..\..\ThirdParty\imgui_internal.h" />
+    <ClInclude Include="..\..\ThirdParty\magic_enum.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\ThirdParty\imgui.cpp" />
+    <ClCompile Include="..\..\ThirdParty\imgui_draw.cpp" />
+    <ClCompile Include="..\..\ThirdParty\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\..\ThirdParty\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\..\ThirdParty\imgui_tables.cpp" />
+    <ClCompile Include="..\..\ThirdParty\imgui_widgets.cpp" />
     <ClCompile Include="Game.cpp" />
   </ItemGroup>
   <ItemGroup>

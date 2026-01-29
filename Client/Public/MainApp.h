@@ -3,6 +3,14 @@
 #include "Client_Define.h"
 #include "Base.h"
 
+/* ================== TEST ================== */
+
+#include "Event.h"
+
+/* ========================================== */
+
+
+
 NS_BEGIN(Engine)
 class CGameInstance;
 class CGameObject;
@@ -14,7 +22,7 @@ class CMainApp final : public CBase
 {
 private:
     CMainApp();
-    virtual ~CMainApp() = default;
+    ~CMainApp() override = default;
 
 public:
     HRESULT Initialize();
@@ -29,7 +37,19 @@ private:
     ID3D11Device* m_pDevice{ };
     ID3D11DeviceContext* m_pContext{ };
 
+    /* ================== TEST ================== */
+public :
+    Engine::CEvent<> m_voidEvent;
+    Engine::CEvent<_int> m_intEvent;
+    Engine::CEvent<_int, _float> m_intFloatEvent;
+    class Tester* m_pTester{};
+
+
+private :
+
     list<CGameObject*> m_GameObjects;
+
+    /* ========================================== */
 
 public:
     static CMainApp* Create();

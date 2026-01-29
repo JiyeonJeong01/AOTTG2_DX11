@@ -8,6 +8,9 @@
     <Filter Include="MainApp">
       <UniqueIdentifier>{f1ab0385-4b32-4754-98f6-57ff549c7c58}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{b4d703de-d321-49be-b037-240778cf8662}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -16,10 +19,16 @@
     <ClInclude Include="..\Public\Client_Define.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Tester.h">
+      <Filter>Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
       <Filter>MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Tester.cpp">
+      <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -4,10 +4,22 @@
     <Filter Include="Default">
       <UniqueIdentifier>{bd696045-5891-412c-a20b-fb03ce15f51f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EditorPanel">
+      <UniqueIdentifier>{2915fedf-6584-4f23-98bf-c73851eda3fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Editor.cpp">
       <Filter>Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EditorPanel.cpp">
+      <Filter>EditorPanel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\InspectorPanel.cpp">
+      <Filter>EditorPanel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HierarchyPanel.cpp">
+      <Filter>EditorPanel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -23,6 +35,16 @@
     <ClInclude Include="targetver.h">
       <Filter>Default</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\EditorPanel.h">
+      <Filter>EditorPanel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\InspectorPanel.h">
+      <Filter>EditorPanel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HierarchyPanel.h">
+      <Filter>EditorPanel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Define.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Editor.rc">

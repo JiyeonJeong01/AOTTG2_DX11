@@ -1,4 +1,4 @@
-#ifndef Engine_Define_h__
+﻿#ifndef Engine_Define_h__
 #define Engine_Define_h__
 
 #include <d3d11.h>
@@ -15,6 +15,7 @@ using namespace DirectX;
 #include <unordered_map>
 #include <ctime>
 #include <array>
+#include <memory>
 
 using namespace std;
 
@@ -24,6 +25,10 @@ using namespace std;
 #include "Engine_Typedef.h"
 #include "Engine_Function.h"
 #include "Core_Struct.h"
+
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_dx11.h"
 
 #include <type_traits>
 

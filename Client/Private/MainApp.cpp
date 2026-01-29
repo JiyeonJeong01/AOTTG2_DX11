@@ -6,6 +6,8 @@
 /* ====== Component Test ====== */
 #include "TestComponentA.h"
 #include "TestComponentB.h"
+#include "Event.h"
+#include "Tester.h"
 /* ============================ */
 
 CMainApp::CMainApp()
@@ -42,6 +44,8 @@ HRESULT CMainApp::Initialize()
 
     LOG_INFO("%d개 생성됨", (int)m_GameObjects.size());
 
+    m_pTester = Tester::Create();
+    m_pTester->Initialize_Tester(this);
     return S_OK;
 }
 
@@ -52,6 +56,24 @@ void CMainApp::Update(_float fDT)
     /* Update */
 
     /* Late_Update */
+
+
+
+    /*  Test  */
+
+    if (GetAsyncKeyState('M') & 0x8000)
+    {
+        m_voidEvent.Invoke();
+    }
+    if (GetAsyncKeyState('N') & 0x8000)
+    {
+        m_intFloatEvent.Invoke(0, 2.0);
+    }
+    if (GetAsyncKeyState('B') & 0x8000)
+    {
+        m_intEvent.Invoke(10);
+    }
+
 }
 
 
