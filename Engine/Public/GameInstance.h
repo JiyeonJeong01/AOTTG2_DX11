@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Base.h"
 
@@ -16,7 +16,8 @@ private:
 public :
 	HRESULT		Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ ID3D11Device** ppDevice, _Out_ ID3D11DeviceContext** ppContext);
 	void		Update_Engine(_float fTimeDelta);
-
+    HRESULT     Draw();
+    void        Clear_Resources(_uint iLevelIndex);
 public :
 	HRESULT		Clear_Buffers(const _float4* pClearColor) const;
 	HRESULT		Present() const;

@@ -48,6 +48,14 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	SYS_COM->Update(fTimeDelta);
 }
 
+HRESULT CGameInstance::Draw()
+{
+}
+
+void CGameInstance::Clear_Resources(_uint iLevelIndex)
+{
+}
+
 HRESULT CGameInstance::Clear_Buffers(const _float4* pClearColor) const
 {
 	if (FAILED(m_pGraphic_Device->Clear_BackBuffer_View(pClearColor)))

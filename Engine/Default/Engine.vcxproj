@@ -176,8 +176,10 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\GameObject.h" />
     <ClInclude Include="..\Public\Graphic_Device.h" />
     <ClInclude Include="..\Public\ISink.h" />
+    <ClInclude Include="..\Public\Scene_Manager.h" />
     <ClInclude Include="..\Public\Logger.h" />
     <ClInclude Include="..\Public\Object.h" />
+    <ClInclude Include="..\Public\Scene.h" />
     <ClInclude Include="..\Public\TestComponentA.h" />
     <ClInclude Include="..\Public\TestComponentASystem.h" />
     <ClInclude Include="..\Public\TestComponentB.h" />
@@ -202,8 +204,10 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\GameObject.cpp" />
     <ClCompile Include="..\Private\Graphic_Device.cpp" />
     <ClCompile Include="..\Private\ISink.cpp" />
+    <ClCompile Include="..\Private\Scene_Manager.cpp" />
     <ClCompile Include="..\Private\Logger.cpp" />
     <ClCompile Include="..\Private\Object.cpp" />
+    <ClCompile Include="..\Private\Scene.cpp" />
     <ClCompile Include="..\Private\TestComponentA.cpp" />
     <ClCompile Include="..\Private\TestComponentASystem.cpp" />
     <ClCompile Include="..\Private\TestComponentB.cpp" />
