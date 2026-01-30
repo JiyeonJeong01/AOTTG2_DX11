@@ -61,18 +61,18 @@ void CMainApp::Update(_float fDT)
 
     /*  Test  */
 
-    if (GetAsyncKeyState('M') & 0x8000)
-    {
-        m_voidEvent.Invoke();
-    }
-    if (GetAsyncKeyState('N') & 0x8000)
-    {
-        m_intFloatEvent.Invoke(0, 2.0);
-    }
-    if (GetAsyncKeyState('B') & 0x8000)
-    {
-        m_intEvent.Invoke(10);
-    }
+    //if (GetAsyncKeyState('M') & 0x8000)
+    //{
+    //    m_voidEvent.Invoke();
+    //}
+    //if (GetAsyncKeyState('N') & 0x8000)
+    //{
+    //    m_intFloatEvent.Invoke(0, 2.0);
+    //}
+    //if (GetAsyncKeyState('B') & 0x8000)
+    //{
+    //    m_intEvent.Invoke(10);
+    //}
 
 }
 

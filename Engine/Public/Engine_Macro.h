@@ -1,4 +1,4 @@
-#ifndef Engine_Macro_h__
+﻿#ifndef Engine_Macro_h__
 #define Engine_Macro_h__
 
 namespace Engine
@@ -80,8 +80,9 @@ namespace Engine
 #define GET_INSTANCE(CLASSNAME)	CLASSNAME::GetInstance()
 #define GI						GET_SINGLE(CGameInstance)
 
-#define LOGGER		GET_INSTANCE(CLogger)
-#define SYS_COM		GET_INSTANCE(CComponent_System)
+#define SYS_LOG		        GET_INSTANCE(CLogger)
+#define SYS_COM		        GET_INSTANCE(CComponent_System)
+#define SYS_GAMEOBJECT      GET_INSTANCE(CGameObject_System)
 
 //#define INPUT		GET_INSTANCE(CInputSystem)
 //#define TIME		GET_INSTANCE(CTimeManager)
@@ -90,7 +91,7 @@ namespace Engine
 //#define GUI		GET_INSTANCE(ImGuiManager)
 //#define SCENE		GET_INSTANCE(CSceneManager)
 //#define SOUND		GET_INSTANCE(CSoundManager)
-//#define EVENT		GET_INSTANCE(CEventManager)
+//#define EVENT		GET_INSTANCE(CEvent_Manager)
 
 }
 #endif // Engine_Macro_h__

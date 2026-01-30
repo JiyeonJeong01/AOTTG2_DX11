@@ -1,24 +1,36 @@
-#pragma once
+Ôªø#pragma once
 #include "Base.h"
 #include "Component_System.h"
 #include "Engine_Log.h"
 
 NS_BEGIN(Engine)
-	class ENGINE_DLL CGameObject : public CBase
+
+class ENGINE_DLL CGameObject : public CBase, public LABEL
 {
 protected:
 	CGameObject();
-	virtual ~CGameObject() = default;
-
+    CGameObject(std::string str);
+    CGameObject(const CGameObject& Clone);
+	~CGameObject() override = default;
 
 public :
-	/* µπˆ±Î µÓø° ªÁøÎµ… ºˆ ¿÷¥Ÿ. */
+	/* ÎîîÎ≤ÑÍπÖ Îì±Ïóê ÏÇ¨Ïö©Îê† Ïàò ÏûàÎã§. */
 	void Render();
 
-protected :
-	uint32_t	m_iComponentSlots[MAX_COMPONENT] = { 0, };
+protected:
+    /* Components */
+    map<COMPONENT_TYPE, COMPONENT_HANDLE> m_ComponentHandles;
+
+    /* Hierarchy */
+	uint32_t                m_iComponentSlots[MAX_COMPONENT] = { 0, };
+    CGameObject*            m_pParent{};
+    vector<CGameObject*>    m_pChildren{};
+
+    /* etc */
+    _bool                   m_bActive{ true };
 
 public :
+    /* Components */
     template <typename PROXY>
 	PROXY Add_Component(COMPONENT_TYPE eComType);
 	template <typename PROXY>
@@ -26,15 +38,31 @@ public :
 	template <typename PROXY>
 	vector<PROXY> Get_Components(COMPONENT_TYPE eComType);
 
-protected :
-	map<COMPONENT_TYPE, COMPONENT_HANDLE> m_ComponentHandles;
+    GAMEOBJECT_META&        Access_Meta();
+    const GAMEOBJECT_META&  Access_Meta() const;
+
+    /* Hierarchy */
+    HRESULT                     Set_Parent(CGameObject* pNewParent);
+    CGameObject*                Get_Parent();
+    HRESULT                     Add_Child(CGameObject* pNewChild);
+    const std::vector<CGameObject*>&  Get_Children() const;
+
+    /* Layer */
+    GAMEOBJECT_META             m_tMeta{};
+
+    /* etc */
+    void                        Set_Active(_bool bActive) { m_bActive = bActive; }
+    _bool                       Get_Active() const        { return m_bActive; }
 
 protected :
+    /* Components */
 	COMPONENT_HANDLE Decode_Slot(uint32_t iSlotData) const;
 
 public :
-	/* ¿”Ω√∑Œ ø≠æÓµ“ */
-	static CGameObject* Create();
+	/* ÏûÑÏãúÎ°ú Ïó¥Ïñ¥Îë† */
+	static CGameObject* Create(uint32_t iLayer = Layer::DEFAULT_LAYER, string strName = "GameObject", CGameObject* pParent = nullptr);
+    CGameObject* Clone();
+
 private:
 	void Free() override;
 };
@@ -51,11 +79,11 @@ PROXY CGameObject::Add_Component(COMPONENT_TYPE eComType)
 	}
 
 	uint32_t& iSlotData = m_iComponentSlots[SCAST(_uint, eComType)];
-	if (0 == iSlotData) /* √≥¿Ω √ﬂ∞°µ«¥¬  ƒƒ∆˜≥Õ∆Æ */
+	if (0 == iSlotData) /* Ï≤òÏùå Ï∂îÍ∞ÄÎêòÎäî  Ïª¥Ìè¨ÎÑåÌä∏ */
 	{
 		iSlotData = hNewHandle.iHandle;
 	}
-	else if ((iSlotData & ComponentConfig::GROUP_FLAG) == 0) /* ±◊∑Ï¿∏∑Œ Ω¬∞›µ«¥¬ ∞ÊøÏ */
+	else if ((iSlotData & ComponentConfig::GROUP_FLAG) == 0) /* Í∑∏Î£πÏúºÎ°ú ÏäπÍ≤©ÎêòÎäî Í≤ΩÏö∞ */
 	{
 		COMPONENT_HANDLE hOld;
 		hOld.iHandle = iSlotData & ComponentConfig::DATA_MASK;
@@ -65,7 +93,7 @@ PROXY CGameObject::Add_Component(COMPONENT_TYPE eComType)
 	}
 	else
 	{
-		const uint32_t iGroupID = iSlotData & ComponentConfig::DATA_MASK; /* ±‚¡∏ ±◊∑Ïø° √ﬂ∞°µ«¥¬ ∞ÊøÏ */
+		const uint32_t iGroupID = iSlotData & ComponentConfig::DATA_MASK; /* Í∏∞Ï°¥ Í∑∏Î£πÏóê Ï∂îÍ∞ÄÎêòÎäî Í≤ΩÏö∞ */
 		SYS_COM->Add_To_Group(iGroupID, hNewHandle);
 	}
 
@@ -84,16 +112,16 @@ PROXY CGameObject::Get_Component(COMPONENT_TYPE eComType)
 	}
 
 	COMPONENT_HANDLE handle;
-	if ((iSlotData & ComponentConfig::GROUP_FLAG) == 0)  /* ¥‹¿œ ƒƒ∆˜≥Õ∆Æ */
+	if ((iSlotData & ComponentConfig::GROUP_FLAG) == 0)  /* Îã®Ïùº Ïª¥Ìè¨ÎÑåÌä∏ */
 	{
 		handle.iHandle = iSlotData;
 	}
-	else /* ±◊∑Ï ƒƒ∆˜≥Õ∆Æ */
+	else /* Í∑∏Î£π Ïª¥Ìè¨ÎÑåÌä∏ */
 	{
 		handle = SYS_COM->Get_Group((iSlotData & ComponentConfig::DATA_MASK)).tPrimary;
 	}
 
-	/* ====== TODO : æ»¡§»≠Ω√ πŸ∑Œ return ====== */
+	/* ====== TODO : ÏïàÏ†ïÌôîÏãú Î∞îÎ°ú return ====== */
 	PROXY component = SYS_COM->Get_Proxy<PROXY>(eComType, handle);
 	return component;
 
@@ -111,13 +139,13 @@ vector<PROXY> CGameObject::Get_Components(COMPONENT_TYPE eComType)
 		return vector<PROXY>{};
 	}
 
-	if ((iSlotData & ComponentConfig::GROUP_FLAG) == 0) /* ¥‹¿œ ƒƒ∆˜≥Õ∆Æ */
+	if ((iSlotData & ComponentConfig::GROUP_FLAG) == 0) /* Îã®Ïùº Ïª¥Ìè¨ÎÑåÌä∏ */
 	{
 		COMPONENT_HANDLE h;
 		h.iHandle = iSlotData;
 		return { SYS_COM->Get_Proxy<PROXY>(eComType, h) };
 	}
-	else /* ±◊∑Ï ƒƒ∆˜≥Õ∆Æ */
+	else /* Í∑∏Î£π Ïª¥Ìè¨ÎÑåÌä∏ */
 	{
 		const uint32_t iGroupID = iSlotData & ComponentConfig::DATA_MASK;
 		const auto& tGroup = SYS_COM->Get_Group(iGroupID);

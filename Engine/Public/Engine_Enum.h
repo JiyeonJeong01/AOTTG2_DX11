@@ -20,7 +20,8 @@ namespace Engine
 
 	enum class AXIS_TYPE		{ X, Y, Z, END };
 
-    enum class EVENT_TYPE { GameObject_Created, GameObject_Destroyed, Window_Resize };
+    enum class EVENT_TYPE       { None, On_GameObject_Created, On_GameObject_Destroyed, On_Scene_Changed, On_Window_Resize };
+
 
     /* ------ LOG ------ */
 	enum class SEVERITY_TYPE : uint8_t { INFO, WARN, ERR, ASSERTION };

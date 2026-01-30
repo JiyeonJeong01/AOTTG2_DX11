@@ -1,7 +1,8 @@
-#include "GameInstance.h"
+﻿#include "GameInstance.h"
 
 #include "Graphic_Device.h"
 
+#include "GameObject_System.h"
 #include "Component_System.h"
 
 #include "TimerSystem.h"
@@ -37,7 +38,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 		return E_FAIL;
 	}
 
-	LOGGER->Ready_Logger();
+	SYS_LOG->Ready_Logger();
 
 	return S_OK;
 }
@@ -50,6 +51,7 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 
 HRESULT CGameInstance::Draw()
 {
+    return S_OK;
 }
 
 void CGameInstance::Clear_Resources(_uint iLevelIndex)
@@ -79,6 +81,11 @@ _float CGameInstance::Compute_SystemDT() const
 _float CGameInstance::Compute_FrameDT() const
 {
 	return m_pTimerSystem->Compute_FrameDT();
+}
+
+HRESULT CGameInstance::Change_Scene(_uint iNewLevelIndex, CLevel* pNewLevel)
+{
+    return S_OK;
 }
 
 void CGameInstance::Free()

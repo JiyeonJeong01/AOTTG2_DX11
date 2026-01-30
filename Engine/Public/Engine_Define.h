@@ -12,10 +12,12 @@ using namespace DirectX;
 #include <algorithm>
 #include <functional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <ctime>
 #include <array>
 #include <memory>
+#include <unordered_set>
 
 using namespace std;
 
@@ -29,6 +31,7 @@ using namespace std;
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
+#include "imgui_stdlib.h"
 
 #include <type_traits>
 

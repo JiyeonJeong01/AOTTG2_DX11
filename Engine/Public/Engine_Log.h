@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 
 #include "Logger.h"
 
@@ -17,7 +17,7 @@
 
 // log macros
 #define LOG_IMPL(sev, dom, fmt, ...) \
-  do { LOGGER->Log(sev, dom, __FILE__, __FUNCTION__, nullptr, __LINE__, fmt, ##__VA_ARGS__); } while(0)
+  do { SYS_LOG->Log(sev, dom, __FILE__, __FUNCTION__, nullptr, __LINE__, fmt, ##__VA_ARGS__); } while(0)
 
 #define LOG_INFO(fmt, ...)  LOG_IMPL(SEVERITY_TYPE::INFO,  DOMAIN_TYPE::CLIENT, fmt, ##__VA_ARGS__)
 #define LOG_WARN(fmt, ...)  LOG_IMPL(SEVERITY_TYPE::WARN,  DOMAIN_TYPE::CLIENT, fmt, ##__VA_ARGS__)
@@ -36,7 +36,7 @@
 #define INTERNAL_ASSERT_IMPL(domain, check, fmt, ...) \
     do { \
       if (!(check)) { \
-        LOGGER->Assert(domain, __FILE__, __FUNCTION__, STRINGIFY(check), __LINE__, (fmt) ? (fmt) : "", ##__VA_ARGS__); \
+        SYS_LOG->Assert(domain, __FILE__, __FUNCTION__, STRINGIFY(check), __LINE__, (fmt) ? (fmt) : "", ##__VA_ARGS__); \
         DEBUG_BREAK(); \
       } \
     } while (0)
@@ -77,11 +77,15 @@
     DEBUG_BREAK(); \
   } while(0)
 
-// µπˆ±◊ ∏µÂ¿œ ∂ß∏∏ Ω««‡ 
+// ÎîîÎ≤ÑÍ∑∏ Î™®ÎìúÏùº ÎïåÎßå Ïã§Ìñâ 
 #ifdef _DEBUG
-#define _DEBUG_ERROR_BREAK(fmt, ...) ERROR_BREAK(fmt, ##__VA_ARGS__) 
+#define _DEBUG_ERROR_BREAK(fmt, ...)    ERROR_BREAK(fmt, ##__VA_ARGS__)
+#define _DEBUG_ERROR(fmt, ...)          LOG_ERROR(fmt, ##__VA_ARGS__)
+#define _DEBUG_WARN(fmt, ...)           LOG_WARN(fmt, ##__VA_ARGS__)
 #else
-#define _DEBUG_ERROR_BREAK(fmt, ...) ((void)0)
+#define _DEBUG_ERROR_BREAK(fmt, ...)    ((void)0)
+#define _DEBUG_ERROR(fmt, ...)          ((void)0)
+#define _DEBUG_WARN(fmt, ...)           ((void)0)
 #endif
 
 #pragma region LOG_MODE

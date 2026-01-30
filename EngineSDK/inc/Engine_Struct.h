@@ -1,4 +1,4 @@
-#ifndef Engine_Struct_h__
+ï»¿#ifndef Engine_Struct_h__
 #define Engine_Struct_h__
 
 #include "Engine_Enum.h"
@@ -14,14 +14,27 @@ namespace  Engine
 
     namespace ComponentConfig
     {
-        static constexpr uint32_t INDEX_MASK = 0x000FFFFF;      // ÇÏÀ§ 20ºñÆ® : ÆäÀÌÁö ÀÎµ¦½º
-        static constexpr uint32_t VERSION_MASK = 0xFFF00000;    // »óÀ§ 12ºñÆ® : 
-        static constexpr uint32_t GROUP_FLAG = 0x80000000;      // MSB 1ºñÆ® : ¸ÖÆ¼ ¿©ºÎ
-        static constexpr uint32_t DATA_MASK = 0x7FFFFFFF;       // ³ª¸ÓÁö 31ºñÆ® : µ¥ÀÌÅÍ ÃßÃâ
-        static constexpr uint32_t MAX_VERSION = 0x000007FF;     // ¾ÈÀüÇÑ ÃÖ´ë ¹öÀü
+        static constexpr uint32_t INDEX_MASK = 0x000FFFFF;      // í•˜ìœ„ 20ë¹„íŠ¸ : í˜ì´ì§€ ì¸ë±ìŠ¤
+        static constexpr uint32_t VERSION_MASK = 0xFFF00000;    // ìƒìœ„ 12ë¹„íŠ¸ : 
+        static constexpr uint32_t GROUP_FLAG = 0x80000000;      // MSB 1ë¹„íŠ¸ : ë©€í‹° ì—¬ë¶€
+        static constexpr uint32_t DATA_MASK = 0x7FFFFFFF;       // ë‚˜ë¨¸ì§€ 31ë¹„íŠ¸ : ë°ì´í„° ì¶”ì¶œ
+        static constexpr uint32_t MAX_VERSION = 0x000007FF;     // ì•ˆì „í•œ ìµœëŒ€ ë²„ì „
         static constexpr uint32_t VERSION_SHIFT = 20;
     }
 
+    namespace Layer
+    {
+        using LAYER_ID = uint8_t;
+        using LAYER_MASK = uint32_t;
+        constexpr LAYER_ID INVALID_LAYER = 0xff;
+        constexpr uint32_t DEFAULT_LAYER = 0;
+        constexpr uint32_t MAX_LAYERS = 32;
+
+        constexpr LAYER_MASK To_Bit(LAYER_ID layer)
+        {
+            return (layer == INVALID_LAYER) ? 0u : (1u << layer);
+        }
+    }
 
     typedef struct tagComponentHandle
     {
@@ -47,7 +60,30 @@ namespace  Engine
         vector<COMPONENT_HANDLE>    tExtras;
     }COMPONENT_GROUP;
 
+    typedef struct tagGameObjectMeta
+    {
+        Layer::LAYER_ID layer = Layer::INVALID_LAYER;
+        uint32_t iIndexInLayer = 0;
+    }GAMEOBJECT_META;
 
+    typedef struct tagLabel
+    {
+    private :
+        std::string label{};
+    public :
+        tagLabel() = default;
+        tagLabel(std::string str)
+        : label(std::move(str)) {}
+        void Set_Label(std::string_view str)
+        {
+            label.assign(str);
+        }
+        std::string_view Get_Label() const
+        {
+            return label;
+        }
+
+    }LABEL;
 }
 
 #endif // Engine_Struct_h__

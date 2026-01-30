@@ -45,6 +45,7 @@
       <Filter>EditorPanel</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Editor_Define.h" />
+    <ClInclude Include="..\Public\Editor_Util.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Editor.rc">

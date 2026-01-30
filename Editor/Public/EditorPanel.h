@@ -20,7 +20,7 @@ public:
 
     virtual void Init() {}
     virtual void Update() {}    
-    virtual void RenderUI() = 0;
+    virtual void Render_UI() = 0;
 
     const std::string& GetTitle() const { return _title; }
     _bool IsOpen() const { return m_bOpen; }

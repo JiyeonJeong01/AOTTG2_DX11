@@ -1,43 +1,61 @@
 ﻿#pragma once
 #include "Base.h"
+#include <map>
+#include <functional>
 
 NS_BEGIN(Engine)
 
-/* Variadic template for multiple arguments. */
+using ListenerID = size_t;
+
+
 template <typename... Args>
 class CEvent : public CBase
 {
-public :
-    CEvent() {};
-    virtual ~CEvent() = default;
+public:
+    using Listener = std::function<void(Args...)>;
 
-public :
-    using Listener = std::function<void(Args ...)>;
-    using ListenerID = size_t;
+    CEvent() = default;
+    ~CEvent() override = default;
+
+public:
 
     /* For lambda or std::function listeners */
     ListenerID Add_Listener(Listener handler)
     {
-        m_listeners.push_back(handler);
-        return m_iNextID++;
+        if (!handler) return 0;
+
+        ListenerID id = ++m_iNextID;
+        m_listeners[id] = handler;
+        return id;
     }
 
     /* For member function listeners */
-    template<typename T>
+    template <typename T>
     ListenerID Add_Listener(void(T::* func)(Args...), T* pInstance)
     {
-        return Add_Listener([pInstance, func](Args... args) { (pInstance->*func)(std::forward<Args>(args)...); });
+        if (!pInstance || !func) return 0;
+
+        return Add_Listener([pInstance, func](Args... args) {
+            (pInstance->*func)(std::forward<Args>(args)...);
+            });
     }
 
     void Remove_Listener(ListenerID iID)
     {
-        m_listeners.erase(iID);
+        auto it = m_listeners.find(iID);
+        if (it != m_listeners.end())
+        {
+            m_listeners.erase(it);
+        }
     }
 
     void Invoke(Args... args)
     {
-        for (auto& l : m_listeners)
-            l(args...);
+        for (auto const& [id, handler] : m_listeners)
+        {
+            if (handler)
+                handler(args...);
+        }
     }
 
     void Clear()
@@ -45,17 +63,17 @@ public :
         m_listeners.clear();
     }
 
-    size_t Get_ListenrCount()
+    size_t Get_ListenerCount() const
     {
         return m_listeners.size();
     }
 
 private:
-    std::vector<Listener>    m_listeners;
-    size_t                          m_iNextID{};
+    std::map<ListenerID, Listener> m_listeners;
+    ListenerID m_iNextID = 0;
 
-private :
-    void Free() override { m_listeners.clear(); };
+private:
+    void Free() override { Clear(); }
 };
 
 NS_END

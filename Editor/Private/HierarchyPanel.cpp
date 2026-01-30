@@ -1,567 +1,751 @@
-﻿//#include "HierarchyPanel.h"
-//
-//// 너 엔진/에디터 실제 include로 교체
-//#include "GameObject.h"
-//#include "Transform.h"
-//#include "InspectorPanel.h"
-//
-//#include "EditorManager.h"
-//#include "SceneView.h"
-//#include "Utils.h"
-//
-//NS_BEGIN(Editor)
-//
-//CHierarchyPanel::CHierarchyPanel()
-//    : CEditorPanel("Hierarchy")
-//{
-//    m_bOpen = true;
-//    m_SearchBuf[0] = '\0';
-//    m_CreateSearchBuf[0] = '\0';
-//}
-//
-//void CHierarchyPanel::Bind_Inspector(Engine::CInspectorPanel* pInspector)
-//{
-//    m_pInspector = pInspector;
-//}
-//
-//void CHierarchyPanel::Init()
-//{
-//    // GameObject 생성 이벤트 구독
-//    EVENTS->Subscribe(EventType::GameObject_Created, [this](Event& e)
-//        {
-//            auto& ev = static_cast<GameObjectCreateEvent&>(e);
-//            auto pObj = ev.GetGameObject(); // 너 이벤트가 CGameObject*를 준다고 가정(아니면 여기만 바꾸면 됨)
-//            if (!pObj) return;
-//
-//            pObj = Ensure_Unique_Name(pObj);
-//
-//            CUR_SCENE->Add_Scene(pObj);
-//            Add_Object(pObj);
-//
-//            LOG_WARNING("GameObject Created !");
-//        });
-//
-//    // GameObject 삭제 이벤트 구독
-//    EVENTS->Subscribe(EventType::GameObject_Destroyed, [this](Event& e)
-//        {
-//            auto& ev = static_cast<GameObjectDestroyedEvent&>(e);
-//            auto pObj = ev.GetGameObject();
-//            if (!pObj) return;
-//
-//            CUR_SCENE->Remove_Scene(pObj);
-//            Remove_Object(pObj);
-//
-//            // 선택에서 제거
-//            Remove_Selection(pObj);
-//
-//            // clipboard에서도 제거(선택 복붙 후 삭제 시 안전)
-//            auto it = std::remove(m_Clipboard.begin(), m_Clipboard.end(), pObj);
-//            if (it != m_Clipboard.end())
-//                m_Clipboard.erase(it, m_Clipboard.end());
-//
-//            // Inspector sync
-//            Sync_Inspector_Selection();
-//
-//            LOG_INFO("Destroyed GameObject");
-//        });
-//}
-//
-//void CHierarchyPanel::Update()
-//{
-//    // 필요하면 Scene의 오브젝트 목록을 매 프레임 동기화
-//    // 지금은 이벤트 기반으로 Add/Remove 하니까 비워둠
-//}
-//
-//void CHierarchyPanel::RenderUI()
-//{
-//    if (!m_bOpen) return;
-//
-//    if (!ImGui::Begin((_title + "##HierarchyPanel").c_str(), reinterpret_cast<bool*>(&m_bOpen),
-//        ImGuiWindowFlags_NoNavInputs))
-//    {
-//        ImGui::End();
-//        return;
-//    }
-//
-//    // 입력은 패널이 포커스일 때만
-//    if (ImGui::IsWindowFocused())
-//    {
-//        Handle_Input_Shortcuts();
-//        Handle_Keyboard_Navigation();
-//    }
-//
-//    Draw_Toolbar();
-//    Draw_Object_List();
-//
-//    ImGui::End();
-//}
-//
-//Engine::CGameObject* CHierarchyPanel::Get_Primary_Selection() const
-//{
-//    return m_Selected.empty() ? nullptr : m_Selected.front();
-//}
-//
-//void CHierarchyPanel::Set_Selection_Single(Engine::CGameObject* pObj)
-//{
-//    m_Selected.clear();
-//    if (pObj) m_Selected.push_back(pObj);
-//    Sync_Inspector_Selection();
-//}
-//
-//void CHierarchyPanel::Add_Selection(Engine::CGameObject* pObj)
-//{
-//    if (!pObj) return;
-//    if (!Is_Selected(pObj))
-//        m_Selected.push_back(pObj);
-//}
-//
-//void CHierarchyPanel::Remove_Selection(Engine::CGameObject* pObj)
-//{
-//    if (!pObj) return;
-//    auto it = std::find(m_Selected.begin(), m_Selected.end(), pObj);
-//    if (it != m_Selected.end())
-//        m_Selected.erase(it);
-//}
-//
-//void CHierarchyPanel::Clear_Selection()
-//{
-//    m_Selected.clear();
-//    Sync_Inspector_Selection();
-//}
-//
-//_bool CHierarchyPanel::Is_Selected(Engine::CGameObject* pObj) const
-//{
-//    return std::find(m_Selected.begin(), m_Selected.end(), pObj) != m_Selected.end();
-//}
-//
-//void CHierarchyPanel::Add_Object(Engine::CGameObject* pObj)
-//{
-//    if (!pObj) return;
-//    m_SceneObjects.push_back(pObj);
-//    m_bSortDirty = true;
-//}
-//
-//void CHierarchyPanel::Remove_Object(Engine::CGameObject* pObj)
-//{
-//    if (!pObj) return;
-//    auto it = std::find(m_SceneObjects.begin(), m_SceneObjects.end(), pObj);
-//    if (it != m_SceneObjects.end())
-//    {
-//        m_SceneObjects.erase(it);
-//        m_bSortDirty = true;
-//    }
-//}
-//
-//void CHierarchyPanel::Clear_Objects()
-//{
-//    m_SceneObjects.clear();
-//    m_Selected.clear();
-//    m_Clipboard.clear();
-//    m_bSortDirty = true;
-//    Sync_Inspector_Selection();
-//}
-//
-//void CHierarchyPanel::Draw_Toolbar()
-//{
-//    if (ImGui::Button("Create Object"))
-//        ImGui::OpenPopup("##CreateObjectPopup");
-//
-//    Draw_Create_Object_Popup();
-//
-//    ImGui::Separator();
-//}
-//
-//void CHierarchyPanel::Draw_Create_Object_Popup()
-//{
-//    if (!ImGui::BeginPopup("##CreateObjectPopup"))
-//        return;
-//
-//    ImGui::InputTextWithHint("##CreateSearch", "Search Class...", m_CreateSearchBuf, IM_ARRAYSIZE(m_CreateSearchBuf));
-//    ImGui::Separator();
-//
-//    const std::string filter = m_CreateSearchBuf;
-//
-//    const auto& creators = GameObjectFactory::GetAllCreator();
-//
-//    for (const auto& [name, creator] : creators)
-//    {
-//        if (!filter.empty() && name.find(filter) == std::string::npos)
-//            continue;
-//
-//        if (ImGui::Selectable(name.c_str()))
-//        {
-//            Engine::CGameObject* pNewObj = creator(); // creator가 raw pointer를 만든다고 가정
-//            if (pNewObj)
-//            {
-//                if (pNewObj->GetName() == L"GameObject")
-//                    pNewObj->SetName(Utils::ToWString(name));
-//
-//                pNewObj->GetOrAddTransform();
-//
-//                EVENTS->Publish(std::make_shared<GameObjectCreateEvent>(pNewObj));
-//                Set_Selection_Single(pNewObj);
-//            }
-//
-//            ImGui::CloseCurrentPopup();
-//        }
-//    }
-//
-//    ImGui::EndPopup();
-//}
-//
-//void CHierarchyPanel::Draw_Object_List()
-//{
-//    Sort_If_Dirty();
-//
-//    ImGui::InputTextWithHint("##SearchHierarchy", "Search...", m_SearchBuf, IM_ARRAYSIZE(m_SearchBuf));
-//    ImGui::Separator();
-//
-//    // 카운트
-//    _int filtered = 0;
-//    for (auto* pObj : m_SceneObjects)
-//        if (Pass_Search_Filter(pObj)) filtered++;
-//
-//    ImGui::Text("Objects : %d / %d", filtered, (_int)m_SceneObjects.size());
-//    ImGui::Separator();
-//
-//    for (_int i = 0; i < (_int)m_SceneObjects.size(); ++i)
-//    {
-//        Engine::CGameObject* pObj = m_SceneObjects[i];
-//        if (!pObj) continue;
-//        if (!Pass_Search_Filter(pObj)) continue;
-//
-//        const _bool isSelected = Is_Selected(pObj);
-//
-//        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-//        if (isSelected) flags |= ImGuiTreeNodeFlags_Selected;
-//
-//        const std::string name = Utils::ToString(pObj->GetName());
-//        ImGui::TreeNodeEx((void*)pObj, flags, "%s", name.c_str());
-//
-//        // 우클릭 메뉴
-//        Draw_Object_Context_Menu(pObj);
-//
-//        // 클릭 선택
-//        if (ImGui::IsItemClicked())
-//        {
-//            const _bool ctrl = INPUT->GetButton(KEY_TYPE::CTRL);
-//            const _bool shift = INPUT->GetButton(KEY_TYPE::SHIFT);
-//
-//            if (ctrl)
-//            {
-//                // Ctrl + 클릭 : 토글
-//                if (Is_Selected(pObj)) Remove_Selection(pObj);
-//                else Add_Selection(pObj);
-//            }
-//            else if (shift)
-//            {
-//                // Shift + 클릭 : 범위 선택 (anchor = 첫 선택)
-//                if (!m_Selected.empty())
-//                {
-//                    Engine::CGameObject* pAnchor = m_Selected.front();
-//                    _int startIdx = 0;
-//
-//                    for (_int k = 0; k < (_int)m_SceneObjects.size(); ++k)
-//                    {
-//                        if (m_SceneObjects[k] == pAnchor) { startIdx = k; break; }
-//                    }
-//
-//                    _int endIdx = i;
-//                    _int a = std::min(startIdx, endIdx);
-//                    _int b = std::max(startIdx, endIdx);
-//
-//                    m_Selected.clear();
-//                    for (_int k = a; k <= b; ++k)
-//                    {
-//                        Engine::CGameObject* p = m_SceneObjects[k];
-//                        if (p && Pass_Search_Filter(p))
-//                            m_Selected.push_back(p);
-//                    }
-//                }
-//                else
-//                {
-//                    m_Selected.clear();
-//                    m_Selected.push_back(pObj);
-//                }
-//            }
-//            else
-//            {
-//                // 일반 클릭 : 단일 선택
-//                Set_Selection_Single(pObj);
-//            }
-//
-//            Sync_Inspector_Selection();
-//        }
-//
-//        // 더블 클릭 : 카메라 포커스
-//        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
-//        {
-//            Focus_To_Object(pObj);
-//        }
-//    }
-//}
-//
-//void CHierarchyPanel::Draw_Object_Context_Menu(Engine::CGameObject* pObj)
-//{
-//    if (!pObj) return;
-//
-//    if (ImGui::BeginPopupContextItem("##HierarchyItemContext"))
-//    {
-//        if (ImGui::Selectable("Duplicate"))
-//        {
-//            Engine::CGameObject* pClone = pObj->Clone();
-//            if (pClone)
-//            {
-//                EVENTS->Publish(std::make_shared<GameObjectCreateEvent>(pClone));
-//                Set_Selection_Single(pClone);
-//            }
-//        }
-//
-//        if (ImGui::Selectable("Delete"))
-//        {
-//            EVENTS->Publish(std::make_shared<GameObjectDestroyedEvent>(pObj));
-//            // Destroy 이벤트에서 실제 리스트/선택 정리됨
-//        }
-//
-//        ImGui::EndPopup();
-//    }
-//}
-//
-//void CHierarchyPanel::Handle_Input_Shortcuts()
-//{
-//    // Ctrl+C : 복사
-//    if (INPUT->GetButton(KEY_TYPE::CTRL) && INPUT->GetButtonDown(KEY_TYPE::C))
-//    {
-//        m_Clipboard = m_Selected;
-//        LOG_INFO("Copied " + std::to_string(m_Clipboard.size()) + " objects");
-//    }
-//
-//    // Ctrl+V : 붙여넣기
-//    if (INPUT->GetButton(KEY_TYPE::CTRL) && INPUT->GetButtonDown(KEY_TYPE::V))
-//    {
-//        std::vector<Engine::CGameObject*> clones;
-//        for (auto* pOriginal : m_Clipboard)
-//        {
-//            if (!pOriginal) continue;
-//            Engine::CGameObject* pClone = pOriginal->Clone();
-//            if (pClone)
-//            {
-//                EVENTS->Publish(std::make_shared<GameObjectCreateEvent>(pClone));
-//                clones.push_back(pClone);
-//            }
-//        }
-//
-//        m_Selected = clones;
-//        Sync_Inspector_Selection();
-//
-//        LOG_INFO("Pasted " + std::to_string(clones.size()) + " objects");
-//    }
-//
-//    // Ctrl+D : 바로 복제
-//    if (INPUT->GetButton(KEY_TYPE::CTRL) && INPUT->GetButtonDown(KEY_TYPE::D))
-//    {
-//        std::vector<Engine::CGameObject*> clones;
-//        for (auto* pOriginal : m_Selected)
-//        {
-//            if (!pOriginal) continue;
-//            Engine::CGameObject* pClone = pOriginal->Clone();
-//            if (pClone)
-//            {
-//                EVENTS->Publish(std::make_shared<GameObjectCreateEvent>(pClone));
-//                clones.push_back(pClone);
-//            }
-//        }
-//
-//        m_Selected = clones;
-//        Sync_Inspector_Selection();
-//
-//        LOG_INFO("Duplicated " + std::to_string(clones.size()) + " objects");
-//    }
-//
-//    // Delete : 삭제
-//    if (INPUT->GetButtonDown(KEY_TYPE::DEL))
-//    {
-//        auto toDelete = m_Selected; // 순회 중 수정 방지(복사)
-//        for (auto* pObj : toDelete)
-//        {
-//            if (pObj)
-//                EVENTS->Publish(std::make_shared<GameObjectDestroyedEvent>(pObj));
-//        }
-//        m_Selected.clear();
-//        Sync_Inspector_Selection();
-//
-//        LOG_INFO("Deleted " + std::to_string(toDelete.size()) + " objects");
-//    }
-//
-//    // Enter : 카메라 포커스 (선택 첫번째 기준)
-//    if (INPUT->GetButtonDown(KEY_TYPE::ENTER))
-//    {
-//        auto* pObj = Get_Primary_Selection();
-//        if (pObj) Focus_To_Object(pObj);
-//    }
-//}
-//
-//void CHierarchyPanel::Handle_Keyboard_Navigation()
-//{
-//    if (m_SceneObjects.empty())
-//        return;
-//
-//    const _bool ctrl = INPUT->GetButton(KEY_TYPE::CTRL);
-//
-//    // 위
-//    if (INPUT->GetButtonDown(KEY_TYPE::UP))
-//    {
-//        Move_Selection(-1, ctrl);
-//        m_KeyRepeatTimer = 0.f;
-//    }
-//    else if (INPUT->GetButton(KEY_TYPE::UP))
-//    {
-//        m_KeyRepeatTimer += DT;
-//        if (m_KeyRepeatTimer >= m_KeyRepeatDelay)
-//        {
-//            Move_Selection(-1, ctrl);
-//            m_KeyRepeatTimer = 0.f;
-//        }
-//    }
-//
-//    // 아래
-//    if (INPUT->GetButtonDown(KEY_TYPE::DOWN))
-//    {
-//        Move_Selection(1, ctrl);
-//        m_KeyRepeatTimer = 0.f;
-//    }
-//    else if (INPUT->GetButton(KEY_TYPE::DOWN))
-//    {
-//        m_KeyRepeatTimer += DT;
-//        if (m_KeyRepeatTimer >= m_KeyRepeatDelay)
-//        {
-//            Move_Selection(1, ctrl);
-//            m_KeyRepeatTimer = 0.f;
-//        }
-//    }
-//}
-//
-//_int CHierarchyPanel::Get_Current_Selected_Index() const
-//{
-//    if (m_Selected.empty() || m_SceneObjects.empty())
-//        return -1;
-//
-//    Engine::CGameObject* pLast = m_Selected.back();
-//    auto it = std::find(m_SceneObjects.begin(), m_SceneObjects.end(), pLast);
-//    if (it == m_SceneObjects.end())
-//        return -1;
-//
-//    return (_int)std::distance(m_SceneObjects.begin(), it);
-//}
-//
-//void CHierarchyPanel::Move_Selection(_int iDirection, _bool bAdditive)
-//{
-//    if (m_SceneObjects.empty())
-//        return;
-//
-//    _int cur = Get_Current_Selected_Index();
-//    if (cur < 0) cur = 0;
-//
-//    _int next = std::max(0, std::min((_int)m_SceneObjects.size() - 1, cur + iDirection));
-//    Engine::CGameObject* pObj = m_SceneObjects[next];
-//    if (!pObj) return;
-//
-//    if (!bAdditive)
-//    {
-//        m_Selected.clear();
-//        m_Selected.push_back(pObj);
-//    }
-//    else
-//    {
-//        if (!Is_Selected(pObj))
-//            m_Selected.push_back(pObj);
-//    }
-//
-//    Sync_Inspector_Selection();
-//}
-//
-//void CHierarchyPanel::Focus_To_Object(Engine::CGameObject* pObj)
-//{
-//    if (!pObj) return;
-//
-//    auto sceneView = dynamic_pointer_cast<SceneView>(
-//        GET_SINGLE(EditorManager)->GetWindow(L"Scene"));
-//
-//    if (sceneView && pObj->GetTransform())
-//    {
-//        Vec3 pos = pObj->GetTransform()->GetPosition();
-//        sceneView->FocusOnPosition(pos);
-//    }
-//}
-//
-//_bool CHierarchyPanel::Pass_Search_Filter(Engine::CGameObject* pObj) const
-//{
-//    if (!pObj) return false;
-//
-//    const std::string filter = m_SearchBuf;
-//    if (filter.empty())
-//        return true;
-//
-//    const std::string name = Utils::ToString(pObj->GetName());
-//    return name.find(filter) != std::string::npos;
-//}
-//
-//Engine::CGameObject* CHierarchyPanel::Ensure_Unique_Name(Engine::CGameObject* pObj)
-//{
-//    if (!pObj) return nullptr;
-//
-//    auto& sceneObjects = CUR_SCENE->GetObjects(); // 여기가 vector<CGameObject*> 라고 가정
-//
-//    std::wstring baseName = pObj->GetName();
-//    std::wstring uniqueName = baseName;
-//    _int count = 1;
-//
-//    while (true)
-//    {
-//        _bool dup = false;
-//
-//        for (auto* p : sceneObjects)
-//        {
-//            if (!p || p == pObj) continue;
-//            if (p->GetName() == uniqueName)
-//            {
-//                dup = true;
-//                break;
-//            }
-//        }
-//
-//        if (!dup) break;
-//
-//        ++count;
-//        uniqueName = baseName + L"_" + std::to_wstring(count);
-//    }
-//
-//    pObj->SetName(uniqueName);
-//    return pObj;
-//}
-//
-//void CHierarchyPanel::Sort_If_Dirty()
-//{
-//    if (!m_bSortDirty) return;
-//
-//    std::sort(m_SceneObjects.begin(), m_SceneObjects.end(),
-//        [](Engine::CGameObject* a, Engine::CGameObject* b)
-//        {
-//            if (!a || !b) return false;
-//            return a->GetName() < b->GetName();
-//        });
-//
-//    m_bSortDirty = false;
-//}
-//
-//void CHierarchyPanel::Sync_Inspector_Selection()
-//{
-//    if (!m_pInspector) return;
-//
-//    if (m_Selected.empty())
-//        m_pInspector->Set_Target(nullptr);
-//    else
-//        m_pInspector->Set_Target(m_Selected.front());
-//}
-//
-//NS_END
+﻿#include "HierarchyPanel.h"
+
+#include "Editor_Util.h"
+#include "GameObject.h"
+#include "GameObject_System.h"
+
+NS_BEGIN(Editor)
+
+CHierarchyPanel::CHierarchyPanel()
+    : CEditorPanel("Hierarchy")
+{
+}
+
+void CHierarchyPanel::Init()
+{
+    Refresh_Roots();
+}
+
+void CHierarchyPanel::Update()
+{
+    /* TODO : Consider using a dirty list for refresh,,, */
+    Refresh_Roots();
+    Validate_Selection();
+}
+
+void CHierarchyPanel::Render_UI()
+{
+    if (!ImGui::Begin(m_pszWindowName))
+    {
+        ImGui::End();
+        return;
+    }
+
+    if (m_bShowToolbar) Draw_Toolbar();
+    if (m_bShowSearch)  Draw_Search_Bar();
+
+    Handle_Shortcuts();
+    Draw_Object_Tree();
+    Draw_Context_Menu();
+
+    ImGui::End();
+}
+
+/* =======================================================================*/
+/* ============================= Callbacks ===============================*/
+/* =======================================================================*/
+void CHierarchyPanel::Set_On_Primary_Selection_Changed(std::function<void(Engine::CGameObject*)> fn)
+{
+    m_fnPrimarySelectionChanged = std::move(fn);
+}
+
+void CHierarchyPanel::Set_On_Selection_Changed(std::function<void(const std::vector<Engine::CGameObject*>&)> fn)
+{
+    m_fnSelectionChanged = std::move(fn);
+}
+
+/* =======================================================================*/
+/* =========================== Selection API =============================*/
+/* =======================================================================*/
+Engine::CGameObject* CHierarchyPanel::Get_Primary_Selection() const
+{
+    return m_selection.empty() ? nullptr : m_selection.front();
+}
+
+const std::vector<Engine::CGameObject*>& CHierarchyPanel::Get_Selection() const
+{
+    return m_selection;
+}
+
+bool CHierarchyPanel::Is_Selected(Engine::CGameObject* pObj) const
+{
+    return std::find(m_selection.begin(), m_selection.end(), pObj) != m_selection.end();
+}
+
+void CHierarchyPanel::Set_Selection_Single(Engine::CGameObject* pObj)
+{
+    m_selection.clear();
+    if (pObj)
+        m_selection.push_back(pObj);
+    m_pLastClicked = pObj;
+
+    Notify_Selection_Changed();
+}
+
+void CHierarchyPanel::Add_Selection(Engine::CGameObject* pObj)
+{
+    if (!pObj)
+        return;
+    if (!m_bAllowMultiSelect)
+    {
+        Set_Selection_Single(pObj);
+        return;
+    }
+    if (!Is_Selected(pObj))
+    {
+        m_selection.push_back(pObj);
+        m_pLastClicked = pObj;
+
+        Notify_Selection_Changed();
+    }
+}
+
+void CHierarchyPanel::Toggle_Selection(Engine::CGameObject* pObj)
+{
+    if (!pObj)
+        return;
+    if (!m_bAllowMultiSelect)
+    {
+        Set_Selection_Single(pObj);
+        return;
+    }
+
+    auto it = std::find(m_selection.begin(), m_selection.end(), pObj);
+    if (it != m_selection.end())
+        m_selection.erase(it);
+    else
+        m_selection.push_back(pObj);
+
+    m_pLastClicked = pObj;
+    Notify_Selection_Changed();
+}
+
+void CHierarchyPanel::Set_Selection_Range(Engine::CGameObject* pFrom, Engine::CGameObject* pTo)
+{
+    /* TODO : Support only the parent's sibling range, as the current tree display order is undefined */
+    if (!m_bAllowMultiSelect)
+    {
+        Set_Selection_Single(pTo);
+        return;
+    }
+    if (!pFrom || !pTo)
+    {
+        Set_Selection_Single(pTo);
+        return;
+    }
+
+    Engine::CGameObject* pFromParent = pFrom->Get_Parent();
+    Engine::CGameObject* pToParent = pTo->Get_Parent();
+    if (pFromParent != pToParent)
+    {
+        /* TODO : Expand to display order based range */
+        Set_Selection_Single(pTo);
+        return;
+    }
+
+    const std::vector<Engine::CGameObject*>& siblings = (pFromParent ? pFromParent->Get_Children() : m_roots);
+
+    auto itA = std::find(siblings.begin(), siblings.end(), pFrom);
+    auto itB = std::find(siblings.begin(), siblings.end(), pTo);
+    if (itA == siblings.end() || itB == siblings.end())
+    {
+        Set_Selection_Single(pTo);
+        return;
+    }
+
+    if (itA > itB)
+        std::swap(itA, itB);
+
+    m_selection.clear();
+    for (auto it = itA; it != itB + 1; ++it)
+        m_selection.push_back(*it);
+
+    m_pLastClicked = pTo;
+
+    Notify_Selection_Changed();
+}
+
+void CHierarchyPanel::Clear_Selection()
+{
+    if (m_selection.empty())
+        return;
+    m_selection.clear();
+    m_pLastClicked = nullptr;
+
+    Notify_Selection_Changed();
+}
+
+/* =======================================================================*/
+/* =============================== Rename ================================*/
+/* =======================================================================*/
+void CHierarchyPanel::Begin_Rename(Engine::CGameObject* pObj)
+{
+    if (!m_bAllowRename || !pObj)
+        return;
+
+    m_pRenameTarget = pObj;
+    m_renameBuffer.assign(pObj->Get_Label());
+    m_bJustStartedRename = true;
+}
+
+void CHierarchyPanel::Cancel_Rename()
+{
+    m_pRenameTarget = nullptr;
+    m_renameBuffer.clear();
+    m_bJustStartedRename = false;
+}
+
+bool CHierarchyPanel::Is_Renaming() const
+{
+    return m_pRenameTarget != nullptr;
+}
+
+/* =======================================================================*/
+/* ============================ Draw Section =============================*/
+/* =======================================================================*/
+void CHierarchyPanel::Draw_Toolbar()
+{
+    /* Create Object */
+    if (ImGui::Button("+"))
+    {
+        Engine::CGameObject* pNew = Create_Empty_Object(nullptr);
+        if (pNew)
+        {
+            Set_Selection_Single(pNew);
+            Begin_Rename(pNew);
+        }
+    }
+
+    ImGui::SameLine();
+
+    /* Duplicate Object */ 
+    ImGui::BeginDisabled(!m_bAllowDuplicate || Get_Primary_Selection() == nullptr);
+    if (ImGui::Button("Duplicate"))
+    {
+        Engine::CGameObject* pSel = Get_Primary_Selection();
+        Engine::CGameObject* pParent = pSel ? pSel->Get_Parent() : nullptr;
+        Engine::CGameObject* pDup = Duplicate_Object(pSel, pParent);
+        if (pDup)
+        {
+            Set_Selection_Single(pDup);
+            Begin_Rename(pDup);
+        }
+    }
+    ImGui::EndDisabled();
+
+    ImGui::SameLine();
+
+    /* Delete Object */
+    ImGui::BeginDisabled(!m_bAllowDelete || m_selection.empty());
+    if (ImGui::Button("Delete"))
+    {
+        auto toDelete = m_selection;
+        Clear_Selection();
+        for (auto* obj : toDelete)
+            Destroy_Object(obj);
+    }
+    ImGui::EndDisabled();
+
+    ImGui::Separator();
+}
+
+void CHierarchyPanel::Draw_Search_Bar()
+{
+    ImGui::TextUnformatted("Search");
+    ImGui::SameLine();
+
+    ImGui::SetNextItemWidth(-1.f);
+    if (m_bRequestFocusSearch)
+    {
+        ImGui::SetKeyboardFocusHere();
+        m_bRequestFocusSearch = false;
+    }
+
+    if (ImGui::InputText("##HierarchySearch", &m_search))
+    {
+        // filter changed
+    }
+    ImGui::Separator();
+}
+
+void CHierarchyPanel::Draw_Object_Tree()
+{
+    /* Background right-click for context menu */
+    ImGui::BeginChild("##HierarchyTreeRegion", ImVec2(0, 0), false,
+        ImGuiWindowFlags_HorizontalScrollbar);
+
+    /* Deselect in empty space on click */
+    if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+    {
+        if (!ImGui::IsAnyItemHovered())
+            Clear_Selection();
+    }
+
+    Draw_Root_List();
+
+    if (m_bShowToolbar == false)
+    {
+        /* no-op */
+    }
+    ImGui::EndChild();
+}
+
+void CHierarchyPanel::Draw_Context_Menu()
+{
+    if (!m_bShowActiveToggle && !m_bShowToolbar)
+    {
+        /* no-op */
+    }
+
+    /*  Right-click on GameOjbect */
+    if (ImGui::BeginPopupContextWindow("##HierarchyBlankContext", ImGuiPopupFlags_MouseButtonRight))
+    {
+        m_pContextTarget = nullptr;
+
+        /* Right-click on empty space, Context menu */
+        if (ImGui::MenuItem("Create Empty"))
+        {
+            Engine::CGameObject* pNew = Create_Empty_Object(nullptr);
+            if (pNew) { Set_Selection_Single(pNew); Begin_Rename(pNew); }
+        }
+
+        ImGui::EndPopup();
+    }
+}
+
+/* =======================================================================*/
+/* ============================ Tree Helpers =============================*/
+/* =======================================================================*/
+void CHierarchyPanel::Refresh_Roots()
+{
+    SYS_GAMEOBJECT->Get_Roots(m_roots);
+}
+
+void CHierarchyPanel::Draw_Root_List()
+{
+    /* TODO : Wrap with an additional TreeNode for a Scene View in Unity */
+    for (auto* root : m_roots)
+    {
+        if (!root)
+            continue;
+        if (!Is_Visible_By_Filter_Recursive(root))
+            continue;
+        Draw_Node_Recursive(root, 0);
+    }
+}
+
+bool CHierarchyPanel::Is_Visible_By_Filter(Engine::CGameObject* pObj) const
+{
+    if (m_search.empty())
+        return true;
+    if (!pObj)
+        return false;
+
+    const char* szName = pObj->Get_Label().data();
+    std::string strName = (szName ? szName : "");
+    return Editor_Util::Str_IContains(strName, m_search);
+}
+
+bool CHierarchyPanel::Is_Visible_By_Filter_Recursive(Engine::CGameObject* pObj)
+{
+    if (Is_Visible_By_Filter(pObj))
+        return true;
+
+    const std::vector<Engine::CGameObject*>& pChildren = pObj->Get_Children();
+
+    for (auto* ch : pChildren)
+    {
+        if (!ch) continue;
+        if (Is_Visible_By_Filter_Recursive(ch))
+            return true;
+    }
+    return false;
+}
+
+void CHierarchyPanel::Draw_Node_Recursive(Engine::CGameObject* pObj, int /*iDepth*/)
+{
+    if (!pObj)
+        return;
+
+    /* Check children */
+    const std::vector<Engine::CGameObject*>& pChildren = pObj->Get_Children();
+
+    const _bool bHasChildren = !pChildren.empty();
+
+    ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth;
+    if (!bHasChildren)
+        flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+    if (Is_Selected(pObj))
+        flags |= ImGuiTreeNodeFlags_Selected;
+
+    /* Keep open state */
+    uint64_t iID = Get_Stable_Id(pObj);
+    _bool bOpen = (m_openNodes.find(iID) != m_openNodes.end());
+
+    _bool bActive = pObj->Get_Active();
+
+    const char* szName = pObj->Get_Label().data();
+    if (!szName)
+        szName = "";
+
+    /* Unique label to avoid ImGui ID conflicts */
+    std::string strLabel = std::string(szName) + "##" + std::to_string((uintptr_t)pObj);
+
+    if (bHasChildren)
+        ImGui::SetNextItemOpen(bOpen, ImGuiCond_Always);
+
+    _bool bOpened = ImGui::TreeNodeEx(strLabel.c_str(), flags);
+
+    /* Handle click */
+    if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+        Handle_Node_Click(pObj);
+
+    /* Handle double click to rename */
+    if (m_bDoubleClickToRename && m_bAllowRename && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+        Begin_Rename(pObj);
+
+    /* Handle right-click to display menu */
+    if (m_bShowToolbar || m_bShowActiveToggle || true)
+    {
+        if (ImGui::BeginPopupContextItem(("##HierarchyNodeCtx" + std::to_string((uintptr_t)pObj)).c_str()))
+        {
+            m_pContextTarget = pObj;
+
+            if (ImGui::MenuItem("Create Empty Child"))
+            {
+                Engine::CGameObject* pNew = Create_Empty_Object(pObj);
+                if (pNew)
+                {
+                    Set_Selection_Single(pNew);
+                    Begin_Rename(pNew);
+                }
+            }
+
+            ImGui::BeginDisabled(!m_bAllowDuplicate);
+            if (ImGui::MenuItem("Duplicate"))
+            {
+                Engine::CGameObject* pDup = Duplicate_Object(pObj, pObj->Get_Parent());
+                if (pDup)
+                {
+                    Set_Selection_Single(pDup);
+                    Begin_Rename(pDup);
+                }
+            }
+            ImGui::EndDisabled();
+
+            if (m_bAllowRename && ImGui::MenuItem("Rename", "F2"))
+                Begin_Rename(pObj);
+
+            ImGui::BeginDisabled(!m_bAllowDelete);
+            if (ImGui::MenuItem("Delete", "Del"))
+            {
+                /* Delete all selected items if the target is selected, otherwise delete only the target */
+                if (Is_Selected(pObj) && !m_selection.empty())
+                {
+                    auto toDelete = m_selection;
+                    Clear_Selection();
+                    for (auto* obj : toDelete)
+                        Destroy_Object(obj);
+                }
+                else
+                {
+                    if (Get_Primary_Selection() == pObj)
+                        Clear_Selection();
+                    Destroy_Object(pObj);
+                }
+            }
+            ImGui::EndDisabled();
+
+            if (m_bShowActiveToggle)
+            {
+                _bool bCur = pObj->Get_Active();
+                if (ImGui::MenuItem(bCur ? "Set Inactive" : "Set Active"))
+                    pObj->Set_Active(!bCur);
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+
+    /* Reparent by drag-and-drop */
+    if (m_bAllowDragDrop)
+        Handle_DragDrop(pObj);
+
+    /* Rename the target */
+    if (m_pRenameTarget == pObj)
+        Draw_Rename_Field(pObj);
+
+    /* Save open state */
+    if (bHasChildren)
+    {
+        if (bOpened && !bOpen)
+            m_openNodes.insert(iID);
+        if (!bOpened && bOpen)
+            m_openNodes.erase(iID);
+    }
+
+    /* Draw Children */
+    if (bHasChildren && bOpened)
+    {
+        for (auto* child : pChildren)
+        {
+            if (!child) continue;
+            if (!Is_Visible_By_Filter_Recursive(child)) continue;
+            Draw_Node_Recursive(child, 0);
+        }
+        ImGui::TreePop();
+    }
+}
+
+/* =======================================================================*/
+/* ============================ Interaction ==============================*/
+/* =======================================================================*/
+void CHierarchyPanel::Handle_Node_Click(Engine::CGameObject* pObj)
+{
+    ImGuiIO& io = ImGui::GetIO();
+
+    const _bool bSift = io.KeyShift;
+    const _bool bCtrl = io.KeyCtrl;
+
+    if (!m_bAllowMultiSelect)
+    {
+        Set_Selection_Single(pObj);
+        return;
+    }
+
+    if (bSift && m_pLastClicked)
+    {
+        Set_Selection_Range(m_pLastClicked, pObj);
+        return;
+    }
+
+    if (bCtrl)
+    {
+        Toggle_Selection(pObj);
+        return;
+    }
+
+    Set_Selection_Single(pObj);
+}
+
+void CHierarchyPanel::Handle_Shortcuts()
+{
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
+        return;
+
+    /* Handle ESC : Cancel renaming if active; otherwise, clear the current selection*/
+    if (ImGui::IsKeyPressed(ImGuiKey_Escape, false))
+    {
+        if (Is_Renaming())
+            Cancel_Rename();
+        else
+            Clear_Selection();
+    }
+
+    /* Handle Ctrl+F : Set input focus to the search bar */
+    if (Editor_Util::Is_KeyChord_Pressed(true, false, false, ImGuiKey_F))
+        m_bRequestFocusSearch = true;
+
+    /* Handle F2 : Trigger the renaming process */
+    if (m_bAllowRename && ImGui::IsKeyPressed(ImGuiKey_F2, false))
+    {
+        if (auto* p = Get_Primary_Selection())
+            Begin_Rename(p);
+    }
+
+    /* Handle Delete : Permanently remove all currently objects */
+    if (m_bAllowDelete && ImGui::IsKeyPressed(ImGuiKey_Delete, false))
+    {
+        if (!m_selection.empty())
+        {
+            auto toDelete = m_selection;
+            Clear_Selection();
+            for (auto* obj : toDelete)
+                Destroy_Object(obj);
+        }
+    }
+
+    /* Handle Ctrl + D: Duplicate of the selected object */
+    if (m_bAllowDuplicate && Editor_Util::Is_KeyChord_Pressed(true, false, false, ImGuiKey_D))
+    {
+        if (auto* p = Get_Primary_Selection())
+        {
+            auto* parent = p->Get_Parent();
+            Engine::CGameObject* pDup = Duplicate_Object(p, parent);
+            if (pDup)
+            {
+                Set_Selection_Single(pDup);
+                Begin_Rename(pDup);
+            }
+        }
+    }
+}
+
+void CHierarchyPanel::Handle_DragDrop(Engine::CGameObject* pObj)
+{
+    /* Drag and Drop */
+    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+    {
+        Engine::CGameObject* pPayloadObj = pObj;
+        ImGui::SetDragDropPayload(PAYLOAD_GO_PTR, &pPayloadObj, sizeof(pPayloadObj));
+        ImGui::Text("Move: %s", pObj->Get_Label());
+        ImGui::EndDragDropSource();
+    }
+
+    /* This node can accept drop */
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* p = ImGui::AcceptDragDropPayload(PAYLOAD_GO_PTR))
+        {
+            /* pPayloadObj is CGameObject*, so &pPayloadObj is CGameObject*, therefore cast void* to CGameObject** */
+            Engine::CGameObject* pDropped = *(Engine::CGameObject**)p->Data;
+            if (pDropped && pDropped != pObj)
+            {
+                _bool bCycle = false;
+                {
+                    Engine::CGameObject* pCurObj = pObj;
+                    while (pCurObj)
+                    {
+                        if (pCurObj == pDropped)
+                        {
+                            bCycle = true;
+                            break;
+                        }
+                        pCurObj = pCurObj->Get_Parent();
+                    }
+                }
+
+                if (!bCycle)
+                {
+                    pDropped->Set_Parent(pObj);
+                }
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
+}
+
+/* =======================================================================*/
+/* ============================= Operation ===============================*/
+/* =======================================================================*/
+Engine::CGameObject* CHierarchyPanel::Create_Empty_Object(Engine::CGameObject* pParent)
+{
+    std::string szBaseName = "New GameObject";
+    Engine::CGameObject* pNew = CGameObject::Create(Layer::DEFAULT_LAYER, szBaseName, pParent);
+
+    return pNew;
+}
+
+Engine::CGameObject* CHierarchyPanel::Duplicate_Object(Engine::CGameObject* pSrc, Engine::CGameObject* pParent)
+{
+    if (!m_bAllowDuplicate || !pSrc)
+        return nullptr;
+
+    Engine::CGameObject* pDup = pSrc->Clone();
+
+    return pDup;
+}
+
+void CHierarchyPanel::Destroy_Object(Engine::CGameObject* pObj)
+{
+    if (!m_bAllowDelete || !pObj)
+        return;
+
+    if (m_pRenameTarget == pObj)
+        Cancel_Rename();
+
+    SYS_GAMEOBJECT->Destroy_Object(pObj);
+}
+
+/* =======================================================================*/
+/* ============================= Rename UI ===============================*/
+/* =======================================================================*/
+void CHierarchyPanel::Draw_Rename_Field(Engine::CGameObject* pObj)
+{
+    /* Simple way to place input on the same line. Use ItemRectMin/Max right after drawing TreeNode to render InputText on the next line */
+    if (m_bJustStartedRename)
+    {
+        ImGui::SetKeyboardFocusHere();
+        m_bJustStartedRename = false;
+    }
+
+    ImGui::PushID((int)(uintptr_t)pObj);
+    ImGui::SetNextItemWidth(-1.f);
+
+    ImGuiInputTextFlags flags = ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue;
+
+    _bool bEnter = ImGui::InputText("##Rename", &m_renameBuffer, flags);
+
+    /* Commit on Enter */
+    if (bEnter)
+    {
+        Commit_Rename();
+        ImGui::PopID();
+        return;
+    }
+
+    /* Commit on focus loss */
+    if (!ImGui::IsItemActive() && !ImGui::IsItemHovered())
+    {
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+            Commit_Rename();
+    }
+
+    /* ESC is handled in Handle_Shortcuts for Cancel_Rename */
+    ImGui::PopID();
+}
+
+void CHierarchyPanel::Commit_Rename()
+{
+    if (!m_pRenameTarget)
+        return;
+
+    if (m_renameBuffer.empty())
+        m_renameBuffer = "GameObject";
+
+    m_pRenameTarget->Set_Label(m_renameBuffer.c_str());
+    Cancel_Rename();
+}
+
+/* =======================================================================*/
+/* ============================== Internal ===============================*/
+/* =======================================================================*/
+void CHierarchyPanel::Notify_Selection_Changed()
+{
+    if (m_fnSelectionChanged)
+        m_fnSelectionChanged(m_selection);
+
+    if (m_fnPrimarySelectionChanged)
+        m_fnPrimarySelectionChanged(Get_Primary_Selection());
+}
+
+void CHierarchyPanel::Validate_Selection()
+{
+    /* TODO : Things to switch from per-frame updates to event-based handling */
+    /* TODO : If there's no way to detect engine-deleted pointers here, at least remove nullptr entries */
+    m_selection.erase(
+        std::remove(m_selection.begin(), m_selection.end(), nullptr),
+        m_selection.end()
+    );
+
+    if (m_pLastClicked && !Is_Selected(m_pLastClicked))
+    {
+        /* If the last clicked GameObject is removed from the selection, the primary selection may need to be updated */
+        if (!m_selection.empty())
+            m_pLastClicked = m_selection.back();
+        else
+            m_pLastClicked = nullptr;
+    }
+}
+
+uint64_t CHierarchyPanel::Get_Stable_Id(Engine::CGameObject* pObj)
+{
+    return Editor_Util::Stable_Id(pObj);
+}
+
+bool CHierarchyPanel::String_IContains(const std::string& haystack, const std::string& needle)
+{
+    return Editor_Util::Str_IContains(haystack, needle);
+}
+
+NS_END
