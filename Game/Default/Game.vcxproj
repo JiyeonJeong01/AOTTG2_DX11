@@ -136,12 +136,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\ThirdParty\imgui.cpp" />
-    <ClCompile Include="..\..\ThirdParty\imgui_draw.cpp" />
-    <ClCompile Include="..\..\ThirdParty\imgui_impl_dx11.cpp" />
-    <ClCompile Include="..\..\ThirdParty\imgui_impl_win32.cpp" />
-    <ClCompile Include="..\..\ThirdParty\imgui_tables.cpp" />
-    <ClCompile Include="..\..\ThirdParty\imgui_widgets.cpp" />
     <ClCompile Include="Game.cpp" />
   </ItemGroup>
   <ItemGroup>

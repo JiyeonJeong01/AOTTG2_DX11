@@ -6,14 +6,16 @@
 
 NS_BEGIN(Editor)
 
-CHierarchyPanel::CHierarchyPanel()
-    : CEditorPanel("Hierarchy")
+CHierarchyPanel::CHierarchyPanel(const std::string& strPanelName)
+    : CEditorPanel(strPanelName)
 {
 }
 
-void CHierarchyPanel::Init()
+HRESULT CHierarchyPanel::Initialize()
 {
     Refresh_Roots();
+
+    return S_OK;
 }
 
 void CHierarchyPanel::Update()
@@ -23,9 +25,9 @@ void CHierarchyPanel::Update()
     Validate_Selection();
 }
 
-void CHierarchyPanel::Render_UI()
+void CHierarchyPanel::Render()
 {
-    if (!ImGui::Begin(m_pszWindowName))
+    if (!ImGui::Begin(m_strPanelName.c_str()))
     {
         ImGui::End();
         return;
@@ -209,7 +211,7 @@ bool CHierarchyPanel::Is_Renaming() const
 void CHierarchyPanel::Draw_Toolbar()
 {
     /* Create Object */
-    if (ImGui::Button("+"))
+    if (ImGui::Button("Create"))
     {
         Engine::CGameObject* pNew = Create_Empty_Object(nullptr);
         if (pNew)
@@ -591,7 +593,7 @@ void CHierarchyPanel::Handle_DragDrop(Engine::CGameObject* pObj)
     {
         Engine::CGameObject* pPayloadObj = pObj;
         ImGui::SetDragDropPayload(PAYLOAD_GO_PTR, &pPayloadObj, sizeof(pPayloadObj));
-        ImGui::Text("Move: %s", pObj->Get_Label());
+        ImGui::Text("Move: %s", pObj->Get_Label().data());
         ImGui::EndDragDropSource();
     }
 
@@ -759,6 +761,22 @@ uint64_t CHierarchyPanel::Get_Stable_Id(Engine::CGameObject* pObj)
 bool CHierarchyPanel::String_IContains(const std::string& haystack, const std::string& needle)
 {
     return Editor_Util::Str_IContains(haystack, needle);
+}
+
+CHierarchyPanel* CHierarchyPanel::Create(const std::string& strPanelName)
+{
+    CHierarchyPanel* pInstance = new CHierarchyPanel(strPanelName);
+    if (FAILED(pInstance->Initialize()))
+    {
+        Safe_Release(pInstance);
+        _DEBUG_ERROR_BREAK("CHierarchyPanel Create failed");
+    }
+    return pInstance;
+}
+
+void CHierarchyPanel::Free()
+{
+    CEditorPanel::Free();
 }
 
 NS_END

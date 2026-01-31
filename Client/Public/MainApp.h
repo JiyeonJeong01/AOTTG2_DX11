@@ -25,7 +25,7 @@ private:
     ~CMainApp() override = default;
 
 public:
-    HRESULT Initialize();
+    HRESULT Initialize(const ENGINE_DESC& EngineDesc);
     void Update(_float fDT);
     void Late_Update(_float fDT);
     void Fixed_Update(_float fDT);
@@ -54,7 +54,7 @@ private :
     /* ========================================== */
 
 public:
-    static CMainApp* Create();
+    static CMainApp* Create(const ENGINE_DESC& EngineDesc);
     virtual void Free() override;
 };
 

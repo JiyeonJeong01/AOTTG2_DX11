@@ -4,9 +4,6 @@
     <Filter Include="Default">
       <UniqueIdentifier>{bd696045-5891-412c-a20b-fb03ce15f51f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="00. MainEditor">
-      <UniqueIdentifier>{93762f00-72f4-4268-96bb-dd74af0b70aa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Editor Panel">
       <UniqueIdentifier>{2915fedf-6584-4f23-98bf-c73851eda3fd}</UniqueIdentifier>
     </Filter>
@@ -25,13 +22,25 @@
     <Filter Include="01. Editor Panel\Inspector">
       <UniqueIdentifier>{e67757eb-2b3b-426b-8f13-a6b69e67a468}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{93762f00-72f4-4268-96bb-dd74af0b70aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{f5a29f9b-913c-4118-9e97-bd440c0370c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{279d7aa6-4d3e-44b7-a1d2-ae709babf599}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Editor Panel\MainPanel">
+      <UniqueIdentifier>{1c9f5ee4-e6f3-47c6-9a9c-8884fd4db20b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Editor Panel\_Base">
+      <UniqueIdentifier>{65cf5c7a-b5f1-4784-8ce2-9bd01e6ccff7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Private\EditorPanel.cpp">
-      <Filter>01. Editor Panel</Filter>
-    </ClCompile>
     <ClCompile Include="Editor.cpp">
-      <Filter>00. MainEditor</Filter>
+      <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="..\..\ThirdParty\imgui.cpp">
       <Filter>99. ThirdParty</Filter>
@@ -66,23 +75,14 @@
     <ClCompile Include="..\Private\InspectorPanel.cpp">
       <Filter>01. Editor Panel\Inspector</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\EditorPanel.cpp">
+      <Filter>01. Editor Panel\_Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MainPanel.cpp">
+      <Filter>01. Editor Panel\MainPanel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Default</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Default</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Default</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\EditorPanel.h">
-      <Filter>01. Editor Panel</Filter>
-    </ClInclude>
-    <ClInclude Include="Editor.h">
-      <Filter>00. MainEditor</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\ThirdParty\magic_enum.hpp">
       <Filter>99. ThirdParty</Filter>
     </ClInclude>
@@ -104,12 +104,6 @@
     <ClInclude Include="..\Public\GUI_System.h">
       <Filter>98. GUI_System</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Editor_Define.h">
-      <Filter>00. MainEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Editor_Util.h">
-      <Filter>00. MainEditor</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\ThirdParty\imgui_stdlib.h">
       <Filter>99. ThirdParty</Filter>
     </ClInclude>
@@ -122,18 +116,42 @@
     <ClInclude Include="..\Public\InspectorPanel.h">
       <Filter>01. Editor Panel\Inspector</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Editor.rc">
-      <Filter>Default</Filter>
-    </ResourceCompile>
+    <ClInclude Include="framework.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Util.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Define.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EditorPanel.h">
+      <Filter>01. Editor Panel\_Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MainPanel.h">
+      <Filter>01. Editor Panel\MainPanel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
-      <Filter>Default</Filter>
+      <Filter>리소스 파일</Filter>
     </Image>
     <Image Include="small.ico">
-      <Filter>Default</Filter>
+      <Filter>리소스 파일</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Editor.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

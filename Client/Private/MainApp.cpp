@@ -10,25 +10,20 @@
 #include "Tester.h"
 /* ============================ */
 
+NS_BEGIN(Client)
+
 CMainApp::CMainApp()
     : m_pGameInstance{ CGameInstance::GetInstance() }
 {
     Safe_AddRef(m_pGameInstance);
 }
 
-HRESULT CMainApp::Initialize()
+HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 {
-    ENGINE_DESC		EngineDesc{};
-    EngineDesc.hWnd = g_hWnd;
-    EngineDesc.eWinMode = WINMODE::WIN;
-    EngineDesc.iViewportSize.first = g_iWinSizeX;
-    EngineDesc.iViewportSize.second = g_iWinSizeY;
-
     if (FAILED(m_pGameInstance->Initialize_Engine(EngineDesc, &m_pDevice, &m_pContext)))
         return E_FAIL;
 
-
-    /* Create GameObject with various components */
+    /* TEST : Create GameObject with various components */
     for (int i = 0; i < 5; ++i) {
         Engine::CGameObject* pObj = Engine::CGameObject::Create();
         pObj->Add_Component<CTestComponentA>(COMPONENT_TYPE::TEST_A);
@@ -84,7 +79,7 @@ void CMainApp::Fixed_Update(_float fDT)
 
 HRESULT CMainApp::Begin_Render()
 {
-    _float4		vClearColor = { 0.f, 0.f, 1.f, 1.f };
+    _float4		vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };
     if (FAILED(m_pGameInstance->Clear_Buffers(&vClearColor)))
         return E_FAIL;
 
@@ -107,11 +102,11 @@ HRESULT CMainApp::End_Render()
     return S_OK;
 }
 
-CMainApp* CMainApp::Create()
+CMainApp* CMainApp::Create(const ENGINE_DESC& Engine_Desc)
 {
     CMainApp* pInstance = new CMainApp();
 
-    if (FAILED(pInstance->Initialize()))
+    if (FAILED(pInstance->Initialize(Engine_Desc)))
     {
         MSG_BOX("Failed to Created : CMainApp");
         Safe_Release(pInstance);
@@ -125,3 +120,5 @@ void CMainApp::Free()
 
     Safe_Release(m_pGameInstance);
 }
+
+NS_END;

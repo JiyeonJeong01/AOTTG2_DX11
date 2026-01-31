@@ -1,4 +1,5 @@
-﻿#include "framework.h"
+﻿#define _EDITOR
+#include "framework.h"
 #include "Editor.h"
 
 #include "MainApp.h"
@@ -7,9 +8,8 @@
 
 #include "GameInstance.h"
 #include "GUI_System.h"
-#include "HierarchyPanel.h"
-#include "ConsolePanel.h"
-#include "InspectorPanel.h"
+
+#include "MainPanel.h"
 
 #define MAX_LOADSTRING 100
 
@@ -37,7 +37,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    CMainApp* pMainApp = { nullptr };
+    Client::CMainApp* pMainApp = { nullptr };
 
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_EDITOR, szWindowClass, MAX_LOADSTRING);
@@ -52,7 +52,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-    pMainApp = CMainApp::Create();
+    ENGINE_DESC EngineDesc{};
+    EngineDesc.eWinMode = WINMODE::WIN;
+    EngineDesc.hWnd = g_hWnd;
+    EngineDesc.iViewportSize = {Client::g_iWinSizeX, Client::g_iWinSizeY };
+
+    pMainApp = Client::CMainApp::Create(EngineDesc);
     if (nullptr == pMainApp)
         return FALSE;
 
@@ -67,18 +72,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _float      fTimeAcc = {};
     _float      fFixedAcc = {};
 
-
     /* =================================== TEST =====================================*/
     Editor::CGUI_System::GetInstance()->Ready_System();
 
-    Editor::CHierarchyPanel* pHierarchy = new Editor::CHierarchyPanel();
-    pHierarchy->Init();
-
-    Editor::CConsolePanel* pConsole = new Editor::CConsolePanel();
-    pConsole->Init();
-
-    Editor::CInspectorPanel* pInspector = new Editor::CInspectorPanel();
-    pInspector->Init(pHierarchy);
+    const string strMain = "PANEL_MAIN";
+    Editor::CMainPanel* pMainPanel = Editor::CMainPanel::Create(strMain);
+    
 
     // 기본 메시지 루프입니다:
     while (true)
@@ -106,13 +105,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             pMainApp->Render();
 
             Editor::CGUI_System::GetInstance()->Update();
-            pHierarchy->Update();
-            pConsole->Update();
-            pInspector->Update();
 
-            pHierarchy->Render_UI();
-            pConsole->Render_UI();
-            pInspector->Render_UI();
+            pMainPanel->Update();
+            pMainPanel->Render();
+
             Editor::CGUI_System::GetInstance()->Render_GUI();
 
             pMainApp->End_Render();
@@ -150,6 +146,9 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.lpszClassName = szWindowClass;
     wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
+    /* TODO NOTE WARN */
+    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+
     return RegisterClassExW(&wcex);
 }
 
@@ -157,8 +156,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
+
+    Client::g_iWinSizeX = SCAST(_uint, GetSystemMetrics(SM_CXSCREEN));
+    Client::g_iWinSizeY = SCAST(_uint, GetSystemMetrics(SM_CYSCREEN));
     HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+        0, 0, Client::g_iWinSizeX, Client::g_iWinSizeY, nullptr, nullptr, hInstance, nullptr);
 
     if (!hWnd)
     {

@@ -24,6 +24,9 @@ private:
     ID3D11DeviceContext* m_pContext{};
     ImGuiContext* m_pGuiContext{};
 
+private :
+    void    Setup_ImGuiStyle();
+
 public:
     static CGUI_System* Create(HWND hWnd, ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 private:

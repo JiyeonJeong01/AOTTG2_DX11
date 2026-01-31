@@ -14,23 +14,23 @@ NS_BEGIN(Editor)
 class CEditorPanel : public CBase
 {
 public:
-    CEditorPanel(const std::string& title)
-        : _title(title), m_pGameInstance( CGameInstance::GetInstance() ), m_bOpen(true) { }
+    CEditorPanel(const std::string& strPanel)
+        : m_strPanelName(strPanel), m_pGameInstance( CGameInstance::GetInstance() ), m_bOpen(true) { }
     virtual ~CEditorPanel() = default;
 
-    virtual void Init() {}
+    virtual HRESULT Initialize() { return S_OK; }
     virtual void Update() {}    
-    virtual void Render_UI() = 0;
+    virtual void Render() = 0;
 
-    const std::string& GetTitle() const { return _title; }
+    const std::string& GetTitle() const { return m_strPanelName; }
     _bool IsOpen() const { return m_bOpen; }
     void SetOpen(_bool open) { m_bOpen = open; }
 
 protected:
-    std::wstring OpenFileDialog(const wchar_t* filter);
+    std::wstring OpenFileDialog(const wchar_t* filter) { return wstring{}; };
 
 protected:
-    std::string _title;
+    std::string m_strPanelName;
     Engine::CGameInstance*  m_pGameInstance {};
     _bool m_bOpen;
 };

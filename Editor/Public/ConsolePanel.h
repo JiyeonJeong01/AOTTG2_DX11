@@ -10,12 +10,12 @@ NS_BEGIN(Editor)
 class CConsolePanel : public CEditorPanel
 {
 public :
-    CConsolePanel();
+    CConsolePanel(const std::string& strPanelName);
     ~CConsolePanel() override = default;
 
-    void Init() override;
+    HRESULT Initialize() override;
     void Update() override {}
-    void Render_UI() override;
+    void Render() override;
 
     void Set_Max_Lines(size_t iMax)
     {
@@ -46,6 +46,11 @@ private:
     bool m_bScrollToBottom = false;
 
     std::vector<Engine::CLogger::RECORD> m_tmpDrain;
+
+public :
+    static CConsolePanel* Create(const std::string& strPanelName);
+private :
+    void Free() override;
 };
 
 NS_END

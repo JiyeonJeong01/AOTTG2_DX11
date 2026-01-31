@@ -30,7 +30,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    CMainApp* pMainApp = { nullptr };
+    Client::CMainApp* pMainApp = { nullptr };
 
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_GAME, szWindowClass, MAX_LOADSTRING);
@@ -45,7 +45,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-    pMainApp = CMainApp::Create();
+    ENGINE_DESC EngineDesc{};
+    EngineDesc.eWinMode = WINMODE::FULL;
+    EngineDesc.hWnd = g_hWnd;
+    EngineDesc.iViewportSize = {Client::g_iWinSizeX, Client::g_iWinSizeY };
+
+    pMainApp = Client::CMainApp::Create(EngineDesc);
     if (nullptr == pMainApp)
         return FALSE;
 
@@ -151,8 +156,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         _tfreopen_s(&debug, _T("CONOUT$"), _T("w"), stderr);
 
         HWND hConsole = GetConsoleWindow();
-        MoveWindow(hWnd, 0, 0, g_iWinSizeX, g_iWinSizeY, TRUE);
-        MoveWindow(hConsole, 0, g_iWinSizeY, g_iWinSizeX, 400, TRUE);
+        MoveWindow(hWnd, 0, 0, Client::g_iWinSizeX, Client::g_iWinSizeY, TRUE);
+        MoveWindow(hConsole, 0, Client::g_iWinSizeY, Client::g_iWinSizeX, 400, TRUE);
     }
     break;
 

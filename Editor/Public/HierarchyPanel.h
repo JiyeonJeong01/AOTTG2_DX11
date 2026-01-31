@@ -12,12 +12,12 @@ NS_BEGIN(Editor)
 class CHierarchyPanel final : public CEditorPanel
 {
 public:
-    CHierarchyPanel();
+    CHierarchyPanel(const std::string& strPanelName);
     ~CHierarchyPanel() override = default;
 
-    void Init() override;
+    HRESULT Initialize() override;
     void Update() override;
-    void Render_UI() override;
+    void Render() override;
 
     /* Bind with Inspector Panel */
     void Set_On_Primary_Selection_Changed(std::function<void(Engine::CGameObject*)> fn);
@@ -127,8 +127,12 @@ private:
     bool m_bDoubleClickToRename = true;
 
     // window
-    const char* m_pszWindowName = "Hierarchy";
     static constexpr const char* PAYLOAD_GO_PTR = "HIERARCHY_GO_PTR";
+
+public:
+        static CHierarchyPanel* Create(const std::string& strPanelName);
+private:
+    void Free() override;
 };
 
 NS_END

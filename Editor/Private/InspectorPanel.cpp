@@ -5,16 +5,16 @@
 
 NS_BEGIN(Editor)
 
-CInspectorPanel::CInspectorPanel()
-    : CEditorPanel("Inspector")
+CInspectorPanel::CInspectorPanel(const std::string& strPanelName)
+    : CEditorPanel(strPanelName)
 {
 }
 
-void CInspectorPanel::Init(CHierarchyPanel* pPanel)
+HRESULT CInspectorPanel::Initialize(CHierarchyPanel* pPanel)
 {
-    CEditorPanel::Init();
-
     pPanel->m_OnPrimarySelectionChanged.Add_Listener(&CInspectorPanel::Set_Target, this);
+
+    return S_OK;
 }
 
 void CInspectorPanel::Set_Target(Engine::CGameObject* pObj)
@@ -42,14 +42,16 @@ void CInspectorPanel::Validate_Target()
     /* TODO : Validiate  */
 }
 
-void CInspectorPanel::Render_UI()
+
+
+void CInspectorPanel::Render()
 {
     if (!m_bOpen)
         return;
 
     Validate_Target();
 
-    if (!ImGui::Begin(m_pszWindowName, (bool*)&m_bOpen))
+    if (!ImGui::Begin(m_strPanelName.c_str(), (bool*)&m_bOpen))
     {
         ImGui::End();
         return;
@@ -192,4 +194,19 @@ void CInspectorPanel::Draw_Components()
     }
 }
 
+CInspectorPanel* CInspectorPanel::Create(const std::string& strPanelName, CHierarchyPanel* pHierarcy)
+{
+    CInspectorPanel* pInstance = new CInspectorPanel(strPanelName);
+    if (FAILED(pInstance->Initialize(pHierarcy)))
+    {
+        Safe_Release(pInstance);
+        _DEBUG_ERROR_BREAK("CInspectorPanel Create failed");
+    }
+    return pInstance;
+}
+
+void CInspectorPanel::Free()
+{
+    CEditorPanel::Free();
+}
 NS_END

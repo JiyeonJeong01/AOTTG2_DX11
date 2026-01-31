@@ -10,12 +10,12 @@ NS_BEGIN(Editor)
 class CInspectorPanel final : public CEditorPanel
 {
 public:
-    CInspectorPanel();
+    CInspectorPanel(const std::string& strPanelName);
     ~CInspectorPanel() override = default;
 
-    void Init(class CHierarchyPanel* pPanel);
+    HRESULT Initialize(class CHierarchyPanel* pPanel);
     void Update() override {}
-    void Render_UI() override;
+    void Render() override;
 
     /* Binding with HierarchyPanel */
     void Set_Target(Engine::CGameObject* pObj);
@@ -40,8 +40,10 @@ private:
     bool m_bJustStartedNameEdit = false;
     bool m_bAutoFocusOnSelection = true;
 
-    // window
-    const char* m_pszWindowName = "Inspector";
+public:
+    static CInspectorPanel* Create(const std::string& strPanelName, CHierarchyPanel* pHierarchy);
+private:
+    void Free() override;
 };
 
 NS_END

@@ -6,26 +6,28 @@
 
 NS_BEGIN(Editor)
 
-CConsolePanel::CConsolePanel()
-    : CEditorPanel("Console"), m_pSink(nullptr)
+CConsolePanel::CConsolePanel(const std::string& strPanelName)
+    : CEditorPanel(strPanelName), m_pSink(nullptr)
 {
 }
 
-void CConsolePanel::Init()
+HRESULT CConsolePanel::Initialize()
 {
-    CEditorPanel::Init();
-
     m_pSink = dynamic_cast<CGUI_Sink*>(SYS_LOG->Set_Sink(CLogger::LOG_TYPE::GUI));
     if (!m_pSink)
+    {
         _DEBUG_ERROR_BREAK("CConsolePanel Init failed : m_pSink is nullptr");
+        return E_FAIL;
+    }
+    return S_OK;
 }
 
-void CConsolePanel::Render_UI()
+void CConsolePanel::Render()
 {
     if (!m_bOpen)
         return;
 
-    if (!ImGui::Begin(_title.c_str(), (bool*)&m_bOpen))
+    if (!ImGui::Begin(m_strPanelName.c_str(), (bool*)&m_bOpen))
     {
         ImGui::End();
         return;
@@ -66,6 +68,7 @@ void CConsolePanel::_Enforce_Limit()
     while (m_lines.size() > m_iMaxLines)
         m_lines.pop_front();
 }
+
 
 void CConsolePanel::Draw_Toolbar()
 {
@@ -161,6 +164,22 @@ void CConsolePanel::Draw_Log_List()
     }
 
     ImGui::EndChild();
+}
+
+CConsolePanel* CConsolePanel::Create(const std::string& strPanelName)
+{
+    CConsolePanel* pInstance = new CConsolePanel(strPanelName);
+    if (FAILED(pInstance->Initialize()))
+    {
+        Safe_Release(pInstance);
+        _DEBUG_ERROR_BREAK("CConsolePanel Create failed");
+    }
+    return pInstance;
+}
+
+void CConsolePanel::Free()
+{
+    CEditorPanel::Free();
 }
 
 NS_END
