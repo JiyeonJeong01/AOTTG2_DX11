@@ -42,9 +42,10 @@ public :
     const GAMEOBJECT_META&  Access_Meta() const;
 
     /* Hierarchy */
-    HRESULT                     Set_Parent(CGameObject* pNewParent);
     CGameObject*                Get_Parent();
-    HRESULT                     Add_Child(CGameObject* pNewChild);
+    HRESULT                     Set_Parent(CGameObject* pNewParent);
+    HRESULT                     Add_Child(CGameObject* pChild);
+    HRESULT                     Remove_Child(CGameObject* pChild);
     const std::vector<CGameObject*>&  Get_Children() const;
 
     /* Layer */
@@ -56,7 +57,11 @@ public :
 
 protected :
     /* Components */
-	COMPONENT_HANDLE Decode_Slot(uint32_t iSlotData) const;
+	COMPONENT_HANDLE            Decode_Slot(uint32_t iSlotData) const;
+
+private :
+    void Add_Child_Inner(CGameObject* pChild);
+    void Remove_Child_Inner(CGameObject* pChild);
 
 public :
 	/* 임시로 열어둠 */

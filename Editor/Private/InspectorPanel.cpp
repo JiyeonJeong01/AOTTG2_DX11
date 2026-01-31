@@ -81,7 +81,7 @@ void CInspectorPanel::Render()
 void CInspectorPanel::Draw_Header()
 {
     /* Optional : icon or breadcrumbs */
-    ImGui::TextUnformatted("GameObject");
+    ImGui::TextUnformatted(m_pTarget->Get_Label().data());
     ImGui::SameLine();
     ImGui::TextDisabled("(%p)", (void*)m_pTarget);
 

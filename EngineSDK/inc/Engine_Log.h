@@ -77,17 +77,25 @@
     DEBUG_BREAK(); \
   } while(0)
 
+#define LOG_INFO_BREAK(fmt, ...) \
+  do { \
+    LOG_INFO(fmt, ##__VA_ARGS__); \
+    DEBUG_BREAK(); \
+  } while(0)
+
 // 디버그 모드일 때만 실행 
 #ifdef _DEBUG
 #define _DEBUG_ERROR_BREAK(fmt, ...)    ERROR_BREAK(fmt, ##__VA_ARGS__)
+#define _DEBUG_INFO_BREAK(fmt, ...)     LOG_INFO_BREAK(fmt, ##__VA_ARGS__)
 #define _DEBUG_ERROR(fmt, ...)          LOG_ERROR(fmt, ##__VA_ARGS__)
 #define _DEBUG_WARN(fmt, ...)           LOG_WARN(fmt, ##__VA_ARGS__)
-#define _DEBUG_INFO(fmt, ...)          LOG_INFO(fmt, ##__VA_ARGS__)
+#define _DEBUG_INFO(fmt, ...)           LOG_INFO(fmt, ##__VA_ARGS__)
 #else
 #define _DEBUG_ERROR_BREAK(fmt, ...)    ((void)0)
+#define _DEBUG_INFO_BREAK(fmt, ...)     ((void)0)
 #define _DEBUG_ERROR(fmt, ...)          ((void)0)
 #define _DEBUG_WARN(fmt, ...)           ((void)0)
-#define _DEBUG_INFO(fmt, ...)          ((void)0)
+#define _DEBUG_INFO(fmt, ...)           ((void)0)
 #endif
 
 #pragma region LOG_MODE
