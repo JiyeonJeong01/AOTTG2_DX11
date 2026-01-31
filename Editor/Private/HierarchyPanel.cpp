@@ -31,8 +31,10 @@ void CHierarchyPanel::Render_UI()
         return;
     }
 
-    if (m_bShowToolbar) Draw_Toolbar();
-    if (m_bShowSearch)  Draw_Search_Bar();
+    if (m_bShowToolbar)
+        Draw_Toolbar();
+    if (m_bShowSearch)
+        Draw_Search_Bar();
 
     Handle_Shortcuts();
     Draw_Object_Tree();
@@ -185,6 +187,7 @@ void CHierarchyPanel::Begin_Rename(Engine::CGameObject* pObj)
 
     m_pRenameTarget = pObj;
     m_renameBuffer.assign(pObj->Get_Label());
+    m_renameBuffer.reserve(256);
     m_bJustStartedRename = true;
 }
 
@@ -660,40 +663,82 @@ void CHierarchyPanel::Destroy_Object(Engine::CGameObject* pObj)
 /* =======================================================================*/
 /* ============================= Rename UI ===============================*/
 /* =======================================================================*/
+//void CHierarchyPanel::Draw_Rename_Field(Engine::CGameObject* pObj)
+//{
+//    /* Simple way to place input on the same line. Use ItemRectMin/Max right after drawing TreeNode to render InputText on the next line */
+//    if (m_bJustStartedRename)
+//    {
+//        ImGui::SetKeyboardFocusHere();
+//        m_bJustStartedRename = false;
+//    }
+//
+//    ImGui::PushID((int)(uintptr_t)pObj);
+//    ImGui::SetNextItemWidth(-1.f);
+//
+//    ImGuiInputTextFlags flags = ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue;
+//
+//    _bool bEnter = ImGui::InputText("##Rename", &m_renameBuffer, flags);
+//
+//    /* Commit on Enter */
+//    if (bEnter)
+//    {
+//        Commit_Rename();
+//        ImGui::PopID();
+//        return;
+//    }
+//
+//    /* Commit on focus loss */
+//    if (!ImGui::IsItemActive() && !ImGui::IsItemHovered())
+//    {
+//        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+//            Commit_Rename();
+//    }
+//
+//    /* ESC is handled in Handle_Shortcuts for Cancel_Rename */
+//    ImGui::PopID();
+//}
+
 void CHierarchyPanel::Draw_Rename_Field(Engine::CGameObject* pObj)
 {
-    /* Simple way to place input on the same line. Use ItemRectMin/Max right after drawing TreeNode to render InputText on the next line */
     if (m_bJustStartedRename)
     {
         ImGui::SetKeyboardFocusHere();
-        m_bJustStartedRename = false;
     }
 
     ImGui::PushID((int)(uintptr_t)pObj);
     ImGui::SetNextItemWidth(-1.f);
 
-    ImGuiInputTextFlags flags = ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue;
+    ImGuiInputTextFlags flags =
+        ImGuiInputTextFlags_AutoSelectAll |
+        ImGuiInputTextFlags_EnterReturnsTrue;
 
-    _bool bEnter = ImGui::InputText("##Rename", &m_renameBuffer, flags);
+    bool enter = ImGui::InputText("##Rename", &m_renameBuffer, flags);
 
-    /* Commit on Enter */
-    if (bEnter)
+    if (enter)
+    {
+        Commit_Rename();
+        ImGui::PopID();
+        m_bJustStartedRename = false;
+        return;
+    }
+
+    if (m_bJustStartedRename)
+    {
+        m_bJustStartedRename = false;
+        ImGui::PopID();
+        return;
+    }
+
+    if (ImGui::IsItemDeactivated())
     {
         Commit_Rename();
         ImGui::PopID();
         return;
     }
 
-    /* Commit on focus loss */
-    if (!ImGui::IsItemActive() && !ImGui::IsItemHovered())
-    {
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-            Commit_Rename();
-    }
-
-    /* ESC is handled in Handle_Shortcuts for Cancel_Rename */
     ImGui::PopID();
 }
+
 
 void CHierarchyPanel::Commit_Rename()
 {

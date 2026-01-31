@@ -129,11 +129,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\ThirdParty\imconfig.h" />
-    <ClInclude Include="..\..\ThirdParty\imgui.h" />
-    <ClInclude Include="..\..\ThirdParty\imgui_impl_dx11.h" />
-    <ClInclude Include="..\..\ThirdParty\imgui_impl_win32.h" />
-    <ClInclude Include="..\..\ThirdParty\imgui_internal.h" />
     <ClInclude Include="..\..\ThirdParty\magic_enum.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />

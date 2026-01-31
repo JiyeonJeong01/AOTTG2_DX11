@@ -124,6 +124,7 @@
     <PostBuildEvent>
       <Command>xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Client\Bin\"
 xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Game\Bin\"
+xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Editor\Bin\"
 xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.lib" "$(SolutionDir)EngineSDK\lib\"
 xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Command>
     </PostBuildEvent>
@@ -147,11 +148,6 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\ThirdParty\imconfig.h" />
-    <ClInclude Include="..\..\ThirdParty\imgui.h" />
-    <ClInclude Include="..\..\ThirdParty\imgui_impl_dx11.h" />
-    <ClInclude Include="..\..\ThirdParty\imgui_impl_win32.h" />
-    <ClInclude Include="..\..\ThirdParty\imgui_internal.h" />
     <ClInclude Include="..\..\ThirdParty\magic_enum.hpp" />
     <ClInclude Include="..\Public\Base.h" />
     <ClInclude Include="..\Public\CComponent_Proxy_Base.h" />
@@ -178,6 +174,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\GameObject.h" />
     <ClInclude Include="..\Public\GameObject_Event.h" />
     <ClInclude Include="..\Public\Graphic_Device.h" />
+    <ClInclude Include="..\Public\GUISink.h" />
     <ClInclude Include="..\Public\ISink.h" />
     <ClInclude Include="..\Public\GameObject_System.h" />
     <ClInclude Include="..\Public\Scene_Manager.h" />
@@ -192,12 +189,6 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Transform.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\ThirdParty\imgui.cpp" />
-    <ClCompile Include="..\..\ThirdParty\imgui_draw.cpp" />
-    <ClCompile Include="..\..\ThirdParty\imgui_impl_dx11.cpp" />
-    <ClCompile Include="..\..\ThirdParty\imgui_impl_win32.cpp" />
-    <ClCompile Include="..\..\ThirdParty\imgui_tables.cpp" />
-    <ClCompile Include="..\..\ThirdParty\imgui_widgets.cpp" />
     <ClCompile Include="..\Private\Base.cpp" />
     <ClCompile Include="..\Private\Collider.cpp" />
     <ClCompile Include="..\Private\ComponentGroup_Manager.cpp" />
@@ -209,6 +200,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\GameObject.cpp" />
     <ClCompile Include="..\Private\GameObject_Event.cpp" />
     <ClCompile Include="..\Private\Graphic_Device.cpp" />
+    <ClCompile Include="..\Private\GUISink.cpp" />
     <ClCompile Include="..\Private\ISink.cpp" />
     <ClCompile Include="..\Private\GameObject_System.cpp" />
     <ClCompile Include="..\Private\Scene_Manager.cpp" />

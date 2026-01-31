@@ -82,16 +82,25 @@ void CMainApp::Fixed_Update(_float fDT)
     /* Fixed_Update */
 }
 
-HRESULT CMainApp::Render()
+HRESULT CMainApp::Begin_Render()
 {
     _float4		vClearColor = { 0.f, 0.f, 1.f, 1.f };
     if (FAILED(m_pGameInstance->Clear_Buffers(&vClearColor)))
         return E_FAIL;
 
+    return S_OK;
+}
+
+HRESULT CMainApp::Render()
+{
     /* Render all GameObjects*/
 
-    /*  */
 
+    return S_OK;
+}
+
+HRESULT CMainApp::End_Render()
+{
     if (FAILED(m_pGameInstance->Present()))
         return E_FAIL;
 

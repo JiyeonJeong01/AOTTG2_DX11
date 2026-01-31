@@ -2,7 +2,6 @@
 
 #include "Graphic_Device.h"
 
-#include "GameObject_System.h"
 #include "Component_System.h"
 
 #include "TimerSystem.h"
@@ -34,11 +33,14 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 	if(FAILED(SYS_COM->Init()))
 	{
-		MSG_BOX("Failed Component System Initialize");
+		MSG_BOX("Failed Component System Ready_System");
 		return E_FAIL;
 	}
 
 	SYS_LOG->Ready_Logger();
+
+    m_pDevice = *ppDevice;
+    m_pContext = *ppContext;
 
 	return S_OK;
 }
@@ -56,6 +58,12 @@ HRESULT CGameInstance::Draw()
 
 void CGameInstance::Clear_Resources(_uint iLevelIndex)
 {
+}
+
+void CGameInstance::Share_GraphicDevice(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
+{
+    *ppDevice = m_pDevice;
+    *ppContext = m_pContext;
 }
 
 HRESULT CGameInstance::Clear_Buffers(const _float4* pClearColor) const

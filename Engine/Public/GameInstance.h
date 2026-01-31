@@ -16,6 +16,8 @@ public :
 	void		Update_Engine(_float fTimeDelta);
     HRESULT     Draw();
     void        Clear_Resources(_uint iLevelIndex);
+
+    void        Share_GraphicDevice(_Out_ ID3D11Device** ppDevice, _Out_ ID3D11DeviceContext** ppContext);
 public :
 	HRESULT		Clear_Buffers(const _float4* pClearColor) const;
 	HRESULT		Present() const;
@@ -36,6 +38,9 @@ private:
 	class CTimerSystem*			m_pTimerSystem{ };
     class CLevel_Manager*       m_pLevel_Manager { };
     class CPrototype_Manager*   m_pPrototype_Manager { };
+
+    ID3D11Device*               m_pDevice{};
+    ID3D11DeviceContext*        m_pContext{};
 
 public:
 	void Free() override;

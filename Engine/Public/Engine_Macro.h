@@ -88,7 +88,6 @@ namespace Engine
 //#define TIME		GET_INSTANCE(CTimeManager)
 //#define DT				   
 //#define RESOURCES	GET_INSTANCE(CResourceManager)
-//#define GUI		GET_INSTANCE(ImGuiManager)
 //#define SCENE		GET_INSTANCE(CSceneManager)
 //#define SOUND		GET_INSTANCE(CSoundManager)
 //#define EVENT		GET_INSTANCE(CEvent_Manager)

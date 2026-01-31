@@ -2,8 +2,13 @@
 #include "Editor.h"
 
 #include "MainApp.h"
-#include "GameInstance.h"
+
 #include <locale.h>
+
+#include "GameInstance.h"
+#include "GUI_System.h"
+#include "HierarchyPanel.h"
+
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
@@ -60,6 +65,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _float      fTimeAcc = {};
     _float      fFixedAcc = {};
 
+
+    /* =================================== TEST =====================================*/
+    Editor::CGUI_System::GetInstance()->Ready_System();
+
+    Editor::CHierarchyPanel* pHierarchy = new Editor::CHierarchyPanel();
+
     // 기본 메시지 루프입니다:
     while (true)
     {
@@ -79,8 +90,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
         if (fTimeAcc >= FRAME_DT)
         {
+
             pMainApp->Update(pGameInstance->Compute_FrameDT());
+
+            pMainApp->Begin_Render();
             pMainApp->Render();
+
+            Editor::CGUI_System::GetInstance()->Update();
+            pHierarchy->Update();
+            pHierarchy->Render_UI();
+            Editor::CGUI_System::GetInstance()->Render_GUI();
+
+            pMainApp->End_Render();
 
             /* FIXED DT*/
             // pMainApp->Fixed_Update(FIXED_DT);
@@ -138,8 +159,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     return TRUE;
 }
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    if(ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+        return 0;
+
+
     switch (message)
     {
     case WM_CLOSE:

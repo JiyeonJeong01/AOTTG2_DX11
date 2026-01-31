@@ -19,15 +19,31 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\ThirdParty\imgui.cpp" />
+    <ClCompile Include="..\..\ThirdParty\imgui_draw.cpp" />
+    <ClCompile Include="..\..\ThirdParty\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\..\ThirdParty\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\..\ThirdParty\imgui_stdlib.cpp" />
+    <ClCompile Include="..\..\ThirdParty\imgui_tables.cpp" />
+    <ClCompile Include="..\..\ThirdParty\imgui_widgets.cpp" />
     <ClCompile Include="..\Private\EditorPanel.cpp" />
+    <ClCompile Include="..\Private\GUI_System.cpp" />
     <ClCompile Include="..\Private\HierarchyPanel.cpp" />
     <ClCompile Include="..\Private\InspectorPanel.cpp" />
     <ClCompile Include="Editor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\ThirdParty\imconfig.h" />
+    <ClInclude Include="..\..\ThirdParty\imgui.h" />
+    <ClInclude Include="..\..\ThirdParty\imgui_impl_dx11.h" />
+    <ClInclude Include="..\..\ThirdParty\imgui_impl_win32.h" />
+    <ClInclude Include="..\..\ThirdParty\imgui_internal.h" />
+    <ClInclude Include="..\..\ThirdParty\imgui_stdlib.h" />
+    <ClInclude Include="..\..\ThirdParty\magic_enum.hpp" />
     <ClInclude Include="..\Public\EditorPanel.h" />
     <ClInclude Include="..\Public\Editor_Define.h" />
     <ClInclude Include="..\Public\Editor_Util.h" />
+    <ClInclude Include="..\Public\GUI_System.h" />
     <ClInclude Include="..\Public\HierarchyPanel.h" />
     <ClInclude Include="..\Public\InspectorPanel.h" />
     <ClInclude Include="Editor.h" />
@@ -145,6 +161,13 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Client\Bin\"
+xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Editor\Bin\"
+xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Game\Bin\"
+xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.lib" "$(SolutionDir)EngineSDK\lib\"
+xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

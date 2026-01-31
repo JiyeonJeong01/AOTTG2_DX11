@@ -30,7 +30,9 @@ public:
     void Late_Update(_float fDT);
     void Fixed_Update(_float fDT);
 
+    HRESULT Begin_Render();
     HRESULT Render();
+    HRESULT End_Render();
 
 private:
     CGameInstance* m_pGameInstance{ };

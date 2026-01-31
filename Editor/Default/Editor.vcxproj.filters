@@ -4,28 +4,58 @@
     <Filter Include="Default">
       <UniqueIdentifier>{bd696045-5891-412c-a20b-fb03ce15f51f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EditorPanel">
+    <Filter Include="00. MainEditor">
+      <UniqueIdentifier>{93762f00-72f4-4268-96bb-dd74af0b70aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Editor Panel">
       <UniqueIdentifier>{2915fedf-6584-4f23-98bf-c73851eda3fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. GUI_System">
+      <UniqueIdentifier>{dcc53563-0d64-48f0-b2e0-5c7023d29095}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99. ThirdParty">
+      <UniqueIdentifier>{1c47b732-30c4-47e1-ae05-0316e40913fc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Editor.cpp">
-      <Filter>Default</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\EditorPanel.cpp">
-      <Filter>EditorPanel</Filter>
+      <Filter>01. Editor Panel</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\InspectorPanel.cpp">
-      <Filter>EditorPanel</Filter>
+      <Filter>01. Editor Panel</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\HierarchyPanel.cpp">
-      <Filter>EditorPanel</Filter>
+      <Filter>01. Editor Panel</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor.cpp">
+      <Filter>00. MainEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui.cpp">
+      <Filter>99. ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_draw.cpp">
+      <Filter>99. ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_impl_dx11.cpp">
+      <Filter>99. ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_impl_win32.cpp">
+      <Filter>99. ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_tables.cpp">
+      <Filter>99. ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_widgets.cpp">
+      <Filter>99. ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GUI_System.cpp">
+      <Filter>98. GUI_System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_stdlib.cpp">
+      <Filter>99. ThirdParty</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Editor.h">
-      <Filter>Default</Filter>
-    </ClInclude>
     <ClInclude Include="framework.h">
       <Filter>Default</Filter>
     </ClInclude>
@@ -36,16 +66,47 @@
       <Filter>Default</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EditorPanel.h">
-      <Filter>EditorPanel</Filter>
+      <Filter>01. Editor Panel</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\InspectorPanel.h">
-      <Filter>EditorPanel</Filter>
+      <Filter>01. Editor Panel</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\HierarchyPanel.h">
-      <Filter>EditorPanel</Filter>
+      <Filter>01. Editor Panel</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Editor_Define.h" />
-    <ClInclude Include="..\Public\Editor_Util.h" />
+    <ClInclude Include="Editor.h">
+      <Filter>00. MainEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\magic_enum.hpp">
+      <Filter>99. ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\imconfig.h">
+      <Filter>99. ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\imgui.h">
+      <Filter>99. ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\imgui_impl_dx11.h">
+      <Filter>99. ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\imgui_impl_win32.h">
+      <Filter>99. ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\imgui_internal.h">
+      <Filter>99. ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GUI_System.h">
+      <Filter>98. GUI_System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Define.h">
+      <Filter>00. MainEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Util.h">
+      <Filter>00. MainEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\imgui_stdlib.h">
+      <Filter>99. ThirdParty</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Editor.rc">

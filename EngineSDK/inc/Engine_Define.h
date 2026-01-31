@@ -28,11 +28,6 @@ using namespace std;
 #include "Engine_Function.h"
 #include "Core_Struct.h"
 
-#include "imgui.h"
-#include "imgui_impl_win32.h"
-#include "imgui_impl_dx11.h"
-#include "imgui_stdlib.h"
-
 #include <type_traits>
 
 #define DIRECTINPUT_VERSION		0x8000

@@ -18,6 +18,8 @@ using namespace DirectX;
 #include <array>
 #include <memory>
 #include <unordered_set>
+#include <deque>
+#include <mutex>
 
 using namespace std;
 
@@ -27,11 +29,6 @@ using namespace std;
 #include "Engine_Typedef.h"
 #include "Engine_Function.h"
 #include "Core_Struct.h"
-
-#include "imgui.h"
-#include "imgui_impl_win32.h"
-#include "imgui_impl_dx11.h"
-#include "imgui_stdlib.h"
 
 #include <type_traits>
 
