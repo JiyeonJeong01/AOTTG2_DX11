@@ -663,40 +663,6 @@ void CHierarchyPanel::Destroy_Object(Engine::CGameObject* pObj)
 /* =======================================================================*/
 /* ============================= Rename UI ===============================*/
 /* =======================================================================*/
-//void CHierarchyPanel::Draw_Rename_Field(Engine::CGameObject* pObj)
-//{
-//    /* Simple way to place input on the same line. Use ItemRectMin/Max right after drawing TreeNode to render InputText on the next line */
-//    if (m_bJustStartedRename)
-//    {
-//        ImGui::SetKeyboardFocusHere();
-//        m_bJustStartedRename = false;
-//    }
-//
-//    ImGui::PushID((int)(uintptr_t)pObj);
-//    ImGui::SetNextItemWidth(-1.f);
-//
-//    ImGuiInputTextFlags flags = ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue;
-//
-//    _bool bEnter = ImGui::InputText("##Rename", &m_renameBuffer, flags);
-//
-//    /* Commit on Enter */
-//    if (bEnter)
-//    {
-//        Commit_Rename();
-//        ImGui::PopID();
-//        return;
-//    }
-//
-//    /* Commit on focus loss */
-//    if (!ImGui::IsItemActive() && !ImGui::IsItemHovered())
-//    {
-//        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-//            Commit_Rename();
-//    }
-//
-//    /* ESC is handled in Handle_Shortcuts for Cancel_Rename */
-//    ImGui::PopID();
-//}
 
 void CHierarchyPanel::Draw_Rename_Field(Engine::CGameObject* pObj)
 {
@@ -762,6 +728,8 @@ void CHierarchyPanel::Notify_Selection_Changed()
 
     if (m_fnPrimarySelectionChanged)
         m_fnPrimarySelectionChanged(Get_Primary_Selection());
+
+    m_OnPrimarySelectionChanged.Invoke(Get_Primary_Selection());
 }
 
 void CHierarchyPanel::Validate_Selection()

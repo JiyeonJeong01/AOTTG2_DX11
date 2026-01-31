@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "EditorPanel.h"
+#include "Event.h"
 
 NS_BEGIN(Engine)
 class CGameObject;
@@ -86,6 +87,8 @@ private:
     static uint64_t Get_Stable_Id(Engine::CGameObject* pObj); // 기본: pointer cast
     static bool String_IContains(const std::string& haystack, const std::string& needle);
 
+public :
+    CEvent<Engine::CGameObject*> m_OnPrimarySelectionChanged{};
 
 private:
     // data

@@ -174,7 +174,7 @@ void CGameObject_System::Remove_From_LayerBucket(CGameObject* pObj)
     const uint32_t iRemoveIndex = tMeta.iIndexInLayer;
     const uint32_t iLastIndex = SCAST(uint32_t, bucket.size() - 1);
 
-    if (iRemoveIndex >= iLastIndex)
+    if (iRemoveIndex > iLastIndex)
     {
         _DEBUG_ERROR_BREAK("Meta is in a corrupted state.");
         tMeta.layer = Layer::INVALID_LAYER;
@@ -235,6 +235,8 @@ void CGameObject_System::Add_To_LayerBucket(CGameObject* pObj, Layer::LAYER_ID l
     tMeta.layer = layer;
     tMeta.iIndexInLayer = SCAST(uint32_t, bucket.size());
     bucket.push_back(pObj);
+
+    _DEBUG_INFO("layer : %d, Index in Layer : %d", SCAST(int, tMeta.layer), tMeta.iIndexInLayer);
 }
 
 void CGameObject_System::Flush_PendingDestroy()

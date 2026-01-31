@@ -26,6 +26,7 @@
     <ClCompile Include="..\..\ThirdParty\imgui_stdlib.cpp" />
     <ClCompile Include="..\..\ThirdParty\imgui_tables.cpp" />
     <ClCompile Include="..\..\ThirdParty\imgui_widgets.cpp" />
+    <ClCompile Include="..\Private\ConsolePanel.cpp" />
     <ClCompile Include="..\Private\EditorPanel.cpp" />
     <ClCompile Include="..\Private\GUI_System.cpp" />
     <ClCompile Include="..\Private\HierarchyPanel.cpp" />
@@ -40,6 +41,7 @@
     <ClInclude Include="..\..\ThirdParty\imgui_internal.h" />
     <ClInclude Include="..\..\ThirdParty\imgui_stdlib.h" />
     <ClInclude Include="..\..\ThirdParty\magic_enum.hpp" />
+    <ClInclude Include="..\Public\ConsolePanel.h" />
     <ClInclude Include="..\Public\EditorPanel.h" />
     <ClInclude Include="..\Public\Editor_Define.h" />
     <ClInclude Include="..\Public\Editor_Util.h" />

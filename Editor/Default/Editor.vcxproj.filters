@@ -16,15 +16,18 @@
     <Filter Include="99. ThirdParty">
       <UniqueIdentifier>{1c47b732-30c4-47e1-ae05-0316e40913fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Editor Panel\Console">
+      <UniqueIdentifier>{f4168582-1fbc-4859-833b-9e518b55029d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Editor Panel\Hierarchy">
+      <UniqueIdentifier>{30c42a5e-6683-4e13-bdad-ae9552ccb601}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Editor Panel\Inspector">
+      <UniqueIdentifier>{e67757eb-2b3b-426b-8f13-a6b69e67a468}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\EditorPanel.cpp">
-      <Filter>01. Editor Panel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\InspectorPanel.cpp">
-      <Filter>01. Editor Panel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\HierarchyPanel.cpp">
       <Filter>01. Editor Panel</Filter>
     </ClCompile>
     <ClCompile Include="Editor.cpp">
@@ -54,6 +57,15 @@
     <ClCompile Include="..\..\ThirdParty\imgui_stdlib.cpp">
       <Filter>99. ThirdParty</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\ConsolePanel.cpp">
+      <Filter>01. Editor Panel\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HierarchyPanel.cpp">
+      <Filter>01. Editor Panel\Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\InspectorPanel.cpp">
+      <Filter>01. Editor Panel\Inspector</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -66,12 +78,6 @@
       <Filter>Default</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\EditorPanel.h">
-      <Filter>01. Editor Panel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\InspectorPanel.h">
-      <Filter>01. Editor Panel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\HierarchyPanel.h">
       <Filter>01. Editor Panel</Filter>
     </ClInclude>
     <ClInclude Include="Editor.h">
@@ -106,6 +112,15 @@
     </ClInclude>
     <ClInclude Include="..\..\ThirdParty\imgui_stdlib.h">
       <Filter>99. ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ConsolePanel.h">
+      <Filter>01. Editor Panel\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HierarchyPanel.h">
+      <Filter>01. Editor Panel\Hierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\InspectorPanel.h">
+      <Filter>01. Editor Panel\Inspector</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

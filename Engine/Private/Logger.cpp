@@ -1,18 +1,29 @@
-#include "Logger.h"
+ï»¿#include "Logger.h"
 #include "ConsoleSink.h"
+#include "GUISink.h"
 
 IMPLEMENT_SINGLETON(CLogger)
 
 void CLogger::Ready_Logger()
 {
-	/* TODO : ifdef µî ¸ÅÅ©·Î Á¤ÀÇ¿¡ µû¶ó ¹Ù²î±ä ÇØ¾ß ÇÑ´Ù. */
-	m_pSink = new CConsoleSink();
+	/* TODO : ifdef ë“± ë§¤í¬ë¡œ ì •ì˜ì— ë”°ë¼ ë°”ë€Œê¸´ í•´ì•¼ í•œë‹¤. */
 }
 
-void CLogger::Set_Sink(ISink* pSink)
+ISink* CLogger::Set_Sink(LOG_TYPE eType)
 {
 	Safe_Release(m_pSink);
-	m_pSink = pSink;
+
+    switch (eType)
+    {
+    case LOG_TYPE::CONSOLE:
+        m_pSink = new CConsoleSink;
+        break;
+    case LOG_TYPE::GUI:
+        m_pSink = new CGUI_Sink;
+        break;
+    }
+
+    return m_pSink;
 }
 
 void CLogger::Log(SEVERITY_TYPE eSeverity, DOMAIN_TYPE eDomain, const char* szFile, const char* szFunc,
@@ -82,17 +93,17 @@ void CLogger::Assert(DOMAIN_TYPE eDomain, const char* szFile, const char* szFunc
 }
 
 /**
- * \brief printf ½ºÅ¸ÀÏ °¡º¯ ÀÎÀÚ¸¦ std::stringÀ¸·Î Æ÷¸ËÆÃÇÑ´Ù.
- * \param szFmt  printf Æ÷¸Ë ¹®ÀÚ¿­
- * \param args printf ½ºÅ¸ÀÏÀÇ °¡º¯ ÀÎÀÚ
- * \return va_list·Î Àü´ŞµÈ °¡º¯ ÀÎÀÚ¸¦ vsnprintf·Î Æ÷¸ËÆÃÇÏ¿© stringÀ¸·Î ¹İÈ¯ÇÑ´Ù
+ * \brief printf ìŠ¤íƒ€ì¼ ê°€ë³€ ì¸ìë¥¼ std::stringìœ¼ë¡œ í¬ë§·íŒ…í•œë‹¤.
+ * \param szFmt  printf í¬ë§· ë¬¸ìì—´
+ * \param args printf ìŠ¤íƒ€ì¼ì˜ ê°€ë³€ ì¸ì
+ * \return va_listë¡œ ì „ë‹¬ëœ ê°€ë³€ ì¸ìë¥¼ vsnprintfë¡œ í¬ë§·íŒ…í•˜ì—¬ stringìœ¼ë¡œ ë°˜í™˜í•œë‹¤
  */
 string CLogger::FormatV(const char* szFmt, va_list args)
 {
 	if (szFmt == nullptr)
 		return {};
 
-	// va_list´Â ÇÑ ¹ø ÀĞÀ¸¸é ³»ºÎ Æ÷ÀÎÅÍ°¡ ÀÌµ¿ÇÏ¹Ç·Î º¹»ç ÇÊ¼ö 
+	// va_listëŠ” í•œ ë²ˆ ì½ìœ¼ë©´ ë‚´ë¶€ í¬ì¸í„°ê°€ ì´ë™í•˜ë¯€ë¡œ ë³µì‚¬ í•„ìˆ˜ 
 	va_list argsCopy;
 	va_copy(argsCopy, args);
 	const int len = vsnprintf(nullptr, 0, szFmt, argsCopy);
@@ -104,7 +115,7 @@ string CLogger::FormatV(const char* szFmt, va_list args)
 	string out;
 	out.resize(SCAST(size_t, len) + 1);
 
-	// szFmt + args¸¦ ÇØ¼®ÇÏ¿© °á°ú¸¦ out ¹öÆÛ¿¡ ¾¸
+	// szFmt + argsë¥¼ í•´ì„í•˜ì—¬ ê²°ê³¼ë¥¼ out ë²„í¼ì— ì”€
 	vsnprintf(&out[0], out.size(), szFmt, args);
 	out.pop_back();
 	return out;

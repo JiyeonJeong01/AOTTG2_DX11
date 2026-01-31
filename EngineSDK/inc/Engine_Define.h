@@ -18,6 +18,8 @@ using namespace DirectX;
 #include <array>
 #include <memory>
 #include <unordered_set>
+#include <deque>
+#include <mutex>
 
 using namespace std;
 

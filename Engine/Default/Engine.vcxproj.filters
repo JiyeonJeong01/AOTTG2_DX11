@@ -177,7 +177,9 @@
     <ClInclude Include="..\Public\GameObject_System.h">
       <Filter>01. Utility\03. Object</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\GUISink.h" />
+    <ClInclude Include="..\Public\GUISink.h">
+      <Filter>00. System\10. Logger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -249,6 +251,8 @@
     <ClCompile Include="..\Private\GameObject_System.cpp">
       <Filter>01. Utility\03. Object</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\GUISink.cpp" />
+    <ClCompile Include="..\Private\GUISink.cpp">
+      <Filter>00. System\10. Logger</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

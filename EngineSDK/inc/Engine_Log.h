@@ -82,10 +82,12 @@
 #define _DEBUG_ERROR_BREAK(fmt, ...)    ERROR_BREAK(fmt, ##__VA_ARGS__)
 #define _DEBUG_ERROR(fmt, ...)          LOG_ERROR(fmt, ##__VA_ARGS__)
 #define _DEBUG_WARN(fmt, ...)           LOG_WARN(fmt, ##__VA_ARGS__)
+#define _DEBUG_INFO(fmt, ...)          LOG_INFO(fmt, ##__VA_ARGS__)
 #else
 #define _DEBUG_ERROR_BREAK(fmt, ...)    ((void)0)
 #define _DEBUG_ERROR(fmt, ...)          ((void)0)
 #define _DEBUG_WARN(fmt, ...)           ((void)0)
+#define _DEBUG_INFO(fmt, ...)          ((void)0)
 #endif
 
 #pragma region LOG_MODE

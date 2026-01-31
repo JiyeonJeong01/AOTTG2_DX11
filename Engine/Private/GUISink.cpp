@@ -10,7 +10,7 @@ void CGUI_Sink::Write(const CLogger::RECORD& tRecord)
 {
     std::lock_guard<std::mutex> lock(m_mtx);
     m_queue.push_back(tRecord);
-    _Enforce_Limit_Locked();
+    Enforce_Limit_Locked();
 }
 
 void CGUI_Sink::Drain(std::vector<CLogger::RECORD>& out)
@@ -28,7 +28,7 @@ void CGUI_Sink::Drain(std::vector<CLogger::RECORD>& out)
     }
 }
 
-void CGUI_Sink::_Enforce_Limit_Locked()
+void CGUI_Sink::Enforce_Limit_Locked()
 {
     while (m_queue.size() > m_iMaxRecords)
         m_queue.pop_front();

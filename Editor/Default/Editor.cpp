@@ -8,6 +8,8 @@
 #include "GameInstance.h"
 #include "GUI_System.h"
 #include "HierarchyPanel.h"
+#include "ConsolePanel.h"
+#include "InspectorPanel.h"
 
 #define MAX_LOADSTRING 100
 
@@ -70,6 +72,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     Editor::CGUI_System::GetInstance()->Ready_System();
 
     Editor::CHierarchyPanel* pHierarchy = new Editor::CHierarchyPanel();
+    pHierarchy->Init();
+
+    Editor::CConsolePanel* pConsole = new Editor::CConsolePanel();
+    pConsole->Init();
+
+    Editor::CInspectorPanel* pInspector = new Editor::CInspectorPanel();
+    pInspector->Init(pHierarchy);
 
     // 기본 메시지 루프입니다:
     while (true)
@@ -98,7 +107,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
             Editor::CGUI_System::GetInstance()->Update();
             pHierarchy->Update();
+            pConsole->Update();
+            pInspector->Update();
+
             pHierarchy->Render_UI();
+            pConsole->Render_UI();
+            pInspector->Render_UI();
             Editor::CGUI_System::GetInstance()->Render_GUI();
 
             pMainApp->End_Render();

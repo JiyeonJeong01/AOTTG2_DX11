@@ -1,9 +1,10 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 
 NS_BEGIN(Engine)
+    class ISink;
 
-class ENGINE_DLL CLogger : public CBase
+    class ENGINE_DLL CLogger : public CBase
 {
 	DECLARE_SINGLETON(CLogger)
 private:
@@ -23,9 +24,11 @@ public :
 		std::string			strMsg;
 	}RECORD;
 
+    enum class LOG_TYPE { CONSOLE, GUI, END };
+
 public :
 	void	Ready_Logger();
-	void	Set_Sink(class ISink* pSink);
+    ISink*	Set_Sink(LOG_TYPE eType);
 
 public :
 	void	Log(SEVERITY_TYPE eSeverity, DOMAIN_TYPE eDomain, 
