@@ -5,6 +5,8 @@
 
 NS_BEGIN(Engine)
 
+class CGameObject_System;
+
 class ENGINE_DLL CGameObject : public CBase, public LABEL
 {
 protected:
@@ -75,7 +77,7 @@ private:
 template <typename PROXY>
 PROXY CGameObject::Add_Component(COMPONENT_TYPE eComType)
 {
-	COMPONENT_HANDLE hNewHandle = SYS_COM->Create_Component_By_Type(eComType);
+	COMPONENT_HANDLE hNewHandle = SYS_COMPONENT->Create_Component_By_Type(eComType);
 
 	if (0 == hNewHandle.iHandle)
 	{
@@ -93,16 +95,16 @@ PROXY CGameObject::Add_Component(COMPONENT_TYPE eComType)
 		COMPONENT_HANDLE hOld;
 		hOld.iHandle = iSlotData & ComponentConfig::DATA_MASK;
 
-		const uint32_t iGroupID = SYS_COM->Promote(hOld, hNewHandle);
+		const uint32_t iGroupID = SYS_COMPONENT->Promote(hOld, hNewHandle);
 		iSlotData = iGroupID | ComponentConfig::GROUP_FLAG;
 	}
 	else
 	{
 		const uint32_t iGroupID = iSlotData & ComponentConfig::DATA_MASK; /* 기존 그룹에 추가되는 경우 */
-		SYS_COM->Add_To_Group(iGroupID, hNewHandle);
+        SYS_COMPONENT->Add_To_Group(iGroupID, hNewHandle);
 	}
 
-    return SYS_COM->Get_Proxy<PROXY>(eComType, hNewHandle);
+    return SYS_COMPONENT->Get_Proxy<PROXY>(eComType, hNewHandle);
 }
 
 template <typename PROXY>
@@ -123,14 +125,14 @@ PROXY CGameObject::Get_Component(COMPONENT_TYPE eComType)
 	}
 	else /* 그룹 컴포넌트 */
 	{
-		handle = SYS_COM->Get_Group((iSlotData & ComponentConfig::DATA_MASK)).tPrimary;
+		handle = SYS_COMPONENT->Get_Group((iSlotData & ComponentConfig::DATA_MASK)).tPrimary;
 	}
 
 	/* ====== TODO : 안정화시 바로 return ====== */
-	PROXY component = SYS_COM->Get_Proxy<PROXY>(eComType, handle);
+	PROXY component = SYS_COMPONENT->Get_Proxy<PROXY>(eComType, handle);
 	return component;
 
-	// return SYS_COM->Get_Proxy<T>(eComType, handle);
+	// return SYS_COMPONENT->Get_Proxy<T>(eComType, handle);
 }
 
 template <typename PROXY>
@@ -148,19 +150,19 @@ vector<PROXY> CGameObject::Get_Components(COMPONENT_TYPE eComType)
 	{
 		COMPONENT_HANDLE h;
 		h.iHandle = iSlotData;
-		return { SYS_COM->Get_Proxy<PROXY>(eComType, h) };
+		return { SYS_COMPONENT->Get_Proxy<PROXY>(eComType, h) };
 	}
 	else /* 그룹 컴포넌트 */
 	{
 		const uint32_t iGroupID = iSlotData & ComponentConfig::DATA_MASK;
-		const auto& tGroup = SYS_COM->Get_Group(iGroupID);
+		const auto& tGroup = SYS_COMPONENT->Get_Group(iGroupID);
 
 		vector<PROXY> components;
 		components.reserve(tGroup.tExtras.size() + 1);
-		components.push_back(SYS_COM->Get_Proxy<PROXY>(eComType, tGroup.tPrimary));
+		components.push_back(SYS_COMPONENT->Get_Proxy<PROXY>(eComType, tGroup.tPrimary));
 
 		for (auto& h : tGroup.tExtras)
-			components.push_back(SYS_COM->Get_Proxy<PROXY>(eComType, h));
+			components.push_back(SYS_COMPONENT->Get_Proxy<PROXY>(eComType, h));
 
 		return components;
 	}

@@ -170,7 +170,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Event.h" />
     <ClInclude Include="..\Public\EventData.h" />
     <ClInclude Include="..\Public\Event_Manager.h" />
-    <ClInclude Include="..\Public\GameInstance.h" />
+    <ClInclude Include="..\Public\Core_System.h" />
     <ClInclude Include="..\Public\GameObject.h" />
     <ClInclude Include="..\Public\GameObject_Event.h" />
     <ClInclude Include="..\Public\Graphic_Device.h" />
@@ -196,7 +196,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\CLI_Sink.cpp" />
     <ClCompile Include="..\Private\EventData.cpp" />
     <ClCompile Include="..\Private\Event_Manager.cpp" />
-    <ClCompile Include="..\Private\GameInstance.cpp" />
+    <ClCompile Include="..\Private\Core_System.cpp" />
     <ClCompile Include="..\Private\GameObject.cpp" />
     <ClCompile Include="..\Private\GameObject_Event.cpp" />
     <ClCompile Include="..\Private\Graphic_Device.cpp" />

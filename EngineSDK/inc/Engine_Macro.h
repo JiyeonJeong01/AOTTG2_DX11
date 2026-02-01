@@ -77,12 +77,12 @@ namespace Engine
 				return iRefCnt;									\
 			}
 
-#define GET_INSTANCE(CLASSNAME)	CLASSNAME::GetInstance()
-#define GI						GET_SINGLE(CGameInstance)
+#define GET_INSTANCE(CLASSNAME) CLASSNAME::GetInstance()
+#define SYS_CORE				GET_INSTANCE(Engine::CCore_System)
 
-#define SYS_LOG		        GET_INSTANCE(CLogger)
-#define SYS_COM		        GET_INSTANCE(CComponent_System)
-#define SYS_GAMEOBJECT      GET_INSTANCE(CGameObject_System)
+#define SYS_LOG		            GET_INSTANCE(Engine::CLogger)
+#define SYS_COMPONENT           GET_INSTANCE(Engine::CComponent_System)
+#define SYS_GAMEOBJECT          GET_INSTANCE(Engine::CGameObject_System)
 
 //#define INPUT		GET_INSTANCE(CInputSystem)
 //#define TIME		GET_INSTANCE(CTimeManager)

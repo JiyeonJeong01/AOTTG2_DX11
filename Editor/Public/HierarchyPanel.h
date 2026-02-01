@@ -4,6 +4,7 @@
 
 NS_BEGIN(Engine)
 class CGameObject;
+class CGameObject_System;
 class CInspectorPanel;
 NS_END
 

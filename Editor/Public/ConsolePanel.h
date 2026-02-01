@@ -4,6 +4,7 @@
 namespace Engine
 {
     class CGUI_Sink;
+    class CLogger;
 }
 
 NS_BEGIN(Editor)

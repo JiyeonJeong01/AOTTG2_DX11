@@ -1,4 +1,4 @@
-﻿#include "GameInstance.h"
+﻿#include "Core_System.h"
 
 #include "Graphic_Device.h"
 
@@ -10,14 +10,14 @@
 
 NS_BEGIN(Engine)
 
-IMPLEMENT_SINGLETON(CGameInstance)
+IMPLEMENT_SINGLETON(CCore_System)
 
-CGameInstance::CGameInstance()
+CCore_System::CCore_System()
 {
 
 }
 
-HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice,
+HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice,
 	ID3D11DeviceContext** ppContext)
 {
     /* --- Device --- */
@@ -41,7 +41,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
     /* --- Component System ---*/
     {
-        if (FAILED(SYS_COM->Initialize()))
+        if (FAILED(SYS_COMPONENT->Initialize()))
         {
             MSG_BOX("Component System failed Initialize");
             return E_FAIL;
@@ -72,27 +72,27 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	return S_OK;
 }
 
-void CGameInstance::Update_Engine(_float fTimeDelta)
+void CCore_System::Update_Engine(_float fTimeDelta)
 {
-	SYS_COM->Update(fTimeDelta);
+	SYS_COMPONENT->Update(fTimeDelta);
 }
 
-HRESULT CGameInstance::Draw()
+HRESULT CCore_System::Draw()
 {
     return S_OK;
 }
 
-void CGameInstance::Clear_Resources(_uint iLevelIndex)
+void CCore_System::Clear_Resources(_uint iLevelIndex)
 {
 }
 
-void CGameInstance::Share_GraphicDevice(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
+void CCore_System::Share_GraphicDevice(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
 {
     *ppDevice = m_pDevice;
     *ppContext = m_pContext;
 }
 
-HRESULT CGameInstance::Clear_Buffers(const _float4* pClearColor) const
+HRESULT CCore_System::Clear_Buffers(const _float4* pClearColor) const
 {
 	if (FAILED(m_pGraphic_Device->Clear_BackBuffer_View(pClearColor)))
 		return E_FAIL;
@@ -103,26 +103,26 @@ HRESULT CGameInstance::Clear_Buffers(const _float4* pClearColor) const
 	return S_OK;
 }
 
-HRESULT CGameInstance::Present() const
+HRESULT CCore_System::Present() const
 {
 	return m_pGraphic_Device->Present();
 }
 
-_float CGameInstance::Compute_SystemDT() const
+_float CCore_System::Compute_SystemDT() const
 {
 	return m_pTimerSystem->Compute_SystemDT();
 }
-_float CGameInstance::Compute_FrameDT() const
+_float CCore_System::Compute_FrameDT() const
 {
 	return m_pTimerSystem->Compute_FrameDT();
 }
 
-HRESULT CGameInstance::Change_Scene(_uint iNewLevelIndex, CLevel* pNewLevel)
+HRESULT CCore_System::Change_Scene(_uint iNewLevelIndex, CLevel* pNewLevel)
 {
     return S_OK;
 }
 
-void CGameInstance::Free()
+void CCore_System::Free()
 {
 	__super::Free();
 }

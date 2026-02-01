@@ -57,7 +57,7 @@ void CLogger::Log(SEVERITY_TYPE eSeverity, DOMAIN_TYPE eDomain, const char* szFi
     std::string_view svSeverity = magic_enum::enum_name(tRecord.eSeverity);
 
     tRecord.strMsg = FormatV(
-        "[%s][%s]\t %s \t\t\t\t\t\t\t\t\t\t\tt(%s, Line: %d)",
+        "[%s][%s]\t %s \t\t\t\t\t\t\t\t\t\t\t(%s, Line: %d)",
         Get_TimeStamp().c_str(),
         svSeverity.data(),
         msg.c_str(),

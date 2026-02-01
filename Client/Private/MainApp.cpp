@@ -1,26 +1,22 @@
 ﻿#include "MainApp.h"
-
-#include "GameInstance.h"
+#include "Core_System.h"
 #include "GameObject.h"
 
 /* ====== Component Test ====== */
 #include "TestComponentA.h"
 #include "TestComponentB.h"
-#include "Event.h"
 #include "Tester.h"
 /* ============================ */
 
 NS_BEGIN(Client)
 
 CMainApp::CMainApp()
-    : m_pGameInstance{ CGameInstance::GetInstance() }
 {
-    Safe_AddRef(m_pGameInstance);
 }
 
 HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 {
-    if (FAILED(m_pGameInstance->Initialize_Engine(EngineDesc, &m_pDevice, &m_pContext)))
+    if (FAILED(SYS_CORE->Initialize_Engine(EngineDesc, &m_pDevice, &m_pContext)))
         return E_FAIL;
 
     /* TEST : Create GameObject with various components */
@@ -80,7 +76,7 @@ void CMainApp::Fixed_Update(_float fDT)
 HRESULT CMainApp::Begin_Render()
 {
     _float4		vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };
-    if (FAILED(m_pGameInstance->Clear_Buffers(&vClearColor)))
+    if (FAILED(SYS_CORE->Clear_Buffers(&vClearColor)))
         return E_FAIL;
 
     return S_OK;
@@ -96,7 +92,7 @@ HRESULT CMainApp::Render()
 
 HRESULT CMainApp::End_Render()
 {
-    if (FAILED(m_pGameInstance->Present()))
+    if (FAILED(SYS_CORE->Present()))
         return E_FAIL;
 
     return S_OK;
@@ -117,8 +113,6 @@ CMainApp* CMainApp::Create(const ENGINE_DESC& Engine_Desc)
 void CMainApp::Free()
 {
     __super::Free();
-
-    Safe_Release(m_pGameInstance);
 }
 
 NS_END;

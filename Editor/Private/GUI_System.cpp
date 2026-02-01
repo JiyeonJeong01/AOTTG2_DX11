@@ -1,7 +1,7 @@
 ﻿#include "GUI_System.h"
 
 #include "Engine_Log.h"
-#include "GameInstance.h"
+#include "Core_System.h"
 
 IMPLEMENT_SINGLETON(Editor::CGUI_System)
 
@@ -12,7 +12,7 @@ Editor::CGUI_System::CGUI_System()
 
 HRESULT Editor::CGUI_System::Ready_System()
 {
-    CGameInstance::GetInstance()->Share_GraphicDevice(&m_pDevice, &m_pContext);
+    SYS_CORE->Share_GraphicDevice(&m_pDevice, &m_pContext);
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;

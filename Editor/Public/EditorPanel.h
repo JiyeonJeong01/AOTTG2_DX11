@@ -6,7 +6,7 @@
 
 namespace Engine
 {
-    class CGameInstance;
+    class CCore_System;
 }
 
 NS_BEGIN(Editor)
@@ -15,7 +15,7 @@ class CEditorPanel : public CBase
 {
 public:
     CEditorPanel(const std::string& strPanel)
-        : m_strPanelName(strPanel), m_pGameInstance( CGameInstance::GetInstance() ), m_bOpen(true) { }
+        : m_strPanelName(strPanel), m_bOpen(true) { }
     virtual ~CEditorPanel() = default;
 
     virtual HRESULT Initialize() { return S_OK; }
@@ -31,7 +31,6 @@ protected:
 
 protected:
     std::string m_strPanelName;
-    Engine::CGameInstance*  m_pGameInstance {};
     _bool m_bOpen;
 };
 

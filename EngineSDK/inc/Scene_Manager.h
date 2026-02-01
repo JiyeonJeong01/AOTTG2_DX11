@@ -5,7 +5,7 @@
 NS_BEGIN(Engine)
 
 class CScene;
-class CGameInstance;
+class CCore_System;
 
 class CScene_Manager final : public CBase
 {
@@ -19,9 +19,9 @@ public:
     HRESULT Render();
 
 private:
-    CScene*         m_pCurrentScene{};
-    CGameInstance*  m_pGameInstance{};
-    _uint			m_iCurrentSceneIndex;
+    CScene*         m_pCurrentScene = nullptr;
+
+    _uint			m_iCurrentSceneIndex = 0;
 
 public:
     static CScene_Manager* Create();

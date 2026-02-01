@@ -54,7 +54,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     if (nullptr == pMainApp)
         return FALSE;
 
-    CGameInstance* pGameInstance = CGameInstance::GetInstance();
+    CCore_System* pGameInstance = CCore_System::GetInstance();
     Safe_AddRef(pGameInstance);
 
     if (nullptr == pGameInstance) {

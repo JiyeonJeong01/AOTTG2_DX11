@@ -12,7 +12,6 @@
 
 
 NS_BEGIN(Engine)
-class CGameInstance;
 class CGameObject;
 NS_END
 
@@ -35,7 +34,6 @@ public:
     HRESULT End_Render();
 
 private:
-    CGameInstance* m_pGameInstance{ };
     ID3D11Device* m_pDevice{ };
     ID3D11DeviceContext* m_pContext{ };
 
@@ -48,7 +46,6 @@ public :
 
 
 private :
-
     list<CGameObject*> m_GameObjects;
 
     /* ========================================== */

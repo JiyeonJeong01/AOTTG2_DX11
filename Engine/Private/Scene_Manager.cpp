@@ -1,20 +1,18 @@
 ﻿#include "Scene_Manager.h"
 
-#include "GameInstance.h"
+#include "Core_System.h"
 #include "Scene.h"
 
 NS_BEGIN(Engine)
 
 CScene_Manager::CScene_Manager()
-    : m_pGameInstance{ CGameInstance::GetInstance() }
 {
-    Safe_AddRef(m_pGameInstance);
 }
 
 HRESULT CScene_Manager::Change_Scene(_uint iNewSceneIndex, CScene* pNewScene)
 {
     if (nullptr != m_pCurrentScene)
-        m_pGameInstance->Clear_Resources(m_iCurrentSceneIndex);
+        SYS_CORE->Clear_Resources(m_iCurrentSceneIndex);
 
     if (0 != Safe_Release(m_pCurrentScene))
     {
@@ -52,7 +50,6 @@ void CScene_Manager::Free()
     __super::Free();
 
     Safe_Release(m_pCurrentScene);
-    Safe_Release(m_pGameInstance);
 }
 
 NS_END
