@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 
 /**
@@ -14,17 +14,9 @@ private:
 	virtual ~CComponentGroup_Manager() = default;
 
 public :
-	/**
-	* @brief Promotes a single component handle to a multi-component group.
-	* @param hOld The existing handle currently stored in the GameObject's slot.
-	* @param hNew The new handle to be added to the group.
-	* @return A unique Group ID, to be stored in the lower 31 bits of the component slot.
-	*/
+	/* Promotes a single component handle to a multi-component group. A unique Group ID, to be stored in the lower 31 bits of the component slot. */
 	uint32_t				Promote(COMPONENT_HANDLE hOld, COMPONENT_HANDLE hNew);
-
-	/**
-	* @brief Appends an additional component handle to an existing group.
-	*/
+	/* Appends an additional component handle to an existing group. */
 	void					Add_To_Group(uint32_t iGroupID, COMPONENT_HANDLE hNew);
 
 	const COMPONENT_GROUP&	Get_Group(uint32_t iGroupID) const;

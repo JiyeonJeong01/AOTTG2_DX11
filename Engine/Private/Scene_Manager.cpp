@@ -1,8 +1,9 @@
 ﻿#include "Scene_Manager.h"
 
 #include "GameInstance.h"
-
 #include "Scene.h"
+
+NS_BEGIN(Engine)
 
 CScene_Manager::CScene_Manager()
     : m_pGameInstance{ CGameInstance::GetInstance() }
@@ -53,3 +54,5 @@ void CScene_Manager::Free()
     Safe_Release(m_pCurrentScene);
     Safe_Release(m_pGameInstance);
 }
+
+NS_END

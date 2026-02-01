@@ -6,6 +6,8 @@ Engine::CGameObject::CGameObject()
 {
 }
 
+NS_BEGIN(Engine)
+
 CGameObject::CGameObject(std::string str)
     : tagLabel(str)
 {
@@ -16,7 +18,6 @@ CGameObject::CGameObject(const CGameObject& Clone)
 {
     /* TODO : Children은 따로 만들어줘야 할듯 */
 }
-
 
 void Engine::CGameObject::Render()
 {
@@ -137,3 +138,5 @@ void Engine::CGameObject::Free()
 {
 	CBase::Free();
 }
+
+NS_END

@@ -40,17 +40,6 @@ public:
     void Cancel_Rename();
     bool Is_Renaming() const;
 
-    /* Options */
-    void Set_Allow_Multi_Select(_bool b) { m_bAllowMultiSelect = b; }
-    void Set_Show_Search(_bool b) { m_bShowSearch = b; }
-    void Set_Show_Toolbar(_bool b) { m_bShowToolbar = b; }
-    void Set_Show_Active_Toggle(_bool b) { m_bShowActiveToggle = b; }
-    void Set_Allow_DragDrop(_bool b) { m_bAllowDragDrop = b; }
-    void Set_Allow_Rename(_bool b) { m_bAllowRename = b; }
-    void Set_Allow_Delete(_bool b) { m_bAllowDelete = b; }
-    void Set_Allow_Duplicate(_bool b) { m_bAllowDuplicate = b; }
-    void Set_Double_Click_To_Rename(_bool b) { m_bDoubleClickToRename = b; }
-
 private:
     /* Main render section */
     void Draw_Toolbar();
@@ -84,49 +73,37 @@ private:
     void Notify_Selection_Changed();
     void Validate_Selection();
 
-    static uint64_t Get_Stable_Id(Engine::CGameObject* pObj); // 기본: pointer cast
+    static uint64_t Get_Stable_Id(Engine::CGameObject* pObj);
     static bool String_IContains(const std::string& haystack, const std::string& needle);
 
 public :
-    CEvent<Engine::CGameObject*> m_OnPrimarySelectionChanged{};
+    CEvent<Engine::CGameObject*> m_OnPrimarySelectionChanged;
 
 private:
-    // data
+    /* Data */
     std::vector<Engine::CGameObject*> m_roots;
     std::vector<Engine::CGameObject*> m_selection;
     Engine::CGameObject* m_pLastClicked = nullptr;
 
     std::unordered_set<uint64_t> m_openNodes;
 
-    // filter
+    /* Filter */
     std::string m_search;
-    bool m_bRequestFocusSearch = false;
+    _bool m_bRequestFocusSearch = false;
 
-    // rename
+    /* Renmae */
     Engine::CGameObject* m_pRenameTarget = nullptr;
     std::string m_renameBuffer;
     bool m_bJustStartedRename = false;
 
-    // context menu target
+    /* Context menu */
     Engine::CGameObject* m_pContextTarget = nullptr;
 
-    // callbacks
+    /* Callbacks */
     std::function<void(Engine::CGameObject*)> m_fnPrimarySelectionChanged;
     std::function<void(const std::vector<Engine::CGameObject*>&)> m_fnSelectionChanged;
 
-    // options
-    bool m_bAllowMultiSelect = true;
-    bool m_bShowSearch = true;
-    bool m_bShowToolbar = true;
-    bool m_bShowActiveToggle = true;
-
-    bool m_bAllowDragDrop = true;
-    bool m_bAllowRename = true;
-    bool m_bAllowDelete = true;
-    bool m_bAllowDuplicate = true;
-    bool m_bDoubleClickToRename = true;
-
-    // window
+    /* Window */
     static constexpr const char* PAYLOAD_GO_PTR = "HIERARCHY_GO_PTR";
 
 public:

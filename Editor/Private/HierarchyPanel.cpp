@@ -27,16 +27,14 @@ void CHierarchyPanel::Update()
 
 void CHierarchyPanel::Render()
 {
-    if (!ImGui::Begin(m_strPanelName.c_str()))
+    if (!ImGui::Begin(m_strPanelName.c_str())) /* MainPanel::PANEL_HIERARCHY = "Hierarchy" */
     {
         ImGui::End();
         return;
     }
 
-    if (m_bShowToolbar)
-        Draw_Toolbar();
-    if (m_bShowSearch)
-        Draw_Search_Bar();
+    Draw_Toolbar();
+    Draw_Search_Bar();
 
     Handle_Shortcuts();
     Draw_Object_Tree();
@@ -90,11 +88,6 @@ void CHierarchyPanel::Add_Selection(Engine::CGameObject* pObj)
 {
     if (!pObj)
         return;
-    if (!m_bAllowMultiSelect)
-    {
-        Set_Selection_Single(pObj);
-        return;
-    }
     if (!Is_Selected(pObj))
     {
         m_selection.push_back(pObj);
@@ -108,11 +101,6 @@ void CHierarchyPanel::Toggle_Selection(Engine::CGameObject* pObj)
 {
     if (!pObj)
         return;
-    if (!m_bAllowMultiSelect)
-    {
-        Set_Selection_Single(pObj);
-        return;
-    }
 
     auto it = std::find(m_selection.begin(), m_selection.end(), pObj);
     if (it != m_selection.end())
@@ -127,11 +115,6 @@ void CHierarchyPanel::Toggle_Selection(Engine::CGameObject* pObj)
 void CHierarchyPanel::Set_Selection_Range(Engine::CGameObject* pFrom, Engine::CGameObject* pTo)
 {
     /* TODO : Support only the parent's sibling range, as the current tree display order is undefined */
-    if (!m_bAllowMultiSelect)
-    {
-        Set_Selection_Single(pTo);
-        return;
-    }
     if (!pFrom || !pTo)
     {
         Set_Selection_Single(pTo);
@@ -184,7 +167,7 @@ void CHierarchyPanel::Clear_Selection()
 /* =======================================================================*/
 void CHierarchyPanel::Begin_Rename(Engine::CGameObject* pObj)
 {
-    if (!m_bAllowRename || !pObj)
+    if (!pObj)
         return;
 
     m_pRenameTarget = pObj;
@@ -224,7 +207,7 @@ void CHierarchyPanel::Draw_Toolbar()
     ImGui::SameLine();
 
     /* Duplicate Object */ 
-    ImGui::BeginDisabled(!m_bAllowDuplicate || Get_Primary_Selection() == nullptr);
+    ImGui::BeginDisabled(Get_Primary_Selection() == nullptr);
     if (ImGui::Button("Duplicate"))
     {
         Engine::CGameObject* pSel = Get_Primary_Selection();
@@ -241,7 +224,7 @@ void CHierarchyPanel::Draw_Toolbar()
     ImGui::SameLine();
 
     /* Delete Object */
-    ImGui::BeginDisabled(!m_bAllowDelete || m_selection.empty());
+    ImGui::BeginDisabled(m_selection.empty());
     if (ImGui::Button("Delete"))
     {
         auto toDelete = m_selection;
@@ -288,20 +271,11 @@ void CHierarchyPanel::Draw_Object_Tree()
 
     Draw_Root_List();
 
-    if (m_bShowToolbar == false)
-    {
-        /* no-op */
-    }
     ImGui::EndChild();
 }
 
 void CHierarchyPanel::Draw_Context_Menu()
 {
-    if (!m_bShowActiveToggle && !m_bShowToolbar)
-    {
-        /* no-op */
-    }
-
     /*  Right-click on GameOjbect */
     if (ImGui::BeginPopupContextWindow("##HierarchyBlankContext", ImGuiPopupFlags_MouseButtonRight))
     {
@@ -406,12 +380,10 @@ void CHierarchyPanel::Draw_Node_Recursive(Engine::CGameObject* pObj, int /*iDept
         Handle_Node_Click(pObj);
 
     /* Handle double click to rename */
-    if (m_bDoubleClickToRename && m_bAllowRename && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+    if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
         Begin_Rename(pObj);
 
     /* Handle right-click to display menu */
-    if (m_bShowToolbar || m_bShowActiveToggle || true)
-    {
         if (ImGui::BeginPopupContextItem(("##HierarchyNodeCtx" + std::to_string((uintptr_t)pObj)).c_str()))
         {
             m_pContextTarget = pObj;
@@ -426,7 +398,6 @@ void CHierarchyPanel::Draw_Node_Recursive(Engine::CGameObject* pObj, int /*iDept
                 }
             }
 
-            ImGui::BeginDisabled(!m_bAllowDuplicate);
             if (ImGui::MenuItem("Duplicate"))
             {
                 Engine::CGameObject* pDup = Duplicate_Object(pObj, pObj->Get_Parent());
@@ -436,12 +407,10 @@ void CHierarchyPanel::Draw_Node_Recursive(Engine::CGameObject* pObj, int /*iDept
                     Begin_Rename(pDup);
                 }
             }
-            ImGui::EndDisabled();
 
-            if (m_bAllowRename && ImGui::MenuItem("Rename", "F2"))
+            if (ImGui::MenuItem("Rename", "F2"))
                 Begin_Rename(pObj);
 
-            ImGui::BeginDisabled(!m_bAllowDelete);
             if (ImGui::MenuItem("Delete", "Del"))
             {
                 /* Delete all selected items if the target is selected, otherwise delete only the target */
@@ -459,22 +428,18 @@ void CHierarchyPanel::Draw_Node_Recursive(Engine::CGameObject* pObj, int /*iDept
                     Destroy_Object(pObj);
                 }
             }
-            ImGui::EndDisabled();
 
-            if (m_bShowActiveToggle)
-            {
-                _bool bCur = pObj->Get_Active();
-                if (ImGui::MenuItem(bCur ? "Set Inactive" : "Set Active"))
-                    pObj->Set_Active(!bCur);
-            }
+
+            _bool bCur = pObj->Get_Active();
+            if (ImGui::MenuItem(bCur ? "Set Inactive" : "Set Active"))
+                pObj->Set_Active(!bCur);
 
             ImGui::EndPopup();
         }
-    }
 
     /* Reparent by drag-and-drop */
-    if (m_bAllowDragDrop)
-        Handle_DragDrop(pObj);
+    Handle_DragDrop(pObj);
+        
 
     /* Rename the target */
     if (m_pRenameTarget == pObj)
@@ -512,12 +477,6 @@ void CHierarchyPanel::Handle_Node_Click(Engine::CGameObject* pObj)
     const _bool bSift = io.KeyShift;
     const _bool bCtrl = io.KeyCtrl;
 
-    if (!m_bAllowMultiSelect)
-    {
-        Set_Selection_Single(pObj);
-        return;
-    }
-
     if (bSift && m_pLastClicked)
     {
         Set_Selection_Range(m_pLastClicked, pObj);
@@ -552,14 +511,14 @@ void CHierarchyPanel::Handle_Shortcuts()
         m_bRequestFocusSearch = true;
 
     /* Handle F2 : Trigger the renaming process */
-    if (m_bAllowRename && ImGui::IsKeyPressed(ImGuiKey_F2, false))
+    if (ImGui::IsKeyPressed(ImGuiKey_F2, false))
     {
         if (auto* p = Get_Primary_Selection())
             Begin_Rename(p);
     }
 
     /* Handle Delete : Permanently remove all currently objects */
-    if (m_bAllowDelete && ImGui::IsKeyPressed(ImGuiKey_Delete, false))
+    if (ImGui::IsKeyPressed(ImGuiKey_Delete, false))
     {
         if (!m_selection.empty())
         {
@@ -571,7 +530,7 @@ void CHierarchyPanel::Handle_Shortcuts()
     }
 
     /* Handle Ctrl + D: Duplicate of the selected object */
-    if (m_bAllowDuplicate && Editor_Util::Is_KeyChord_Pressed(true, false, false, ImGuiKey_D))
+    if (Editor_Util::Is_KeyChord_Pressed(true, false, false, ImGuiKey_D))
     {
         if (auto* p = Get_Primary_Selection())
         {
@@ -643,7 +602,7 @@ Engine::CGameObject* CHierarchyPanel::Create_Empty_Object(Engine::CGameObject* p
 
 Engine::CGameObject* CHierarchyPanel::Duplicate_Object(Engine::CGameObject* pSrc, Engine::CGameObject* pParent)
 {
-    if (!m_bAllowDuplicate || !pSrc)
+    if (!pSrc)
         return nullptr;
 
     Engine::CGameObject* pDup = pSrc->Clone();
@@ -653,7 +612,7 @@ Engine::CGameObject* CHierarchyPanel::Duplicate_Object(Engine::CGameObject* pSrc
 
 void CHierarchyPanel::Destroy_Object(Engine::CGameObject* pObj)
 {
-    if (!m_bAllowDelete || !pObj)
+    if (!pObj)
         return;
 
     if (m_pRenameTarget == pObj)
@@ -745,7 +704,7 @@ void CHierarchyPanel::Validate_Selection()
 
     if (m_pLastClicked && !Is_Selected(m_pLastClicked))
     {
-        /* If the last clicked GameObject is removed from the selection, the primary selection may need to be updated */
+        /* If the last clicked GameObject is removed from the selection, the primary selection need to be updated */
         if (!m_selection.empty())
             m_pLastClicked = m_selection.back();
         else

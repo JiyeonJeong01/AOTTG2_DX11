@@ -15,7 +15,7 @@ private:
 
 public:
     HRESULT Change_Scene(_uint iNewSceneIndex, class CScene* pNewScene);
-    void Update(_float fTimeDelta);
+    void    Update(_float fTimeDelta);
     HRESULT Render();
 
 private:

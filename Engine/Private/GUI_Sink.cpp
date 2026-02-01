@@ -1,4 +1,4 @@
-﻿#include "GUISink.h"
+﻿#include "GUI_Sink.h"
 
 NS_BEGIN(Engine)
 
@@ -9,6 +9,7 @@ CGUI_Sink::CGUI_Sink()
 void CGUI_Sink::Write(const CLogger::RECORD& tRecord)
 {
     std::lock_guard<std::mutex> lock(m_mtx);
+    
     m_queue.push_back(tRecord);
     Enforce_Limit_Locked();
 }

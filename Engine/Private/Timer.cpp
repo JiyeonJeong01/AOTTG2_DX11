@@ -1,4 +1,6 @@
-#include "Timer.h"
+﻿#include "Timer.h"
+
+NS_BEGIN(Engine)
 
 CTimer::CTimer()
 	: m_fTimeDelta(0.f)
@@ -8,7 +10,7 @@ CTimer::CTimer()
 	ZeroMemory(&m_CpuTick, sizeof(LARGE_INTEGER));
 }
 
-HRESULT CTimer::Ready_Timer()
+HRESULT CTimer::Initialize()
 {
 	QueryPerformanceCounter(&m_FrameTime);	
 	QueryPerformanceCounter(&m_LastTime);	
@@ -34,7 +36,7 @@ CTimer* CTimer::Create()
 {
 	CTimer* pInstance = new CTimer;
 
-	if (FAILED(pInstance->Ready_Timer()))
+	if (FAILED(pInstance->Initialize()))
 	{
 		Engine::Safe_Release(pInstance);
 		return nullptr;
@@ -49,3 +51,4 @@ void CTimer::Free()
 
 }
 
+NS_END

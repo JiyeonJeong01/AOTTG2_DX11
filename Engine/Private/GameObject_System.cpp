@@ -2,6 +2,8 @@
 #include "GameObject.h"
 #include "Engine_Log.h"
 
+NS_BEGIN(Engine)
+
 IMPLEMENT_SINGLETON(CGameObject_System)
 
 CGameObject_System::CGameObject_System()
@@ -10,7 +12,7 @@ CGameObject_System::CGameObject_System()
 
 HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers)
 {
-    if (iMaxLayers <= Layer::DEFAULT_LAYER || iMaxLayers >= Layer::MAX_LAYERS)
+    if (iMaxLayers <= Layer::DEFAULT_LAYER || iMaxLayers > Layer::MAX_LAYERS)
     {
         _DEBUG_ERROR_BREAK("CGameObject_System Initialize failed: invalid layer count.");
         return E_FAIL;
@@ -267,3 +269,5 @@ void CGameObject_System::Free()
 {
     CBase::Free();
 }
+
+NS_END

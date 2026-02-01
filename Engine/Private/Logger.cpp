@@ -1,12 +1,14 @@
 ﻿#include "Logger.h"
-#include "ConsoleSink.h"
-#include "GUISink.h"
+#include "CLI_Sink.h"
+#include "GUI_Sink.h"
+
+NS_BEGIN(Engine)
 
 IMPLEMENT_SINGLETON(CLogger)
 
-void CLogger::Ready_Logger()
+HRESULT CLogger::Initialize()
 {
-	/* TODO : ifdef 등 매크로 정의에 따라 바뀌긴 해야 한다. */
+    return S_OK;
 }
 
 ISink* CLogger::Set_Sink(LOG_TYPE eType)
@@ -15,8 +17,8 @@ ISink* CLogger::Set_Sink(LOG_TYPE eType)
 
     switch (eType)
     {
-    case LOG_TYPE::CONSOLE:
-        m_pSink = new CConsoleSink;
+    case LOG_TYPE::CLI:
+        m_pSink = new CCLI_Sink;
         break;
     case LOG_TYPE::GUI:
         m_pSink = new CGUI_Sink;
@@ -93,30 +95,33 @@ void CLogger::Assert(DOMAIN_TYPE eDomain, const char* szFile, const char* szFunc
 }
 
 /**
- * \brief printf 스타일 가변 인자를 std::string으로 포맷팅한다.
- * \param szFmt  printf 포맷 문자열
- * \param args printf 스타일의 가변 인자
- * \return va_list로 전달된 가변 인자를 vsnprintf로 포맷팅하여 string으로 반환한다
+ * \brief Formats printf-style variadic arguments into std::string
+ * \param szFmt  printf-style format string
+ * \param args Variadic arguments in printf-style 
+ * \return a std::string containing the result of formatting the variadic arguments using vsnprintf.
  */
 string CLogger::FormatV(const char* szFmt, va_list args)
 {
-	if (szFmt == nullptr)
-		return {};
+    if (!szFmt)
+        return {};
 
-	// va_list는 한 번 읽으면 내부 포인터가 이동하므로 복사 필수 
-	va_list argsCopy;
-	va_copy(argsCopy, args);
-	const int len = vsnprintf(nullptr, 0, szFmt, argsCopy);
-	va_end(argsCopy);
+    /* va_list must be copied because reading it moves its internal pointer. */
+    va_list argsCopy;
+    va_copy(argsCopy, args);
+    const int len = std::vsnprintf(nullptr, 0, szFmt, argsCopy);
+    va_end(argsCopy);
 
-	if (len <= 0)
-		return string(szFmt);
+    if (len < 0)
+        return {};
 
-	string out;
-	out.resize(SCAST(size_t, len) + 1);
+    std::string out;
+    out.resize(static_cast<size_t>(len) + 1); // +1 for null terminator
 
-	// szFmt + args를 해석하여 결과를 out 버퍼에 씀
-	vsnprintf(&out[0], out.size(), szFmt, args);
-	out.pop_back();
-	return out;
+    /* Parse szFmt and args, and write the formatted result into output buffer */
+    std::vsnprintf(out.data(), out.size(), szFmt, args);
+
+    out.pop_back(); /* remove null terminator */
+    return out;
 }
+
+NS_END

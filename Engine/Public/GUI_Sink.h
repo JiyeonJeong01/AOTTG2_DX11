@@ -30,7 +30,7 @@ private:
 private:
     std::mutex m_mtx;
     std::deque<CLogger::RECORD> m_queue;  // 아직 UI로 전달 안 된 것
-    size_t m_iMaxRecords = 10000;
+    size_t m_iMaxRecords = 5000;
 };
 
 NS_END

@@ -14,7 +14,7 @@ private :
 	~CComponent_System() override = default;
 
 public :
-	HRESULT Init();
+	HRESULT Initialize();
 	void Update(_float fDT);
 	void LateUpdate(_float fDT);
 	void FixedUpdate(_float fDT);

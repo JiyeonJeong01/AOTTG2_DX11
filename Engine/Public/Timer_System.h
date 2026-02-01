@@ -1,22 +1,22 @@
-#pragma once
+﻿#pragma once
 
 #include "Base.h"
 
 NS_BEGIN(Engine)
 
 class CTimer;
-class CTimerSystem : public CBase
+class CTimer_System : public CBase
 {
 private:
-	CTimerSystem();
-	virtual ~CTimerSystem() = default;
+	CTimer_System();
+	virtual ~CTimer_System() = default;
 public :
-	HRESULT			Ready_System();
+	HRESULT			Initialize_System();
 
 public:
 	_float			Compute_SystemDT();
 	_float			Compute_FrameDT();
-	_float			Get_FrameDT() const { return m_fFrameDT; }
+    _float			Get_FrameDT() const;
 
 private:
 	CTimer*			m_pSystemTimer = { nullptr };
@@ -24,7 +24,7 @@ private:
 	float			m_fFrameDT = {};
 
 public:
-	static CTimerSystem* Create();
+	static CTimer_System* Create();
 	virtual void		Free();
 };
 

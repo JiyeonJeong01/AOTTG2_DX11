@@ -9,7 +9,7 @@
 
 IMPLEMENT_SINGLETON(CComponent_System)
 
-HRESULT CComponent_System::Init()
+HRESULT CComponent_System::Initialize()
 {
 	m_pComGroupMgr = CComponentGroup_Manager::Create();
 

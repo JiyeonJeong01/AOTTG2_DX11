@@ -157,7 +157,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Component_Processor.h" />
     <ClInclude Include="..\Public\Component_Processor_Impl.h" />
     <ClInclude Include="..\Public\Component_System.h" />
-    <ClInclude Include="..\Public\ConsoleSink.h" />
+    <ClInclude Include="..\Public\CLI_Sink.h" />
     <ClInclude Include="..\Public\Core_Struct.h" />
     <ClInclude Include="..\Public\Engine_Define.h" />
     <ClInclude Include="..\Public\Engine_Enum.h" />
@@ -174,7 +174,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\GameObject.h" />
     <ClInclude Include="..\Public\GameObject_Event.h" />
     <ClInclude Include="..\Public\Graphic_Device.h" />
-    <ClInclude Include="..\Public\GUISink.h" />
+    <ClInclude Include="..\Public\GUI_Sink.h" />
     <ClInclude Include="..\Public\ISink.h" />
     <ClInclude Include="..\Public\GameObject_System.h" />
     <ClInclude Include="..\Public\Scene_Manager.h" />
@@ -185,7 +185,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\TestComponentB.h" />
     <ClInclude Include="..\Public\TestComponentBSystem.h" />
     <ClInclude Include="..\Public\Timer.h" />
-    <ClInclude Include="..\Public\TimerSystem.h" />
+    <ClInclude Include="..\Public\Timer_System.h" />
     <ClInclude Include="..\Public\Transform.h" />
   </ItemGroup>
   <ItemGroup>
@@ -193,14 +193,14 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Collider.cpp" />
     <ClCompile Include="..\Private\ComponentGroup_Manager.cpp" />
     <ClCompile Include="..\Private\Component_System.cpp" />
-    <ClCompile Include="..\Private\ConsoleSink.cpp" />
+    <ClCompile Include="..\Private\CLI_Sink.cpp" />
     <ClCompile Include="..\Private\EventData.cpp" />
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
     <ClCompile Include="..\Private\GameObject.cpp" />
     <ClCompile Include="..\Private\GameObject_Event.cpp" />
     <ClCompile Include="..\Private\Graphic_Device.cpp" />
-    <ClCompile Include="..\Private\GUISink.cpp" />
+    <ClCompile Include="..\Private\GUI_Sink.cpp" />
     <ClCompile Include="..\Private\ISink.cpp" />
     <ClCompile Include="..\Private\GameObject_System.cpp" />
     <ClCompile Include="..\Private\Scene_Manager.cpp" />
@@ -211,7 +211,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\TestComponentB.cpp" />
     <ClCompile Include="..\Private\TestComponentBSystem.cpp" />
     <ClCompile Include="..\Private\Timer.cpp" />
-    <ClCompile Include="..\Private\TimerSystem.cpp" />
+    <ClCompile Include="..\Private\Timer_System.cpp" />
     <ClCompile Include="..\Private\Transform.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

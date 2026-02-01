@@ -1,9 +1,11 @@
-﻿#include "ConsoleSink.h"
+﻿#include "CLI_Sink.h"
 
 #include "Engine_Log.h"
-#include "../../ThirdParty/magic_enum.hpp"
+#include "magic_enum.hpp"
 
-void CConsoleSink::Write(const CLogger::RECORD& tRecord)
+NS_BEGIN(Engine)
+
+void CCLI_Sink::Write(const CLogger::RECORD& tRecord)
 {
     // 색 변경
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -23,12 +25,14 @@ void CConsoleSink::Write(const CLogger::RECORD& tRecord)
         tRecord.iLine);
 }
 
-CConsoleSink* CConsoleSink::Create()
+CCLI_Sink* CCLI_Sink::Create()
 {
-    return new CConsoleSink();
+    return new CCLI_Sink();
 }
 
-void CConsoleSink::Free()
+void CCLI_Sink::Free()
 {
 	ISink::Free();
 }
+
+NS_END

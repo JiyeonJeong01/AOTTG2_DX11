@@ -1,17 +1,17 @@
-#pragma once
+﻿#pragma once
 #include "ISink.h"
 
 NS_BEGIN(Engine)
 
-class CConsoleSink final :  public ISink
+class CCLI_Sink final :  public ISink
 {
 private:
-	~CConsoleSink() = default;
+	~CCLI_Sink() = default;
 public :
 	void Write(const CLogger::RECORD& tRecord) override;
 
 public :
-	static CConsoleSink* Create();
+	static CCLI_Sink* Create();
 private:
 	void Free() override;
 };

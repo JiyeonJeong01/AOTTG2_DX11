@@ -35,7 +35,7 @@ public: /* For.Scene_Manager */
 
 private:
 	class CGraphic_Device*		m_pGraphic_Device{ };
-	class CTimerSystem*			m_pTimerSystem{ };
+	class CTimer_System*		m_pTimerSystem{ };
     class CLevel_Manager*       m_pLevel_Manager { };
     class CPrototype_Manager*   m_pPrototype_Manager { };
 

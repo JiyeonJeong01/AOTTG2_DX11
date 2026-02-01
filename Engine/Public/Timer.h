@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Base.h"
 
@@ -12,7 +12,7 @@ private:
 
 
 public:
-	HRESULT		Ready_Timer();
+	HRESULT		Initialize();
 	_float		Update_Timer();
 
 private:

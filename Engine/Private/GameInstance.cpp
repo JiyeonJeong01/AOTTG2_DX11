@@ -2,10 +2,13 @@
 
 #include "Graphic_Device.h"
 
+#include "GameObject_System.h"
 #include "Component_System.h"
 
-#include "TimerSystem.h"
+#include "Timer_System.h"
 #include "Logger.h"
+
+NS_BEGIN(Engine)
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -17,27 +20,51 @@ CGameInstance::CGameInstance()
 HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice,
 	ID3D11DeviceContext** ppContext)
 {
-	m_pGraphic_Device = CGraphic_Device::Create(EngineDesc.hWnd,
-		EngineDesc.eWinMode,
-		EngineDesc.iViewportSize.first,
-		EngineDesc.iViewportSize.second,
-		ppDevice,
-		ppContext);
-	if (nullptr == m_pGraphic_Device)
-		return E_FAIL;
+    /* --- Device --- */
+    {
+        m_pGraphic_Device = CGraphic_Device::Create(EngineDesc.hWnd,
+           EngineDesc.eWinMode,
+           EngineDesc.iViewportSize.first,
+           EngineDesc.iViewportSize.second,
+           ppDevice,
+           ppContext);
+        if (nullptr == m_pGraphic_Device)
+            return E_FAIL;
+    }
 
-	m_pTimerSystem = CTimerSystem::Create();
-	if (nullptr == m_pTimerSystem)
-		return E_FAIL;
+    /* --- Timer ---*/
+    {
+        m_pTimerSystem = CTimer_System::Create();
+        if (nullptr == m_pTimerSystem)
+            return E_FAIL;
+    }
 
+    /* --- Component System ---*/
+    {
+        if (FAILED(SYS_COM->Initialize()))
+        {
+            MSG_BOX("Component System failed Initialize");
+            return E_FAIL;
+        }
+    }
 
-	if(FAILED(SYS_COM->Init()))
-	{
-		MSG_BOX("Failed Component System Ready_System");
-		return E_FAIL;
-	}
+    /* --- Object System --- */
+    {
+        if (FAILED(SYS_GAMEOBJECT->Initialize()))
+        {
+            MSG_BOX("Object System failed Initialize");
+            return E_FAIL;
+        }
+    }
 
-	SYS_LOG->Ready_Logger();
+    /* --- Log System --- */
+    {
+        if (FAILED(SYS_LOG->Initialize()))
+        {
+            MSG_BOX("Log System failed Initialize");
+            return E_FAIL;
+        }
+    }
 
     m_pDevice = *ppDevice;
     m_pContext = *ppContext;
@@ -47,7 +74,6 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 
 void CGameInstance::Update_Engine(_float fTimeDelta)
 {
-
 	SYS_COM->Update(fTimeDelta);
 }
 
@@ -100,3 +126,5 @@ void CGameInstance::Free()
 {
 	__super::Free();
 }
+
+NS_END

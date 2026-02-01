@@ -1,6 +1,8 @@
-#include "ComponentGroup_Manager.h"
+﻿#include "ComponentGroup_Manager.h"
 
 #include "Engine_Log.h"
+
+NS_BEGIN(Engine)
 
 uint32_t CComponentGroup_Manager::Promote(COMPONENT_HANDLE hOld, COMPONENT_HANDLE hNew)
 {
@@ -61,3 +63,5 @@ void CComponentGroup_Manager::Free()
 {
 	CBase::Free();
 }
+
+NS_END
