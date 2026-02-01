@@ -20,7 +20,6 @@ namespace Engine
 
 	#define SCAST(type, value) static_cast<type>(value)
 
-
 	#define NULL_CHECK( _ptr)	\
 			{if( _ptr == 0){ return;}}
 	

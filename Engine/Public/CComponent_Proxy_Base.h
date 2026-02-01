@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 
 template <typename PROXY> class CComponent_Processor_Impl;
@@ -38,8 +38,8 @@ public:
     }
 
 protected:
-    COMPONENT_HANDLE m_hHandle{};   /* Unique identifier for version-safe access */
-    DATA_T* m_pData{};              /* Direct pointer to the raw data in the pool */
-    COMPONENT_TYPE      m_eComType;
+    COMPONENT_HANDLE            m_hHandle{};    /* Unique identifier for version-safe access */
+    DATA_T*                     m_pData{};      /* Direct pointer to the raw data in the pool */
+    COMPONENT_TYPE              m_eComType = COMPONENT_TYPE::END;
 
 };

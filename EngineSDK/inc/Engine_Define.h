@@ -20,6 +20,8 @@ using namespace DirectX;
 #include <unordered_set>
 #include <deque>
 #include <mutex>
+#include <new>
+
 
 using namespace std;
 

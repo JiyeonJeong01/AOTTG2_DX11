@@ -18,7 +18,7 @@ void CTestComponentASystem::Process_A(_float fDT)
         {
             if (!pPage->Is_Active(i)) continue;
 
-            TEST_DATA_A& data = pPage->rawData[i];
+            TEST_DATA_A& data = *pPage->Get_Ptr(i);
             for (int j = 0; j < 4; ++j)
             {
                 data.vData[j].x += data.vData[j].y * fDT;
