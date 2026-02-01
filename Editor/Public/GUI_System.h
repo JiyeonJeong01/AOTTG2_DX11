@@ -12,7 +12,7 @@ private:
     ~CGUI_System() override = default;
 
 public:
-    HRESULT Ready_System();
+    HRESULT Initialize();
     void    Update();
     void    Render_GUI();
 

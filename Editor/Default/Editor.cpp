@@ -70,7 +70,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _float      fFixedAcc = {};
 
     /* =================================== TEST =====================================*/
-    Editor::CGUI_System::GetInstance()->Ready_System();
+    Editor::CGUI_System::GetInstance()->Initialize();
 
     const string strMain = "PANEL_MAIN";
     Editor::CMainPanel* pMainPanel = Editor::CMainPanel::Create(strMain);

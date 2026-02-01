@@ -2,7 +2,7 @@
 #include "Game.h"
 
 #include "MainApp.h"
-#include "GameInstance.h"
+#include "Core_System.h"
 #include <locale.h>
 #define MAX_LOADSTRING 100
 
@@ -54,11 +54,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     if (nullptr == pMainApp)
         return FALSE;
 
-    CCore_System* pGameInstance = CCore_System::GetInstance();
-    Safe_AddRef(pGameInstance);
 
-    if (nullptr == pGameInstance) {
-        MessageBox(nullptr, L"GameInstance가 없습니다!", L"에러", MB_OK);
+    if (SYS_CORE)
+    {
+        MessageBox(nullptr, L"SYS_CORE가 없습니다!", L"에러", MB_OK);
         return FALSE;
     }
 
@@ -80,11 +79,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
         }
 
-        fTimeAcc += pGameInstance->Compute_SystemDT();
+        fTimeAcc += SYS_CORE->Compute_SystemDT();
 
         if (fTimeAcc >= FRAME_DT)
         {
-            pMainApp->Update(pGameInstance->Compute_FrameDT());
+            pMainApp->Update(SYS_CORE->Compute_FrameDT());
             pMainApp->Render();
 
             /* FIXED DT*/
@@ -93,8 +92,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             fTimeAcc = 0.f;
         }
     }
-
-    Safe_Release(pGameInstance);
 
     if (0 != Safe_Release(pMainApp))
         return FALSE;

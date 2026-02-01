@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "Base.h"
-#include "GameInstance.h"
 #include "Editor_Define.h"
 
 namespace Engine

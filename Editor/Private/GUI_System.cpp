@@ -10,7 +10,7 @@ Editor::CGUI_System::CGUI_System()
 {
 }
 
-HRESULT Editor::CGUI_System::Ready_System()
+HRESULT Editor::CGUI_System::Initialize()
 {
     SYS_CORE->Share_GraphicDevice(&m_pDevice, &m_pContext);
     IMGUI_CHECKVERSION();
@@ -25,7 +25,7 @@ HRESULT Editor::CGUI_System::Ready_System()
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports;
 
-    io.ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable; // <- 일단 꺼보기
+    io.ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;
 
     static constexpr const char* UI_FONT_PATH = "C:/Windows/Fonts/segoeui.ttf";
     io.Fonts->AddFontFromFileTTF(
@@ -74,7 +74,7 @@ void Editor::CGUI_System::Setup_ImGuiStyle()
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
 
-    // ===== Spacing & Shape (Unity 느낌 핵심) =====
+    // ===== Spacing & Shape =====
     style.WindowRounding = 4.0f;
     style.FrameRounding = 3.0f;
     style.PopupRounding = 3.0f;
@@ -136,7 +136,6 @@ void Editor::CGUI_System::Setup_ImGuiStyle()
     style.Colors[ImGuiCol_TabUnfocused] = bg_dark;
     style.Colors[ImGuiCol_TabUnfocusedActive] = bg_mid;
 
-    // 얇은 상단 강조선 (Unity는 거의 안 튀게)
     style.Colors[ImGuiCol_TabSelectedOverline] = ImVec4(0.45f, 0.45f, 0.45f, 1.00f);
 
     // ===== Title Bar =====
