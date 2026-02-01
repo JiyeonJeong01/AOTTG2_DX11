@@ -1,5 +1,5 @@
 ﻿#include "ConsolePanel.h"
-#include "GUISink.h"
+#include "GUI_Sink.h"
 
 #include "Editor_Util.h"
 #include "Engine_Log.h"
