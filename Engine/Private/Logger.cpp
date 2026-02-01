@@ -1,6 +1,14 @@
 ﻿#include "Logger.h"
+
+#include <chrono>
+#include <format> 
+#include <string>
+
 #include "CLI_Sink.h"
 #include "GUI_Sink.h"
+#include "magic_enum.hpp"
+
+using namespace chrono;
 
 NS_BEGIN(Engine)
 
@@ -31,7 +39,7 @@ ISink* CLogger::Set_Sink(LOG_TYPE eType)
 void CLogger::Log(SEVERITY_TYPE eSeverity, DOMAIN_TYPE eDomain, const char* szFile, const char* szFunc,
 	const char* szExpr, int iLine, const char* szFmt, ...)
 {
-	if (m_pSink == nullptr)
+	if (!m_pSink)
 		return;
 
 	if (szFmt == nullptr)
@@ -44,14 +52,17 @@ void CLogger::Log(SEVERITY_TYPE eSeverity, DOMAIN_TYPE eDomain, const char* szFi
 
 	va_end(args);
 
-	RECORD tRecord;
-	tRecord.eSeverity = eSeverity;
-	tRecord.eDomain = eDomain;
-	tRecord.file = szFile;
-	tRecord.func = szFunc;
-	tRecord.iLine = iLine;
-	tRecord.expr = szExpr;
-	tRecord.strMsg = msg;
+    RECORD tRecord(eSeverity, eDomain, szFile, szFunc, iLine, szExpr);
+
+    std::string_view svSeverity = magic_enum::enum_name(tRecord.eSeverity);
+
+    tRecord.strMsg = FormatV(
+        "[%s][%s]\t %s \t\t\t\t\t\t\t\t\t\t\tt(%s, Line: %d)",
+        Get_TimeStamp().c_str(),
+        svSeverity.data(),
+        msg.c_str(),
+        tRecord.szFunc,
+        tRecord.iLine);
 
 	m_pSink->Write(tRecord);
 }
@@ -59,7 +70,7 @@ void CLogger::Log(SEVERITY_TYPE eSeverity, DOMAIN_TYPE eDomain, const char* szFi
 void CLogger::Assert(DOMAIN_TYPE eDomain, const char* szFile, const char* szFunc,
 	const char* szExpr, int iLine, const char* szFmt, ...)
 {
-	if (m_pSink == nullptr)
+	if (!m_pSink)
 		return;
 
 	string msg;
@@ -82,14 +93,17 @@ void CLogger::Assert(DOMAIN_TYPE eDomain, const char* szFile, const char* szFunc
 		va_end(args);
 	}
 
-	RECORD tRecord;
-	tRecord.eSeverity = SEVERITY_TYPE::ASSERTION;
-	tRecord.eDomain = eDomain;
-	tRecord.file = szFile;
-	tRecord.func = szFunc;
-	tRecord.iLine = iLine;
-	tRecord.expr = szExpr;
-	tRecord.strMsg = msg;
+    RECORD tRecord(SEVERITY_TYPE::ASSERTION, eDomain, szFile, szFunc, iLine, szExpr);
+
+    std::string_view svSeverity = magic_enum::enum_name(tRecord.eSeverity);
+
+    tRecord.strMsg = FormatV(
+        "[%s][%s]\t %s \t\t\t\t\t\t\t\t\t(%s, Line: %d)",
+        Get_TimeStamp().c_str(),
+        svSeverity.data(),
+        msg.c_str(),
+        tRecord.szFunc,
+        tRecord.iLine);
 
 	m_pSink->Write(tRecord);
 }
@@ -122,6 +136,30 @@ string CLogger::FormatV(const char* szFmt, va_list args)
 
     out.pop_back(); /* remove null terminator */
     return out;
+}
+
+string CLogger::FormatV(const char* szFmt, ...)
+{
+    va_list args;
+    va_start(args, szFmt);
+
+    std::string strFormatted = FormatV(szFmt, args);
+
+    va_end(args);
+
+    return strFormatted;
+}
+
+std::string CLogger::Get_TimeStamp() const
+{
+    using namespace std::chrono;
+
+    auto now = system_clock::now();
+    auto sec = floor<seconds>(now);
+
+    hh_mm_ss hms{ sec.time_since_epoch() };
+
+    return std::format("{:02}:{:02}", hms.minutes().count(), hms.seconds().count());
 }
 
 NS_END

@@ -1,15 +1,18 @@
 ﻿#include "GUI_Sink.h"
 
-NS_BEGIN(Engine)
+#include "magic_enum.hpp"
 
-CGUI_Sink::CGUI_Sink()
+NS_BEGIN(Engine)
+    CGUI_Sink::CGUI_Sink()
 {
 }
 
 void CGUI_Sink::Write(const CLogger::RECORD& tRecord)
 {
     std::lock_guard<std::mutex> lock(m_mtx);
-    
+
+    std::string_view svSeverity = magic_enum::enum_name(tRecord.eSeverity);
+
     m_queue.push_back(tRecord);
     Enforce_Limit_Locked();
 }

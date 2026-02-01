@@ -8,9 +8,6 @@ class ISink : public CBase
 {
 protected :
 	virtual ~ISink() = default;
-
-protected :
-	string Get_TimeStamp() const;
 public :
 	virtual void Write(const CLogger::RECORD& tRecord) = 0;
 };

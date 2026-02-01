@@ -24,8 +24,8 @@ namespace Engine
 
 
     /* ------ LOG ------ */
-	enum class SEVERITY_TYPE : uint8_t { INFO, WARN, ERR, ASSERTION };
-	enum class DOMAIN_TYPE : uint8_t { ENGINE, CLIENT, EDITOR };
+	enum class SEVERITY_TYPE : uint8_t { INFO, WARN, ERR, ASSERTION, END };
+	enum class DOMAIN_TYPE : uint8_t { ENGINE, CLIENT, EDITOR, END };
 
 }
 #endif // Engine_Enum_h__
