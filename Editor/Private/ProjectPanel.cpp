@@ -77,7 +77,7 @@ const std::filesystem::path& CProjectPanel::Get_Selected_Path() const
     return m_selectedPath;
 }
 
-bool CProjectPanel::Has_Selection() const
+_bool CProjectPanel::Has_Selection() const
 {
     return !m_selectedPath.empty();
 }
@@ -112,7 +112,7 @@ void CProjectPanel::Cancel_Rename()
     m_bJustStartedRename = false;
 }
 
-bool CProjectPanel::Is_Renaming() const
+_bool CProjectPanel::Is_Renaming() const
 {
     return !m_renameTargetPath.empty();
 }
@@ -256,16 +256,51 @@ void CProjectPanel::Draw_File_List()
         return;
     }
 
+    /* Blank-space context (file list only) */
+    if (ImGui::BeginPopupContextWindow("##FileListBlankContext",
+        ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
+    {
+        if (ImGui::MenuItem("Create Folder"))
+        {
+            std::filesystem::path created;
+            if (Create_Folder(m_currentFolder, created))
+            {
+                m_bListDirty = true;
+                m_bTreeDirty = true;
+
+                m_pendingRenamePath = created;
+
+                Set_Selection(created);
+                Notify_Selection_Changed();
+            }
+        }
+
+        if (ImGui::MenuItem("Refresh"))
+        {
+            m_bTreeDirty = true;
+            m_bListDirty = true;
+        }
+
+        if (ImGui::MenuItem("Show Current in Explorer"))
+            Show_In_Explorer(m_currentFolder);
+
+        ImGui::EndPopup();
+    }
+
     /* Display file(asset) list */
     for (const auto& item : m_Assets)
     {
-        if (!m_search.empty())
-        {
-            if (!Is_Visible_By_Filter(item.name, m_search))
-                continue;
-        }
+        if (!m_search.empty() && !Is_Visible_By_Filter(item.name, m_search))
+            continue;
 
         Draw_File_Asset_Row(item);
+    }
+
+    /* Rename after create folder (outside popup) */
+    if (!m_pendingRenamePath.empty())
+    {
+        Begin_Rename(m_pendingRenamePath);
+        m_pendingRenamePath.clear();
     }
 }
 
@@ -319,7 +354,7 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
             Delete_Path(m_contextTargetPath);
             m_bTreeDirty = true;
             m_bListDirty = true;
-            if (!m_selectedPath.empty() && std::filesystem::equivalent(m_selectedPath, m_contextTargetPath))
+            if (!m_selectedPath.empty() && (m_selectedPath == m_contextTargetPath))
                 Clear_Selection();
         }
 
@@ -388,6 +423,29 @@ void CProjectPanel::Draw_Context_Menu()
                 Cancel_Rename();
         }
     }
+}
+
+_bool CProjectPanel::Create_Folder(const std::filesystem::path& parentFolder, std::filesystem::path& outCreatedPath)
+{
+    outCreatedPath.clear();
+
+    if (parentFolder.empty() || !std::filesystem::exists(parentFolder))
+        return false;
+
+    std::error_code ec;
+
+    const std::string folderName = Make_Unique_Folder_Name_Impl(parentFolder, "New Folder");
+    std::filesystem::path newPath = parentFolder / folderName;
+
+    std::filesystem::create_directory(newPath, ec);
+    if (ec)
+    {
+        _DEBUG_ERROR("Create Folder Failed: %s", ec.message().c_str());
+        return false;
+    }
+
+    outCreatedPath = newPath;
+    return true;
 }
 
 /* =======================================================================*/
@@ -465,7 +523,7 @@ void CProjectPanel::Refresh_File_List()
 /* =======================================================================*/
 /* ============================== Helpers ================================*/
 /* =======================================================================*/
-bool CProjectPanel::Is_Visible_By_Filter(const std::string& name, const std::string& filter)
+_bool CProjectPanel::Is_Visible_By_Filter(const std::string& name, const std::string& filter)
 {
     return String_IContains(name, filter);
 }
@@ -495,7 +553,7 @@ ASSET_TYPE CProjectPanel::Resolve_Asset_Type(const std::filesystem::path& path, 
     return ASSET_TYPE::UNKNOWN;
 }
 
-const char* CProjectPanel::ASSET_TYPE_To_Label(ASSET_TYPE t)
+const _char* CProjectPanel::ASSET_TYPE_To_Label(ASSET_TYPE t)
 {
     switch (t)
     {
@@ -510,7 +568,7 @@ const char* CProjectPanel::ASSET_TYPE_To_Label(ASSET_TYPE t)
     }
 }
 
-bool CProjectPanel::Is_Folder_Open(const std::filesystem::path& path) const
+_bool CProjectPanel::Is_Folder_Open(const std::filesystem::path& path) const
 {
     return m_openFolders.find(Get_Stable_Id_From_Path(path)) != m_openFolders.end();
 }
@@ -539,7 +597,7 @@ void CProjectPanel::Ensure_Path_Exists(std::filesystem::path& inoutPath)
 /* =======================================================================*/
 /* ============================= Operations ==============================*/
 /* =======================================================================*/
-bool CProjectPanel::Rename_Path(const std::filesystem::path& src, const std::string& newName)
+_bool CProjectPanel::Rename_Path(const std::filesystem::path& src, const std::string& newName)
 {
     if (src.empty() || newName.empty())
         return false;
@@ -569,19 +627,29 @@ bool CProjectPanel::Rename_Path(const std::filesystem::path& src, const std::str
     return true;
 }
 
-bool CProjectPanel::Delete_Path(const std::filesystem::path& target)
+_bool CProjectPanel::Delete_Path(const std::filesystem::path& target)
 {
-    if (target.empty())
+    if (target.empty() || !std::filesystem::exists(target))
         return false;
 
     std::error_code ec;
+    _bool bSuccess = false;
 
     if (std::filesystem::is_directory(target))
-        std::filesystem::remove_all(target, ec);
+        bSuccess = (std::filesystem::remove_all(target, ec) > 0);
     else
-        std::filesystem::remove(target, ec);
+        bSuccess = std::filesystem::remove(target, ec);
 
-    return !ec;
+    if (bSuccess && !ec)
+    {
+        if (m_currentFolder == target || Is_Subpath(m_currentFolder, target))
+        {
+            m_currentFolder = m_assetsRoot;
+            m_bListDirty = true;
+        }
+    }
+
+    return bSuccess && !ec;
 }
 
 void CProjectPanel::Show_In_Explorer(const std::filesystem::path& target)
@@ -661,7 +729,7 @@ uint64_t CProjectPanel::Get_Stable_Id_From_Path(const std::filesystem::path& p)
     return std::hash<std::wstring>{}(std::filesystem::weakly_canonical(p).wstring());
 }
 
-bool CProjectPanel::String_IContains(const std::string& haystack, const std::string& needle)
+_bool CProjectPanel::String_IContains(const std::string& haystack, const std::string& needle)
 {
     if (needle.empty())
         return true;
@@ -673,6 +741,34 @@ bool CProjectPanel::String_IContains(const std::string& haystack, const std::str
     for (auto& c : b) c = (char)tolower(c);
 
     return (a.find(b) != std::string::npos);
+}
+
+_bool CProjectPanel::Is_Subpath(const std::filesystem::path& path, const std::filesystem::path& base)
+{
+    auto relativeness = std::ranges::mismatch(base, path);
+    return relativeness.in1 == base.end();
+}
+
+std::string CProjectPanel::Make_Unique_Folder_Name_Impl(const std::filesystem::path& parent,
+    const std::string& baseName)
+{
+    // "New Folder", "New Folder (1)" ...
+    std::string name = baseName;
+    std::filesystem::path candidate = parent / name;
+
+    if (!std::filesystem::exists(candidate))
+        return name;
+
+    for (int i = 1; i < 9999; ++i)
+    {
+        name = baseName + " (" + std::to_string(i) + ")";
+        candidate = parent / name;
+        if (!std::filesystem::exists(candidate))
+            return name;
+    }
+
+    // fallback
+    return baseName + " (9999)";
 }
 
 /* =======================================================================*/

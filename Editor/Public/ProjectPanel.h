@@ -35,7 +35,6 @@ private:
     void    Cancel_Rename();
     _bool   Is_Renaming() const;
 
-private:
     /* Main render section */
     void    Draw_Toolbar();
     void    Draw_Search_Bar();
@@ -51,6 +50,7 @@ private:
 
     /* Context menu */
     void    Draw_Context_Menu();
+    _bool   Create_Folder(const std::filesystem::path& parentFolder, std::filesystem::path& outCreatedPath);
 
     /* Data refresh */
     void    Refresh_Folder_Tree();    /* Rebuild if dirty */
@@ -74,7 +74,7 @@ public :
     /* Helpers */
     static _bool        Is_Visible_By_Filter(const std::string& name, const std::string& filter);
     static ASSET_TYPE   Resolve_Asset_Type(const std::filesystem::path& path, _bool isDirectory);
-    static const char*  ASSET_TYPE_To_Label(ASSET_TYPE t);
+    static const _char*  ASSET_TYPE_To_Label(ASSET_TYPE t);
 
 private:
     /* Root */
@@ -103,6 +103,7 @@ private:
     std::filesystem::path   m_renameTargetPath;
     std::string             m_renameBuffer;
     _bool                   m_bJustStartedRename = false;
+    std::filesystem::path   m_pendingRenamePath{};
 
     /* Dirty flags */
     _bool m_bTreeDirty = true;
@@ -111,6 +112,8 @@ private:
 private:
     static uint64_t Get_Stable_Id_From_Path(const std::filesystem::path& p);
     static _bool    String_IContains(const std::string& haystack, const std::string& needle);
+    static _bool    Is_Subpath(const std::filesystem::path& path, const std::filesystem::path& base);
+    static std::string Make_Unique_Folder_Name_Impl(const std::filesystem::path& parent, const std::string& baseName);
 
 public:
     static CProjectPanel* Create(const std::string& strPanelName);
