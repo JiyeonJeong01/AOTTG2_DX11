@@ -66,7 +66,9 @@ namespace  Engine
         uint32_t iIndexInLayer = 0;
     }GAMEOBJECT_META;
 
-    typedef struct tagLabel
+
+    /* TODO : ===============================================================================*/
+    typedef struct ENGINE_DLL tagLabel
     {
     private :
         std::string label{};

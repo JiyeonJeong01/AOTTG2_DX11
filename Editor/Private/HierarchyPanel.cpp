@@ -302,7 +302,7 @@ void CHierarchyPanel::Refresh_Roots()
 
 void CHierarchyPanel::Draw_Root_List()
 {
-    /* TODO : Wrap with an additional TreeNode for a Scene View in Unity */
+    /* TODO : Wrap with an additional TreeNode for a SCENE View in Unity */
     for (auto* root : m_roots)
     {
         if (!root)

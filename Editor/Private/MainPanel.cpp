@@ -4,6 +4,7 @@
 #include "ConsolePanel.h"
 #include "HierarchyPanel.h"
 #include "InspectorPanel.h"
+#include "ProjectPanel.h"
 
 NS_BEGIN(Editor)
 
@@ -20,7 +21,10 @@ HRESULT CMainPanel::Initialize()
     CHierarchyPanel* pHierarchy = CHierarchyPanel::Create(PANEL_HIERARCHY);
     Add_Panel(pHierarchy);
 
-    CInspectorPanel* pInspector = CInspectorPanel::Create(PANEL_INSPECTOR, pHierarchy);
+    CProjectPanel* pProject = CProjectPanel::Create(PANEL_PROJECT);
+    Add_Panel(pProject);
+
+    CInspectorPanel* pInspector = CInspectorPanel::Create(PANEL_INSPECTOR, pHierarchy, pProject);
     Add_Panel(pInspector);
 
     return S_OK;
@@ -125,11 +129,11 @@ void CMainPanel::Draw_MenuBar()
     /* Right-side : Display the current scene */
     {
         /* Place the txet about 360px from the right edge */
-        _float fWidth = ImGui::CalcTextSize("Scene: ").x;
+        _float fWidth = ImGui::CalcTextSize("SCENE: ").x;
         (void)fWidth;
         ImGui::SameLine(ImGui::GetWindowWidth() - 360.f);
 
-        std::string sceneLabel = "Scene: ";
+        std::string sceneLabel = "SCENE: ";
         if (m_scenePath.empty())
             sceneLabel += "(Untitled)";
         else
@@ -148,7 +152,7 @@ void CMainPanel::Draw_MenuBar()
 
 void CMainPanel::Draw_Menu_File()
 {
-    if (ImGui::MenuItem("New Scene", "Ctrl+N"))
+    if (ImGui::MenuItem("New SCENE", "Ctrl+N"))
     {
         if (m_fnNewScene)
             m_fnNewScene();
@@ -156,9 +160,9 @@ void CMainPanel::Draw_Menu_File()
         m_bSceneDirty = false;
     }
 
-    if (ImGui::MenuItem("Open Scene...", "Ctrl+O"))
+    if (ImGui::MenuItem("Open SCENE...", "Ctrl+O"))
     {
-        const std::wstring path = OpenFileDialog(L"Scene Files (*.scene)\0*.scene\0All Files (*.*)\0*.*\0\0");
+        const std::wstring path = OpenFileDialog(L"SCENE Files (*.scene)\0*.scene\0All Files (*.*)\0*.*\0\0");
         if (!path.empty())
         {
             if (m_fnOpenScene)
@@ -171,7 +175,7 @@ void CMainPanel::Draw_Menu_File()
     ImGui::Separator();
 
     // Save: if no path is set, behave like Save As.
-    if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
+    if (ImGui::MenuItem("Save SCENE", "Ctrl+S"))
     {
         if (!m_scenePath.empty())
         {
@@ -181,7 +185,7 @@ void CMainPanel::Draw_Menu_File()
         }
         else
         {
-            const std::wstring path = OpenFileDialog(L"Scene Files (*.scene)\0*.scene\0\0");
+            const std::wstring path = OpenFileDialog(L"SCENE Files (*.scene)\0*.scene\0\0");
             if (!path.empty())
             {
                 if (m_fnSaveAsScene)
@@ -192,9 +196,9 @@ void CMainPanel::Draw_Menu_File()
         }
     }
 
-    if (ImGui::MenuItem("Save As Scene...", "Ctrl+Shift+S"))
+    if (ImGui::MenuItem("Save As SCENE...", "Ctrl+Shift+S"))
     {
-        const std::wstring path = OpenFileDialog(L"Scene Files (*.scene)\0*.scene\0\0");
+        const std::wstring path = OpenFileDialog(L"SCENE Files (*.scene)\0*.scene\0\0");
         if (!path.empty())
         {
             if (m_fnSaveAsScene)
@@ -280,39 +284,39 @@ void CMainPanel::Draw_Toolbar()
 
 void CMainPanel::Build_Default_Layout()
 {
-    ImGuiID dockspace_id = ImGui::GetID(m_strPanelName.c_str());
+    //ImGuiID dockspace_id = ImGui::GetID(m_strPanelName.c_str());
 
-    ImGui::DockBuilderRemoveNode(dockspace_id);
-    ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
-    ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->WorkSize);
+    //ImGui::DockBuilderRemoveNode(dockspace_id);
+    //ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+    //ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->WorkSize);
 
-    ImGuiID dock_main = dockspace_id;
+    //ImGuiID dock_main = dockspace_id;
 
-    ImGuiID dock_left = 0;
-    ImGuiID dock_right = 0;
-    ImGuiID dock_bottom = 0;
-    ImGuiID dock_center = 0;
+    //ImGuiID dock_left = 0;
+    //ImGuiID dock_right = 0;
+    //ImGuiID dock_bottom = 0;
+    //ImGuiID dock_center = 0;
 
-    /* Inspector : right-side */
-    dock_right = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Right, 0.25f, nullptr, &dock_main);
+    ///* Inspector : right-side */
+    //dock_right = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Right, 0.25f, nullptr, &dock_main);
 
-    /* Hierarchy : left-side */
-    dock_left = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Left, 0.20f, nullptr, &dock_main);
+    ///* Hierarchy : left-side */
+    //dock_left = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Left, 0.20f, nullptr, &dock_main);
 
-    /* Console : bottom */
-    dock_bottom = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Down, 0.28f, nullptr, &dock_main);
+    ///* Console : bottom */
+    //dock_bottom = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Down, 0.28f, nullptr, &dock_main);
 
-    /* Center : scene-game view */
-    //dock_center = dock_main;
+    ///* Center : scene-game view */
+    ////dock_center = dock_main;
 
-    ImGui::DockBuilderDockWindow(PANEL_HIERARCHY, dock_left);
-    ImGui::DockBuilderDockWindow(PANEL_INSPECTOR, dock_right);
-    ImGui::DockBuilderDockWindow(PANEL_CONSOLE, dock_bottom);
-    //ImGui::DockBuilderDockWindow("Scene", dock_center); 
+    //ImGui::DockBuilderDockWindow(PANEL_HIERARCHY, dock_left);
+    //ImGui::DockBuilderDockWindow(PANEL_INSPECTOR, dock_right);
+    //ImGui::DockBuilderDockWindow(PANEL_CONSOLE, dock_bottom);
+    ////ImGui::DockBuilderDockWindow("SCENE", dock_center); 
 
-    ImGui::DockBuilderFinish(dockspace_id);
+    //ImGui::DockBuilderFinish(dockspace_id);
 
-    m_bBuiltLayer = true;
+    //m_bBuiltLayer = true;
 }
 
 void CMainPanel::Draw_Dockspace()

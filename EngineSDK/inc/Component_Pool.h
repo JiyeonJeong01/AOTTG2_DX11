@@ -57,6 +57,9 @@ public:
         }
     };
 
+    static_assert((PAGE_SIZE& (PAGE_SIZE - 1)) == 0, "PAGE_SIZE must be a power of two.");
+    static_assert((1u << PAGE_SHIFT) == PAGE_SIZE, "PAGE_SHIFT must match PAGE_SIZE.");
+
     CComponent_Pool() {};
     ~CComponent_Pool() override
 	{
@@ -108,7 +111,7 @@ public:
         PAGE* pPage = m_pages[iPageIndex];
 
         if (pPage->iVersion[iOffset] > ComponentConfig::MAX_VERSION) /* 2047, 11bit */
-            pPage->iVersion[iOffset] = 1;
+            pPage->iVersion[iOffset] = 0;
 
         /* Construct object IN PLACE (placement new) */
         Construct_At(pPage->Get_Ptr(iOffset));
@@ -144,12 +147,13 @@ public:
             return;
         }
 
-        /* Destroy data */
         DATA_T* pData = pPage->Get_Ptr(iOffset);
-        Destroy_At(pData);
 
         /* For a notification event to external system; not for cleanup */
         m_OnDeallocate.Invoke(pData);
+
+        /* Destroy data */
+        Destroy_At(pData);
 
         /* Invalidate handle */
         pPage->iVersion[iOffset]++;
@@ -189,7 +193,7 @@ public:
         return pPage->Get_Ptr(iOffset);
     }
 
-    const vector<PAGE*>& GetPages() const
+    const std::vector<PAGE*>& GetPages() const
     {
         return m_pages;
     }
@@ -217,7 +221,7 @@ private:
         /* If DATA_T is trivial destructible, this compiles away */
         if constexpr (!std::is_trivially_destructible_v<DATA_T>)
         {
-            p->~DATA_T();
+            std::destroy_at(p);
         }
     }
 };

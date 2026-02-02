@@ -41,7 +41,7 @@
 Index of this file:
 // [SECTION] Header mess
 // [SECTION] Forward declarations and basic types
-// [SECTION] Texture identifiers (ImTextureID, ImTextureRef)
+// [SECTION] TEXTURE identifiers (ImTextureID, ImTextureRef)
 // [SECTION] Dear ImGui end-user API functions
 // [SECTION] Flags & Enumerations
 // [SECTION] Tables API flags and structures (ImGuiTableFlags, ImGuiTableColumnFlags, ImGuiTableRowFlags, ImGuiTableBgTarget, ImGuiTableSortSpecs, ImGuiTableColumnSortSpecs)
@@ -52,7 +52,7 @@ Index of this file:
 // [SECTION] Helpers (ImGuiOnceUponAFrame, ImGuiTextFilter, ImGuiTextBuffer, ImGuiStorage, ImGuiListClipper, Math Operators, ImColor)
 // [SECTION] Multi-Select API flags and structures (ImGuiMultiSelectFlags, ImGuiMultiSelectIO, ImGuiSelectionRequest, ImGuiSelectionBasicStorage, ImGuiSelectionExternalStorage)
 // [SECTION] Drawing API (ImDrawCallback, ImDrawCmd, ImDrawIdx, ImDrawVert, ImDrawChannel, ImDrawListSplitter, ImDrawFlags, ImDrawListFlags, ImDrawList, ImDrawData)
-// [SECTION] Texture API (ImTextureFormat, ImTextureStatus, ImTextureRect, ImTextureData)
+// [SECTION] TEXTURE API (ImTextureFormat, ImTextureStatus, ImTextureRect, ImTextureData)
 // [SECTION] Font API (ImFontConfig, ImFontGlyph, ImFontGlyphRangesBuilder, ImFontAtlasFlags, ImFontAtlas, ImFontBaked, ImFont)
 // [SECTION] Viewports (ImGuiViewportFlags, ImGuiViewport)
 // [SECTION] ImGuiPlatformIO + other Platform Dependent Interfaces (ImGuiPlatformMonitor, ImGuiPlatformImeData)
@@ -322,7 +322,7 @@ struct ImVec4
 IM_MSVC_RUNTIME_CHECKS_RESTORE
 
 //-----------------------------------------------------------------------------
-// [SECTION] Texture identifiers (ImTextureID, ImTextureRef)
+// [SECTION] TEXTURE identifiers (ImTextureID, ImTextureRef)
 //-----------------------------------------------------------------------------
 
 // ImTextureID = backend specific, low-level identifier for a texture uploaded in GPU/graphics system.
@@ -3573,7 +3573,7 @@ struct ImDrawData
 };
 
 //-----------------------------------------------------------------------------
-// [SECTION] Texture API (ImTextureFormat, ImTextureStatus, ImTextureRect, ImTextureData)
+// [SECTION] TEXTURE API (ImTextureFormat, ImTextureStatus, ImTextureRect, ImTextureData)
 //-----------------------------------------------------------------------------
 // In principle, the only data types that user/application code should care about are 'ImTextureRef' and 'ImTextureID'.
 // They are defined above in this header file. Read their description to the difference between ImTextureRef and ImTextureID.
@@ -3624,8 +3624,8 @@ struct ImTextureData
     void*               BackendUserData;        // -    rw  // Convenience storage for backend. Some backends may have enough with TexID.
     ImTextureID         TexID;                  // r    w   // Backend-specific texture identifier. Always use SetTexID() to modify! The identifier will stored in ImDrawCmd::GetTexID() and passed to backend's RenderDrawData function.
     ImTextureFormat     Format;                 // w    r   // ImTextureFormat_RGBA32 (default) or ImTextureFormat_Alpha8
-    int                 Width;                  // w    r   // Texture width
-    int                 Height;                 // w    r   // Texture height
+    int                 Width;                  // w    r   // TEXTURE width
+    int                 Height;                 // w    r   // TEXTURE height
     int                 BytesPerPixel;          // w    r   // 4 or 1
     unsigned char*      Pixels;                 // w    r   // Pointer to buffer holding 'Width*Height' pixels and 'Width*Height*BytesPerPixels' bytes.
     ImTextureRect       UsedRect;               // w    r   // Bounding box encompassing all past and queued Updates[].
@@ -3711,7 +3711,7 @@ struct ImFontGlyph
     unsigned int    Codepoint : 26;     // 0x0000..0x10FFFF
     float           AdvanceX;           // Horizontal distance to advance cursor/layout position.
     float           X0, Y0, X1, Y1;     // Glyph corners. Offsets from current cursor/layout position.
-    float           U0, V0, U1, V1;     // Texture coordinates for the current value of ImFontAtlas->TexRef. Cached equivalent of calling GetCustomRect() with PackId.
+    float           U0, V0, U1, V1;     // TEXTURE coordinates for the current value of ImFontAtlas->TexRef. Cached equivalent of calling GetCustomRect() with PackId.
     int             PackId;             // [Internal] ImFontAtlasRectId value (FIXME: Cold data, could be moved elsewhere?)
 
     ImFontGlyph()   { memset(this, 0, sizeof(*this)); PackId = -1; }
@@ -3767,7 +3767,7 @@ enum ImFontAtlasFlags_
 // It is the rendering backend responsibility to upload texture into your graphics API:
 //  - ImGui_ImplXXXX_RenderDrawData() functions generally iterate platform_io->Textures[] to create/update/destroy each ImTextureData instance.
 //  - Backend then set ImTextureData's TexID and BackendUserData.
-//  - Texture id are passed back to you during rendering to identify the texture. Read FAQ entry about ImTextureID/ImTextureRef for more details.
+//  - TEXTURE id are passed back to you during rendering to identify the texture. Read FAQ entry about ImTextureID/ImTextureRef for more details.
 // Legacy path:
 //  - Call Build() + GetTexDataAsAlpha8() or GetTexDataAsRGBA32() to build and retrieve pixels data.
 //  - Call SetTexID(my_tex_id); and pass the pointer/identifier to your texture in a format natural to your graphics API.
@@ -3848,7 +3848,7 @@ struct ImFontAtlas
     // - Since 1.92.0, packing is done immediately in the function call (previously packing was done during the Build call)
     // - You can render your pixels into the texture right after calling the AddCustomRect() functions.
     // - VERY IMPORTANT:
-    //   - Texture may be created/resized at any time when calling ImGui or ImFontAtlas functions.
+    //   - TEXTURE may be created/resized at any time when calling ImGui or ImFontAtlas functions.
     //   - IT WILL INVALIDATE RECTANGLE DATA SUCH AS UV COORDINATES. Always use latest values from GetCustomRect().
     //   - UV coordinates are associated to the current texture identifier aka 'atlas->TexRef'. Both TexRef and UV coordinates are typically changed at the same time.
     // - If you render colored output into your custom rectangles: set 'atlas->TexPixelsUseColors = true' as this may help some backends decide of preferred texture format.
@@ -3889,13 +3889,13 @@ struct ImFontAtlas
     ImTextureData*              TexData;            // Latest texture.
 
     // [Internal]
-    ImVector<ImTextureData*>    TexList;            // Texture list (most often TexList.Size == 1). TexData is always == TexList.back(). DO NOT USE DIRECTLY, USE GetDrawData().Textures[]/GetPlatformIO().Textures[] instead!
+    ImVector<ImTextureData*>    TexList;            // TEXTURE list (most often TexList.Size == 1). TexData is always == TexList.back(). DO NOT USE DIRECTLY, USE GetDrawData().Textures[]/GetPlatformIO().Textures[] instead!
     bool                        Locked;             // Marked as locked during ImGui::NewFrame()..EndFrame() scope if TexUpdates are not supported. Any attempt to modify the atlas will assert.
     bool                        RendererHasTextures;// Copy of (BackendFlags & ImGuiBackendFlags_RendererHasTextures) from supporting context.
     bool                        TexIsBuilt;         // Set when texture was built matching current font input. Mostly useful for legacy IsBuilt() call.
     bool                        TexPixelsUseColors; // Tell whether our texture data is known to use colors (rather than just alpha channel), in order to help backend select a format or conversion process.
     ImVec2                      TexUvScale;         // = (1.0f/TexData->TexWidth, 1.0f/TexData->TexHeight). May change as new texture gets created.
-    ImVec2                      TexUvWhitePixel;    // Texture coordinates to a white pixel. May change as new texture gets created.
+    ImVec2                      TexUvWhitePixel;    // TEXTURE coordinates to a white pixel. May change as new texture gets created.
     ImVector<ImFont*>           Fonts;              // Hold all the fonts returned by AddFont*. Fonts[0] is the default font upon calling ImGui::NewFrame(), use ImGui::PushFont()/PopFont() to change the current font.
     ImVector<ImFontConfig>      Sources;            // Source/configuration data
     ImVec4                      TexUvLines[IM_DRAWLIST_TEX_LINES_WIDTH_MAX + 1];  // UVs for baked anti-aliased lines

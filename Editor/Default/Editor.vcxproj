@@ -32,6 +32,7 @@
     <ClCompile Include="..\Private\HierarchyPanel.cpp" />
     <ClCompile Include="..\Private\InspectorPanel.cpp" />
     <ClCompile Include="..\Private\MainPanel.cpp" />
+    <ClCompile Include="..\Private\ProjectPanel.cpp" />
     <ClCompile Include="Editor.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +51,7 @@
     <ClInclude Include="..\Public\HierarchyPanel.h" />
     <ClInclude Include="..\Public\InspectorPanel.h" />
     <ClInclude Include="..\Public\MainPanel.h" />
+    <ClInclude Include="..\Public\ProjectPanel.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />

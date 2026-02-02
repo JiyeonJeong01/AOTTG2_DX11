@@ -10,9 +10,10 @@ CInspectorPanel::CInspectorPanel(const std::string& strPanelName)
 {
 }
 
-HRESULT CInspectorPanel::Initialize(CHierarchyPanel* pPanel)
+HRESULT CInspectorPanel::Initialize(CHierarchyPanel* pPanel, CProjectPanel* pProject)
 {
     pPanel->m_OnPrimarySelectionChanged.Add_Listener(&CInspectorPanel::Set_Target, this);
+    pProject->m_OnSelectionChanged.Add_Listener(&CInspectorPanel::Set_Selected_Asset, this);
 
     return S_OK;
 }
@@ -32,6 +33,20 @@ void CInspectorPanel::Set_Target(Engine::CGameObject* pObj)
     _DEBUG_INFO("Changed target");
 
     m_bJustStartedNameEdit = false;
+
+    m_selectedAsset = ASSET_SELECTION{};
+    m_eMode = (pObj ? InspectMode::GameObject : InspectMode::None);
+}
+
+void CInspectorPanel::Set_Selected_Asset(const ASSET_SELECTION& sel)
+{
+    m_selectedAsset = sel;
+    m_pTarget = nullptr;
+    m_eMode = (sel.Is_Valid() ? InspectMode::Asset : InspectMode::None);
+}
+
+void CInspectorPanel::Clear_Target()
+{
 }
 
 void CInspectorPanel::Validate_Target()
@@ -57,23 +72,36 @@ void CInspectorPanel::Render()
         return;
     }
 
-    if (m_pTarget == nullptr)
+
+
+    if (m_eMode == InspectMode::GameObject)
     {
-        ImGui::TextUnformatted("No selection.");
-        ImGui::End();
-        return;
+        if (m_pTarget == nullptr)
+        {
+            ImGui::TextUnformatted("No selection.");
+            ImGui::End();
+            return;
+        }
+        Draw_Header();
+        ImGui::Separator();
+
+        Draw_Basic_Info();
+        ImGui::Separator();
+
+        Draw_Transform();
+        ImGui::Separator();
+
+        Draw_Components();
+    }
+    else if (m_eMode == InspectMode::Asset)
+    {
+        Draw_Asset();
+    }
+    else
+    {
+        Draw_None();
     }
 
-    Draw_Header();
-    ImGui::Separator();
-
-    Draw_Basic_Info();
-    ImGui::Separator();
-
-    Draw_Transform();
-    ImGui::Separator();
-
-    Draw_Components();
 
     ImGui::End();
 }
@@ -194,10 +222,30 @@ void CInspectorPanel::Draw_Components()
     }
 }
 
-CInspectorPanel* CInspectorPanel::Create(const std::string& strPanelName, CHierarchyPanel* pHierarcy)
+void CInspectorPanel::Draw_Asset()
+{
+    // 리소스 로드 X: 메타만 표시
+    const std::string name = m_selectedAsset.path.filename().string();
+    const std::string path = m_selectedAsset.path.string();
+
+    ImGui::TextUnformatted("Asset");
+    ImGui::Separator();
+
+    ImGui::Text("Name: %s", name.c_str());
+    ImGui::Text("Type: %s", CProjectPanel::ASSET_TYPE_To_Label(m_selectedAsset.type)); // 공용 함수 만들면 좋음
+    ImGui::Text("Path: %s", path.c_str());
+    ImGui::Text("Directory: %s", m_selectedAsset.isDirectory ? "true" : "false");
+}
+
+void CInspectorPanel::Draw_None()
+{
+    ImGui::TextUnformatted("No selection.");
+}
+
+CInspectorPanel* CInspectorPanel::Create(const std::string& strPanelName, CHierarchyPanel* pHierarcy, CProjectPanel* pProject)
 {
     CInspectorPanel* pInstance = new CInspectorPanel(strPanelName);
-    if (FAILED(pInstance->Initialize(pHierarcy)))
+    if (FAILED(pInstance->Initialize(pHierarcy, pProject)))
     {
         Safe_Release(pInstance);
         _DEBUG_ERROR_BREAK("CInspectorPanel Create failed");

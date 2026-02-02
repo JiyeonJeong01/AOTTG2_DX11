@@ -1,8 +1,9 @@
 ﻿#pragma once
 #include "EditorPanel.h"
+#include "ProjectPanel.h"
 
 NS_BEGIN(Engine)
-class CGameObject;
+    class CGameObject;
 NS_END
 
 NS_BEGIN(Editor)
@@ -13,7 +14,7 @@ public:
     CInspectorPanel(const std::string& strPanelName);
     ~CInspectorPanel() override = default;
 
-    HRESULT Initialize(class CHierarchyPanel* pPanel);
+    HRESULT Initialize(class CHierarchyPanel* pPanel, CProjectPanel* pProject);
     void Update() override {}
     void Render() override;
 
@@ -23,12 +24,27 @@ public:
     {
         return m_pTarget;
     }
+    // 신규
+    void Set_Selected_Asset(const ASSET_SELECTION& sel);
+    void Clear_Target();
+
+private:
+    enum class InspectMode : uint8_t
+    {
+        None = 0,
+        GameObject,
+        Asset,
+    };
+    InspectMode m_eMode = InspectMode::None;
 
 private:
     void Draw_Header();
     void Draw_Basic_Info();
     void Draw_Transform();
     void Draw_Components();     /* TODO : engine-specific */
+
+    void Draw_Asset();
+    void Draw_None();
 
     void Validate_Target();
 
@@ -40,8 +56,11 @@ private:
     bool m_bJustStartedNameEdit = false;
     bool m_bAutoFocusOnSelection = true;
 
+    // 신규 타겟
+    ASSET_SELECTION m_selectedAsset;
+
 public:
-    static CInspectorPanel* Create(const std::string& strPanelName, CHierarchyPanel* pHierarchy);
+    static CInspectorPanel* Create(const std::string& strPanelName, CHierarchyPanel* pHierarchy, CProjectPanel* pProject);
 private:
     void Free() override;
 };

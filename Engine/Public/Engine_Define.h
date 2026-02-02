@@ -18,6 +18,7 @@ using namespace DirectX;
 #include <array>
 #include <memory>
 #include <unordered_set>
+#include <queue>
 #include <deque>
 #include <mutex>
 #include <new>

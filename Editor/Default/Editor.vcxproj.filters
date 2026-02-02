@@ -37,6 +37,9 @@
     <Filter Include="01. Editor Panel\_Base">
       <UniqueIdentifier>{65cf5c7a-b5f1-4784-8ce2-9bd01e6ccff7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Editor Panel\Project">
+      <UniqueIdentifier>{b54a6712-909a-4424-96a3-a328da2c41f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Editor.cpp">
@@ -80,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\MainPanel.cpp">
       <Filter>01. Editor Panel\MainPanel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ProjectPanel.cpp">
+      <Filter>01. Editor Panel\Project</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\MainPanel.h">
       <Filter>01. Editor Panel\MainPanel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ProjectPanel.h">
+      <Filter>01. Editor Panel\Project</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

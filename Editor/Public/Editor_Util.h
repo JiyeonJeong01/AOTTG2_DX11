@@ -38,4 +38,11 @@ static bool Is_KeyChord_Pressed(bool ctrl, bool shift, bool alt, ImGuiKey key)
     return ImGui::IsKeyPressed(key, false);
 }
 
+/* ImGui is UTF-8 based, so file paths must be converted to UTF-8. */
+static std::string To_UTF8(const std::filesystem::path& p)
+{
+    auto u8 = p.u8string();
+    return std::string(reinterpret_cast<const char*>(u8.data()), u8.size());
+}
+
 NS_END

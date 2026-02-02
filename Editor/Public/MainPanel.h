@@ -16,7 +16,7 @@ public:
     /* Panels to dock */
     void Add_Panel(Editor::CEditorPanel* pPanel);
 
-    /* Scene operations */
+    /* SCENE operations */
     /* TODO : Hook these to Engine layer */
     void Set_On_New_Scene(std::function<void()> fn) { m_fnNewScene = std::move(fn); }
     void Set_On_Open_Scene(std::function<void(const std::wstring&)> fn) { m_fnOpenScene = std::move(fn); }
@@ -49,7 +49,7 @@ private:
     /* --- Panels --- */
     std::vector<CEditorPanel*> m_panels;
 
-    /* --- Scene UI State --- */
+    /* --- SCENE UI State --- */
     std::wstring m_scenePath;
     _bool m_bSceneDirty = false;
     _bool m_bBuiltLayer = false;
@@ -71,6 +71,7 @@ private:
     static constexpr const char* PANEL_HIERARCHY = "Hierarchy";
     static constexpr const char* PANEL_INSPECTOR = "Inspector";
     static constexpr const char* PANEL_CONSOLE = "Console";
+    static constexpr const char* PANEL_PROJECT = "Project";
 
 public:
     static CMainPanel* Create(const std::string& strPanelName);
