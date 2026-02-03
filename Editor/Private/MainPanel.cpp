@@ -284,6 +284,9 @@ void CMainPanel::Draw_Toolbar()
 
 void CMainPanel::Build_Default_Layout()
 {
+    /* TODO : =======================================================*/
+    /* TODO : =============== After learning RTV ====================*/
+    /* TODO : =======================================================*/
     //ImGuiID dockspace_id = ImGui::GetID(m_strPanelName.c_str());
 
     //ImGui::DockBuilderRemoveNode(dockspace_id);

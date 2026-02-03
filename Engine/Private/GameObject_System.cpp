@@ -10,11 +10,17 @@ CGameObject_System::CGameObject_System()
 {
 }
 
-HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers)
+HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
 {
     if (iMaxLayers <= Layer::DEFAULT_LAYER || iMaxLayers > Layer::MAX_LAYERS)
     {
         _DEBUG_ERROR_BREAK("CGameObject_System Initialize failed: invalid layer count.");
+        return E_FAIL;
+    }
+
+    if (iPoolSize < 2)
+    {
+        _DEBUG_ERROR_BREAK("CGameObject_System Initialize failed: pool size too small.");
         return E_FAIL;
     }
 
@@ -23,61 +29,147 @@ HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers)
     for (uint32_t i = 0; i < Layer::MAX_LAYERS; ++i)
         m_layerBuckets[i].clear();
 
+    m_dataPool.clear();
+    m_wrapperPool.clear();
+
+    m_dataPool.resize(iPoolSize);
+    m_wrapperPool.resize(iPoolSize, nullptr);
+
+    while (!m_freeIndices.empty())
+        m_freeIndices.pop();
+
+    /* m_wrapperPool[0] is for DummyData */
+    m_wrapperPool[0] = nullptr;
+
+    for (uint32_t i = 1; i < iPoolSize; ++i)
+    {
+        CGameObject* pWrapper = new CGameObject(i);
+        m_wrapperPool[i] = pWrapper;
+
+        m_freeIndices.push(i);
+        m_dataPool[i].Reset();
+    }
+
     return S_OK;
 }
 
-HRESULT CGameObject_System::Create_Object(CGameObject* pNewObj, Layer::LAYER_ID iLayer/* = Layer::DEFAULT_LAYER*/)
+HRESULT CGameObject_System::Create_Object(CGameObject** ppOutObj, Layer::LAYER_ID iLayer, const string& strName)
 {
-    if (iLayer == Layer::INVALID_LAYER || iLayer >= m_iLayerCount)
+    if (m_freeIndices.empty())
     {
-        _DEBUG_WARN("Invalid layer; set to 0");
-        iLayer = 0;
-    }
-
-    if (!pNewObj)
-    {
-        _DEBUG_ERROR_BREAK("Create_Object failed: CGameObject::Create() returned null.");
+        _DEBUG_ERROR_BREAK("GameObject Pool is Full!");
         return E_FAIL;
     }
 
-    /* GAMEOBJECT_META init + Layerbucket add */
-    Add_To_LayerBucket(pNewObj, iLayer);
+    if (iLayer == Layer::INVALID_LAYER || iLayer >= m_iLayerCount)
+    {
+        _DEBUG_WARN("Invalid layer; set to DEFAULT_LAYER.");
+        iLayer = Layer::DEFAULT_LAYER;
+    }
+
+    /* Allocate index */
+    const uint32_t idx = m_freeIndices.front();
+    m_freeIndices.pop();
+
+    GAMEOBJECT_DATA& data = m_dataPool[idx];
+    CGameObject* pWrapper = m_wrapperPool[idx];
+
+    if (!pWrapper)
+    {
+        _DEBUG_ERROR_BREAK("Create_Object failed: wrapper is null.");
+        m_freeIndices.push(idx); /* Return allocated index */
+        return E_FAIL;
+    }
+
+    /* Reset data */
+    data.Reset();
+    data.iVersion++;
+    data.bActive = true;
+
+    pWrapper->m_hSelf.iIndex = idx;
+    pWrapper->m_hSelf.iVersion = data.iVersion;
+
+    pWrapper->Set_Label(strName);
+
+    Add_To_LayerBucket(pWrapper, iLayer);
+
+    if (ppOutObj)
+        *ppOutObj = pWrapper;
 
     return S_OK;
 }
 
 void CGameObject_System::Destroy_Object(CGameObject* pObj)
 {
-    if (!pObj)
+    if (!pObj || !pObj->IsValid())
     {
-        _DEBUG_WARN("Destroy_Object failed : CGameObject is nullptr");
+        _DEBUG_WARN("Destroy_Object failed : Invalid Object");
         return;
     }
 
     Remove_From_LayerBucket(pObj);
 
-    m_pendingDestroy.push_back(pObj);
+    /* TODO : ======================================================== */
+    /* TODO : =============== ADD PENDING DESTROY LOGIC ============== */
+    /* TODO : ======================================================== */
+
+    const GAMEOBJECT_HANDLE handle = pObj->Get_Handle();
+    if (handle.iIndex == 0 /* dummy */ || handle.iIndex >= m_dataPool.size())
+        return;
+
+    GAMEOBJECT_DATA& data = m_dataPool[handle.iIndex];
+
+    /* Clean up the relationship with the parent. */
+    if (data.hParent.IsValid())
+    {
+        CGameObject* pParent = Get_Wrapper(data.hParent);
+        if (pParent && pParent->IsValid())
+        {
+            pObj->Set_Parent(nullptr);
+        }
+        else
+        {
+            data.hParent = {};
+        }
+    }
+
+    /* Clean up the relationship with the children */
+    {
+        auto childrenCopy = data.hChildren;
+        for (const auto& hChild : childrenCopy)
+        {
+            CGameObject* pChild = Get_Wrapper(hChild);
+            if (pChild && pChild->IsValid())
+            {
+                pChild->Set_Parent(nullptr);
+            }
+        }
+    }
+
+    data.bActive = false;
+    data.Reset();
+
+    m_freeIndices.push(handle.iIndex);
 }
 
 void CGameObject_System::Set_Layer(CGameObject* pObj, Layer::LAYER_ID iNewLayer)
 {
-    if (!pObj)
+    if (!pObj || !pObj->IsValid())
     {
-        _DEBUG_ERROR_BREAK("Set_Layer failed : GameObject is nullptr");
+        _DEBUG_ERROR_BREAK("Set_Layer failed : Invalid Object");
         return;
     }
 
     if (iNewLayer >= m_iLayerCount || iNewLayer == Layer::INVALID_LAYER)
     {
-        _DEBUG_WARN("Invalid layer index; set to 0.");
-        iNewLayer = 0;
+        _DEBUG_WARN("Invalid layer index; set to DEFAULT_LAYER.");
+        iNewLayer = Layer::DEFAULT_LAYER;
     }
 
-    auto& tMeta = pObj->Access_Meta();
-    if (tMeta.layer == iNewLayer)
+    GAMEOBJECT_DATA& data = Access_Data_Raw(pObj->Get_Handle());
+    if (data.layer == iNewLayer)
         return;
 
-    /* Remove from the previous layer and insert into the new layer. */
     Remove_From_LayerBucket(pObj);
     Add_To_LayerBucket(pObj, iNewLayer);
 }
@@ -88,7 +180,7 @@ const std::vector<CGameObject*>& CGameObject_System::Get_LayerObjects(Layer::LAY
 
     if (iLayer >= m_iLayerCount || iLayer == Layer::INVALID_LAYER)
     {
-        _DEBUG_WARN("Invalid layer index; set to 0.");
+        _DEBUG_WARN("Invalid layer index; returning empty.");
         return s_Empty;
     }
 
@@ -99,41 +191,44 @@ void CGameObject_System::Gather_By_Mask(Layer::LAYER_MASK mask, std::vector<CGam
 {
     outObjects.clear();
 
-    /* Reserve to gather GameObjects */
-    size_t iTotal = 0;
-
+    size_t total = 0;
     for (uint32_t iLayer = 0; iLayer < m_iLayerCount; ++iLayer)
     {
         if ((mask & Layer::To_Bit(SCAST(Layer::LAYER_ID, iLayer))) == 0)
             continue;
-        iTotal += m_layerBuckets[iLayer].size();
+
+        total += m_layerBuckets[iLayer].size();
     }
 
-    outObjects.reserve(iTotal);
+    outObjects.reserve(total);
 
-    /* Gather GameObjects */
     for (uint32_t iLayer = 0; iLayer < m_iLayerCount; ++iLayer)
     {
         if ((mask & Layer::To_Bit(SCAST(Layer::LAYER_ID, iLayer))) == 0)
             continue;
 
-        const auto& layerBucket = m_layerBuckets[iLayer];
-        outObjects.insert(outObjects.end(), layerBucket.begin(), layerBucket.end());
+        const auto& bucket = m_layerBuckets[iLayer];
+        for (CGameObject* pObj : bucket)
+        {
+            if (pObj && pObj->IsValid())
+                outObjects.push_back(pObj);
+        }
     }
 }
 
-void CGameObject_System::Get_Roots(std::vector<CGameObject*>& outRoots) const
+void CGameObject_System::Get_Roots(std::vector<CGameObject*>& outRoots)
 {
     outRoots.clear();
 
     for (uint32_t iLayer = 0; iLayer < m_iLayerCount; ++iLayer)
     {
-        const auto& layerBucket = m_layerBuckets[iLayer];
-        for (CGameObject* pObj : layerBucket)
+        const auto& bucket = m_layerBuckets[iLayer];
+        for (CGameObject* pObj : bucket)
         {
-            if (!pObj)
+            if (!pObj || !pObj->IsValid())
                 continue;
-            if (!pObj->Get_Parent())
+
+            if (!Access_Data_Raw(pObj->Get_Handle()).hParent.IsValid())
                 outRoots.push_back(pObj);
         }
     }
@@ -141,132 +236,140 @@ void CGameObject_System::Get_Roots(std::vector<CGameObject*>& outRoots) const
 
 void CGameObject_System::Remove_From_LayerBucket(CGameObject* pObj)
 {
-    if (!pObj)
+    if (!pObj || !pObj->IsValid())
+        return;
+
+    GAMEOBJECT_DATA& tData = Access_Data_Raw(pObj->Get_Handle());
+
+    const uint32_t iLayer = tData.layer;
+    if (iLayer == Layer::INVALID_LAYER || iLayer >= m_iLayerCount)
     {
-        _DEBUG_WARN("Remove_From_LayerBucket: pObj is nullptr");
+        _DEBUG_ERROR_BREAK("Invalid layer access.");
         return;
     }
 
-    auto& tMeta = pObj->Access_Meta();
-
-    if (tMeta.layer == Layer::INVALID_LAYER)
-    {
-        _DEBUG_WARN("Invalid meta");
-        return;
-    }
-
-    if (tMeta.layer >= m_iLayerCount)
-    {
-        _DEBUG_WARN("Remove_From_LayerBucket: meta.layer out of range. Force reset.");
-        tMeta.layer = Layer::INVALID_LAYER;
-        tMeta.iIndexInLayer = 0;
-        return;
-    }
-
-    auto& bucket = m_layerBuckets[tMeta.layer];
-
+    auto& bucket = m_layerBuckets[iLayer];
     if (bucket.empty())
     {
-        _DEBUG_WARN("Remove_From_LayerBucket: bucket empty but meta says registered.");
-        tMeta.layer = Layer::INVALID_LAYER;
-        tMeta.iIndexInLayer = 0;
+        _DEBUG_ERROR_BREAK("Invalid layer access : this layer is empty.");
+        tData.layer = Layer::INVALID_LAYER;
+        tData.iIndexInLayer = 0;
         return;
     }
 
-    const uint32_t iRemoveIndex = tMeta.iIndexInLayer;
-    const uint32_t iLastIndex = SCAST(uint32_t, bucket.size() - 1);
+    const uint32_t iLastIdx = (uint32_t)bucket.size() - 1;
 
-    if (iRemoveIndex > iLastIndex)
+    uint32_t iRemoveIdx = tData.iIndexInLayer;
+
+    /* If metadata index is invalid, recover real index defensively. */
+    if (iRemoveIdx > iLastIdx)
     {
-        _DEBUG_ERROR_BREAK("Meta is in a corrupted state.");
-        tMeta.layer = Layer::INVALID_LAYER;
-        tMeta.iIndexInLayer = 0;
-        return;
+        _DEBUG_ERROR_BREAK("Corrupted layer index; fall back to a defensive linear search.");
+
+        auto it = std::find(bucket.begin(), bucket.end(), pObj);
+        if (it == bucket.end())
+        {
+            /* Not found in bucket; just clear layer data. */
+            tData.layer = Layer::INVALID_LAYER;
+            tData.iIndexInLayer = 0;
+            return;
+        }
+
+        iRemoveIdx = (uint32_t)std::distance(bucket.begin(), it);
     }
 
-    /* Swap-pop*/
-    if (iRemoveIndex != iLastIndex)
+    /* Swap-pop removal. */
+    if (iRemoveIdx != iLastIdx)
     {
-        CGameObject* pMoved = bucket[iLastIndex];
-        bucket[iRemoveIndex] = pMoved;
+        CGameObject* pMoved = bucket[iLastIdx];
+        bucket[iRemoveIdx] = pMoved;
 
-        if (pMoved)
-        {
-            auto& tMovedMeta = pMoved->Access_Meta();
-
-            tMovedMeta.layer = tMeta.layer;
-            tMovedMeta.iIndexInLayer = iRemoveIndex;
-        }
-        else
-        {
-            _DEBUG_WARN("Remove_From_LayerBucket: moved object is nullptr.");
-        }
+        if (pMoved && pMoved->IsValid())
+            Access_Data_Raw(pMoved->Get_Handle()).iIndexInLayer = iRemoveIdx;
     }
 
     bucket.pop_back();
 
-    /* Reset pObj meta data to an unregistered state. */
-    tMeta.layer = Layer::INVALID_LAYER;
-    tMeta.iIndexInLayer = 0;
+    /* Cleanup for the object being removed. */
+    tData.layer = Layer::INVALID_LAYER;
+    tData.iIndexInLayer = 0;
 }
 
-void CGameObject_System::Add_To_LayerBucket(CGameObject* pObj, Layer::LAYER_ID layer /* = Layer::DEFAULT_LAYER*/)
+
+void CGameObject_System::Add_To_LayerBucket(CGameObject* pObj, Layer::LAYER_ID layer)
 {
-    if (!pObj)
-    {
-        _DEBUG_WARN("Add_To_LayerBucket: pObj is nullptr");
+    if (!pObj || !pObj->IsValid())
         return;
-    }
 
     if (layer == Layer::INVALID_LAYER || layer >= m_iLayerCount)
-    {
-        _DEBUG_WARN("Add_To_LayerBucket: invalid layer index; set to 0.");
-        layer = 0;
-    }
+        layer = Layer::DEFAULT_LAYER;
 
-    auto& tMeta = pObj->Access_Meta();
+    const GAMEOBJECT_HANDLE hObj = pObj->Get_Handle();
+    GAMEOBJECT_DATA& data = Access_Data_Raw(hObj);
 
-    /* Prevent duplicate registration. In the Set_Layer flow, Remove is called before Add, so this should not normally trigger. */ 
-    if (tMeta.layer != Layer::INVALID_LAYER)
-    {
-        _DEBUG_WARN("Add_To_LayerBucket: object already registered. Removing from old layer first.");
+    /* Remove this object from its current layer bucket. */
+    if (data.layer != Layer::INVALID_LAYER)
         Remove_From_LayerBucket(pObj);
-    }
 
     auto& bucket = m_layerBuckets[layer];
-    tMeta.layer = layer;
-    tMeta.iIndexInLayer = SCAST(uint32_t, bucket.size());
-    bucket.push_back(pObj);
 
-    _DEBUG_INFO("layer : %d, Index in Layer : %d", SCAST(int, tMeta.layer), tMeta.iIndexInLayer);
+    data.layer = layer;
+    data.iIndexInLayer = (uint32_t)bucket.size();
+
+    bucket.push_back(pObj);
 }
 
 void CGameObject_System::Flush_PendingDestroy()
 {
-    for (CGameObject* pObj : m_pendingDestroy)
-    {
-        if (!pObj)
-            continue;
-
-        /* TODO : Proper handling is needed for the destory */
-
-        Safe_Release(pObj);
-    }
+    // TODO ============================================================
+    // TODO implement after system architecture comfirmed
+    // TODO ============================================================
 }
 
-CGameObject_System* CGameObject_System::Create(uint32_t iMaxLayers)
+GAMEOBJECT_DATA& CGameObject_System::Access_Data_Raw(GAMEOBJECT_HANDLE hObj)
 {
-    CGameObject_System* pInstance = new CGameObject_System();
-    if (FAILED(pInstance->Initialize(iMaxLayers)))
+    if (hObj.iIndex == 0 || hObj.iIndex >= m_dataPool.size())
     {
-        Safe_Release(pInstance);
-        _DEBUG_ERROR_BREAK("Create CGameObjectSystem faild");
+        _DEBUG_ERROR_BREAK("Access_Data_Raw failed: invalid index.");
+        return m_dataPool[0]; // 0번 더미
     }
-    return pInstance;
+    return m_dataPool[hObj.iIndex];
+}
+
+CGameObject* CGameObject_System::Get_Wrapper(GAMEOBJECT_HANDLE hObj)
+{
+    if (hObj.iIndex == 0 || hObj.iIndex >= m_wrapperPool.size())
+        return nullptr;
+
+    if (m_dataPool[hObj.iIndex].iVersion != hObj.iVersion)
+        return nullptr;
+
+    return m_wrapperPool[hObj.iIndex];
+}
+
+bool CGameObject_System::Is_Valid_Handle(GAMEOBJECT_HANDLE hObj) const
+{
+    if (hObj.iIndex == 0 || hObj.iIndex >= m_dataPool.size())
+        return false;
+
+    const auto& tData = m_dataPool[hObj.iIndex];
+    return tData.bActive && (tData.iVersion == hObj.iVersion);
 }
 
 void CGameObject_System::Free()
 {
+    for (CGameObject* pWrapper : m_wrapperPool)
+        Safe_Release(pWrapper);
+
+    m_wrapperPool.clear();
+    m_dataPool.clear();
+
+    while (!m_freeIndices.empty())
+        m_freeIndices.pop();
+
+    for (uint32_t i = 0; i < Layer::MAX_LAYERS; ++i)
+        m_layerBuckets[i].clear();
+
     CBase::Free();
 }
 

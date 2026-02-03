@@ -11,7 +11,7 @@ protected:
 
 public:
     virtual HRESULT Initialize();
-    virtual void Update(_float fTimeDelta);
+    virtual void    Update(_float fTimeDelta);
     virtual HRESULT Render();
 
 protected:

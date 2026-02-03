@@ -72,8 +72,6 @@ void CInspectorPanel::Render()
         return;
     }
 
-
-
     if (m_eMode == InspectMode::GameObject)
     {
         if (m_pTarget == nullptr)
@@ -101,7 +99,6 @@ void CInspectorPanel::Render()
     {
         Draw_None();
     }
-
 
     ImGui::End();
 }

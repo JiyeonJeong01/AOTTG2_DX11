@@ -9,33 +9,40 @@ class CGameObject;
 class ENGINE_DLL CGameObject_System final : public CBase
 {
     DECLARE_SINGLETON(CGameObject_System)
+
 private:
     CGameObject_System();
     ~CGameObject_System() override = default;
 
 public:
-    HRESULT         Initialize(uint32_t iMaxLayers = 32);
-
-    HRESULT         Create_Object(CGameObject* pNewObj, Layer::LAYER_ID iLayer = Layer::DEFAULT_LAYER);
+    HRESULT         Initialize(uint32_t iMaxLayers = 32, uint32_t iPoolSize = 2048);
+    HRESULT         Create_Object(CGameObject** ppOutObj, Layer::LAYER_ID iLayer, const string& strName);
     void            Destroy_Object(CGameObject* pObj);
 
     void            Set_Layer(CGameObject* pObj, Layer::LAYER_ID iNewLayer);
     const std::vector<CGameObject*>& Get_LayerObjects(Layer::LAYER_ID iLayer) const;
     void            Gather_By_Mask(Layer::LAYER_MASK mask, std::vector<CGameObject*>& outObjects) const;
-    void            Get_Roots(std::vector<CGameObject*>& outRoots) const;
+    void            Get_Roots(std::vector<CGameObject*>& outRoots);
 
 private:
     uint32_t        m_iLayerCount = Layer::MAX_LAYERS;
+
     std::array<std::vector<CGameObject*>, Layer::MAX_LAYERS> m_layerBuckets{};
-    std::list<CGameObject*> m_pendingDestroy;
+
+    std::vector<GAMEOBJECT_DATA>    m_dataPool;
+    std::vector<CGameObject*>       m_wrapperPool;
+    std::queue<uint32_t>            m_freeIndices;
+
+public:
+    GAMEOBJECT_DATA&    Access_Data_Raw(GAMEOBJECT_HANDLE hObj);
+    CGameObject*        Get_Wrapper(GAMEOBJECT_HANDLE hObj);
+    _bool               Is_Valid_Handle(GAMEOBJECT_HANDLE hObj) const;
 
 private:
     void Remove_From_LayerBucket(CGameObject* pObj);
     void Add_To_LayerBucket(CGameObject* pObj, Layer::LAYER_ID layer = Layer::DEFAULT_LAYER);
     void Flush_PendingDestroy();
 
-public:
-    static CGameObject_System* Create(uint32_t iMaxLayers = 32);
     void Free() override;
 };
 

@@ -6,27 +6,29 @@ NS_BEGIN(Engine)
 
 uint32_t CComponentGroup_Manager::Promote(COMPONENT_HANDLE hOld, COMPONENT_HANDLE hNew)
 {
-	uint32_t iID = 0;
+	uint32_t iGroupID = 0;
 	if (false == m_FreeIndices.empty())
 	{
-		iID = m_FreeIndices.back();
+        iGroupID = m_FreeIndices.back();
 		m_FreeIndices.pop_back();
 	}
 	else
 	{
-		iID = SCAST(uint32_t, m_Groups.size());
+        iGroupID = SCAST(uint32_t, m_Groups.size());
 		m_Groups.emplace_back();
 	}
 
 	/* Allocate space for group promotion. */
-	auto& tGroup = m_Groups[iID];
+	auto& tGroup = m_Groups[iGroupID];
 	tGroup.tPrimary = hOld;
 
 	/* Prepare for reuse and append the new handle to the Extras container. */
 	tGroup.tExtras.clear();
 	tGroup.tExtras.push_back(hNew);
 
-	return iID;
+    _DEBUG_INFO("Promote to group. GroupID : [ %d ]", iGroupID);
+
+	return iGroupID;
 }
 
 void CComponentGroup_Manager::Add_To_Group(uint32_t iGroupID, COMPONENT_HANDLE hNew)
@@ -38,6 +40,7 @@ void CComponentGroup_Manager::Add_To_Group(uint32_t iGroupID, COMPONENT_HANDLE h
 		return;
 	}
 
+    _DEBUG_INFO("Added to group. GroupID : [ %d ]", iGroupID);
 	m_Groups[iGroupID].tExtras.push_back(hNew);
 }
 

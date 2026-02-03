@@ -20,6 +20,9 @@ namespace  Engine
         static constexpr uint32_t DATA_MASK = 0x7FFFFFFF;       // 나머지 31비트 : 데이터 추출
         static constexpr uint32_t MAX_VERSION = 0x000007FF;     // 안전한 최대 버전
         static constexpr uint32_t VERSION_SHIFT = 20;
+        static constexpr uint32_t INVALID_COMPONENT_SLOT = 0;
+        static constexpr uint32_t FIRST_COMPONENT = 0;
+
     }
 
     namespace Layer
@@ -60,22 +63,16 @@ namespace  Engine
         vector<COMPONENT_HANDLE>    tExtras;
     }COMPONENT_GROUP;
 
-    typedef struct tagGameObjectMeta
-    {
-        Layer::LAYER_ID layer = Layer::INVALID_LAYER;
-        uint32_t iIndexInLayer = 0;
-    }GAMEOBJECT_META;
-
-
     /* TODO : ===============================================================================*/
     typedef struct ENGINE_DLL tagLabel
     {
-    private :
+    private:
         std::string label{};
-    public :
+    public:
         tagLabel() = default;
         tagLabel(std::string str)
-        : label(std::move(str)) {}
+            : label(std::move(str)) {}
+
         void Set_Label(std::string_view str)
         {
             label.assign(str);
@@ -86,6 +83,57 @@ namespace  Engine
         }
 
     }LABEL;
+
+    typedef struct tagGameObjectHandle
+    {
+        uint32_t    iIndex = 0;
+        uint32_t    iVersion = 0;
+
+        bool IsValid() const
+        {
+            return iIndex != 0;
+        }
+        bool operator==(const tagGameObjectHandle& other) const
+        {
+            return iIndex == other.iIndex && iVersion == other.iVersion;
+        }
+        bool operator!=(const tagGameObjectHandle& other) const
+        {
+            return !(*this == other);
+        }
+
+    }GAMEOBJECT_HANDLE;
+
+    typedef struct tagGameObjectData
+    {
+        uint32_t    iVersion = 0;       /* slot's current version */
+        bool        bActive = false;
+
+        /* For layer access in O(1) */
+        Layer::LAYER_ID layer = Layer::INVALID_LAYER;
+        uint32_t iIndexInLayer = 0;
+
+        /* Components */
+        uint32_t iComponentSlots[MAX_COMPONENT] = { 0, };
+
+        /* Hierarchy */
+        GAMEOBJECT_HANDLE           hParent{};
+        std::vector<GAMEOBJECT_HANDLE>   hChildren;
+
+        /* Reset helper */
+        void Reset()
+        {
+            bActive = false;
+            layer = Layer::INVALID_LAYER;
+            iIndexInLayer = 0;
+            std::fill(std::begin(iComponentSlots), std::end(iComponentSlots), 0);
+            hParent = {};
+            hChildren.clear();
+        }
+
+    }GAMEOBJECT_DATA;
+
+
 }
 
 #endif // Engine_Struct_h__
