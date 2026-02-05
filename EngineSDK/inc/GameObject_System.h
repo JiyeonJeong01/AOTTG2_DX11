@@ -34,9 +34,9 @@ private:
     std::queue<uint32_t>            m_freeIndices;
 
 public:
-    GAMEOBJECT_DATA& Access_Data_Raw(GAMEOBJECT_HANDLE hObj);
-    CGameObject* Get_Wrapper(GAMEOBJECT_HANDLE hObj);
-    bool                Is_Valid_Handle(GAMEOBJECT_HANDLE hObj) const;
+    GAMEOBJECT_DATA&    Access_Data_Raw(GAMEOBJECT_HANDLE hObj);
+    CGameObject*        Get_Wrapper(GAMEOBJECT_HANDLE hObj);
+    _bool               Is_Valid_Handle(GAMEOBJECT_HANDLE hObj) const;
 
 private:
     void Remove_From_LayerBucket(CGameObject* pObj);

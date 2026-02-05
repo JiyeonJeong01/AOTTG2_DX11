@@ -47,10 +47,6 @@ public:
     void                        Set_Active(_bool bActive);
     _bool                       Get_Active() const;
 
-protected:
-    /* Components */
-    COMPONENT_HANDLE            Decode_Slot(uint32_t iSlotData) const;
-
 private:
     void Add_Child_Inner(GAMEOBJECT_HANDLE hChild);
     void Remove_Child_Inner(GAMEOBJECT_HANDLE hChild);
@@ -149,7 +145,7 @@ std::vector<PROXY> CGameObject::Get_Components(COMPONENT_TYPE eComType)
     /* A slot data value of 0 means the component does not exist */
     if (iSlotData == ComponentConfig::INVALID_COMPONENT_SLOT)
     {
-        _DEBUG_ERROR_BREAK("GameObject can't get such component!");
+        _DEBUG_INFO("GameObject can't get such component!");
         return std::vector<PROXY>{};
     }
 
