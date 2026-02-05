@@ -27,6 +27,8 @@ HRESULT CMainPanel::Initialize()
     CInspectorPanel* pInspector = CInspectorPanel::Create(PANEL_INSPECTOR, pHierarchy, pProject);
     Add_Panel(pInspector);
 
+    const std::filesystem::path assetRootPath = ProjectConfig::PATH + ProjectConfig::ROOT;
+
     return S_OK;
 }
 

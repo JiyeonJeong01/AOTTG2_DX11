@@ -22,7 +22,9 @@ using namespace DirectX;
 #include <deque>
 #include <mutex>
 #include <new>
-
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 
 using namespace std;
 
@@ -55,5 +57,6 @@ using namespace std;
 #endif // _DEBUG
 
 using namespace Engine;
+
 
 #endif // Engine_Define_h__

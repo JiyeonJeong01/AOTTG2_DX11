@@ -1,8 +1,9 @@
 ﻿#include "ProjectPanel.h"
 
-#include <Engine_Log.h>
-
+#include "Engine_Log.h"
 #include "Editor_Util.h"
+#include "Asset_Registry.h"
+
 NS_BEGIN(Editor)
 
 CProjectPanel::CProjectPanel(const std::string& strPanelName)
@@ -32,7 +33,7 @@ void CProjectPanel::Notify_Selection_Changed()
 
 HRESULT CProjectPanel::Initialize()
 {
-    m_assetsRoot = ProjectConfig::PATH + ProjectConfig::ROOT;
+    m_assetsRoot = Engine::ProjectConfig::PATH + Engine::ProjectConfig::ROOT;
 
     Ensure_Path_Exists(m_assetsRoot);
 
@@ -206,7 +207,7 @@ void CProjectPanel::Draw_Folder_Node_Recursive(const FOLDER_NODE& tNode, _int iD
     {
         /* Root: always open by default */
         flags |= ImGuiTreeNodeFlags_DefaultOpen;
-        bOpen = ImGui::TreeNodeEx(ProjectConfig::ROOT.c_str(), flags);
+        bOpen = ImGui::TreeNodeEx(Engine::ProjectConfig::ROOT.c_str(), flags);
     }
     else
     {
@@ -306,19 +307,35 @@ void CProjectPanel::Draw_File_List()
 
 void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
 {
+    /* Hide meta file */
+    if (Engine::Is_MetaFile(tAsset.path))
+        return;
+
+    ImGui::PushID(Editor_Util::To_UTF8(tAsset.path).c_str());
+
     const _bool bSelected = (!m_selectedPath.empty() &&
         std::filesystem::exists(m_selectedPath) && 
         std::filesystem::exists(tAsset.path) &&    
         std::filesystem::equivalent(m_selectedPath, tAsset.path));
+
     /* row label */
     const _char* szAssetType = ASSET_TYPE_To_Label(tAsset.type);
 
-    ImGui::PushID(Editor_Util::To_UTF8(tAsset.path).c_str());
+    /* Display asset type */
+    ImGui::BeginGroup();
+
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+    ImGui::Text("[%s]", szAssetType);
+    ImGui::PopStyleColor();
+
+    ImGui::SameLine(90.f);
+
 
     /* Rename inline */
     if (Is_Renaming() && m_renameTargetPath == tAsset.path)
     {
         Draw_Rename_Field(tAsset);
+        ImGui::EndGroup();
         ImGui::PopID();
         return;
     }
@@ -339,6 +356,28 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
             m_bListDirty = true;
         }
     }
+
+
+    if (!tAsset.isDirectory) // 폴더 드래그는 일단 보류 (원하면 later)
+    {
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+        {
+            Engine::ASSET_GUID g{};
+            if (SYS_RESOURCE->Try_Get_GUID(tAsset.path, g))
+            {
+                ImGui::SetDragDropPayload("ASSET_GUID", &g, sizeof(g));
+                ImGui::Text("Asset: %s", tAsset.name.c_str());
+            }
+            else
+            {
+                ImGui::Text("No GUID");
+            }
+
+            ImGui::EndDragDropSource();
+        }
+    }
+
+    ImGui::EndGroup();
 
     /* context */
     std::string popupId = "##Context" + Editor_Util::To_UTF8(tAsset.path);
@@ -363,13 +402,6 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
 
         ImGui::EndPopup();
     }
-
-    /* Display asset-type on the right side*/
-    ImGui::SameLine();
-    _float fRightX = ImGui::GetWindowContentRegionMax().x - 80.f;
-    ImGui::SetCursorPosX(fRightX);
-    ImGui::TextUnformatted(szAssetType);
-
     ImGui::PopID();
 }
 
@@ -455,7 +487,7 @@ void CProjectPanel::Refresh_Folder_Tree()
 {
     m_rootNode = FOLDER_NODE{};
     m_rootNode.path = m_assetsRoot;
-    m_rootNode.name = ProjectConfig::ROOT;
+    m_rootNode.name = Engine::ProjectConfig::ROOT;
 
     std::function<void(FOLDER_NODE&)> fnBuild = [&](FOLDER_NODE& n)
         {
@@ -604,12 +636,18 @@ _bool CProjectPanel::Rename_Path(const std::filesystem::path& src, const std::st
 
     std::filesystem::path dst = src.parent_path() / std::filesystem::path(newName);
 
-    /* preserve extension if user didn't type it (optional policy) */
-    if (src.has_extension() && !dst.has_extension())
-        dst.replace_extension(src.extension());
+    /* preserve extension if user didn't type it (not a directory) */
+    if (!std::filesystem::is_directory(src))
+    {
+        if (src.has_extension() && !dst.has_extension())
+            dst.replace_extension(src.extension());
+    }
 
     if (src == dst)
         return true;
+
+    if (std::filesystem::exists(dst))
+        return false;
 
     std::error_code ec;
     std::filesystem::rename(src, dst, ec);
@@ -624,6 +662,21 @@ _bool CProjectPanel::Rename_Path(const std::filesystem::path& src, const std::st
     if (m_currentFolder == src)
         m_currentFolder = dst;
 
+    /* Handle meta file */
+    if (!Engine::Is_MetaFile(src))
+    {
+        auto oldMeta = Engine::Make_MetaPath(src);
+        auto newMeta = Engine::Make_MetaPath(dst);
+
+        if (std::filesystem::exists(oldMeta))
+        {
+            ec.clear();
+            std::filesystem::rename(oldMeta, newMeta, ec);
+            if (ec)
+                LOG_WARN("Failed to rename meta: %s", oldMeta.string().c_str());
+        }
+    }
+
     return true;
 }
 
@@ -634,22 +687,36 @@ _bool CProjectPanel::Delete_Path(const std::filesystem::path& target)
 
     std::error_code ec;
     _bool bSuccess = false;
+    const _bool bIsDir = std::filesystem::is_directory(target);
 
     if (std::filesystem::is_directory(target))
         bSuccess = (std::filesystem::remove_all(target, ec) > 0);
     else
         bSuccess = std::filesystem::remove(target, ec);
 
-    if (bSuccess && !ec)
+    if (!(bSuccess && !ec))
+        return false;
+
+    /* Handle meta file */
+    if (!Engine::Is_MetaFile(target))
     {
-        if (m_currentFolder == target || Is_Subpath(m_currentFolder, target))
+        const auto metaPath = Engine::Make_MetaPath(target);
+        if (std::filesystem::exists(metaPath))
         {
-            m_currentFolder = m_assetsRoot;
-            m_bListDirty = true;
+            ec.clear();
+            std::filesystem::remove(metaPath, ec);
+            if (ec)
+                LOG_WARN("Failed to delete meta: %s", metaPath.string().c_str());
         }
     }
 
-    return bSuccess && !ec;
+    if (m_currentFolder == target || Is_Subpath(m_currentFolder, target))
+    {
+        m_currentFolder = m_assetsRoot;
+        m_bListDirty = true;
+    }
+
+    return true;
 }
 
 void CProjectPanel::Show_In_Explorer(const std::filesystem::path& target)

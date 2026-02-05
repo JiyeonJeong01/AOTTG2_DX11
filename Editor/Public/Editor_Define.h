@@ -5,24 +5,6 @@
 
 namespace Editor
 {
-    namespace ProjectConfig
-    {
-        const std::string PATH = "../../Client/Bin/";
-        const std::string ROOT = "Assets";
-    }
-
-    enum class ASSET_TYPE : uint8_t
-    {
-        FOLDER = 0,
-        TEXTURE,
-        MESH,
-        MATERIAL,
-        SCENE,
-        PREFAB,
-        SCRIPT,
-        UNKNOWN,
-    };
-
     typedef struct tagFolderNode
     {
         std::filesystem::path path;
@@ -35,7 +17,7 @@ namespace Editor
         std::filesystem::path   path;
         std::string             name;
         ASSET_TYPE              type = ASSET_TYPE::UNKNOWN;
-        _bool                    isDirectory = false;
+        _bool                   isDirectory = false;
     }LIST_ASSET;
 
     typedef struct tagAssetSelection

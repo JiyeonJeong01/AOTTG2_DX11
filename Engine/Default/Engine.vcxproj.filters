@@ -70,6 +70,12 @@
     <Filter Include="01. Utility\04. Component\98. Spec">
       <UniqueIdentifier>{1ab4117b-0910-4fd7-a7ef-399092d8ea14}</UniqueIdentifier>
     </Filter>
+    <Filter Include="00. System\08. Resource">
+      <UniqueIdentifier>{226011d0-3cda-4be5-bb2a-7b81bf2f1602}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98. Util">
+      <UniqueIdentifier>{248d1eed-41d4-4a63-b1cd-2606bf3824eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -198,6 +204,18 @@
     <ClInclude Include="..\Public\Prototype_System.h">
       <Filter>00. System\09. Prototype</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Asset_GUID.h">
+      <Filter>00. System\08. Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Asset_Meta.h">
+      <Filter>00. System\08. Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Asset_Registry.h">
+      <Filter>00. System\08. Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\String_Utils.h">
+      <Filter>98. Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -277,6 +295,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Prototype_System.cpp">
       <Filter>00. System\09. Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Asset_Registry.cpp">
+      <Filter>00. System\08. Resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

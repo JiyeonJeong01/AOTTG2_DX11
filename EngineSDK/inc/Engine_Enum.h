@@ -22,6 +22,7 @@ namespace Engine
 
     enum class EVENT_TYPE       { None, On_GameObject_Created, On_GameObject_Destroyed, On_Scene_Changed, On_Window_Resize };
 
+    enum class ASSET_TYPE : uint8_t { UNKNOWN = 0, FOLDER, TEXTURE, MESH, MODEL, MATERIAL, SCENE, PREFAB, PROTOTYPE, SCRIPT, };
 
     /* ------ LOG ------ */
 	enum class SEVERITY_TYPE : uint8_t { INFO, WARN, ERR, ASSERTION, END };

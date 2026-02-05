@@ -3,6 +3,7 @@
 #include "Editor_Util.h"
 #include "GameObject.h"
 #include "GameObject_System.h"
+#include "Asset_Registry.h"
 
 NS_BEGIN(Editor)
 
@@ -39,6 +40,7 @@ void CHierarchyPanel::Render()
     Handle_Shortcuts();
     Draw_Object_Tree();
     Draw_Context_Menu();
+    Draw_DropTarget();
 
     ImGui::End();
 }
@@ -289,6 +291,42 @@ void CHierarchyPanel::Draw_Context_Menu()
         }
 
         ImGui::EndPopup();
+    }
+}
+
+void CHierarchyPanel::Draw_DropTarget()
+{
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* p = ImGui::AcceptDragDropPayload("ASSET_GUID"))
+        {
+            const Engine::ASSET_GUID* pg = SCAST(const Engine::ASSET_GUID*, p->Data);
+
+            const Engine::ASSET_RECORD* rec = SYS_RESOURCE->Find(*pg);
+            if (rec)
+            {
+                // GUID + path 로그
+                LOG_INFO("Dropped Asset GUID=%s path=%s", pg->To_String_Utf8().c_str(), rec->path.string().c_str());
+
+                switch (rec->eType)
+                {
+                case Engine::ASSET_TYPE::PROTOTYPE:
+                    LOG_INFO("Prototype dropped");
+                    break;
+                    case Engine::ASSET_TYPE::TEXTURE:
+                    LOG_INFO("Texture dropped");
+                    break;
+                default:
+                    LOG_INFO("Other asset dropped");
+                    break;
+                }
+            }
+            else
+            {
+                _DEBUG_WARN("Dropped GUID but not found in registry");
+            }
+        }
+        ImGui::EndDragDropTarget();
     }
 }
 

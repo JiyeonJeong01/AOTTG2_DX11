@@ -37,6 +37,26 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 
     LOG_INFO("%d개 생성됨", (int)m_GameObjects.size());
 
+    // Somewhere test code
+    PROTOTYPE_SPEC spec{};
+    spec.layer = Layer::DEFAULT_LAYER;
+    spec.strName = "TestObj";
+
+    // bundle 채우기 (예시)
+    COMPONENT_SPEC_BUNDLE bundle{};
+    TEST_A_SPEC* pSpecA = new TEST_A_SPEC;
+    pSpecA->vData[0] = { 0, 0, 0 };
+    pSpecA->vData[1] = { 1.f, 1.f, 1.f };
+    pSpecA->vData[2] = { 2.f, 2.f, 2.f };
+    pSpecA->vData[3] = { 3.f, 3.f, 3.f };
+
+    bundle.components.push_back(pSpecA);
+    spec.tComponentBundle = std::move(bundle);
+
+    HRESULT hr = CPrototype_System::GetInstance()->Create_Prototype("TestProto", std::move(spec));
+    if (hr > 0)
+        LOG_INFO("Prototype 등록됨");
+
     m_pTester = Tester::Create();
     m_pTester->Initialize_Tester(this);
     return S_OK;
@@ -66,6 +86,10 @@ void CMainApp::Update(_float fDT)
     //{
     //    m_intEvent.Invoke(10);
     //}
+    if (GetAsyncKeyState('A') & 0x8000)
+    {
+        Engine::CGameObject* pObj = CPrototype_System::GetInstance()->Clone("TestProto");
+    }
 
 }
 

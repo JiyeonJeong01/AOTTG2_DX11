@@ -118,6 +118,13 @@ public:
 
         pPage->Set_Active(iOffset);
 
+
+        /* TODO ================= TEST ===============================*/
+        COMPONENT_HANDLE hTest = COMPONENT_HANDLE::Create(iGlobalIndex, pPage->iVersion[iOffset]);
+        LOG_INFO("Add Component with handle { %d }", hTest.iHandle);
+        /* TODO =======================================================*/
+
+
         return COMPONENT_HANDLE::Create(iGlobalIndex, pPage->iVersion[iOffset]);
     }
 

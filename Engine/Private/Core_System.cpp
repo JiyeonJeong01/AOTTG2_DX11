@@ -7,6 +7,7 @@
 
 #include "Timer_System.h"
 #include "Logger.h"
+#include "Asset_Registry.h"
 
 NS_BEGIN(Engine)
 
@@ -62,6 +63,15 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
         if (FAILED(SYS_LOG->Initialize()))
         {
             MSG_BOX("Log System failed Initialize");
+            return E_FAIL;
+        }
+    }
+
+    /* --- Resource System --- */
+    {
+        if (FAILED(SYS_RESOURCE->Initialize(ProjectConfig::PATH + ProjectConfig::ROOT)))
+        {
+            MSG_BOX("Resource System failed Initialize");
             return E_FAIL;
         }
     }

@@ -47,6 +47,7 @@ private:
     void Draw_Search_Bar();
     void Draw_Object_Tree();
     void Draw_Context_Menu();
+    void Draw_DropTarget();
 
     /* Tree render helpers */
     void Refresh_Roots();   /* Refresh if dirty */

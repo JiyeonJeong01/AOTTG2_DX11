@@ -39,6 +39,12 @@ namespace  Engine
         }
     }
 
+    namespace ProjectConfig
+    {
+        const std::string PATH = "../../Client/Bin/";
+        const std::string ROOT = "Assets";
+    }
+
     typedef struct tagComponentHandle
     {
         uint32_t iHandle = 0;
@@ -174,6 +180,8 @@ namespace  Engine
 
         Layer::LAYER_ID layer = Layer::INVALID_LAYER;
     }PROTOTYPE_SPEC;
+
+
 
 }
 
