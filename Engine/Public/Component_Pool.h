@@ -11,17 +11,17 @@ static constexpr uint32_t PAGE_SHIFT = 10;
 static constexpr uint32_t BITSET_WIDTH = 64;
 static constexpr uint32_t BITSET_COUNT = PAGE_SIZE / BITSET_WIDTH; // 1024 / 64 = 16
 
-template<typename PROXY>
+template<typename TProxy>
 class CComponent_Pool : public CBase
 {
 public:
-    /* Ensure that the PROXY type is derived from CComponent_Proxy_Base at compile-time */
+    /* Ensure that the TProxy type is derived from CComponent_Proxy_Base at compile-time */
     static_assert(
-        std::is_base_of_v<CComponent_Proxy_Base<typename PROXY::DataType, PROXY>, PROXY>,
-        "Error: PROXY must inherit from CComponent_Proxy_Base!");
+        std::is_base_of_v<CComponent_Proxy_Base<typename TProxy::DataType, TProxy>, TProxy>,
+        "Error: TProxy must inherit from CComponent_Proxy_Base!");
 
     /* Alias for the raw data type managed by this pool */
-    using DATA_T = typename PROXY::DataType;
+    using DATA_T = typename TProxy::DataType;
 
     /**
      * PAGE Structure: Contiguous memory block for Cache-Friendliness
@@ -164,16 +164,16 @@ public:
     /**
      * \brief Reference-only view; not an owning handle.
      */
-    PROXY Get_Proxy(COMPONENT_HANDLE handle)
+    TProxy Get_Proxy(COMPONENT_HANDLE handle)
     {
         /* Create and return a Proxy object initialized with the raw data address */
         DATA_T* pRawData = Get_Data_By_Handle(handle);
         if (!pRawData)
         {
             _DEBUG_ERROR_BREAK("Can't find such data!");
-            return PROXY(nullptr, COMPONENT_HANDLE{});
+            return TProxy(nullptr, COMPONENT_HANDLE{});
         }
-        return PROXY(pRawData, handle);
+        return TProxy(pRawData, handle);
     }
 
     /* Retrieve the raw data pointer for internal processing. */

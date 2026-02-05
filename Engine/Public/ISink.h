@@ -4,7 +4,7 @@
 
 NS_BEGIN(Engine)
 
-class ISink : public CBase 
+class ENGINE_DLL ISink : public CBase 
 {
 protected :
 	virtual ~ISink() = default;

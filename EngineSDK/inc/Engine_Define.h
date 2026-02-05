@@ -26,6 +26,8 @@ using namespace DirectX;
 
 using namespace std;
 
+#pragma warning(disable : 4251)
+
 #include "Engine_Enum.h"
 #include "Engine_Macro.h"
 #include "Engine_Struct.h"
@@ -37,8 +39,6 @@ using namespace std;
 
 #define DIRECTINPUT_VERSION		0x8000
 #include <dinput.h>
-
-#pragma warning(disable : 4251)
 
 #ifdef _DEBUG
 

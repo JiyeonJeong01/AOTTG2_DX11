@@ -1,21 +1,21 @@
 ﻿#pragma once
 #include "Base.h"
 
-template <typename PROXY> class CComponent_Processor_Impl;
+template <typename TProxy> class CComponent_Processor_Impl;
 
 /**
  * Base class for all Component Proxies.
  * Uses CRTP (Curiously Recurring Template Pattern) to bind Data and Proxy types.
  * @tparam DATA_T  The raw struct containing component data (e.g., CTransform_Data)
- * @tparam PROXY_T The actual derived proxy class (e.g., CTransform_Proxy)
+ * @tparam TProxy_T The actual derived proxy class (e.g., CTransform_Proxy)
  */
-template <typename DATA_T, typename PROXY_T>
+template <typename DATA_T, typename TProxy_T>
 class CComponent_Proxy_Base : public CBase
 {
 public:
     /* Expose types for the Component System's type traits and Pool allocation */
     using DataType = DATA_T;
-    using ProcessorType = CComponent_Processor_Impl<PROXY_T>;
+    using ProcessorType = CComponent_Processor_Impl<TProxy_T>;
 
     CComponent_Proxy_Base() = default;
     CComponent_Proxy_Base(COMPONENT_TYPE eType) : m_eComType(eType) {}

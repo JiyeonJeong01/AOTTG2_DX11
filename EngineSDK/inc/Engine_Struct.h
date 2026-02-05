@@ -133,6 +133,47 @@ namespace  Engine
 
     }GAMEOBJECT_DATA;
 
+#define COMPONENT_SPEC_TYPE(_TYPE)                                      \
+    static constexpr COMPONENT_TYPE TYPE = _TYPE;                       \
+    COMPONENT_TYPE Get_Type() const noexcept override { return TYPE; }
+
+    struct COMPONENT_SPEC_BASE
+    {
+        virtual ~COMPONENT_SPEC_BASE() = default;
+        virtual COMPONENT_TYPE Get_Type() const noexcept = 0;
+    };
+
+    typedef struct ENGINE_DLL tagComponentSpecBundle
+    {
+        std::vector<COMPONENT_SPEC_BASE*> components;
+        template<typename TSpec>
+        const TSpec* Find_One() const
+        {
+            for (const auto& pSpec : components)
+            {
+                if (pSpec->Get_Type() == TSpec::TYPE)
+                    return SCAST(const TSpec*, pSpec);
+            }
+
+            return nullptr;
+        }
+
+    } COMPONENT_SPEC_BUNDLE;
+
+    using COMPONENT_MASK = uint32_t;
+    using PROTOTYPE_KEY = std::string;
+
+    typedef struct ENGINE_DLL tagPrototypeSpec
+    {
+        PROTOTYPE_KEY key;
+        std::string  strName;
+
+        COMPONENT_SPEC_BUNDLE tComponentBundle;
+
+        std::vector<tagPrototypeSpec> children;
+
+        Layer::LAYER_ID layer = Layer::INVALID_LAYER;
+    }PROTOTYPE_SPEC;
 
 }
 

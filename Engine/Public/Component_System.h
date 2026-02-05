@@ -22,8 +22,8 @@ public :
 
 public : /* Component Processor */
 	COMPONENT_HANDLE Create_Component_By_Type(COMPONENT_TYPE eComType);
-	template <typename PROXY>
-	PROXY Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle);
+	template <typename TProxy>
+	TProxy Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle);
 
 public : /* CComponentGroup_Manager */
 	uint32_t				Promote(COMPONENT_HANDLE hOld, COMPONENT_HANDLE hNew);
@@ -36,10 +36,10 @@ private :
 	CComponentGroup_Manager*		m_pComGroupMgr{ };
 };
 
-template <typename PROXY>
-PROXY CComponent_System::Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle)
+template <typename TProxy>
+TProxy CComponent_System::Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle)
 {
-	using PROCESSOR_T = typename PROXY::ProcessorType;
+	using PROCESSOR_T = typename TProxy::ProcessorType;
 
 	PROCESSOR_T* pProcessor = static_cast<PROCESSOR_T*>(m_pComProcessors[static_cast<uint32_t>(eComType)]);
 
