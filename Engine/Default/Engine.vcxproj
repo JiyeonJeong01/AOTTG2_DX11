@@ -156,6 +156,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Component_Pool.h" />
     <ClInclude Include="..\Public\Component_Processor.h" />
     <ClInclude Include="..\Public\Component_Processor_Impl.h" />
+    <ClInclude Include="..\Public\Component_Spec.h" />
     <ClInclude Include="..\Public\Component_System.h" />
     <ClInclude Include="..\Public\CLI_Sink.h" />
     <ClInclude Include="..\Public\Core_Struct.h" />
@@ -177,6 +178,8 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\GUI_Sink.h" />
     <ClInclude Include="..\Public\ISink.h" />
     <ClInclude Include="..\Public\GameObject_System.h" />
+    <ClInclude Include="..\Public\Prototype.h" />
+    <ClInclude Include="..\Public\Prototype_System.h" />
     <ClInclude Include="..\Public\Scene_Manager.h" />
     <ClInclude Include="..\Public\Logger.h" />
     <ClInclude Include="..\Public\Scene.h" />
@@ -203,6 +206,8 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\GUI_Sink.cpp" />
     <ClCompile Include="..\Private\ISink.cpp" />
     <ClCompile Include="..\Private\GameObject_System.cpp" />
+    <ClCompile Include="..\Private\Prototype.cpp" />
+    <ClCompile Include="..\Private\Prototype_System.cpp" />
     <ClCompile Include="..\Private\Scene_Manager.cpp" />
     <ClCompile Include="..\Private\Logger.cpp" />
     <ClCompile Include="..\Private\Scene.cpp" />

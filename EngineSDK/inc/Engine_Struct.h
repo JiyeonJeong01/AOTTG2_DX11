@@ -114,7 +114,7 @@ namespace  Engine
         uint32_t iIndexInLayer = 0;
 
         /* Components */
-        uint32_t iComponentSlots[MAX_COMPONENT] = { 0, };
+        uint32_t iComponentSlots[COMPONENT_MAX] = { 0, };
 
         /* Hierarchy */
         GAMEOBJECT_HANDLE           hParent{};

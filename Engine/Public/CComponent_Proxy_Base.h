@@ -37,6 +37,11 @@ public:
 	    return m_eComType;
     }
 
+    COMPONENT_HANDLE    Get_Handle()
+    {
+        return m_hHandle;
+    }
+
 protected:
     COMPONENT_HANDLE            m_hHandle{};    /* Unique identifier for version-safe access */
     DATA_T*                     m_pData{};      /* Direct pointer to the raw data in the pool */

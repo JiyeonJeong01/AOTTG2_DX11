@@ -171,14 +171,11 @@ CGameObject* CGameObject::Create(uint32_t iLayer, std::string strName, CGameObje
 {
     CGameObject* pInstance = nullptr;
 
-    if (FAILED(SYS_GAMEOBJECT->Create_Object(&pInstance, iLayer, strName)))
+    if (pInstance = SYS_GAMEOBJECT->Create_Object(iLayer, strName))
     {
-        return nullptr;
+        if (pParent)
+            pInstance->Set_Parent(pParent);
     }
-
-    if (pParent)
-        pInstance->Set_Parent(pParent);
-
     return pInstance;
 }
 

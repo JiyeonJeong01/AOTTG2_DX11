@@ -16,7 +16,7 @@ private:
 
 public:
     HRESULT         Initialize(uint32_t iMaxLayers = 32, uint32_t iPoolSize = 2048);
-    HRESULT         Create_Object(CGameObject** ppOutObj, Layer::LAYER_ID iLayer, const string& strName);
+    CGameObject*    Create_Object(Layer::LAYER_ID iLayer, const string& strName);
     void            Destroy_Object(CGameObject* pObj);
 
     void            Set_Layer(CGameObject* pObj, Layer::LAYER_ID iNewLayer);

@@ -2,6 +2,7 @@
 #include "Component_System.h"
 #include "GameObject.h"
 #include "Engine_Log.h"
+#include "CComponent_Proxy_Base.h"
 
 NS_BEGIN(Engine)
 
@@ -27,10 +28,8 @@ void CComponent_System::Register_Factory(COMPONENT_TYPE eComType)
 
             if (pBase)
             {
-                const TSpec* pSpec = SCAST(const TSpec*, pBase);
-
                 /* To Keep the lambda capture-free */
-                pSys->Initialize_From_Spec(eInType, proxy.Get_Handle(), *pSpec);
+                pSys->Initialize_From_Spec(eInType, proxy.Get_Handle(), pBase);
             }
         };
 }

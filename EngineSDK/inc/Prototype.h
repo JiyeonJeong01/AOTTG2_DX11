@@ -1,0 +1,62 @@
+﻿#pragma once
+
+#include "Base.h"
+#include "Component_Spec.h"
+
+NS_BEGIN(Engine)
+class CGameObject;
+NS_END
+
+NS_BEGIN(Engine)
+
+constexpr COMPONENT_MASK Component_Bit(COMPONENT_TYPE t) noexcept
+{
+    return 1u << SCAST(uint32_t, t);
+}
+
+class ENGINE_DLL CPrototype final : public CBase
+{
+public:
+    CPrototype() = default;
+    explicit CPrototype(PROTOTYPE_SPEC tSpec)
+        : m_tSpec(std::move(tSpec)) {
+    }
+
+public:
+    const PROTOTYPE_KEY& Get_Key() const noexcept
+    {
+        return m_tSpec.key;
+    }
+    _bool Is_Assembled() const noexcept
+    {
+        return m_bAssembled;
+    }
+    _bool Has(COMPONENT_TYPE t) const noexcept
+    {
+        return (m_componentMask & Component_Bit(t)) != 0;
+    }
+
+    HRESULT Assemble(PROTOTYPE_SPEC&& tSpec);
+    CGameObject* Clone() const;
+
+private:
+    HRESULT Apply_Spec_To_Instance(CGameObject* pInstance) const;
+    HRESULT Clone_Children(CGameObject* pParent) const;
+
+private:
+    PROTOTYPE_SPEC  m_tSpec{};
+    _bool           m_bAssembled = false;
+    COMPONENT_MASK  m_componentMask = 0;
+
+public :
+    static CPrototype* Create();
+};
+
+#define CHECK_CLONE_FAIL(condition, message)    \
+    if (condition) {                            \
+        _DEBUG_ERROR_BREAK(message);            \
+        Safe_Release(pInstance);                \
+        return nullptr;                         \
+    }
+
+NS_END

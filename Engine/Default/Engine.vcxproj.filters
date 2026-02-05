@@ -61,6 +61,15 @@
     <Filter Include="01. Utility\00. Core_System">
       <UniqueIdentifier>{e361a6a6-3262-4360-971b-fa48d02c36e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="00. System\09. Prototype">
+      <UniqueIdentifier>{fac3fdbe-dfc4-4512-8fb1-d393045e780a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. System\09. Prototype\Prototype">
+      <UniqueIdentifier>{934a5bfe-5b55-4d03-a917-895238234527}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\98. Spec">
+      <UniqueIdentifier>{1ab4117b-0910-4fd7-a7ef-399092d8ea14}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -180,6 +189,15 @@
     <ClInclude Include="..\Public\EventData.h">
       <Filter>00. System\11. Event</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Prototype.h">
+      <Filter>00. System\09. Prototype\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Component_Spec.h">
+      <Filter>01. Utility\04. Component\98. Spec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prototype_System.h">
+      <Filter>00. System\09. Prototype</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -253,6 +271,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\EventData.cpp">
       <Filter>00. System\11. Event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prototype.cpp">
+      <Filter>00. System\09. Prototype\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prototype_System.cpp">
+      <Filter>00. System\09. Prototype</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

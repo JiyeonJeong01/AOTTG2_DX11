@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Component_Processor_Impl.h"
 #include "TestComponentA.h"
 
@@ -7,14 +7,19 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CTestComponentASystem final : public CComponent_Processor_Impl<CTestComponentA>
 {
 public:
-	HRESULT Init() override;
+	HRESULT Initialize() override;
 	void Update(_float fDT) override;
 	void LateUpdate(_float fDT) override;
 
-	/* °¢ ÄÄÆ÷³ÍÆ®¿¡ ÇÊ¿äÇÑ ·ÎÁ÷µé */
+    HRESULT Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) override;
+
+	/* ê° ì»´í¬ë„ŒíŠ¸ì— í•„ìš”í•œ ë¡œì§ë“¤ */
 private :
 	void Process_A(_float fDT);
 
+public :
+    static CTestComponentASystem* Create();
+    void Free() override;
 };
 
 NS_END

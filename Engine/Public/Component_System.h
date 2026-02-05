@@ -38,7 +38,7 @@ public : /* CComponentGroup_Manager */
 	void					Free_Group(uint32_t iGroupID);
 
 private :
-    void Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, COMPONENT_SPEC_BASE* pBase);
+    void Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pBase);
 
 private :
 	vector<CComponent_Processor*>	m_pComProcessors{ };

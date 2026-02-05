@@ -53,12 +53,12 @@ HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
     return S_OK;
 }
 
-HRESULT CGameObject_System::Create_Object(CGameObject** ppOutObj, Layer::LAYER_ID iLayer, const string& strName)
+CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const string& strName)
 {
     if (m_freeIndices.empty())
     {
         _DEBUG_ERROR_BREAK("GameObject Pool is Full!");
-        return E_FAIL;
+        return nullptr;
     }
 
     if (iLayer == Layer::INVALID_LAYER || iLayer >= m_iLayerCount)
@@ -78,7 +78,7 @@ HRESULT CGameObject_System::Create_Object(CGameObject** ppOutObj, Layer::LAYER_I
     {
         _DEBUG_ERROR_BREAK("Create_Object failed: wrapper is null.");
         m_freeIndices.push(idx); /* Return allocated index */
-        return E_FAIL;
+        return nullptr;
     }
 
     /* Reset data */
@@ -93,10 +93,7 @@ HRESULT CGameObject_System::Create_Object(CGameObject** ppOutObj, Layer::LAYER_I
 
     Add_To_LayerBucket(pWrapper, iLayer);
 
-    if (ppOutObj)
-        *ppOutObj = pWrapper;
-
-    return S_OK;
+    return pWrapper;
 }
 
 void CGameObject_System::Destroy_Object(CGameObject* pObj)

@@ -10,13 +10,13 @@ protected :
 	~CComponent_Processor() override = default;
 
 public :
-	virtual HRESULT	Init() { return S_OK; };
+	virtual HRESULT	Initialize() { return S_OK; };
 	virtual void	Update(_float fDT) { };
 	virtual void	LateUpdate(_float fDT) { };
 
 	virtual COMPONENT_HANDLE Create_Component_Data() { return COMPONENT_HANDLE{}; }
 	virtual void Remove_Component(COMPONENT_HANDLE hHandle) {};
-    virtual HRESULT Initialize_From_Spec(COMPONENT_HANDLE handle, COMPONENT_SPEC_BASE* pBase) { return S_OK; };
+    virtual HRESULT Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) { return S_OK; };
 
 protected :
 	ID3D11Device*			m_pDevice = { nullptr };

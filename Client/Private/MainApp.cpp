@@ -6,6 +6,8 @@
 #include "TestComponentA.h"
 #include "TestComponentB.h"
 #include "Tester.h"
+#include "Prototype_System.h"
+#include "Component_Spec.h"
 /* ============================ */
 
 NS_BEGIN(Client)

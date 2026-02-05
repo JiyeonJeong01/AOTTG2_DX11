@@ -1,6 +1,6 @@
 ﻿#include "TestComponentBSystem.h"
 
-HRESULT CTestComponentBSystem::Init()
+HRESULT CTestComponentBSystem::Initialize()
 {
     return S_OK;
 }

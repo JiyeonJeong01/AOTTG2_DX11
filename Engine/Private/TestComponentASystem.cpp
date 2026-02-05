@@ -1,12 +1,31 @@
 ﻿#include "TestComponentASystem.h"
+#include "Component_System.h"
 
-HRESULT CTestComponentASystem::Init()
+#include "Component_Spec.h"
+
+HRESULT CTestComponentASystem::Initialize()
 {
+    SYS_COMPONENT->Register_Factory<CTestComponentA, TEST_A_SPEC>(COMPONENT_TYPE::TEST_A);
+
     return S_OK;
 }
 
 void CTestComponentASystem::LateUpdate(_float fDT)
 {
+}
+
+HRESULT CTestComponentASystem::Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
+{
+    TEST_DATA_A* pData = m_Pool.Get_Data_By_Handle(handle);
+
+    for (int i = 0; i < 4; ++i)
+    {
+        pData->vData[i] = SCAST(const TEST_A_SPEC*, pSpec)->vData[i];
+    }
+
+    pData->fAcc = 0.f;
+
+    return S_OK;
 }
 
 void CTestComponentASystem::Process_A(_float fDT)
@@ -28,6 +47,22 @@ void CTestComponentASystem::Process_A(_float fDT)
             }
         }
     }
+}
+
+CTestComponentASystem* CTestComponentASystem::Create()
+{
+    CTestComponentASystem* pInstance = new CTestComponentASystem;
+    if(FAILED(pInstance->Initialize()))
+    {
+        _DEBUG_ERROR_BREAK("Create instance failed");
+        Safe_Release(pInstance);
+    }
+    return pInstance;
+}
+
+void CTestComponentASystem::Free()
+{
+    /* TODO : implement free logic */
 }
 
 void CTestComponentASystem::Update(_float fDT)

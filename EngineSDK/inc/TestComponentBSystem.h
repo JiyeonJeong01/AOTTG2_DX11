@@ -7,7 +7,7 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CTestComponentBSystem final : public CComponent_Processor_Impl<CTestComponentB>
 {
 public:
-	HRESULT Init() override;
+	HRESULT Initialize() override;
 	void Update(_float fDT) override;
 	void LateUpdate(_float fDT) override;
 

@@ -13,7 +13,7 @@ HRESULT CComponent_System::Initialize()
 {
 	m_pComGroupMgr = CComponentGroup_Manager::Create();
 
-	CTestComponentASystem* pASystem = new CTestComponentASystem();
+    CTestComponentASystem* pASystem = CTestComponentASystem::Create();
 	CTestComponentBSystem* pBSystem = new CTestComponentBSystem();
 	m_pComProcessors.push_back(pASystem);
 	m_pComProcessors.push_back(pBSystem);
@@ -64,7 +64,7 @@ void CComponent_System::Create_From_Spec(COMPONENT_TYPE eComType, CGameObject* p
     fn(SYS_COMPONENT, eComType, pObj, pSpec);
 }
 
-void CComponent_System::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, COMPONENT_SPEC_BASE* pBase)
+void CComponent_System::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pBase)
 {
     if (SCAST(_uint, eComType) >= SCAST(_uint, COMPONENT_TYPE::END))
     {
