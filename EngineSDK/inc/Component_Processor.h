@@ -1,4 +1,4 @@
-  #pragma once
+ï»¿  #pragma once
 #include "Base.h"
 
 NS_BEGIN(Engine)
@@ -16,13 +16,14 @@ public :
 
 	virtual COMPONENT_HANDLE Create_Component_Data() { return COMPONENT_HANDLE{}; }
 	virtual void Remove_Component(COMPONENT_HANDLE hHandle) {};
+    virtual HRESULT Initialize_From_Spec(COMPONENT_HANDLE handle, COMPONENT_SPEC_BASE* pBase) { return S_OK; };
 
 protected :
 	ID3D11Device*			m_pDevice = { nullptr };
 	ID3D11DeviceContext*	m_pContext = { nullptr };
 
-	/* TODO È®Àå */
-	/* DirtyList È¤Àº Dirty Flag¸¦ »ç¿ëÇÏ°Ô ÇÒ °ÍÀÎÁö °í¹ÎÇØº¸ÀÚ. */
+	/* TODO í™•ì¥ */
+	/* DirtyList í˜¹ì€ Dirty Flagë¥¼ ì‚¬ìš©í•˜ê²Œ í•  ê²ƒì¸ì§€ ê³ ë¯¼í•´ë³´ì. */
 };
 
 NS_END

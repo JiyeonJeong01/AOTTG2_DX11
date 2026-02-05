@@ -214,6 +214,10 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Timer_System.cpp" />
     <ClCompile Include="..\Private\Transform.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Public\Component_System.inl" />
+    <None Include="..\Public\GameObject.inl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

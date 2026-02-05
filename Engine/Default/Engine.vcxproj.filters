@@ -255,4 +255,12 @@
       <Filter>00. System\11. Event</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Public\GameObject.inl">
+      <Filter>01. Utility\03. Object</Filter>
+    </None>
+    <None Include="..\Public\Component_System.inl">
+      <Filter>01. Utility\04. Component\ComponentSystem</Filter>
+    </None>
+  </ItemGroup>
 </Project>

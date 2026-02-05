@@ -1,4 +1,4 @@
-#include "Component_System.h"
+﻿#include "Component_System.h"
 #include "Component_Processor.h"
 #include "ComponentGroup_Manager.h"
 
@@ -43,6 +43,39 @@ void CComponent_System::Render()
 COMPONENT_HANDLE CComponent_System::Create_Component_By_Type(COMPONENT_TYPE eComType)
 {
 	return m_pComProcessors[SCAST(_uint, eComType)]->Create_Component_Data();
+}
+
+void CComponent_System::Create_From_Spec(COMPONENT_TYPE eComType, CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec)
+{
+    if (!pObj || !pSpec)
+    {
+        _DEBUG_ERROR_BREAK("Create from spec failed: parameter is nullptr.");
+        return;
+    }
+
+    const COMPONENT_TYPE t = pSpec->Get_Type();
+    auto fn = m_factory[SCAST(_uint, t)];
+    if (!fn)
+    {
+        _DEBUG_ERROR_BREAK("Factory not registered for this component type.");
+        return;
+    }
+
+    fn(SYS_COMPONENT, eComType, pObj, pSpec);
+}
+
+void CComponent_System::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, COMPONENT_SPEC_BASE* pBase)
+{
+    if (SCAST(_uint, eComType) >= SCAST(_uint, COMPONENT_TYPE::END))
+    {
+        _DEBUG_ERROR_BREAK("Invalid component type");
+        return;
+    }
+
+    if (FAILED(m_pComProcessors[SCAST(_uint, eComType)]->Initialize_From_Spec(handle, pBase)))
+    {
+        _DEBUG_ERROR_BREAK("Failed initialize with spec");
+    }
 }
 
 uint32_t CComponent_System::Promote(COMPONENT_HANDLE hOld, COMPONENT_HANDLE hNew)
