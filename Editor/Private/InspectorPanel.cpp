@@ -2,6 +2,7 @@
 #include "HierarchyPanel.h"
 #include "GameObject.h"
 #include "Engine_Log.h"
+#include "Asset_Registry.h"
 
 NS_BEGIN(Editor)
 
@@ -229,7 +230,7 @@ void CInspectorPanel::Draw_Asset()
     ImGui::Separator();
 
     ImGui::Text("Name: %s", name.c_str());
-    ImGui::Text("Type: %s", CProjectPanel::ASSET_TYPE_To_Label(m_selectedAsset.type)); // 공용 함수 만들면 좋음
+    ImGui::Text("Type: %s", CAsset_Registry::AssetType_ToStr(m_selectedAsset.type)); // 공용 함수 만들면 좋음
     ImGui::Text("Path: %s", path.c_str());
     ImGui::Text("Directory: %s", m_selectedAsset.isDirectory ? "true" : "false");
 }

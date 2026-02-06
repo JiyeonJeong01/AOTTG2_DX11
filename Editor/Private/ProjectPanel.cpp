@@ -20,7 +20,7 @@ ASSET_SELECTION CProjectPanel::Build_Selection(const std::filesystem::path& p) c
 
     std::error_code ec;
     sel.isDirectory = std::filesystem::is_directory(p, ec);
-    sel.type = Resolve_Asset_Type(p, sel.isDirectory);
+    sel.type = Engine::CAsset_Registry::Detect_Type(p, sel.isDirectory);
     return sel;
 }
 
@@ -319,7 +319,7 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
         std::filesystem::equivalent(m_selectedPath, tAsset.path));
 
     /* row label */
-    const _char* szAssetType = ASSET_TYPE_To_Label(tAsset.type);
+    const _char* szAssetType = Engine::CAsset_Registry::AssetType_ToStr(tAsset.type);
 
     /* Display asset type */
     ImGui::BeginGroup();
@@ -357,8 +357,7 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
         }
     }
 
-
-    if (!tAsset.isDirectory) // 폴더 드래그는 일단 보류 (원하면 later)
+    if (!tAsset.isDirectory)
     {
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
         {
@@ -531,7 +530,7 @@ void CProjectPanel::Refresh_File_List()
         it.path = entry.path();
         it.name = Editor_Util::To_UTF8(entry.path().filename());
         it.isDirectory = true;
-        it.type = Resolve_Asset_Type(it.path, true);
+        it.type = Engine::CAsset_Registry::GetInstance()->Detect_Type(it.path, true);
         m_Assets.push_back(std::move(it));
     }
 
@@ -545,7 +544,7 @@ void CProjectPanel::Refresh_File_List()
         it.path = entry.path();
         it.name = Editor_Util::To_UTF8(entry.path().filename());
         it.isDirectory = false;
-        it.type = Resolve_Asset_Type(it.path, false);
+        it.type = Engine::CAsset_Registry::GetInstance()->Detect_Type(it.path, false);
         m_Assets.push_back(std::move(it));
     }
 
@@ -558,46 +557,6 @@ void CProjectPanel::Refresh_File_List()
 _bool CProjectPanel::Is_Visible_By_Filter(const std::string& name, const std::string& filter)
 {
     return String_IContains(name, filter);
-}
-
-ASSET_TYPE CProjectPanel::Resolve_Asset_Type(const std::filesystem::path& path, bool isDirectory)
-{
-    if (isDirectory)
-        return ASSET_TYPE::FOLDER;
-
-    auto ext = path.extension().string();
-    for (auto& c : ext)
-        c = (_char)tolower(c);
-
-    if (ext == ".png" || ext == ".dds" || ext == ".jpg" || ext == ".jpeg" || ext == ".tga")
-        return ASSET_TYPE::TEXTURE;
-    if (ext == ".fbx" || ext == ".obj" || ext == ".gltf" || ext == ".glb")
-        return ASSET_TYPE::MESH;
-    if (ext == ".mat")
-        return ASSET_TYPE::MATERIAL;
-    if (ext == ".scene")
-        return ASSET_TYPE::SCENE;
-    if (ext == ".prefab")
-        return ASSET_TYPE::PREFAB;
-    if (ext == ".h" || ext == ".cpp" || ext == ".hlsl" || ext == ".cs")
-        return ASSET_TYPE::SCRIPT;
-
-    return ASSET_TYPE::UNKNOWN;
-}
-
-const _char* CProjectPanel::ASSET_TYPE_To_Label(ASSET_TYPE t)
-{
-    switch (t)
-    {
-    case ASSET_TYPE::FOLDER:    return "FOLDER";
-    case ASSET_TYPE::TEXTURE:   return "TEXTURE";
-    case ASSET_TYPE::MESH:      return "MESH";
-    case ASSET_TYPE::MATERIAL:  return "MATERIAL";
-    case ASSET_TYPE::SCENE:     return "SCENE";
-    case ASSET_TYPE::PREFAB:    return "PREFAB";
-    case ASSET_TYPE::SCRIPT:    return "SCRIPT";
-    default:                    return "UNKNOWN";
-    }
 }
 
 _bool CProjectPanel::Is_Folder_Open(const std::filesystem::path& path) const

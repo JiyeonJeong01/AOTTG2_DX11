@@ -8,12 +8,6 @@ NS_BEGIN(Engine)
 
 IMPLEMENT_SINGLETON(CAsset_Registry)
 
-static const char* AssetType_ToStr(ASSET_TYPE t)
-{
-    const std::string_view typeView = magic_enum::enum_name(t);
-    return typeView.data();
-}
-
 HRESULT CAsset_Registry::Initialize(const std::filesystem::path& assetRoot)
 {
     m_assetRoot = Normalize_Path(assetRoot);
@@ -165,6 +159,13 @@ const ASSET_TYPE CAsset_Registry::Detect_Type(const std::filesystem::path& path,
 
 }
 
+const _char* CAsset_Registry::AssetType_ToStr(ASSET_TYPE eType)
+{
+    const std::string_view typeView = magic_enum::enum_name(eType);
+    return typeView.data();
+}
+
+/* Normalize different path strings pointing to the same file into a single, standard format. */
 std::filesystem::path CAsset_Registry::Normalize_Path(const std::filesystem::path& p)
 {
     std::error_code ec;

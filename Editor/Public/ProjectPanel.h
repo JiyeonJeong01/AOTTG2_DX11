@@ -73,8 +73,6 @@ private:
 public :
     /* Helpers */
     static _bool        Is_Visible_By_Filter(const std::string& name, const std::string& filter);
-    static ASSET_TYPE   Resolve_Asset_Type(const std::filesystem::path& path, _bool isDirectory);
-    static const _char*  ASSET_TYPE_To_Label(ASSET_TYPE t);
 
 private:
     /* Root */

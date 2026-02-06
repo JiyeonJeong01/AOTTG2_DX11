@@ -37,6 +37,7 @@ public :
 
     /* path -> ASSET_TYPE */
     static const ASSET_TYPE Detect_Type(const std::filesystem::path& path, _bool bDir);
+    static const _char* AssetType_ToStr(ASSET_TYPE eType);
 
 private :
     static std::filesystem::path Normalize_Path(const std::filesystem::path& p);
