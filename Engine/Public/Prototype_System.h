@@ -27,10 +27,6 @@ public:
 public:
     HRESULT Create_Prototype(const ASSET_GUID& tGUID, PROTOTYPE_SPEC&& spec);
 
-    /* TODO ::::::::::::: 지워 지워ㅣ주어지이날어니ㅏㅇ러ㅣㄴ아러니아러ㅣㄴ아ㅓㄹ */
-    HRESULT Create_Prototype_For_Test(const ASSET_GUID& tGUID, const string key, Layer::LAYER_ID layer, std::string name, COMPONENT_SPEC_BUNDLE&& bundle);
-
-
     const CPrototype* Find(const ASSET_GUID& tGUID) const;
     CGameObject* Clone(const ASSET_GUID& tGUID) const;
 

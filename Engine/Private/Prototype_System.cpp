@@ -10,6 +10,7 @@ void CPrototype_System::Clear()
     m_Prototypes.clear();
 }
 
+/* Create a master prototype using the asset GUID and register it to the system for future cloning */
 HRESULT CPrototype_System::Create_Prototype(const ASSET_GUID& tGUID, PROTOTYPE_SPEC&& spec)
 {
     if (!tGUID.Is_Valid())
@@ -27,15 +28,6 @@ HRESULT CPrototype_System::Create_Prototype(const ASSET_GUID& tGUID, PROTOTYPE_S
 
     m_Prototypes.emplace(tGUID, std::move(pProto));
     return S_OK;
-}
-
-HRESULT CPrototype_System::Create_Prototype_For_Test(const ASSET_GUID& tGUID, const string key, Layer::LAYER_ID layer, std::string name, COMPONENT_SPEC_BUNDLE&& bundle)
-{
-    PROTOTYPE_SPEC spec{};
-    spec.layer = layer;
-    spec.strName = std::move(name);
-    spec.tComponentBundle = std::move(bundle);
-    return Create_Prototype(tGUID, std::move(spec));
 }
 
 const CPrototype* CPrototype_System::Find(const ASSET_GUID& tGUID) const

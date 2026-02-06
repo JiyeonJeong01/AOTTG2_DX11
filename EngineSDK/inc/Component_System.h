@@ -23,7 +23,7 @@ public :
 
 public : /* Component Processor */
 	COMPONENT_HANDLE Create_Component_By_Type(COMPONENT_TYPE eComType);
-    void Create_From_Spec(COMPONENT_TYPE eComType, CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec);
+    void Create_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec);
 
 	template <typename TProxy>
 	TProxy Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle);

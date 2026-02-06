@@ -45,7 +45,7 @@ COMPONENT_HANDLE CComponent_System::Create_Component_By_Type(COMPONENT_TYPE eCom
 	return m_pComProcessors[SCAST(_uint, eComType)]->Create_Component_Data();
 }
 
-void CComponent_System::Create_From_Spec(COMPONENT_TYPE eComType, CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec)
+void CComponent_System::Create_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec)
 {
     if (!pObj || !pSpec)
     {
@@ -53,15 +53,15 @@ void CComponent_System::Create_From_Spec(COMPONENT_TYPE eComType, CGameObject* p
         return;
     }
 
-    const COMPONENT_TYPE t = pSpec->Get_Type();
-    auto fn = m_factory[SCAST(_uint, t)];
+    const COMPONENT_TYPE eType = pSpec->Get_Type();
+    auto fn = m_factory[SCAST(_uint, eType)];
     if (!fn)
     {
         _DEBUG_ERROR_BREAK("Factory not registered for this component type.");
         return;
     }
 
-    fn(SYS_COMPONENT, eComType, pObj, pSpec);
+    fn(SYS_COMPONENT, eType, pObj, pSpec);
 }
 
 void CComponent_System::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pBase)

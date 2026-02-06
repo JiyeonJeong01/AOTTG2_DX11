@@ -72,6 +72,7 @@ private:
     static constexpr const char* PANEL_INSPECTOR = "Inspector";
     static constexpr const char* PANEL_CONSOLE = "Console";
     static constexpr const char* PANEL_PROJECT = "Project";
+    static constexpr const char* PANEL_PROFILE = "Profile";
 
 public:
     static CMainPanel* Create(const std::string& strPanelName);

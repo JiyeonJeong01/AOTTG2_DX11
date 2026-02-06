@@ -46,6 +46,9 @@ public:
     void                        Set_Active(_bool bActive);
     _bool                       Get_Active() const;
 
+    void                        Set_ComponentMask(Component::COMPONENT_MASK mask);
+    Component::COMPONENT_MASK   Get_ComponentMask() const;
+
 private:
     void Add_Child_Inner(GAMEOBJECT_HANDLE hChild);
     void Remove_Child_Inner(GAMEOBJECT_HANDLE hChild);

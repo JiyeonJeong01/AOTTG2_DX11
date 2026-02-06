@@ -34,15 +34,21 @@ namespace Engine
 
     namespace Component
     {
-        static constexpr uint32_t INDEX_MASK = 0x000FFFFF;      // 하위 20비트 : 페이지 인덱스
-        static constexpr uint32_t VERSION_MASK = 0xFFF00000;    // 상위 12비트 : 
-        static constexpr uint32_t GROUP_FLAG = 0x80000000;      // MSB 1비트 : 멀티 여부
-        static constexpr uint32_t DATA_MASK = 0x7FFFFFFF;       // 나머지 31비트 : 데이터 추출
-        static constexpr uint32_t MAX_VERSION = 0x000007FF;     // 안전한 최대 버전
-        static constexpr uint32_t VERSION_SHIFT = 20;
-        static constexpr uint32_t INVALID_COMPONENT_SLOT = 0;
-        static constexpr uint32_t FIRST_COMPONENT = 0;
+        using  COMPONENT_ID = uint32_t;
+        static constexpr COMPONENT_ID INDEX_MASK    = 0x000FFFFF;      // 하위 20비트 : 페이지 인덱스
+        static constexpr COMPONENT_ID VERSION_MASK  = 0x7FF00000;    // 중간 11비트 (0x80000000 제외)
+        static constexpr COMPONENT_ID GROUP_FLAG    = 0x80000000;      // MSB 1비트 : 멀티 여부
+        static constexpr COMPONENT_ID DATA_MASK     = 0x7FFFFFFF;       // 나머지 31비트 : 데이터 추출
+        static constexpr COMPONENT_ID MAX_VERSION   = 0x000007FF;     // 안전한 최대 버전
+        static constexpr uint32_t VERSION_SHIFT     = 20;
+        static constexpr COMPONENT_ID INVALID_COMPONENT_SLOT = 0;
 
+        using COMPONENT_MASK = uint32_t;
+
+        constexpr COMPONENT_MASK Component_Bit(COMPONENT_TYPE t) noexcept
+        {
+            return 1u << SCAST(uint32_t, t);
+        }
     }
 
     namespace Layer

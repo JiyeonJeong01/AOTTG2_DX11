@@ -19,7 +19,7 @@ HRESULT CPrototype::Assemble(PROTOTYPE_SPEC && tSpec)
 
         const uint32_t iIdx = SCAST(uint32_t, eComType);
         if (iIdx < SCAST(uint32_t, COMPONENT_MAX))
-            m_componentMask |= Component_Bit(eComType);
+            m_componentMask |= Component::Component_Bit(eComType);
     }
 
     m_bAssembled = true;
@@ -31,10 +31,10 @@ CGameObject* CPrototype::Clone() const
     /* Create instance */
     CGameObject* pInstance = SYS_GAMEOBJECT->Create_Object(m_tSpec.layer, m_tSpec.strName);
 
-    CHECK_CLONE_FAIL(!pInstance, "CPrototype clone failed : instance is nullptr.");
-    CHECK_CLONE_FAIL(!pInstance->IsValid(), "CPrototype clone failed : instance is not valid.");
-    CHECK_CLONE_FAIL(FAILED(Apply_Spec_To_Instance(pInstance)), "CPrototype clone failed : can't apply spec to instance.");
-    CHECK_CLONE_FAIL(FAILED(Clone_Children(pInstance)), "CPrototype clone failed : child instantiation failed.");
+    CHECK_PROTO_CLONE_FAIL(!pInstance, "CPrototype clone failed : instance is nullptr.");
+    CHECK_PROTO_CLONE_FAIL(!pInstance->IsValid(), "CPrototype clone failed : instance is not valid.");
+    CHECK_PROTO_CLONE_FAIL(FAILED(Apply_Spec_To_Instance(pInstance)), "CPrototype clone failed : can't apply spec to instance.");
+    CHECK_PROTO_CLONE_FAIL(FAILED(Clone_Children(pInstance)), "CPrototype clone failed : child instantiation failed.");
 
     return pInstance;
 }
@@ -49,8 +49,10 @@ HRESULT CPrototype::Apply_Spec_To_Instance(CGameObject* pInstance) const
         if (!pSpec)
             return E_FAIL;
 
-        SYS_COMPONENT->Create_From_Spec(pSpec->Get_Type(), pInstance, pSpec);
+        SYS_COMPONENT->Create_From_Spec(pInstance, pSpec);
     }
+
+    pInstance->Set_ComponentMask(m_componentMask);
 
     return S_OK;
 }

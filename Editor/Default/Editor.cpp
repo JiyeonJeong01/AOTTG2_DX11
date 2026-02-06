@@ -9,6 +9,7 @@
 #include "Core_System.h"
 #include "GUI_System.h"
 #include "MainPanel.h"
+#include "ProfilerPanel.h"
 
 #define MAX_LOADSTRING 100
 
@@ -95,9 +96,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
         if (fTimeAcc >= FRAME_DT)
         {
-
+            Editor::CProfilerPanel::CScope _update("Engine::Update");
             pMainApp->Update(SYS_CORE->Compute_FrameDT());
 
+            Editor::CProfilerPanel::CScope _render("Engine::Render");
             pMainApp->Begin_Render();
             pMainApp->Render();
 

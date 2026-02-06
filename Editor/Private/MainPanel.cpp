@@ -5,6 +5,7 @@
 #include "HierarchyPanel.h"
 #include "InspectorPanel.h"
 #include "ProjectPanel.h"
+#include "ProfilerPanel.h"
 
 NS_BEGIN(Editor)
 
@@ -26,6 +27,9 @@ HRESULT CMainPanel::Initialize()
 
     CInspectorPanel* pInspector = CInspectorPanel::Create(PANEL_INSPECTOR, pHierarchy, pProject);
     Add_Panel(pInspector);
+
+    CProfilerPanel* pProfile = CProfilerPanel::Create(PANEL_PROFILE);
+    Add_Panel(pProfile);
 
     const std::filesystem::path assetRootPath = ProjectConfig::PATH + ProjectConfig::ROOT;
 

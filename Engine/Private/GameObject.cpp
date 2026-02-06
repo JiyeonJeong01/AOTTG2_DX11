@@ -167,6 +167,22 @@ _bool CGameObject::Get_Active() const
     return SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf).bActive;
 }
 
+void CGameObject::Set_ComponentMask(Component::COMPONENT_MASK mask)
+{
+    if (!IsValid())
+        return ;
+
+    SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf).componentMask = mask;
+}
+
+Component::COMPONENT_MASK CGameObject::Get_ComponentMask() const
+{
+    if (!IsValid())
+        return 0;
+
+    return SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf).componentMask;
+}
+
 CGameObject* CGameObject::Create(uint32_t iLayer, std::string strName, CGameObject* pParent)
 {
     CGameObject* pInstance = nullptr;

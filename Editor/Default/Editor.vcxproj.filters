@@ -31,14 +31,17 @@
     <Filter Include="리소스 파일">
       <UniqueIdentifier>{279d7aa6-4d3e-44b7-a1d2-ae709babf599}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Editor Panel\MainPanel">
-      <UniqueIdentifier>{1c9f5ee4-e6f3-47c6-9a9c-8884fd4db20b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Editor Panel\_Base">
       <UniqueIdentifier>{65cf5c7a-b5f1-4784-8ce2-9bd01e6ccff7}</UniqueIdentifier>
     </Filter>
     <Filter Include="01. Editor Panel\Project">
       <UniqueIdentifier>{b54a6712-909a-4424-96a3-a328da2c41f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Editor Panel\Profiler">
+      <UniqueIdentifier>{96f2a344-55e8-403d-b4ac-1e0d2b3d3faf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Editor Panel\Main">
+      <UniqueIdentifier>{1c9f5ee4-e6f3-47c6-9a9c-8884fd4db20b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -82,10 +85,13 @@
       <Filter>01. Editor Panel\_Base</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MainPanel.cpp">
-      <Filter>01. Editor Panel\MainPanel</Filter>
+      <Filter>01. Editor Panel\Main</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ProjectPanel.cpp">
       <Filter>01. Editor Panel\Project</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ProfilerPanel.cpp">
+      <Filter>01. Editor Panel\Profiler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -144,10 +150,13 @@
       <Filter>01. Editor Panel\_Base</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MainPanel.h">
-      <Filter>01. Editor Panel\MainPanel</Filter>
+      <Filter>01. Editor Panel\Main</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ProjectPanel.h">
       <Filter>01. Editor Panel\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ProfilerPanel.h">
+      <Filter>01. Editor Panel\Profiler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

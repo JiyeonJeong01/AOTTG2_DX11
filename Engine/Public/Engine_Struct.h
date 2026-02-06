@@ -94,6 +94,7 @@ namespace  Engine
 
         /* Components */
         uint32_t iComponentSlots[COMPONENT_MAX] = { 0, };
+        Component::COMPONENT_MASK   componentMask = 0;
 
         /* Hierarchy */
         GAMEOBJECT_HANDLE           hParent{};
@@ -106,6 +107,7 @@ namespace  Engine
             layer = Layer::INVALID_LAYER;
             iIndexInLayer = 0;
             std::fill(std::begin(iComponentSlots), std::end(iComponentSlots), 0);
+            componentMask = 0;
             hParent = {};
             hChildren.clear();
         }
@@ -139,8 +141,6 @@ namespace  Engine
 
     } COMPONENT_SPEC_BUNDLE;
 
-    using COMPONENT_MASK = uint32_t;
-
     typedef struct ENGINE_DLL tagPrototypeSpec
     {
         std::string  strName;
@@ -151,8 +151,6 @@ namespace  Engine
 
         Layer::LAYER_ID layer = Layer::INVALID_LAYER;
     }PROTOTYPE_SPEC;
-
-
 
 }
 

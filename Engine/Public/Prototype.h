@@ -9,11 +9,6 @@ NS_END
 
 NS_BEGIN(Engine)
 
-constexpr COMPONENT_MASK Component_Bit(COMPONENT_TYPE t) noexcept
-{
-    return 1u << SCAST(uint32_t, t);
-}
-
 class ENGINE_DLL CPrototype final : public CBase
 {
 public:
@@ -33,7 +28,7 @@ public:
     }
     _bool Has(COMPONENT_TYPE t) const noexcept
     {
-        return (m_componentMask & Component_Bit(t)) != 0;
+        return (m_componentMask & Component::Component_Bit(t)) != 0;
     }
 
     HRESULT Assemble(PROTOTYPE_SPEC&& tSpec);
@@ -46,13 +41,13 @@ private:
 private:
     PROTOTYPE_SPEC  m_tSpec{};
     _bool           m_bAssembled = false;
-    COMPONENT_MASK  m_componentMask = 0;
+    Component::COMPONENT_MASK  m_componentMask = 0;
 
 public :
     static CPrototype* Create();
 };
 
-#define CHECK_CLONE_FAIL(condition, message)    \
+#define CHECK_PROTO_CLONE_FAIL(condition, message)    \
     if (condition) {                            \
         _DEBUG_ERROR_BREAK(message);            \
         Safe_Release(pInstance);                \
