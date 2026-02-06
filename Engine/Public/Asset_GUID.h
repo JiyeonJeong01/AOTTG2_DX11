@@ -97,7 +97,6 @@ typedef struct tagAssetGuidHasher
     }
 }ASSET_GUID_HASHER;
 
-
 typedef struct ENGINE_DLL tagAssetRecord
 {
     ASSET_GUID              tGUID{};

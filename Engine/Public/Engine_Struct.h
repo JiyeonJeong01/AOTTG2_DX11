@@ -43,7 +43,6 @@ namespace  Engine
         vector<COMPONENT_HANDLE>    tExtras;
     }COMPONENT_GROUP;
 
-    /* TODO : ===============================================================================*/
     typedef struct ENGINE_DLL tagLabel
     {
     private:
@@ -141,11 +140,9 @@ namespace  Engine
     } COMPONENT_SPEC_BUNDLE;
 
     using COMPONENT_MASK = uint32_t;
-    using PROTOTYPE_KEY = std::string;
 
     typedef struct ENGINE_DLL tagPrototypeSpec
     {
-        PROTOTYPE_KEY key;
         std::string  strName;
 
         COMPONENT_SPEC_BUNDLE tComponentBundle;

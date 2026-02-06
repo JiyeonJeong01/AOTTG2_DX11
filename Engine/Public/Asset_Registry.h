@@ -5,6 +5,12 @@
 
 NS_BEGIN(Engine)
 
+/**
+ * @class CAsset_Registry
+ * @brief Manages a comprehensive database of all raw files (Textures, Meshes, JSON, etc.) within the project.
+ * * This class handles ASSET_RECORD entries. During engine initialization, it scans the entire
+ * project directory to establish a mapping between unique ASSET_GUIDs and their respective file paths.
+ */
 class ENGINE_DLL CAsset_Registry : public CBase
 {
     DECLARE_SINGLETON(CAsset_Registry)

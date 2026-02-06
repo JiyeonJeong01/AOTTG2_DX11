@@ -23,9 +23,9 @@ public:
     }
 
 public:
-    const PROTOTYPE_KEY& Get_Key() const noexcept
+    const std::string& Get_Name() const noexcept
     {
-        return m_tSpec.key;
+        return m_tSpec.strName;
     }
     _bool Is_Assembled() const noexcept
     {

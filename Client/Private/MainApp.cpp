@@ -8,6 +8,8 @@
 #include "Tester.h"
 #include "Prototype_System.h"
 #include "Component_Spec.h"
+
+static ASSET_GUID testGUID{};
 /* ============================ */
 
 NS_BEGIN(Client)
@@ -39,8 +41,8 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 
     // Somewhere test code
     PROTOTYPE_SPEC spec{};
+    spec.strName = "TEST_PROTO";
     spec.layer = Layer::DEFAULT_LAYER;
-    spec.strName = "TestObj";
 
     // bundle 채우기 (예시)
     COMPONENT_SPEC_BUNDLE bundle{};
@@ -53,7 +55,7 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
     bundle.components.push_back(pSpecA);
     spec.tComponentBundle = std::move(bundle);
 
-    HRESULT hr = CPrototype_System::GetInstance()->Create_Prototype("TestProto", std::move(spec));
+    HRESULT hr = CPrototype_System::GetInstance()->Create_Prototype(testGUID = ASSET_GUID::New_GUID(), std::move(spec));
     if (hr > 0)
         LOG_INFO("Prototype 등록됨");
 
@@ -88,7 +90,7 @@ void CMainApp::Update(_float fDT)
     //}
     if (GetAsyncKeyState('A') & 0x8000)
     {
-        Engine::CGameObject* pObj = CPrototype_System::GetInstance()->Clone("TestProto");
+        Engine::CGameObject* pObj = CPrototype_System::GetInstance()->Clone(testGUID);
     }
 
 }
