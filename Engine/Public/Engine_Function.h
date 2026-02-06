@@ -1,4 +1,4 @@
-#ifndef Engine_Function_h__
+﻿#ifndef Engine_Function_h__
 #define Engine_Function_h__
 
 
@@ -50,6 +50,12 @@ namespace Engine
 
 		return iRefCnt;
 	}
+
+    template<typename T>
+    requires std::is_enum_v<T>
+    constexpr bool Has_Flag(T value, T flag) {
+        return (static_cast<std::underlying_type_t<T>>(value) & static_cast<std::underlying_type_t<T>>(flag)) != 0;
+    }
 
 }
 

@@ -12,7 +12,7 @@ TProxy CGameObject::Add_Component(COMPONENT_TYPE eComType)
     COMPONENT_HANDLE hNewHandle = SYS_COMPONENT->Create_Component_By_Type(eComType);
 
     /* A handle value of 0 means an invalid component */
-    if (hNewHandle.iHandle == ComponentConfig::INVALID_COMPONENT_SLOT)
+    if (hNewHandle.iHandle == Component::INVALID_COMPONENT_SLOT)
     {
         _DEBUG_ERROR_BREAK("INVALID COMPONENT HANDLE : GameObject can't add component!");
         return TProxy{};
@@ -24,17 +24,17 @@ TProxy CGameObject::Add_Component(COMPONENT_TYPE eComType)
     {
         iSlotData = hNewHandle.iHandle;
     }
-    else if ((iSlotData & ComponentConfig::GROUP_FLAG) == 0)
+    else if ((iSlotData & Component::GROUP_FLAG) == 0)
     {
         COMPONENT_HANDLE hOld;
-        hOld.iHandle = iSlotData & ComponentConfig::DATA_MASK;
+        hOld.iHandle = iSlotData & Component::DATA_MASK;
 
         const uint32_t iGroupID = SYS_COMPONENT->Promote(hOld, hNewHandle);
-        iSlotData = iGroupID | ComponentConfig::GROUP_FLAG;
+        iSlotData = iGroupID | Component::GROUP_FLAG;
     }
     else
     {
-        const uint32_t iGroupID = iSlotData & ComponentConfig::DATA_MASK;
+        const uint32_t iGroupID = iSlotData & Component::DATA_MASK;
         SYS_COMPONENT->Add_To_Group(iGroupID, hNewHandle);
     }
 
@@ -52,20 +52,20 @@ TProxy CGameObject::Get_Component(COMPONENT_TYPE eComType)
     const uint32_t iSlotData = data.iComponentSlots[SCAST(_uint, eComType)];
 
     /* A slot data value of 0 means the component does not exist */
-    if (iSlotData == ComponentConfig::INVALID_COMPONENT_SLOT)
+    if (iSlotData == Component::INVALID_COMPONENT_SLOT)
     {
         _DEBUG_ERROR_BREAK("INVALID COMPONENT HANDLE : GameObject can't get such component!");
         return TProxy{};
     }
 
     COMPONENT_HANDLE handle;
-    if ((iSlotData & ComponentConfig::GROUP_FLAG) == 0)
+    if ((iSlotData & Component::GROUP_FLAG) == 0)
     {
         handle.iHandle = iSlotData;
     }
     else
     {
-        handle = SYS_COMPONENT->Get_Group((iSlotData & ComponentConfig::DATA_MASK)).tPrimary;
+        handle = SYS_COMPONENT->Get_Group((iSlotData & Component::DATA_MASK)).tPrimary;
     }
 
     /* ====== TODO : 안정화시 바로 return ====== */
@@ -86,13 +86,13 @@ std::vector<TProxy> CGameObject::Get_Components(COMPONENT_TYPE eComType)
     const uint32_t iSlotData = data.iComponentSlots[SCAST(_uint, eComType)];
 
     /* A slot data value of 0 means the component does not exist */
-    if (iSlotData == ComponentConfig::INVALID_COMPONENT_SLOT)
+    if (iSlotData == Component::INVALID_COMPONENT_SLOT)
     {
         _DEBUG_INFO("GameObject can't get such component!");
         return std::vector<TProxy>{};
     }
 
-    if ((iSlotData & ComponentConfig::GROUP_FLAG) == 0)
+    if ((iSlotData & Component::GROUP_FLAG) == 0)
     {
         COMPONENT_HANDLE h;
         h.iHandle = iSlotData;
@@ -100,7 +100,7 @@ std::vector<TProxy> CGameObject::Get_Components(COMPONENT_TYPE eComType)
     }
     else
     {
-        const uint32_t iGroupID = iSlotData & ComponentConfig::DATA_MASK;
+        const uint32_t iGroupID = iSlotData & Component::DATA_MASK;
         const auto& tGroup = SYS_COMPONENT->Get_Group(iGroupID);
 
         std::vector<TProxy> components;

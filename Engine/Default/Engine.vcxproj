@@ -163,6 +163,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Component_System.h" />
     <ClInclude Include="..\Public\CLI_Sink.h" />
     <ClInclude Include="..\Public\Core_Struct.h" />
+    <ClInclude Include="..\Public\Engine_Config.h" />
     <ClInclude Include="..\Public\Engine_Define.h" />
     <ClInclude Include="..\Public\Engine_Enum.h" />
     <ClInclude Include="..\Public\Engine_Function.h" />

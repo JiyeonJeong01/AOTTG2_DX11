@@ -110,7 +110,7 @@ public:
 
         PAGE* pPage = m_pages[iPageIndex];
 
-        if (pPage->iVersion[iOffset] > ComponentConfig::MAX_VERSION) /* 2047, 11bit */
+        if (pPage->iVersion[iOffset] > Component::MAX_VERSION) /* 2047, 11bit */
             pPage->iVersion[iOffset] = 0;
 
         /* Construct object IN PLACE (placement new) */

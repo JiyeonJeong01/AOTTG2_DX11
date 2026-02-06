@@ -5,7 +5,6 @@
 #include "GameObject.h"
 
 
-
 HRESULT CPrototype::Assemble(PROTOTYPE_SPEC && tSpec)
 {
     m_tSpec = std::move(tSpec);

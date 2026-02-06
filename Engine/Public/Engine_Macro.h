@@ -76,6 +76,21 @@ namespace Engine
 				return iRefCnt;									\
 			}
 
+
+#define ENUM_BIT_OPERATORS(ENUM_NAME)                           \
+    constexpr ENUM_NAME operator|(ENUM_NAME a, ENUM_NAME b) {   \
+        return static_cast<ENUM_NAME>(                          \
+            static_cast<std::underlying_type_t<ENUM_NAME>>(a) | \
+            static_cast<std::underlying_type_t<ENUM_NAME>>(b)   \
+        );                                                      \
+    }                                                           \
+    constexpr ENUM_NAME operator&(ENUM_NAME a, ENUM_NAME b) {   \
+        return static_cast<ENUM_NAME>(                          \
+            static_cast<std::underlying_type_t<ENUM_NAME>>(a) & \
+            static_cast<std::underlying_type_t<ENUM_NAME>>(b)   \
+        );                                                      \
+    }                                                           \
+
 #define GET_INSTANCE(CLASSNAME) CLASSNAME::GetInstance()
 #define SYS_CORE				GET_INSTANCE(Engine::CCore_System)
 
