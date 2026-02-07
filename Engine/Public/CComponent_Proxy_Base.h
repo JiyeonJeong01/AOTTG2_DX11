@@ -42,8 +42,14 @@ public:
     {
         return m_hHandle;
     }
-    DataType* _Data();
-    const DataType* _Data() const;
+    DataType* _Data()
+    {
+        return m_pData;
+    }
+    const DataType* _Data() const
+    {
+        return m_pData;
+    }
 protected:
     COMPONENT_HANDLE            m_hHandle{};    /* Unique identifier for version-safe access */
     DATA_T*                     m_pData{};      /* Direct pointer to the raw data in the pool */

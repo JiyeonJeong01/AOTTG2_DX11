@@ -100,11 +100,6 @@ namespace Engine
     class TYPE_TIP {};
 
 
-    TYPE_TIP;
-
-
-
-
 
 
 }

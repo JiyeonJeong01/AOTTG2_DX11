@@ -21,7 +21,6 @@ void CTransform::Set_WorldXM(_fmatrix world)
     MathDX::Store(m_pData->World, world);
 }
 
-TYPE_TIP t;
 _vector CTransform::Get_StateXM(STATE axis) const
 {
     const _float4* fState = reinterpret_cast<const _float4*>(&m_pData->World.m[SCAST(_uint, axis)][0]);
@@ -34,6 +33,7 @@ void CTransform::Set_StateXM(STATE axis, _fvector vAxis)
 
 _float3 CTransform::Get_Scaled() const
 {
+    return _float3{};
 }
 
 void CTransform::Set_Identity()

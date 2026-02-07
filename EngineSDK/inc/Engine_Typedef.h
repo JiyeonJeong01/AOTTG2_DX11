@@ -24,13 +24,23 @@ namespace Engine
 	typedef		float						_float;
 	typedef		double						_double;
 
-	typedef		XMFLOAT2					_float2;
-	typedef		XMFLOAT3					_float3;
-	typedef		XMFLOAT4					_float4;
-	typedef		XMFLOAT4X4					_float4x4;
 
-	typedef		XMVECTOR					_vector;
-	typedef		XMMATRIX					_matrix;
+    /* 저장용 */
+    typedef		XMFLOAT2					_float2;
+    typedef		XMFLOAT3					_float3;
+    typedef		XMFLOAT4					_float4;
+    typedef		XMFLOAT4X4					_float4x4;
+
+    /*  SIMD 연산용 */
+    typedef		XMVECTOR					_vector;
+    typedef		FXMVECTOR					_fvector;
+    typedef		GXMVECTOR					_gvector;
+    typedef		HXMVECTOR					_hvector;
+    typedef		CXMVECTOR					_cvector;
+
+    typedef		XMMATRIX					_matrix;
+    typedef		FXMMATRIX					_fmatrix;
+    typedef		CXMMATRIX					_cmatrix;
 
     namespace Component
     {
@@ -64,6 +74,33 @@ namespace Engine
             return (layer == INVALID_LAYER) ? 0u : (1u << layer);
         }
     }
+
+
+    /* ------------------------------------------------ */
+    /*                      GUIDE                       */   
+    /* ------------------------------------------------ */
+
+    /**
+     * @brief =========== DirectX Math 타입 가이드 ===========
+     *
+     *   [저장용] XMFLOATn, XMFLOAT4X4 (멤버 변수용)
+     *
+     *   [연산용] XMVECTOR, XMMATRIX (지역 변수용)
+     *
+     *   [매개변수 전달 규칙]
+     * - FXMVECTOR : 1~3번째 벡터 인자
+     *
+     * - GXMVECTOR : 4번째 벡터 인자
+     *
+     * - HXMVECTOR : 5번째 벡터 인자
+     *
+     * - CXMVECTOR : 6번째 이후 또는 모든 행렬(XMMATRIX) 인자
+     *
+     */
+    class TYPE_TIP {};
+
+
+
 
 }
 
