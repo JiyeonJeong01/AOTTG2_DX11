@@ -182,6 +182,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\GUI_Sink.h" />
     <ClInclude Include="..\Public\ISink.h" />
     <ClInclude Include="..\Public\GameObject_System.h" />
+    <ClInclude Include="..\Public\Engine_MathDX.h" />
     <ClInclude Include="..\Public\Prototype.h" />
     <ClInclude Include="..\Public\Prototype_System.h" />
     <ClInclude Include="..\Public\Scene_Manager.h" />

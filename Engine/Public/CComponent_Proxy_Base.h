@@ -20,6 +20,7 @@ public:
     CComponent_Proxy_Base() = default;
     CComponent_Proxy_Base(COMPONENT_TYPE eType) : m_eComType(eType) {}
     CComponent_Proxy_Base(DATA_T* pData, COMPONENT_HANDLE handle) : m_hHandle(handle), m_pData(pData){}
+    CComponent_Proxy_Base(COMPONENT_TYPE eType, DATA_T* pData, COMPONENT_HANDLE handle) : m_eComType(eType), m_hHandle(handle), m_pData(pData){}
 
     void Initialize(COMPONENT_HANDLE hHandle, DATA_T* pData)
     {
@@ -41,7 +42,8 @@ public:
     {
         return m_hHandle;
     }
-
+    DataType* _Data();
+    const DataType* _Data() const;
 protected:
     COMPONENT_HANDLE            m_hHandle{};    /* Unique identifier for version-safe access */
     DATA_T*                     m_pData{};      /* Direct pointer to the raw data in the pool */

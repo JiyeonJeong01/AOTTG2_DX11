@@ -219,6 +219,9 @@
     <ClInclude Include="..\Public\Engine_Config.h">
       <Filter>99. Defines</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Engine_MathDX.h">
+      <Filter>98. Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
