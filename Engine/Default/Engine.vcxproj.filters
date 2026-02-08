@@ -76,6 +76,15 @@
     <Filter Include="98. Util">
       <UniqueIdentifier>{248d1eed-41d4-4a63-b1cd-2606bf3824eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\04. Component\01. Texture">
+      <UniqueIdentifier>{794fe99f-e9b8-431d-82ce-cf12d9080ede}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. System\08. Resource\Asset">
+      <UniqueIdentifier>{c8a20659-d5e7-4c35-a724-032e3670fc54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. System\08. Resource\Texture">
+      <UniqueIdentifier>{ded94e51-6740-4b6c-b1b3-666d51edf124}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -204,15 +213,6 @@
     <ClInclude Include="..\Public\Prototype_System.h">
       <Filter>00. System\09. Prototype</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Asset_GUID.h">
-      <Filter>00. System\08. Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Asset_Meta.h">
-      <Filter>00. System\08. Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Asset_Registry.h">
-      <Filter>00. System\08. Resource</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\String_Utils.h">
       <Filter>98. Util</Filter>
     </ClInclude>
@@ -221,6 +221,27 @@
     </ClInclude>
     <ClInclude Include="..\Public\Engine_MathDX.h">
       <Filter>98. Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Transform_Processor.h">
+      <Filter>01. Utility\04. Component\00. Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Texture.h">
+      <Filter>01. Utility\04. Component\01. Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Resource_System.h">
+      <Filter>00. System\08. Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Asset_GUID.h">
+      <Filter>00. System\08. Resource\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Asset_Meta.h">
+      <Filter>00. System\08. Resource\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Asset_Registry.h">
+      <Filter>00. System\08. Resource\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Texture_Storage.h">
+      <Filter>00. System\08. Resource\Texture</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -302,8 +323,20 @@
     <ClCompile Include="..\Private\Prototype_System.cpp">
       <Filter>00. System\09. Prototype</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Asset_Registry.cpp">
+    <ClCompile Include="..\Private\Transform_Processor.cpp">
+      <Filter>01. Utility\04. Component\00. Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Texture.cpp">
+      <Filter>01. Utility\04. Component\01. Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Resource_System.cpp">
       <Filter>00. System\08. Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Asset_Registry.cpp">
+      <Filter>00. System\08. Resource\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Texture_Storage.cpp">
+      <Filter>00. System\08. Resource\Texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,7 @@ struct TEST_DATA_A {
 class ENGINE_DLL CTestComponentA final : public CComponent_Proxy_Base<TEST_DATA_A, CTestComponentA>
 {
 public:
-    CTestComponentA() : CComponent_Proxy_Base(COMPONENT_TYPE::TEST_A) {}
+    CTestComponentA() : CComponent_Proxy_Base() { m_eComType = COMPONENT_TYPE::TEST_A;  }
     CTestComponentA(TEST_DATA_A* pData, COMPONENT_HANDLE handle) : CComponent_Proxy_Base(pData, handle) { m_eComType = COMPONENT_TYPE::TEST_A;  }
     ~CTestComponentA() override = default;
 

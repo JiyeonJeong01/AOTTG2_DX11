@@ -9,7 +9,7 @@ namespace Engine
 
 	enum class LAYER_TYPE		{ NONE, BACKGROUND, PLAYER, FLOOR, PARTICLE, MAX = 16, };
     enum class COMPONENT_TYPE : uint8_t { TEST_A, TEST_B,
-                                        TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, SPRITE_RENDERER, ANIMATOR, CAMERA, AUDIO_LISTENER, AUDIO_SOURCE, END };
+                                        TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, TEXTURE, ANIMATOR, CAMERA, AUDIO_LISTENER, AUDIO_SOURCE, END };
 	enum                                { COMPONENT_MAX = static_cast<uint32_t>(COMPONENT_TYPE::END) };
 
 	enum class RESOURCE_TYPE : uint8_t  { TEXTURE, MESH, MATERIAL, ANIMATION, AUDIO_CLIP, SHADER, PREFAB, END };
@@ -18,6 +18,7 @@ namespace Engine
 	enum class UI_TYPE : uint8_t        { BUTTON, IMAGE, PANEL, SLOT, END };
 
 	enum class STATE : uint8_t          { RIGHT, UP, LOOK, POSITION, END };
+    enum class SPACE : uint8_t          { WORLD, LOCAL, END };
 
     enum class EVENT_TYPE : uint8_t     { None, On_GameObject_Created, On_GameObject_Destroyed, On_Scene_Changed, On_Window_Resize };
 

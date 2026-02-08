@@ -26,6 +26,9 @@ using namespace DirectX;
 #include <fstream>
 #include <iostream>
 
+//#include "DirectXTK/DDSTextureLoader.h"
+//#include "DirectXTK/WICTextureLoader.h"
+
 using namespace std;
 
 #pragma warning(disable : 4251)

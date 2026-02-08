@@ -118,7 +118,7 @@ namespace  Engine
     static constexpr COMPONENT_TYPE TYPE = _TYPE;                       \
     COMPONENT_TYPE Get_Type() const noexcept override { return TYPE; }
 
-    struct COMPONENT_SPEC_BASE
+    struct ENGINE_DLL COMPONENT_SPEC_BASE
     {
         virtual ~COMPONENT_SPEC_BASE() = default;
         virtual COMPONENT_TYPE Get_Type() const noexcept = 0;

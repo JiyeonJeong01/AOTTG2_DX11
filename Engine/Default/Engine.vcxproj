@@ -120,6 +120,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../ThirdParty;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Client\Bin\"
@@ -144,7 +145,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -185,6 +186,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Engine_MathDX.h" />
     <ClInclude Include="..\Public\Prototype.h" />
     <ClInclude Include="..\Public\Prototype_System.h" />
+    <ClInclude Include="..\Public\Resource_System.h" />
     <ClInclude Include="..\Public\Scene_Manager.h" />
     <ClInclude Include="..\Public\Logger.h" />
     <ClInclude Include="..\Public\Scene.h" />
@@ -193,9 +195,12 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\TestComponentASystem.h" />
     <ClInclude Include="..\Public\TestComponentB.h" />
     <ClInclude Include="..\Public\TestComponentBSystem.h" />
+    <ClInclude Include="..\Public\Texture.h" />
+    <ClInclude Include="..\Public\Texture_Storage.h" />
     <ClInclude Include="..\Public\Timer.h" />
     <ClInclude Include="..\Public\Timer_System.h" />
     <ClInclude Include="..\Public\Transform.h" />
+    <ClInclude Include="..\Public\Transform_Processor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Asset_Registry.cpp" />
@@ -215,6 +220,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\GameObject_System.cpp" />
     <ClCompile Include="..\Private\Prototype.cpp" />
     <ClCompile Include="..\Private\Prototype_System.cpp" />
+    <ClCompile Include="..\Private\Resource_System.cpp" />
     <ClCompile Include="..\Private\Scene_Manager.cpp" />
     <ClCompile Include="..\Private\Logger.cpp" />
     <ClCompile Include="..\Private\Scene.cpp" />
@@ -222,9 +228,12 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\TestComponentASystem.cpp" />
     <ClCompile Include="..\Private\TestComponentB.cpp" />
     <ClCompile Include="..\Private\TestComponentBSystem.cpp" />
+    <ClCompile Include="..\Private\Texture.cpp" />
+    <ClCompile Include="..\Private\Texture_Storage.cpp" />
     <ClCompile Include="..\Private\Timer.cpp" />
     <ClCompile Include="..\Private\Timer_System.cpp" />
     <ClCompile Include="..\Private\Transform.cpp" />
+    <ClCompile Include="..\Private\Transform_Processor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Public\Component_System.inl" />
