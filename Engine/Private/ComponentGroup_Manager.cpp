@@ -4,6 +4,14 @@
 
 NS_BEGIN(Engine)
 
+CComponentGroup_Manager::CComponentGroup_Manager()
+{
+}
+
+CComponentGroup_Manager::~CComponentGroup_Manager()
+{
+}
+
 uint32_t CComponentGroup_Manager::Promote(COMPONENT_HANDLE hOld, COMPONENT_HANDLE hNew)
 {
 	uint32_t iGroupID = 0;
@@ -60,11 +68,6 @@ CComponentGroup_Manager* CComponentGroup_Manager::Create()
 	CComponentGroup_Manager* pInstance = new CComponentGroup_Manager();
 
 	return pInstance;
-}
-
-void CComponentGroup_Manager::Free()
-{
-	CBase::Free();
 }
 
 NS_END

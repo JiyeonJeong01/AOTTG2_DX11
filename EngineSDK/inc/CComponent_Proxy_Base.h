@@ -18,40 +18,37 @@ public:
     using ProcessorType = CComponent_Processor_Impl<TProxy_T>;
 
     CComponent_Proxy_Base() = default;
-    CComponent_Proxy_Base(COMPONENT_TYPE eType) : m_eComType(eType) {}
-    CComponent_Proxy_Base(DATA_T* pData, COMPONENT_HANDLE handle) : m_hHandle(handle), m_pData(pData){}
+    explicit CComponent_Proxy_Base(COMPONENT_TYPE eType) : m_eComType(eType) {}
+    CComponent_Proxy_Base(DataType* pData, COMPONENT_HANDLE handle) : m_hHandle(handle), m_pData(pData){}
 
-    void Initialize(COMPONENT_HANDLE hHandle, DATA_T* pData)
+    void Initialize(COMPONENT_HANDLE hHandle, DataType* pData) noexcept
     {
         m_hHandle = hHandle;
         m_pData = pData;
     }
 
-    bool Is_Valid() const
+    bool Is_Valid() const noexcept
     {
         return m_pData != nullptr && m_hHandle.Is_Valid();
     }
 
-    COMPONENT_TYPE  Get_ComponentType() const
+    COMPONENT_TYPE  Get_ComponentType() const noexcept
     {
 	    return m_eComType;
     }
 
-    COMPONENT_HANDLE    Get_Handle()
+    COMPONENT_HANDLE    Get_Handle() noexcept
     {
         return m_hHandle;
     }
-    DataType* _Data()
-    {
-        return m_pData;
-    }
-    const DataType* _Data() const
-    {
-        return m_pData;
-    }
+    DataType* _Data() { return m_pData; }
+    const DataType* _Data() const { return m_pData; }
+
+    DataType* operator->() { return m_pData; }
+    const DataType* operator->() const { return m_pData; }
 protected:
     COMPONENT_HANDLE            m_hHandle{};    /* Unique identifier for version-safe access */
-    DATA_T*                     m_pData{};      /* Direct pointer to the raw data in the pool */
+    DataType*                   m_pData{};      /* Direct pointer to the raw data in the pool */
     COMPONENT_TYPE              m_eComType = COMPONENT_TYPE::END;
 
 };

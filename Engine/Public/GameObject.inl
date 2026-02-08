@@ -8,8 +8,8 @@ TProxy CGameObject::Add_Component(COMPONENT_TYPE eComType)
     if (!IsValid())
         return TProxy{};
 
-    GAMEOBJECT_DATA& data = SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf);
-    COMPONENT_HANDLE hNewHandle = SYS_COMPONENT->Create_Component_By_Type(eComType);
+    GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
+    COMPONENT_HANDLE hNewHandle = SYS_COMPONENT.Create_Component_By_Type(eComType);
 
     /* A handle value of 0 means an invalid component */
     if (hNewHandle.iHandle == Component::INVALID_COMPONENT_SLOT)
@@ -29,16 +29,16 @@ TProxy CGameObject::Add_Component(COMPONENT_TYPE eComType)
         COMPONENT_HANDLE hOld;
         hOld.iHandle = iSlotData & Component::DATA_MASK;
 
-        const uint32_t iGroupID = SYS_COMPONENT->Promote(hOld, hNewHandle);
+        const uint32_t iGroupID = SYS_COMPONENT.Promote(hOld, hNewHandle);
         iSlotData = iGroupID | Component::GROUP_FLAG;
     }
     else
     {
         const uint32_t iGroupID = iSlotData & Component::DATA_MASK;
-        SYS_COMPONENT->Add_To_Group(iGroupID, hNewHandle);
+        SYS_COMPONENT.Add_To_Group(iGroupID, hNewHandle);
     }
 
-    return SYS_COMPONENT->Get_Proxy<TProxy>(eComType, hNewHandle);
+    return SYS_COMPONENT.Get_Proxy<TProxy>(eComType, hNewHandle);
 }
 
 template <typename TProxy>
@@ -47,7 +47,7 @@ TProxy CGameObject::Get_Component(COMPONENT_TYPE eComType)
     if (!IsValid())
         return TProxy{};
 
-    const GAMEOBJECT_DATA& data = SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf);
+    const GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
 
     const uint32_t iSlotData = data.iComponentSlots[SCAST(_uint, eComType)];
 
@@ -65,11 +65,11 @@ TProxy CGameObject::Get_Component(COMPONENT_TYPE eComType)
     }
     else
     {
-        handle = SYS_COMPONENT->Get_Group((iSlotData & Component::DATA_MASK)).tPrimary;
+        handle = SYS_COMPONENT.Get_Group((iSlotData & Component::DATA_MASK)).tPrimary;
     }
 
     /* ====== TODO : 안정화시 바로 return ====== */
-    TProxy component = SYS_COMPONENT->Get_Proxy<TProxy>(eComType, handle);
+    TProxy component = SYS_COMPONENT.Get_Proxy<TProxy>(eComType, handle);
     return component;
 
     // return SYS_COMPONENT->Get_Proxy<T>(eComType, handle);
@@ -81,7 +81,7 @@ std::vector<TProxy> CGameObject::Get_Components(COMPONENT_TYPE eComType)
     if (!IsValid())
         return std::vector<TProxy>{};
 
-    const GAMEOBJECT_DATA& data = SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf);
+    const GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
 
     const uint32_t iSlotData = data.iComponentSlots[SCAST(_uint, eComType)];
 
@@ -96,19 +96,19 @@ std::vector<TProxy> CGameObject::Get_Components(COMPONENT_TYPE eComType)
     {
         COMPONENT_HANDLE h;
         h.iHandle = iSlotData;
-        return { SYS_COMPONENT->Get_Proxy<TProxy>(eComType, h) };
+        return { SYS_COMPONENT.Get_Proxy<TProxy>(eComType, h) };
     }
     else
     {
         const uint32_t iGroupID = iSlotData & Component::DATA_MASK;
-        const auto& tGroup = SYS_COMPONENT->Get_Group(iGroupID);
+        const auto& tGroup = SYS_COMPONENT.Get_Group(iGroupID);
 
         std::vector<TProxy> components;
         components.reserve(tGroup.tExtras.size() + 1);
-        components.push_back(SYS_COMPONENT->Get_Proxy<TProxy>(eComType, tGroup.tPrimary));
+        components.push_back(SYS_COMPONENT.Get_Proxy<TProxy>(eComType, tGroup.tPrimary));
 
         for (auto& h : tGroup.tExtras)
-            components.push_back(SYS_COMPONENT->Get_Proxy<TProxy>(eComType, h));
+            components.push_back(SYS_COMPONENT.Get_Proxy<TProxy>(eComType, h));
 
         return components;
     }

@@ -23,12 +23,12 @@ CGameObject* CGameObject::Get_Parent()
     if (!IsValid())
         return nullptr;
 
-    GAMEOBJECT_HANDLE hParent = SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf).hParent;
+    GAMEOBJECT_HANDLE hParent = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).hParent;
 
     if (!hParent.IsValid())
         return nullptr;
 
-    return SYS_GAMEOBJECT->Get_Wrapper(hParent);
+    return SYS_GAMEOBJECT.Get_Wrapper(hParent);
 }
 
 HRESULT CGameObject::Set_Parent(CGameObject* pNewParent)
@@ -41,7 +41,7 @@ HRESULT CGameObject::Set_Parent(CGameObject* pNewParent)
 
     GAMEOBJECT_HANDLE hNewParent = pNewParent ? pNewParent->Get_Handle() : GAMEOBJECT_HANDLE{};
 
-    GAMEOBJECT_DATA& tMyData = SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf);
+    GAMEOBJECT_DATA& tMyData = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
 
     /* Already has the same parent; no changes needed. */
     if (tMyData.hParent == hNewParent)
@@ -50,7 +50,7 @@ HRESULT CGameObject::Set_Parent(CGameObject* pNewParent)
     /* Remove this GameObject from the old parent's children list. */
     if (tMyData.hParent.IsValid())
     {
-        CGameObject* pOldParentWrapper = SYS_GAMEOBJECT->Get_Wrapper(tMyData.hParent);
+        CGameObject* pOldParentWrapper = SYS_GAMEOBJECT.Get_Wrapper(tMyData.hParent);
         if (pOldParentWrapper)
         {
             pOldParentWrapper->Remove_Child_Inner(m_hSelf);
@@ -91,7 +91,7 @@ void CGameObject::Add_Child_Inner(GAMEOBJECT_HANDLE hChild)
     if (!IsValid())
         return;
 
-    GAMEOBJECT_DATA& data = SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf);
+    GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
 
     auto it = std::find(data.hChildren.begin(), data.hChildren.end(), hChild);
     if (it == data.hChildren.end())
@@ -105,7 +105,7 @@ void CGameObject::Remove_Child_Inner(GAMEOBJECT_HANDLE hChild)
     if (!IsValid())
         return;
 
-    GAMEOBJECT_DATA& data = SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf);
+    GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
 
     auto it = std::find(data.hChildren.begin(), data.hChildren.end(), hChild);
     if (it != data.hChildren.end())
@@ -121,12 +121,12 @@ std::vector<CGameObject*> CGameObject::Get_Children() const
     if (!IsValid())
         return result;
 
-    const GAMEOBJECT_DATA& data = SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf);
+    const GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
     result.reserve(data.hChildren.size());
 
     for (const auto& hChild : data.hChildren)
     {
-        CGameObject* pChild = SYS_GAMEOBJECT->Get_Wrapper(hChild);
+        CGameObject* pChild = SYS_GAMEOBJECT.Get_Wrapper(hChild);
         if (pChild && pChild->IsValid())
             result.push_back(pChild);
     }
@@ -148,7 +148,7 @@ _bool CGameObject::IsValid() const
     /* TODO ==================================================== */
     /* TODO : MAKE SURE TO MINIMIZE THE NUMBER OF CALLS TO THIS! */
     /* TODO ==================================================== */
-    return SYS_GAMEOBJECT->Is_Valid_Handle(m_hSelf);
+    return SYS_GAMEOBJECT.Is_Valid_Handle(m_hSelf);
 }
 
 void CGameObject::Set_Active(_bool bActive)
@@ -156,7 +156,7 @@ void CGameObject::Set_Active(_bool bActive)
     if (!IsValid())
         return;
 
-    SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf).bActive = bActive;
+    SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).bActive = bActive;
 }
 
 _bool CGameObject::Get_Active() const
@@ -164,7 +164,7 @@ _bool CGameObject::Get_Active() const
     if (!IsValid())
         return false;
 
-    return SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf).bActive;
+    return SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).bActive;
 }
 
 void CGameObject::Set_ComponentMask(Component::COMPONENT_MASK mask)
@@ -172,7 +172,7 @@ void CGameObject::Set_ComponentMask(Component::COMPONENT_MASK mask)
     if (!IsValid())
         return ;
 
-    SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf).componentMask = mask;
+    SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).componentMask = mask;
 }
 
 Component::COMPONENT_MASK CGameObject::Get_ComponentMask() const
@@ -180,14 +180,14 @@ Component::COMPONENT_MASK CGameObject::Get_ComponentMask() const
     if (!IsValid())
         return 0;
 
-    return SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf).componentMask;
+    return SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).componentMask;
 }
 
 CGameObject* CGameObject::Create(uint32_t iLayer, std::string strName, CGameObject* pParent)
 {
     CGameObject* pInstance = nullptr;
 
-    if (pInstance = SYS_GAMEOBJECT->Create_Object(iLayer, strName))
+    if (pInstance = SYS_GAMEOBJECT.Create_Object(iLayer, strName))
     {
         if (pParent)
             pInstance->Set_Parent(pParent);
@@ -202,7 +202,7 @@ CGameObject* CGameObject::Clone()
 
     std::string cloneName = std::string(Get_Label()) + "_Clone";
 
-    const GAMEOBJECT_DATA& tData = SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf);
+    const GAMEOBJECT_DATA& tData = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
     CGameObject* pClone = CGameObject::Create(tData.layer, cloneName, nullptr);
     if (!pClone)
         return nullptr;

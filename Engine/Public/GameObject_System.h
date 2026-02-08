@@ -10,10 +10,6 @@ class ENGINE_DLL CGameObject_System final : public CBase
 {
     DECLARE_SINGLETON(CGameObject_System)
 
-private:
-    CGameObject_System();
-    ~CGameObject_System() override = default;
-
 public:
     HRESULT         Initialize(uint32_t iMaxLayers = 32, uint32_t iPoolSize = 2048);
     CGameObject*    Create_Object(Layer::LAYER_ID iLayer, const string& strName);

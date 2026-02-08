@@ -29,7 +29,7 @@ HRESULT CPrototype::Assemble(PROTOTYPE_SPEC && tSpec)
 CGameObject* CPrototype::Clone() const
 {
     /* Create instance */
-    CGameObject* pInstance = SYS_GAMEOBJECT->Create_Object(m_tSpec.layer, m_tSpec.strName);
+    CGameObject* pInstance = SYS_GAMEOBJECT.Create_Object(m_tSpec.layer, m_tSpec.strName);
 
     CHECK_PROTO_CLONE_FAIL(!pInstance, "CPrototype clone failed : instance is nullptr.");
     CHECK_PROTO_CLONE_FAIL(!pInstance->IsValid(), "CPrototype clone failed : instance is not valid.");
@@ -49,7 +49,7 @@ HRESULT CPrototype::Apply_Spec_To_Instance(CGameObject* pInstance) const
         if (!pSpec)
             return E_FAIL;
 
-        SYS_COMPONENT->Create_From_Spec(pInstance, pSpec);
+        SYS_COMPONENT.Create_From_Spec(pInstance, pSpec);
     }
 
     pInstance->Set_ComponentMask(m_componentMask);

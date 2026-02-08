@@ -10,9 +10,7 @@ template <typename TProxy>
 TProxy CComponent_System::Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle)
 {
     using PROCESSOR_T = typename TProxy::ProcessorType;
-
-    PROCESSOR_T* pProcessor = static_cast<PROCESSOR_T*>(m_pComProcessors[static_cast<uint32_t>(eComType)]);
-
+    PROCESSOR_T* pProcessor = static_cast<PROCESSOR_T*>(  m_pComProcessors[static_cast<uint32_t>(eComType)].get());
     return pProcessor->Get_Proxy(handle);
 }
 

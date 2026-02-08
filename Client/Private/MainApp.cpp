@@ -20,7 +20,7 @@ CMainApp::CMainApp()
 
 HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 {
-    if (FAILED(SYS_CORE->Initialize_Engine(EngineDesc, &m_pDevice, &m_pContext)))
+    if (FAILED(SYS_CORE.Initialize_Engine(EngineDesc, &m_pDevice, &m_pContext)))
         return E_FAIL;
 
     /* TEST : Create GameObject with various components */
@@ -55,7 +55,7 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
     bundle.components.push_back(pSpecA);
     spec.tComponentBundle = std::move(bundle);
 
-    HRESULT hr = CPrototype_System::GetInstance()->Create_Prototype(testGUID = ASSET_GUID::New_GUID(), std::move(spec));
+    HRESULT hr = CPrototype_System::GetInstance().Create_Prototype(testGUID = ASSET_GUID::New_GUID(), std::move(spec));
     if (hr > 0)
         LOG_INFO("Prototype 등록됨");
 
@@ -90,7 +90,7 @@ void CMainApp::Update(_float fDT)
     //}
     if (GetAsyncKeyState('A') & 0x8000)
     {
-        Engine::CGameObject* pObj = CPrototype_System::GetInstance()->Clone(testGUID);
+        Engine::CGameObject* pObj = CPrototype_System::GetInstance().Clone(testGUID);
     }
 
 }
@@ -104,7 +104,7 @@ void CMainApp::Fixed_Update(_float fDT)
 HRESULT CMainApp::Begin_Render()
 {
     _float4		vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };
-    if (FAILED(SYS_CORE->Clear_Buffers(&vClearColor)))
+    if (FAILED(SYS_CORE.Clear_Buffers(&vClearColor)))
         return E_FAIL;
 
     return S_OK;
@@ -120,7 +120,7 @@ HRESULT CMainApp::Render()
 
 HRESULT CMainApp::End_Render()
 {
-    if (FAILED(SYS_CORE->Present()))
+    if (FAILED(SYS_CORE.Present()))
         return E_FAIL;
 
     return S_OK;

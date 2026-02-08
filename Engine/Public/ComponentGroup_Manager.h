@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Base.h"
+#include "Engine_Define.h"
 
 /**
  * @class CComponentGroup_Manager
@@ -7,11 +7,11 @@
  */
 NS_BEGIN(Engine)
 
-class CComponentGroup_Manager : public CBase
+class CComponentGroup_Manager final
 {
-private:
-	CComponentGroup_Manager() = default;
-	virtual ~CComponentGroup_Manager() = default;
+public:
+	CComponentGroup_Manager();
+	~CComponentGroup_Manager();
 
 public :
 	/* Promotes a single component handle to a multi-component group. A unique Group ID, to be stored in the lower 31 bits of the component slot. */
@@ -28,8 +28,6 @@ private:
 
 public :
 	static CComponentGroup_Manager* Create();
-private:
-	virtual void Free() override;
 };
 
 NS_END

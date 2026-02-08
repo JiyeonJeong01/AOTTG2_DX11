@@ -8,6 +8,17 @@ NS_BEGIN(Engine)
 
 IMPLEMENT_SINGLETON(CAsset_Registry)
 
+CAsset_Registry::CAsset_Registry()
+{
+    
+}
+
+CAsset_Registry::~CAsset_Registry()
+{
+    
+}
+
+
 HRESULT CAsset_Registry::Initialize(const std::filesystem::path& assetRoot)
 {
     m_assetRoot = Normalize_Path(assetRoot);

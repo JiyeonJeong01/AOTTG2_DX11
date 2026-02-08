@@ -5,9 +5,9 @@ NS_BEGIN(Engine)
 
 class ENGINE_DLL CComponent_Processor abstract : public CBase
 {
-protected :
+public:
 	CComponent_Processor() {};
-	~CComponent_Processor() override = default;
+    virtual ~CComponent_Processor() override = default;
 
 public :
 	virtual HRESULT	Initialize() { return S_OK; };

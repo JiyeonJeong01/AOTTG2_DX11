@@ -1,15 +1,11 @@
 ﻿#pragma once
-#include "Base.h"
 #include "Editor_Define.h"
 
 NS_BEGIN(Editor)
 
-class CGUI_System : public CBase
+class CGUI_System
 {
     DECLARE_SINGLETON(CGUI_System)
-private:
-    CGUI_System();
-    ~CGUI_System() override = default;
 
 public:
     HRESULT Initialize();
@@ -29,8 +25,6 @@ private :
 
 public:
     static CGUI_System* Create(HWND hWnd, ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-private:
-    void Free() override;
 };
 
 NS_END;

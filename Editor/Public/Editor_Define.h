@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-#include <shellapi.h>
-#include <filesystem>
+#include "Engine_Define.h"
 
 namespace Editor
 {
@@ -16,14 +15,14 @@ namespace Editor
     {
         std::filesystem::path   path;
         std::string             name;
-        ASSET_TYPE              type = ASSET_TYPE::UNKNOWN;
+        Engine::ASSET_TYPE      type = Engine::ASSET_TYPE::UNKNOWN;
         _bool                   isDirectory = false;
     }LIST_ASSET;
 
     typedef struct tagAssetSelection
     {
         std::filesystem::path   path;
-        ASSET_TYPE              type = ASSET_TYPE::UNKNOWN;
+        Engine::ASSET_TYPE      type = Engine::ASSET_TYPE::UNKNOWN;
         _bool                   isDirectory = false;
 
         _bool Is_Valid() const
@@ -34,13 +33,11 @@ namespace Editor
 
 }
 
-
-#include "Engine_Define.h"
-
 extern HWND g_hWnd;
 extern HINSTANCE g_hInst;
 
-
+#define GET_INSTANCE(CLASSNAME) CLASSNAME::GetInstance()
+#define SYS_GUI			    	GET_INSTANCE(Editor::CGUI_System)
 
 /* -------- ImGui -------- */
 #ifdef new

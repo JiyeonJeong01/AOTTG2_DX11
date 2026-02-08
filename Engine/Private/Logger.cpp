@@ -14,6 +14,14 @@ NS_BEGIN(Engine)
 
 IMPLEMENT_SINGLETON(CLogger)
 
+CLogger::CLogger()
+{
+}
+
+CLogger::~CLogger()
+{
+}
+
 HRESULT CLogger::Initialize()
 {
     return S_OK;

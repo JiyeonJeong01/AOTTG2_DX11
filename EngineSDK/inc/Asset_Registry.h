@@ -15,10 +15,6 @@ class ENGINE_DLL CAsset_Registry : public CBase
 {
     DECLARE_SINGLETON(CAsset_Registry)
 
-private :
-    CAsset_Registry() = default;
-    ~CAsset_Registry() override = default;
-
 public :
     HRESULT Initialize(const std::filesystem::path& assetRoot);
     void    Clear();

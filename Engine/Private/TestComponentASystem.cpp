@@ -1,11 +1,10 @@
 ﻿#include "TestComponentASystem.h"
 #include "Component_System.h"
-
 #include "Component_Spec.h"
 
 HRESULT CTestComponentASystem::Initialize()
 {
-    SYS_COMPONENT->Register_Factory<CTestComponentA, TEST_A_SPEC>(COMPONENT_TYPE::TEST_A);
+    SYS_COMPONENT.Register_Factory<CTestComponentA, TEST_A_SPEC>(COMPONENT_TYPE::TEST_A);
 
     return S_OK;
 }
@@ -30,14 +29,18 @@ HRESULT CTestComponentASystem::Initialize_From_Spec(COMPONENT_HANDLE handle, con
 
 void CTestComponentASystem::Process_A(_float fDT)
 {
-    auto Pages = m_Pool.GetPages();
-    for (auto* pPage : Pages)
+    const auto& Pages = m_Pool.GetPages();
+    for (const auto& upPage : Pages)
     {
+        auto* pPage = upPage.get();
+        if (!pPage) continue;
+
         for (uint32_t i = 0; i < PAGE_SIZE; ++i)
         {
             if (!pPage->Is_Active(i)) continue;
 
-            TEST_DATA_A& data = *pPage->Get_Ptr(i);
+            auto* pData = pPage->Get_Ptr(i);
+            TEST_DATA_A& data = *pData;
             for (int j = 0; j < 4; ++j)
             {
                 data.vData[j].x += data.vData[j].y * fDT;

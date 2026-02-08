@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Component_Processor_Impl.h"
 #include "TestComponentB.h"
 
@@ -11,9 +11,13 @@ public:
 	void Update(_float fDT) override;
 	void LateUpdate(_float fDT) override;
 
-	/* °¢ ÄÄÆ÷³ÍÆ®¿¡ ÇÊ¿äÇÑ ·ÎÁ÷µé */
+	/* ê° ì»´í¬ë„ŒíŠ¸ì— í•„ìš”í•œ ë¡œì§ë“¤ */
 private:
 	void Process_B(_float fDT);
+
+public:
+    static CTestComponentBSystem* Create();
+    void Free() override;
 
 };
 

@@ -5,6 +5,15 @@ NS_BEGIN(Engine)
 
 IMPLEMENT_SINGLETON(CPrototype_System)
 
+CPrototype_System::CPrototype_System()
+{
+    
+}
+CPrototype_System::~CPrototype_System()
+{
+    
+}
+
 void CPrototype_System::Clear()
 {
     m_Prototypes.clear();

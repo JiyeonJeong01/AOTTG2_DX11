@@ -9,14 +9,16 @@
 
 IMPLEMENT_SINGLETON(CComponent_System)
 
+CComponent_System::CComponent_System() = default;
+CComponent_System::~CComponent_System() = default;
+
+
 HRESULT CComponent_System::Initialize()
 {
-	m_pComGroupMgr = CComponentGroup_Manager::Create();
+    m_pComGroupMgr = std::unique_ptr<CComponentGroup_Manager>(CComponentGroup_Manager::Create());
 
-    CTestComponentASystem* pASystem = CTestComponentASystem::Create();
-	CTestComponentBSystem* pBSystem = new CTestComponentBSystem();
-	m_pComProcessors.push_back(pASystem);
-	m_pComProcessors.push_back(pBSystem);
+    m_pComProcessors.push_back(std::unique_ptr<CComponent_Processor>(CTestComponentASystem::Create()));
+    m_pComProcessors.push_back(std::unique_ptr<CComponent_Processor>(CTestComponentBSystem::Create()));
 
 	return S_OK;
 }
@@ -61,7 +63,7 @@ void CComponent_System::Create_From_Spec(CGameObject* pObj, const COMPONENT_SPEC
         return;
     }
 
-    fn(SYS_COMPONENT, eType, pObj, pSpec);
+    fn(this, eType, pObj, pSpec);
 }
 
 void CComponent_System::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pBase)

@@ -45,37 +45,43 @@ namespace Engine
 			{ MessageBoxW(NULL, _message, L"System Message",MB_OK); return _return;}
 	
 	
-#define NO_COPY(CLASSNAME)										\
-			private:											\
-			CLASSNAME(const CLASSNAME&) = delete;				\
-			CLASSNAME& operator = (const CLASSNAME&) = delete;		
+#define NO_COPY(CLASSNAME)                                  \
+    CLASSNAME(const CLASSNAME&) = delete;                   \
+    CLASSNAME& operator=(const CLASSNAME&) = delete;
 
-#define DECLARE_SINGLETON(CLASSNAME)							\
-			NO_COPY(CLASSNAME)									\
-			private:											\
-			static CLASSNAME*	m_pInstance;					\
-			public:												\
-			static CLASSNAME*	GetInstance( void );			\
-			static unsigned int DestroyInstance( void );			
+#define NO_MOVE(CLASSNAME)                                  \
+    CLASSNAME(CLASSNAME&&) = delete;                        \
+    CLASSNAME& operator=(CLASSNAME&&) = delete;
 
-#define IMPLEMENT_SINGLETON(CLASSNAME)							\
-			CLASSNAME*	CLASSNAME::m_pInstance = nullptr;		\
-			CLASSNAME*	CLASSNAME::GetInstance( void )	{		\
-				if(nullptr == m_pInstance) {					\
-					m_pInstance = new CLASSNAME;				\
-				}												\
-				return m_pInstance;								\
-			}													\
-			unsigned int CLASSNAME::DestroyInstance( void ) {	\
-				unsigned int iRefCnt = {};						\
-				if(nullptr != m_pInstance)	{					\
-					iRefCnt = m_pInstance->Release();			\
-					if(0 == iRefCnt)							\
-						m_pInstance = nullptr;					\
-				}												\
-				return iRefCnt;									\
-			}
+#define DECLARE_SINGLETON(CLASSNAME)                        \
+private:                                                    \
+    CLASSNAME(const CLASSNAME&) = delete;                   \
+    CLASSNAME& operator=(const CLASSNAME&) = delete;        \
+    CLASSNAME(CLASSNAME&&) = delete;                        \
+    CLASSNAME& operator=(CLASSNAME&&) = delete;             \
+    static std::unique_ptr<CLASSNAME> m_pInstance;          \
+public:                                                     \
+    static CLASSNAME& GetInstance();                        \
+    static CLASSNAME* GetInstancePtr();                     \
+    static void DestroyInstance();                          \
+    virtual ~CLASSNAME();                                   \
+private:                                                    \
+    CLASSNAME();
 
+#define IMPLEMENT_SINGLETON(CLASSNAME)                          \
+    std::unique_ptr<CLASSNAME> CLASSNAME::m_pInstance = nullptr; \
+    CLASSNAME& CLASSNAME::GetInstance() {                       \
+        if (!m_pInstance) {                                     \
+            m_pInstance = std::unique_ptr<CLASSNAME>(new CLASSNAME()); \
+        }                                                       \
+        return *m_pInstance;                                    \
+    }                                                           \
+    CLASSNAME* CLASSNAME::GetInstancePtr() {                    \
+        return m_pInstance.get();                               \
+    }                                                           \
+    void CLASSNAME::DestroyInstance() {                         \
+        m_pInstance.reset();                                    \
+    }
 
 #define ENUM_BIT_OPERATORS(ENUM_NAME)                           \
     constexpr ENUM_NAME operator|(ENUM_NAME a, ENUM_NAME b) {   \

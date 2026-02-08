@@ -12,7 +12,7 @@ static constexpr uint32_t BITSET_WIDTH = 64;
 static constexpr uint32_t BITSET_COUNT = PAGE_SIZE / BITSET_WIDTH; // 1024 / 64 = 16
 
 template<typename TProxy>
-class CComponent_Pool : public CBase
+class CComponent_Pool final : public CBase
 {
 public:
     /* Ensure that the TProxy type is derived from CComponent_Proxy_Base at compile-time */
@@ -60,11 +60,17 @@ public:
     static_assert((PAGE_SIZE& (PAGE_SIZE - 1)) == 0, "PAGE_SIZE must be a power of two.");
     static_assert((1u << PAGE_SHIFT) == PAGE_SIZE, "PAGE_SHIFT must match PAGE_SIZE.");
 
-    CComponent_Pool() {};
+    CComponent_Pool() = default;
+    CComponent_Pool(const CComponent_Pool&) = delete;
+    CComponent_Pool& operator=(const CComponent_Pool&) = delete;
+    CComponent_Pool(CComponent_Pool&&) noexcept = default;
+    CComponent_Pool& operator=(CComponent_Pool&&) noexcept = default;
+
+
     ~CComponent_Pool() override
 	{
         /* NOTE: destroy all active objects before deleting pages */
-        for (PAGE* pPage : m_pages)
+        for (auto& pPage : m_pages)
         {
             if (!pPage)
                 continue;
@@ -78,8 +84,6 @@ public:
                     pPage->Set_Inactive(i);
                 }
             }
-
-            Safe_Delete(pPage);
         }
         m_pages.clear();
     }
@@ -98,17 +102,17 @@ public:
             iGlobalIndex = m_iNextIndex++;
         }
 
-        uint32_t iPageIndex = iGlobalIndex >> PAGE_SHIFT;
-        uint32_t iOffset = iGlobalIndex & PAGE_OFFSET_MASK;
+        const uint32_t iPageIndex = iGlobalIndex >> PAGE_SHIFT;
+        const uint32_t iOffset = iGlobalIndex & PAGE_OFFSET_MASK;
 
         /* Allocate a new page if current capacity is exceeded */
         while (m_pages.size() <= iPageIndex)
         {
-            m_pages.push_back(new PAGE());
+            m_pages.emplace_back(std::make_unique<PAGE>());
             _DEBUG_INFO("Create new page to allocate component");
         }
 
-        PAGE* pPage = m_pages[iPageIndex];
+        PAGE* pPage = m_pages[iPageIndex].get();
 
         if (pPage->iVersion[iOffset] > Component::MAX_VERSION) /* 2047, 11bit */
             pPage->iVersion[iOffset] = 0;
@@ -131,8 +135,8 @@ public:
     void Deallocate(COMPONENT_HANDLE handle)
     {
         const uint32_t iIndex = handle.Get_Index();
-        uint32_t iPageIndex = iIndex >> PAGE_SHIFT;
-        uint32_t iOffset = iIndex & PAGE_OFFSET_MASK;
+        const uint32_t iPageIndex = iIndex >> PAGE_SHIFT;
+        const uint32_t iOffset = iIndex & PAGE_OFFSET_MASK;
 
         if (iPageIndex >= SCAST(uint32_t, m_pages.size()))
         {
@@ -140,9 +144,9 @@ public:
             return;
         }
 
-        PAGE* pPage = m_pages[iPageIndex];
+        PAGE* pPage = m_pages[iPageIndex].get();
 
-        if (m_pages[iPageIndex]->iVersion[iOffset] != handle.Get_Version())
+        if (pPage->iVersion[iOffset] != handle.Get_Version())
         {
             _DEBUG_ERROR_BREAK("Invalid Handle: Version mismatch!");
             return;
@@ -171,7 +175,7 @@ public:
     /**
      * \brief Reference-only view; not an owning handle.
      */
-    TProxy Get_Proxy(COMPONENT_HANDLE handle)
+    TProxy Get_Proxy(COMPONENT_HANDLE handle) noexcept
     {
         /* Create and return a Proxy object initialized with the raw data address */
         DATA_T* pRawData = Get_Data_By_Handle(handle);
@@ -184,7 +188,7 @@ public:
     }
 
     /* Retrieve the raw data pointer for internal processing. */
-    DATA_T* Get_Data_By_Handle(COMPONENT_HANDLE handle)
+    DATA_T* Get_Data_By_Handle(COMPONENT_HANDLE handle) noexcept
 	{
         const uint32_t iIndex = handle.Get_Index();
         uint32_t iPageIndex = iIndex >> PAGE_SHIFT;
@@ -193,21 +197,21 @@ public:
         if (iPageIndex >= m_pages.size())
             return nullptr;
 
-        PAGE* pPage = m_pages[iPageIndex];
+        PAGE* pPage = m_pages[iPageIndex].get();
         if (pPage->iVersion[iOffset] != handle.Get_Version() || !pPage->Is_Active(iOffset))
             return nullptr;
 
         return pPage->Get_Ptr(iOffset);
     }
 
-    const std::vector<PAGE*>& GetPages() const
+    const std::vector<std::unique_ptr<PAGE>>& GetPages() const
     {
         return m_pages;
     }
 
 private:
-    vector<PAGE*>       m_pages{};
-    vector<uint32_t>    m_freeIndices{};
+    std::vector<std::unique_ptr<PAGE>> m_pages{};
+    std::vector<uint32_t>    m_freeIndices{};
     uint32_t            m_iNextIndex = 1; /* 0 is invalid handle */
 
     CEvent<DATA_T*>     m_OnDeallocate{};
@@ -223,12 +227,13 @@ private:
 
     }
 
-    static void Destroy_At(DATA_T* p)
+    static void Destroy_At(DATA_T* p) noexcept
     {
         /* If DATA_T is trivial destructible, this compiles away */
         if constexpr (!std::is_trivially_destructible_v<DATA_T>)
         {
             std::destroy_at(p);
+            static int a;
         }
     }
 };

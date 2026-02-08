@@ -13,7 +13,7 @@ CConsolePanel::CConsolePanel(const std::string& strPanelName)
 
 HRESULT CConsolePanel::Initialize()
 {
-    m_pSink = dynamic_cast<CGUI_Sink*>(SYS_LOG->Set_Sink(CLogger::LOG_TYPE::GUI));
+    m_pSink = dynamic_cast<CGUI_Sink*>(SYS_LOG.Set_Sink(CLogger::LOG_TYPE::GUI));
     if (!m_pSink)
     {
         _DEBUG_ERROR_BREAK("CConsolePanel Init failed : m_pSink is nullptr");

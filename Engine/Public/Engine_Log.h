@@ -17,7 +17,7 @@
  
 /* --- Log macros --- */
 #define LOG_IMPL(sev, dom, fmt, ...) \
-  do { SYS_LOG->Log(sev, dom, __FILE__, __FUNCTION__, nullptr, __LINE__, fmt, ##__VA_ARGS__); } while(0)
+  do { SYS_LOG.Log(sev, dom, __FILE__, __FUNCTION__, nullptr, __LINE__, fmt, ##__VA_ARGS__); } while(0)
 
 #define LOG_INFO(fmt, ...)  LOG_IMPL(SEVERITY_TYPE::INFO,  DOMAIN_TYPE::CLIENT, fmt, ##__VA_ARGS__)
 #define LOG_WARN(fmt, ...)  LOG_IMPL(SEVERITY_TYPE::WARN,  DOMAIN_TYPE::CLIENT, fmt, ##__VA_ARGS__)
@@ -79,7 +79,7 @@
 #define INTERNAL_ASSERT_IMPL(domain, check, fmt, ...) \
     do { \
       if (!(check)) { \
-        SYS_LOG->Assert(domain, __FILE__, __FUNCTION__, STRINGIFY(check), __LINE__, (fmt) ? (fmt) : "", ##__VA_ARGS__); \
+        SYS_LOG.Assert(domain, __FILE__, __FUNCTION__, STRINGIFY(check), __LINE__, (fmt) ? (fmt) : "", ##__VA_ARGS__); \
         DEBUG_BREAK(); \
       } \
     } while (0)

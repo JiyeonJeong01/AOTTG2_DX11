@@ -302,7 +302,7 @@ void CHierarchyPanel::Draw_DropTarget()
         {
             const Engine::ASSET_GUID* pg = SCAST(const Engine::ASSET_GUID*, p->Data);
 
-            const Engine::ASSET_RECORD* rec = SYS_RESOURCE->Find(*pg);
+            const Engine::ASSET_RECORD* rec = SYS_RESOURCE.Find(*pg);
             if (rec)
             {
                 // GUID + path 로그
@@ -335,7 +335,7 @@ void CHierarchyPanel::Draw_DropTarget()
 /* =======================================================================*/
 void CHierarchyPanel::Refresh_Roots()
 {
-    SYS_GAMEOBJECT->Get_Roots(m_roots);
+    SYS_GAMEOBJECT.Get_Roots(m_roots);
 }
 
 void CHierarchyPanel::Draw_Root_List()
@@ -656,7 +656,7 @@ void CHierarchyPanel::Destroy_Object(Engine::CGameObject* pObj)
     if (m_pRenameTarget == pObj)
         Cancel_Rename();
 
-    SYS_GAMEOBJECT->Destroy_Object(pObj);
+    SYS_GAMEOBJECT.Destroy_Object(pObj);
 }
 
 /* =======================================================================*/

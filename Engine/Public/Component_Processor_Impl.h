@@ -9,6 +9,16 @@ class CComponent_Processor_Impl : public CComponent_Processor
 	static_assert(std::is_base_of_v<CComponent_Proxy_Base<typename TProxy::DataType, TProxy>, TProxy>,
 		"Error: TProxy must inherit from CComponent_Proxy_Base!");
 
+public:
+    CComponent_Processor_Impl() = default;
+    virtual ~CComponent_Processor_Impl() = default;
+
+    CComponent_Processor_Impl(const CComponent_Processor_Impl&) = delete;
+    CComponent_Processor_Impl& operator=(const CComponent_Processor_Impl&) = delete;
+
+    CComponent_Processor_Impl(CComponent_Processor_Impl&&) noexcept = default;
+    CComponent_Processor_Impl& operator=(CComponent_Processor_Impl&&) noexcept = default;
+
 protected:
 	CComponent_Pool<TProxy> m_Pool;
 

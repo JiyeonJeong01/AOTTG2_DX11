@@ -16,9 +16,6 @@ class ENGINE_DLL CPrototype_System final : public CBase
 {
     DECLARE_SINGLETON(CPrototype_System)
 
-private:
-    CPrototype_System() = default;
-    ~CPrototype_System() override = default;
 
 public:
     HRESULT Initialize() { return S_OK; }

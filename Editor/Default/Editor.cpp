@@ -34,6 +34,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_ LPWSTR    lpCmdLine,
     _In_ int       nCmdShow)
 {
+
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -61,7 +64,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     if (nullptr == pMainApp)
         return FALSE;
 
-    if (!SYS_CORE)
+    if (!CCore_System::GetInstancePtr())
     {
         MessageBox(nullptr, L"Core_System이 없습니다!", L"에러", MB_OK);
         return FALSE;
@@ -71,7 +74,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _float      fFixedAcc = {};
 
     /* =================================== TEST =====================================*/
-    Editor::CGUI_System::GetInstance()->Initialize();
+    SYS_GUI.Initialize();
 
     const string strMain = "PANEL_MAIN";
     Editor::CMainPanel* pMainPanel = Editor::CMainPanel::Create(strMain);
@@ -92,23 +95,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
         }
 
-        fTimeAcc += SYS_CORE->Compute_SystemDT();
+        fTimeAcc += SYS_CORE.Compute_SystemDT();
 
         if (fTimeAcc >= FRAME_DT)
         {
             Editor::CProfilerPanel::CScope _update("Engine::Update");
-            pMainApp->Update(SYS_CORE->Compute_FrameDT());
+            pMainApp->Update(SYS_CORE.Compute_FrameDT());
 
             Editor::CProfilerPanel::CScope _render("Engine::Render");
             pMainApp->Begin_Render();
             pMainApp->Render();
 
-            Editor::CGUI_System::GetInstance()->Update();
+            SYS_GUI.Update();
 
             pMainPanel->Update();
             pMainPanel->Render();
 
-            Editor::CGUI_System::GetInstance()->Render_GUI();
+            SYS_GUI.Render_GUI();
 
             pMainApp->End_Render();
 

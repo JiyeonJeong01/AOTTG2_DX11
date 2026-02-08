@@ -6,7 +6,7 @@
 
 HRESULT CTransform_Processor::Initialize()
 {
-    SYS_COMPONENT->Register_Factory<CTransform, TRANSFORM_SPEC>(COMPONENT_TYPE::TRANSFORM);
+    SYS_COMPONENT.Register_Factory<CTransform, TRANSFORM_SPEC>(COMPONENT_TYPE::TRANSFORM);
 
     return S_OK;
 }
@@ -24,17 +24,19 @@ HRESULT CTransform_Processor::Initialize_From_Spec(COMPONENT_HANDLE handle, cons
     pData->vScale = SCAST(const TRANSFORM_SPEC*, pSpec)->vScale;
 
     Bake_World(pData);
-
-    pData->bDirty = false;
-
     return S_OK;
 }
 
 void CTransform_Processor::Update(_float fDT)
 {
-    auto Pages = m_Pool.GetPages();
-    for (auto* pPage : Pages)
+    (void)fDT;
+
+    const auto& Pages = m_Pool.GetPages();
+    for (const auto& upPage : Pages)
     {
+        auto* pPage = upPage.get();
+        if (!pPage) continue;
+
         for (uint32_t i = 0; i < PAGE_SIZE; ++i)
         {
             if (!pPage->Is_Active(i))
@@ -43,9 +45,10 @@ void CTransform_Processor::Update(_float fDT)
             if (!pData->bDirty)
                 continue;
             Bake_World(pData);
+
+            pData->bDirty = false;
         }
     }
-
 }
 
 void CTransform_Processor::Bake_World(TRANSFORM_DATA* pData)

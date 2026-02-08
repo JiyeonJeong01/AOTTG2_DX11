@@ -18,6 +18,11 @@ CCore_System::CCore_System()
 
 }
 
+CCore_System::~CCore_System()
+{
+    
+}
+
 HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice,
 	ID3D11DeviceContext** ppContext)
 {
@@ -42,7 +47,7 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
 
     /* --- Component System ---*/
     {
-        if (FAILED(SYS_COMPONENT->Initialize()))
+        if (FAILED(SYS_COMPONENT.Initialize()))
         {
             MSG_BOX("Component System failed Initialize");
             return E_FAIL;
@@ -51,7 +56,7 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
 
     /* --- Object System --- */
     {
-        if (FAILED(SYS_GAMEOBJECT->Initialize()))
+        if (FAILED(SYS_GAMEOBJECT.Initialize()))
         {
             MSG_BOX("Object System failed Initialize");
             return E_FAIL;
@@ -60,7 +65,7 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
 
     /* --- Log System --- */
     {
-        if (FAILED(SYS_LOG->Initialize()))
+        if (FAILED(SYS_LOG.Initialize()))
         {
             MSG_BOX("Log System failed Initialize");
             return E_FAIL;
@@ -69,7 +74,7 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
 
     /* --- Resource System --- */
     {
-        if (FAILED(SYS_RESOURCE->Initialize(ProjectConfig::PATH + ProjectConfig::ROOT)))
+        if (FAILED(SYS_RESOURCE.Initialize(ProjectConfig::PATH + ProjectConfig::ROOT)))
         {
             MSG_BOX("Resource System failed Initialize");
             return E_FAIL;
@@ -84,7 +89,7 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
 
 void CCore_System::Update_Engine(_float fTimeDelta)
 {
-	SYS_COMPONENT->Update(fTimeDelta);
+	SYS_COMPONENT.Update(fTimeDelta);
 }
 
 HRESULT CCore_System::Draw()

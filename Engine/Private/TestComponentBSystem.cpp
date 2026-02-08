@@ -1,7 +1,11 @@
 ﻿#include "TestComponentBSystem.h"
+#include "Component_System.h"
+#include "Component_Spec.h"
 
 HRESULT CTestComponentBSystem::Initialize()
 {
+    SYS_COMPONENT.Register_Factory<CTestComponentB, TEST_B_SPEC>(COMPONENT_TYPE::TEST_B);
+
     return S_OK;
 }
 
@@ -11,14 +15,19 @@ void CTestComponentBSystem::LateUpdate(_float fDT)
 
 void CTestComponentBSystem::Process_B(_float fDT)
 {
-    auto Pages = m_Pool.GetPages();
-    for (auto* pPage : Pages)
+    const auto& Pages = m_Pool.GetPages();
+
+    for (const auto& upPage : Pages)
     {
+        auto* pPage = upPage.get();
+        if (!pPage) continue;
+
         for (uint32_t i = 0; i < PAGE_SIZE; ++i)
         {
             if (!pPage->Is_Active(i)) continue;
+            auto* pData = pPage->Get_Ptr(i);
+            TEST_DATA_B& data = *pData;
 
-            TEST_DATA_B& data = *pPage->Get_Ptr(i);
             for (int j = 0; j < 4; ++j)
             {
                 data.vData[j].x += data.vData[j].y * fDT;
@@ -28,6 +37,23 @@ void CTestComponentBSystem::Process_B(_float fDT)
             }
         }
     }
+}
+
+CTestComponentBSystem* CTestComponentBSystem::Create()
+{
+    CTestComponentBSystem* pInstance = new CTestComponentBSystem;
+    if (FAILED(pInstance->Initialize()))
+    {
+        _DEBUG_ERROR_BREAK("Create instance failed");
+        Safe_Release(pInstance);
+    }
+    return pInstance;
+}
+
+void CTestComponentBSystem::Free()
+{
+    CComponent_Processor_Impl<CTestComponentB>::Free();
+
 }
 
 void CTestComponentBSystem::Update(_float fDT)

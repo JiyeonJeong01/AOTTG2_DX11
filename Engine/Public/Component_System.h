@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "Base.h"
 #include "Component_Processor_Impl.h"
 
 NS_BEGIN(Engine)
@@ -7,13 +6,9 @@ class CGameObject;
 class CComponent_Processor;
 class CComponentGroup_Manager;
 
-class ENGINE_DLL CComponent_System : public CBase
+class ENGINE_DLL CComponent_System final
 {
-	DECLARE_SINGLETON(CComponent_System)
-private :
-	CComponent_System() = default;
-	~CComponent_System() override = default;
-
+    DECLARE_SINGLETON(CComponent_System)
 public :
 	HRESULT Initialize();
 	void Update(_float fDT);
@@ -41,8 +36,8 @@ private :
     void Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pBase);
 
 private :
-	vector<CComponent_Processor*>	m_pComProcessors{ };
-	CComponentGroup_Manager*		m_pComGroupMgr{ };
+	vector<std::unique_ptr<CComponent_Processor>>	m_pComProcessors{ };
+    std::unique_ptr<CComponentGroup_Manager> 		m_pComGroupMgr{ };
 
     using FACTORY_FN = void(*)(CComponent_System*, COMPONENT_TYPE, CGameObject*, const COMPONENT_SPEC_BASE*);
     FACTORY_FN  m_factory[SCAST(_uint, COMPONENT_TYPE::END)]{};

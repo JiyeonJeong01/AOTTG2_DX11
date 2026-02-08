@@ -10,9 +10,7 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CLogger : public CBase
 {
 	DECLARE_SINGLETON(CLogger)
-private:
-	CLogger() {};
-	virtual ~CLogger() = default;
+
 public :
 	typedef struct tagRecord
 	{

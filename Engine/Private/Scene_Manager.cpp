@@ -12,7 +12,7 @@ CScene_Manager::CScene_Manager()
 HRESULT CScene_Manager::Change_Scene(_uint iNewSceneIndex, CScene* pNewScene)
 {
     if (nullptr != m_pCurrentScene)
-        SYS_CORE->Clear_Resources(m_iCurrentSceneIndex);
+        SYS_CORE.Clear_Resources(m_iCurrentSceneIndex);
 
     if (0 != Safe_Release(m_pCurrentScene))
     {

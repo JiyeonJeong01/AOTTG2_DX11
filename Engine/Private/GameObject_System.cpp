@@ -10,6 +10,10 @@ CGameObject_System::CGameObject_System()
 {
 }
 
+CGameObject_System::~CGameObject_System()
+{
+}
+
 HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
 {
     if (iMaxLayers <= Layer::DEFAULT_LAYER || iMaxLayers > Layer::MAX_LAYERS)
