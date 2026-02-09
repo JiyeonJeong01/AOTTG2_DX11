@@ -3,7 +3,8 @@
 
 #include "MainApp.h"
 #include "Core_System.h"
-#include <locale.h>
+
+
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
@@ -30,7 +31,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    Client::CMainApp* pMainApp = { nullptr };
+    std::unique_ptr<Client::CMainApp> pMainApp = { nullptr };
 
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_GAME, szWindowClass, MAX_LOADSTRING);
@@ -55,7 +56,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
 
 
-    if (SYS_CORE)
+    if (!CCore_System::GetInstancePtr())
     {
         MessageBox(nullptr, L"SYS_CORE가 없습니다!", L"에러", MB_OK);
         return FALSE;
@@ -79,11 +80,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
         }
 
-        fTimeAcc += SYS_CORE->Compute_SystemDT();
+        fTimeAcc += SYS_CORE.Compute_SystemDT();
 
         if (fTimeAcc >= FRAME_DT)
         {
-            pMainApp->Update(SYS_CORE->Compute_FrameDT());
+            pMainApp->Update(SYS_CORE.Compute_FrameDT());
             pMainApp->Render();
 
             /* FIXED DT*/
@@ -92,9 +93,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             fTimeAcc = 0.f;
         }
     }
-
-    if (0 != Safe_Release(pMainApp))
-        return FALSE;
 
     return (int)msg.wParam;
 }

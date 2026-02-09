@@ -9,19 +9,17 @@
 
 /* ========================================== */
 
-
-
 NS_BEGIN(Engine)
 class CGameObject;
 NS_END
 
 NS_BEGIN(Client)
 
-class CMainApp final : public CBase
+class CMainApp final
 {
-private:
+public:
     CMainApp();
-    ~CMainApp() override = default;
+    ~CMainApp();
 
 public:
     HRESULT Initialize(const ENGINE_DESC& EngineDesc);
@@ -51,8 +49,7 @@ private :
     /* ========================================== */
 
 public:
-    static CMainApp* Create(const ENGINE_DESC& EngineDesc);
-    virtual void Free() override;
+    static unique_ptr<CMainApp> Create(const ENGINE_DESC& EngineDesc);
 };
 
 NS_END

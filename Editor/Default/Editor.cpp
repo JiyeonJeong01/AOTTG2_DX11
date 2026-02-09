@@ -4,8 +4,6 @@
 
 #include "MainApp.h"
 
-#include <locale.h>
-
 #include "Core_System.h"
 #include "GUI_System.h"
 #include "MainPanel.h"
@@ -44,7 +42,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    Client::CMainApp* pMainApp = { nullptr };
+    unique_ptr<Client::CMainApp> pMainApp = { nullptr };
 
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_EDITOR, szWindowClass, MAX_LOADSTRING);
@@ -127,9 +125,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
 
     SYS_GUI.DestroyInstance();
-
-    if (0 != Safe_Release(pMainApp))
-        return FALSE;
 
     return (int)msg.wParam;
 }

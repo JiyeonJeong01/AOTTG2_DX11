@@ -16,6 +16,12 @@ NS_BEGIN(Client)
 
 CMainApp::CMainApp()
 {
+
+}
+
+CMainApp::~CMainApp()
+{
+    SYS_CORE.DestroyInstance();
 }
 
 HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
@@ -126,23 +132,16 @@ HRESULT CMainApp::End_Render()
     return S_OK;
 }
 
-CMainApp* CMainApp::Create(const ENGINE_DESC& Engine_Desc)
+std::unique_ptr<CMainApp> CMainApp::Create(const ENGINE_DESC& Engine_Desc)
 {
-    CMainApp* pInstance = new CMainApp();
+    auto pInstance = std::make_unique<CMainApp>();
 
     if (FAILED(pInstance->Initialize(Engine_Desc)))
     {
         MSG_BOX("Failed to Created : CMainApp");
-        Safe_Release(pInstance);
+        return nullptr;
     }
     return pInstance;
-}
-
-void CMainApp::Free()
-{
-    __super::Free();
-
-    SYS_CORE.DestroyInstance();
 }
 
 NS_END;
