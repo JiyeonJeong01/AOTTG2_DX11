@@ -4,12 +4,11 @@
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CTimer : public CBase
+class ENGINE_DLL CTimer
 {
-private:
+public:
 	CTimer();
-	virtual ~CTimer() = default;
-
+	~CTimer();
 
 public:
 	HRESULT		Initialize();
@@ -23,10 +22,7 @@ private:
 	_float				m_fTimeDelta = {};
 
 public:
-	static CTimer* Create();
-
-public:
-	virtual void	Free();
+	static std::unique_ptr<CTimer> Create();
 
 };
 

@@ -18,6 +18,7 @@ void CTransform_Processor::LateUpdate(_float fDT)
 HRESULT CTransform_Processor::Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
 {
     TRANSFORM_DATA* pData = m_Pool.Get_Data_By_Handle(handle);
+    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Transform handle in Initialize_From_Spec");
 
     pData->vPosition = SCAST(const TRANSFORM_SPEC*, pSpec)->vPosition;
     pData->vRotationQuat = SCAST(const TRANSFORM_SPEC*, pSpec)->vRotationQuat;
@@ -29,7 +30,7 @@ HRESULT CTransform_Processor::Initialize_From_Spec(COMPONENT_HANDLE handle, cons
 
 void CTransform_Processor::Update(_float fDT)
 {
-    (void)fDT;
+    [[maybe_unused]] _float dt = fDT;
 
     const auto& Pages = m_Pool.GetPages();
     for (const auto& upPage : Pages)
@@ -63,18 +64,15 @@ void CTransform_Processor::Bake_World(TRANSFORM_DATA* pData)
     pData->bDirty = false;
 }
 
-CTransform_Processor* CTransform_Processor::Create()
+std::unique_ptr<CTransform_Processor> CTransform_Processor::Create()
 {
-    CTransform_Processor* pInstance = new CTransform_Processor;
+    auto pInstance = std::make_unique<CTransform_Processor>();
+
     if (FAILED(pInstance->Initialize()))
     {
         _DEBUG_ERROR_BREAK("Create instance failed");
-        Safe_Release(pInstance);
+        return nullptr;
     }
-    return pInstance;
-}
 
-void CTransform_Processor::Free()
-{
-    /* TODO : implement free logic */
+    return pInstance;
 }

@@ -12,6 +12,14 @@ CGameObject_System::CGameObject_System()
 
 CGameObject_System::~CGameObject_System()
 {
+    m_wrapperPool.clear();
+    m_dataPool.clear();
+
+    while (!m_freeIndices.empty())
+        m_freeIndices.pop();
+
+    for (uint32_t i = 0; i < Layer::MAX_LAYERS; ++i)
+        m_layerBuckets[i].clear();
 }
 
 HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
@@ -37,7 +45,7 @@ HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
     m_wrapperPool.clear();
 
     m_dataPool.resize(iPoolSize);
-    m_wrapperPool.resize(iPoolSize, nullptr);
+    m_wrapperPool.resize(iPoolSize);
 
     while (!m_freeIndices.empty())
         m_freeIndices.pop();
@@ -47,8 +55,7 @@ HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
 
     for (uint32_t i = 1; i < iPoolSize; ++i)
     {
-        CGameObject* pWrapper = new CGameObject(i);
-        m_wrapperPool[i] = pWrapper;
+        m_wrapperPool[i] = std::make_unique<CGameObject>(i);
 
         m_freeIndices.push(i);
         m_dataPool[i].Reset();
@@ -57,7 +64,7 @@ HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
     return S_OK;
 }
 
-CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const string& strName)
+CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent)
 {
     if (m_freeIndices.empty())
     {
@@ -76,7 +83,7 @@ CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const str
     m_freeIndices.pop();
 
     GAMEOBJECT_DATA& data = m_dataPool[idx];
-    CGameObject* pWrapper = m_wrapperPool[idx];
+    CGameObject* pWrapper = m_wrapperPool[idx].get();
 
     if (!pWrapper)
     {
@@ -87,13 +94,14 @@ CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const str
 
     /* Reset data */
     data.Reset();
-    data.iVersion++;
     data.bActive = true;
 
     pWrapper->m_hSelf.iIndex = idx;
     pWrapper->m_hSelf.iVersion = data.iVersion;
 
     pWrapper->Set_Label(strName);
+    if (pParent)
+        pWrapper->Set_Parent(pParent);
 
     Add_To_LayerBucket(pWrapper, iLayer);
 
@@ -108,17 +116,18 @@ void CGameObject_System::Destroy_Object(CGameObject* pObj)
         return;
     }
 
-    Remove_From_LayerBucket(pObj);
-
-    /* TODO : ======================================================== */
-    /* TODO : =============== ADD PENDING DESTROY LOGIC ============== */
-    /* TODO : ======================================================== */
-
     const GAMEOBJECT_HANDLE handle = pObj->Get_Handle();
     if (handle.iIndex == 0 /* dummy */ || handle.iIndex >= m_dataPool.size())
         return;
 
     GAMEOBJECT_DATA& data = m_dataPool[handle.iIndex];
+
+    if (data.bPendingDestroy)
+        return;
+    data.bPendingDestroy = true;
+    m_pendingDestroys.push_back(handle.iIndex);
+
+    Remove_From_LayerBucket(pObj);
 
     /* Clean up the relationship with the parent. */
     if (data.hParent.IsValid())
@@ -148,9 +157,6 @@ void CGameObject_System::Destroy_Object(CGameObject* pObj)
     }
 
     data.bActive = false;
-    data.Reset();
-
-    m_freeIndices.push(handle.iIndex);
 }
 
 void CGameObject_System::Set_Layer(CGameObject* pObj, Layer::LAYER_ID iNewLayer)
@@ -322,9 +328,34 @@ void CGameObject_System::Add_To_LayerBucket(CGameObject* pObj, Layer::LAYER_ID l
 
 void CGameObject_System::Flush_PendingDestroy()
 {
-    // TODO ============================================================
-    // TODO implement after system architecture comfirmed
-    // TODO ============================================================
+    if (m_pendingDestroys.empty())
+        return;
+
+    for (uint32_t idx : m_pendingDestroys)
+    {
+        if (idx == 0 || idx >= static_cast<uint32_t>(m_dataPool.size()))
+        {
+            _DEBUG_ERROR_BREAK("Flush_PendingDestroy: invalid index.");
+            continue;
+        }
+
+        GAMEOBJECT_DATA& data = m_dataPool[idx];
+
+        if (!data.bPendingDestroy)
+            continue;
+
+        CGameObject* pObj = m_wrapperPool[idx].get();
+        if (pObj)
+            pObj->Remove_All_Components();
+        else
+            _DEBUG_ERROR_BREAK("Flush_PendingDestroy: wrapper is null.");
+
+        data.iVersion++;
+        data.Reset();
+        m_freeIndices.push(idx);
+    }
+
+    m_pendingDestroys.clear();
 }
 
 GAMEOBJECT_DATA& CGameObject_System::Access_Data_Raw(GAMEOBJECT_HANDLE hObj)
@@ -342,10 +373,14 @@ CGameObject* CGameObject_System::Get_Wrapper(GAMEOBJECT_HANDLE hObj)
     if (hObj.iIndex == 0 || hObj.iIndex >= m_wrapperPool.size())
         return nullptr;
 
+    const auto& data = m_dataPool[hObj.iIndex];
+    if (!data.bActive)
+        return nullptr;
+
     if (m_dataPool[hObj.iIndex].iVersion != hObj.iVersion)
         return nullptr;
 
-    return m_wrapperPool[hObj.iIndex];
+    return m_wrapperPool[hObj.iIndex].get();
 }
 
 bool CGameObject_System::Is_Valid_Handle(GAMEOBJECT_HANDLE hObj) const
@@ -355,23 +390,6 @@ bool CGameObject_System::Is_Valid_Handle(GAMEOBJECT_HANDLE hObj) const
 
     const auto& tData = m_dataPool[hObj.iIndex];
     return tData.bActive && (tData.iVersion == hObj.iVersion);
-}
-
-void CGameObject_System::Free()
-{
-    for (CGameObject* pWrapper : m_wrapperPool)
-        Safe_Release(pWrapper);
-
-    m_wrapperPool.clear();
-    m_dataPool.clear();
-
-    while (!m_freeIndices.empty())
-        m_freeIndices.pop();
-
-    for (uint32_t i = 0; i < Layer::MAX_LAYERS; ++i)
-        m_layerBuckets[i].clear();
-
-    CBase::Free();
 }
 
 NS_END

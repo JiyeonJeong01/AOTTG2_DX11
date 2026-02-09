@@ -85,8 +85,9 @@ namespace  Engine
 
     typedef struct tagGameObjectData
     {
-        uint32_t    iVersion = 0;       /* slot's current version */
-        bool        bActive = false;
+        uint32_t    iVersion = 1;       /* slot's current version */
+        _bool       bActive = false;
+        _bool       bPendingDestroy = false;
 
         /* For layer access in O(1) */
         Layer::LAYER_ID layer = Layer::INVALID_LAYER;
@@ -97,14 +98,15 @@ namespace  Engine
         Component::COMPONENT_MASK   componentMask = 0;
 
         /* Hierarchy */
-        GAMEOBJECT_HANDLE           hParent{};
-        std::vector<GAMEOBJECT_HANDLE>   hChildren;
+        GAMEOBJECT_HANDLE               hParent{};
+        std::vector<GAMEOBJECT_HANDLE>  hChildren;
 
         /* Reset helper */
         void Reset()
         {
             bActive = false;
             layer = Layer::INVALID_LAYER;
+            bPendingDestroy = false;
             iIndexInLayer = 0;
             std::fill(std::begin(iComponentSlots), std::end(iComponentSlots), 0);
             componentMask = 0;

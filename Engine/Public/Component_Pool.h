@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "Base.h"
 #include "Engine_Log.h"
 #include "CComponent_Proxy_Base.h"
 #include "Event.h"
@@ -12,7 +11,7 @@ static constexpr uint32_t BITSET_WIDTH = 64;
 static constexpr uint32_t BITSET_COUNT = PAGE_SIZE / BITSET_WIDTH; // 1024 / 64 = 16
 
 template<typename TProxy>
-class CComponent_Pool final : public CBase
+class CComponent_Pool final
 {
 public:
     /* Ensure that the TProxy type is derived from CComponent_Proxy_Base at compile-time */
@@ -66,8 +65,7 @@ public:
     CComponent_Pool(CComponent_Pool&&) noexcept = default;
     CComponent_Pool& operator=(CComponent_Pool&&) noexcept = default;
 
-
-    ~CComponent_Pool() override
+    ~CComponent_Pool()
 	{
         /* NOTE: destroy all active objects before deleting pages */
         for (auto& pPage : m_pages)
@@ -194,7 +192,7 @@ public:
         uint32_t iPageIndex = iIndex >> PAGE_SHIFT;
         uint32_t iOffset = iIndex & PAGE_OFFSET_MASK;
 
-        if (iPageIndex >= m_pages.size())
+        if (iPageIndex >= SCAST(uint32_t, m_pages.size()))
             return nullptr;
 
         PAGE* pPage = m_pages[iPageIndex].get();
@@ -233,7 +231,6 @@ private:
         if constexpr (!std::is_trivially_destructible_v<DATA_T>)
         {
             std::destroy_at(p);
-            static int a;
         }
     }
 };

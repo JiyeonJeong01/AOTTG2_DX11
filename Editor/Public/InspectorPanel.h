@@ -12,8 +12,9 @@ class CInspectorPanel final : public CEditorPanel
 {
 public:
     CInspectorPanel(const std::string& strPanelName);
-    ~CInspectorPanel() override = default;
+    ~CInspectorPanel() override;
 
+public :
     HRESULT Initialize(class CHierarchyPanel* pPanel, CProjectPanel* pProject);
     void Update() override {}
     void Render() override;
@@ -60,9 +61,7 @@ private:
     ASSET_SELECTION m_selectedAsset;
 
 public:
-    static CInspectorPanel* Create(const std::string& strPanelName, CHierarchyPanel* pHierarchy, CProjectPanel* pProject);
-private:
-    void Free() override;
+    static std::unique_ptr<CInspectorPanel> Create(const std::string& strPanelName, CHierarchyPanel* pHierarchy, CProjectPanel* pProject);
 };
 
 NS_END

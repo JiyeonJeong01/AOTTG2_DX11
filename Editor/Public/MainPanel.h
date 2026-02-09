@@ -7,14 +7,15 @@ class CMainPanel final : public Editor::CEditorPanel
 {
 public:
     CMainPanel(const std::string& strPanelName);
-    ~CMainPanel() override = default;
+    ~CMainPanel() override;
 
+public :
     HRESULT Initialize() override;
     void Update() override;
     void Render() override;
 
     /* Panels to dock */
-    void Add_Panel(Editor::CEditorPanel* pPanel);
+    void Add_Panel(std::unique_ptr<Editor::CEditorPanel> pPanel);
 
     /* SCENE operations */
     /* TODO : Hook these to Engine layer */
@@ -47,7 +48,7 @@ private:
 
 private:
     /* --- Panels --- */
-    std::vector<CEditorPanel*> m_panels;
+    std::vector<std::unique_ptr<Editor::CEditorPanel>> m_panels;
 
     /* --- SCENE UI State --- */
     std::wstring m_scenePath;
@@ -75,9 +76,7 @@ private:
     static constexpr const char* PANEL_PROFILE = "Profile";
 
 public:
-    static CMainPanel* Create(const std::string& strPanelName);
-private:
-    void Free() override;
+    static std::unique_ptr<CMainPanel> Create(const std::string& strPanelName);
 };
 
 NS_END

@@ -39,21 +39,17 @@ void CTestComponentBSystem::Process_B(_float fDT)
     }
 }
 
-CTestComponentBSystem* CTestComponentBSystem::Create()
+std::unique_ptr<CTestComponentBSystem> CTestComponentBSystem::Create()
 {
-    CTestComponentBSystem* pInstance = new CTestComponentBSystem;
+    auto pInstance = std::make_unique<CTestComponentBSystem>();
+
     if (FAILED(pInstance->Initialize()))
     {
         _DEBUG_ERROR_BREAK("Create instance failed");
-        Safe_Release(pInstance);
+        return nullptr;
     }
+
     return pInstance;
-}
-
-void CTestComponentBSystem::Free()
-{
-    CComponent_Processor_Impl<CTestComponentB>::Free();
-
 }
 
 void CTestComponentBSystem::Update(_float fDT)

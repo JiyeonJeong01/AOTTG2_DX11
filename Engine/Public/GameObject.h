@@ -6,13 +6,12 @@ NS_BEGIN(Engine)
 
 class CGameObject_System;
 
-class ENGINE_DLL CGameObject : public CBase, public LABEL
+class ENGINE_DLL CGameObject : public LABEL
 {
     friend class CGameObject_System;
-
-protected:
+public:
     CGameObject(uint32_t iPoolIndex);
-    ~CGameObject() override = default;
+    ~CGameObject();
 
 public:
     void Render();
@@ -30,6 +29,9 @@ public:
 
     template <typename TProxy>
     std::vector<TProxy> Get_Components(COMPONENT_TYPE eComType);
+
+    void                Remove_Components(COMPONENT_TYPE eComType);
+    void                Remove_All_Components();
 
     /* Hierarchy */
     CGameObject*                Get_Parent();
@@ -54,11 +56,7 @@ private:
     void Remove_Child_Inner(GAMEOBJECT_HANDLE hChild);
 
 public:
-    static CGameObject* Create(uint32_t iLayer = Layer::DEFAULT_LAYER, std::string strName = "GameObject", CGameObject* pParent = nullptr);
     CGameObject* Clone();
-
-private:
-    void Free() override;
 };
 
 NS_END

@@ -11,6 +11,10 @@ CInspectorPanel::CInspectorPanel(const std::string& strPanelName)
 {
 }
 
+CInspectorPanel::~CInspectorPanel()
+{
+}
+
 HRESULT CInspectorPanel::Initialize(CHierarchyPanel* pPanel, CProjectPanel* pProject)
 {
     pPanel->m_OnPrimarySelectionChanged.Add_Listener(&CInspectorPanel::Set_Target, this);
@@ -240,19 +244,15 @@ void CInspectorPanel::Draw_None()
     ImGui::TextUnformatted("No selection.");
 }
 
-CInspectorPanel* CInspectorPanel::Create(const std::string& strPanelName, CHierarchyPanel* pHierarcy, CProjectPanel* pProject)
+std::unique_ptr<CInspectorPanel> CInspectorPanel::Create(const std::string& strPanelName, CHierarchyPanel* pHierarcy, CProjectPanel* pProject)
 {
-    CInspectorPanel* pInstance = new CInspectorPanel(strPanelName);
+    auto pInstance = std::make_unique<CInspectorPanel>(strPanelName);
     if (FAILED(pInstance->Initialize(pHierarcy, pProject)))
     {
-        Safe_Release(pInstance);
         _DEBUG_ERROR_BREAK("CInspectorPanel Create failed");
+        return nullptr;
     }
     return pInstance;
 }
 
-void CInspectorPanel::Free()
-{
-    CEditorPanel::Free();
-}
 NS_END

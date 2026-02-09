@@ -12,10 +12,66 @@ CGameObject::CGameObject(uint32_t iPoolIndex)
     m_hSelf.iVersion = 0;
 }
 
+CGameObject::~CGameObject()
+{
+
+}
+
 void CGameObject::Render()
 {
     if (!IsValid())
         return;
+}
+
+void CGameObject::Remove_Components(COMPONENT_TYPE eComType)
+{
+    if (!IsValid())
+        return;
+
+    const GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
+
+    const uint32_t& iSlotData = data.iComponentSlots[SCAST(_uint, eComType)];
+
+    if ((iSlotData & Component::GROUP_FLAG) == 0)
+    {
+        COMPONENT_HANDLE h;
+        h.iHandle = iSlotData;
+        SYS_COMPONENT.Remove_Component_By_Type(eComType, h);
+    }
+    else
+    {
+        const uint32_t iGroupID = iSlotData & Component::DATA_MASK;
+        const auto& tGroup = SYS_COMPONENT.Get_Group(iGroupID);
+
+        SYS_COMPONENT.Remove_Component_By_Type(eComType, tGroup.tPrimary);
+
+        for (auto& h : tGroup.tExtras)
+            SYS_COMPONENT.Remove_Component_By_Type(eComType, h);
+
+        SYS_COMPONENT.Free_Group(iGroupID);
+    }
+}
+
+
+void CGameObject::Remove_All_Components()
+{
+    if (!IsValid())
+        return;
+
+    GAMEOBJECT_DATA& tMyData = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
+
+    _int iTotalCom = SCAST(_int, COMPONENT_MAX);
+    for (_int i = 0; i < iTotalCom; ++i)
+    {
+        COMPONENT_TYPE eType = SCAST(COMPONENT_TYPE, i);
+
+        const GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
+        if (data.iComponentSlots[i] == 0)
+            continue;
+
+        Remove_Components(eType);
+    }
+
 }
 
 CGameObject* CGameObject::Get_Parent()
@@ -183,18 +239,6 @@ Component::COMPONENT_MASK CGameObject::Get_ComponentMask() const
     return SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).componentMask;
 }
 
-CGameObject* CGameObject::Create(uint32_t iLayer, std::string strName, CGameObject* pParent)
-{
-    CGameObject* pInstance = nullptr;
-
-    if (pInstance = SYS_GAMEOBJECT.Create_Object(iLayer, strName))
-    {
-        if (pParent)
-            pInstance->Set_Parent(pParent);
-    }
-    return pInstance;
-}
-
 CGameObject* CGameObject::Clone()
 {
     if (!IsValid())
@@ -203,7 +247,7 @@ CGameObject* CGameObject::Clone()
     std::string cloneName = std::string(Get_Label()) + "_Clone";
 
     const GAMEOBJECT_DATA& tData = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
-    CGameObject* pClone = CGameObject::Create(tData.layer, cloneName, nullptr);
+    CGameObject* pClone = SYS_GAMEOBJECT.Create_Object(tData.layer, cloneName, nullptr);
     if (!pClone)
         return nullptr;
 
@@ -217,11 +261,6 @@ CGameObject* CGameObject::Clone()
     // todo ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     return pClone;
-}
-
-void CGameObject::Free()
-{
-    CBase::Free();
 }
 
 NS_END

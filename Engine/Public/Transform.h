@@ -27,7 +27,7 @@ public:
 
 public:
     CTransform() : CComponent_Proxy_Base() { m_eComType = COMPONENT_TYPE::TRANSFORM; }
-    CTransform( DataType* pData, COMPONENT_HANDLE handle)
+    CTransform(DataType* pData, COMPONENT_HANDLE handle)
     : CComponent_Proxy_Base(pData, handle) { m_eComType = COMPONENT_TYPE::TRANSFORM; }
     ~CTransform() override = default;
 

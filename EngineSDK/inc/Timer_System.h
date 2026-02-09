@@ -5,11 +5,11 @@
 NS_BEGIN(Engine)
 
 class CTimer;
-class CTimer_System : public CBase
+class CTimer_System final
 {
-private:
+public:
 	CTimer_System();
-	virtual ~CTimer_System() = default;
+	~CTimer_System();
 public :
 	HRESULT			Initialize_System();
 
@@ -19,13 +19,12 @@ public:
     _float			Get_FrameDT() const;
 
 private:
-	CTimer*			m_pSystemTimer = { nullptr };
-	CTimer*			m_pFrameTimer = { nullptr };
-	float			m_fFrameDT = {};
+	std::unique_ptr<CTimer> m_pSystemTimer{ };
+	std::unique_ptr<CTimer> m_pFrameTimer{ };
+	_float			        m_fFrameDT{ };
 
 public:
-	static CTimer_System* Create();
-	virtual void		Free();
+	static unique_ptr<CTimer_System> Create();
 };
 
 NS_END

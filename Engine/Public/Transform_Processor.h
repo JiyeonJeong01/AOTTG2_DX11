@@ -18,8 +18,7 @@ private:
     inline void Bake_World(TRANSFORM_DATA* pData);
 
 public:
-    static CTransform_Processor* Create();
-    void Free() override;
+    static std::unique_ptr<CTransform_Processor> Create();
 };
 
 NS_END

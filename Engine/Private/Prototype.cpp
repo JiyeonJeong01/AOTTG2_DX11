@@ -31,8 +31,6 @@ CGameObject* CPrototype::Clone() const
     /* Create instance */
     CGameObject* pInstance = SYS_GAMEOBJECT.Create_Object(m_tSpec.layer, m_tSpec.strName);
 
-    CHECK_PROTO_CLONE_FAIL(!pInstance, "CPrototype clone failed : instance is nullptr.");
-    CHECK_PROTO_CLONE_FAIL(!pInstance->IsValid(), "CPrototype clone failed : instance is not valid.");
     CHECK_PROTO_CLONE_FAIL(FAILED(Apply_Spec_To_Instance(pInstance)), "CPrototype clone failed : can't apply spec to instance.");
     CHECK_PROTO_CLONE_FAIL(FAILED(Clone_Children(pInstance)), "CPrototype clone failed : child instantiation failed.");
 
@@ -59,6 +57,9 @@ HRESULT CPrototype::Apply_Spec_To_Instance(CGameObject* pInstance) const
 
 HRESULT CPrototype::Clone_Children(CGameObject* pParent) const
 {
+    /* TODO ------------------------------------------- */
+    /* TODO              Complete this logic            */
+    /* TODO ------------------------------------------- */
     //if (!pParent)
     //    return E_FAIL;
 

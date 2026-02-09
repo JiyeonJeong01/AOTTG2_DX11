@@ -20,7 +20,10 @@ CCore_System::CCore_System()
 
 CCore_System::~CCore_System()
 {
-    
+    SYS_COMPONENT.DestroyInstance();
+    SYS_GAMEOBJECT.DestroyInstance();
+    SYS_RESOURCE.DestroyInstance();
+    SYS_LOG.DestroyInstance();
 }
 
 HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice,
@@ -135,11 +138,6 @@ _float CCore_System::Compute_FrameDT() const
 HRESULT CCore_System::Change_Scene(_uint iNewLevelIndex, CLevel* pNewLevel)
 {
     return S_OK;
-}
-
-void CCore_System::Free()
-{
-	__super::Free();
 }
 
 NS_END

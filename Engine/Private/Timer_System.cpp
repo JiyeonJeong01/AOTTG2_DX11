@@ -10,6 +10,10 @@ CTimer_System::CTimer_System()
 
 }
 
+CTimer_System::~CTimer_System()
+{
+}
+
 HRESULT CTimer_System::Initialize_System()
 {
 	m_pSystemTimer = CTimer::Create();
@@ -41,23 +45,16 @@ _float CTimer_System::Get_FrameDT() const
 }
 
 
-CTimer_System* CTimer_System::Create()
+std::unique_ptr<CTimer_System> CTimer_System::Create()
 {
-	CTimer_System* pInstance = new CTimer_System;
+    auto pInstance = make_unique<CTimer_System>();
 	if (FAILED(pInstance->Initialize_System()))
 	{
-		Safe_Release(pInstance);
-		_DEBUG_ERROR_BREAK("CTimer_System Create Failed");
+        _DEBUG_ERROR_BREAK("CTimer_System Create Failed");
+        return nullptr;
 	}
 	return pInstance;
 }
 
-void CTimer_System::Free()
-{
-	__super::Free();
-
-	Safe_Release(m_pSystemTimer);
-	Safe_Release(m_pFrameTimer);
-}
 
 NS_END

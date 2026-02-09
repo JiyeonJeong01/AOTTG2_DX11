@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Base.h"
+#include "Engine_Define.h"
 
 template <typename TProxy> class CComponent_Processor_Impl;
 
@@ -10,7 +10,7 @@ template <typename TProxy> class CComponent_Processor_Impl;
  * @tparam TProxy_T The actual derived proxy class (e.g., CTransform_Proxy)
  */
 template <typename DATA_T, typename TProxy_T>
-class CComponent_Proxy_Base : public CBase
+class CComponent_Proxy_Base
 {
 public:
     /* Expose types for the Component System's type traits and Pool allocation */
@@ -20,6 +20,8 @@ public:
     CComponent_Proxy_Base() = default;
     explicit CComponent_Proxy_Base(COMPONENT_TYPE eType) : m_eComType(eType) {}
     CComponent_Proxy_Base(DataType* pData, COMPONENT_HANDLE handle) : m_hHandle(handle), m_pData(pData){}
+    virtual ~CComponent_Proxy_Base() {}
+
 
     void Initialize(COMPONENT_HANDLE hHandle, DataType* pData) noexcept
     {
@@ -37,15 +39,15 @@ public:
 	    return m_eComType;
     }
 
-    COMPONENT_HANDLE    Get_Handle() noexcept
+    COMPONENT_HANDLE    Get_Handle() const noexcept
     {
         return m_hHandle;
     }
-    DataType* _Data() { return m_pData; }
-    const DataType* _Data() const { return m_pData; }
+    DataType* _Data() noexcept { return m_pData; }
+    const DataType* _Data() const noexcept { return m_pData; }
 
-    DataType* operator->() { return m_pData; }
-    const DataType* operator->() const { return m_pData; }
+    DataType* operator->() noexcept { return m_pData; }
+    const DataType* operator->() const noexcept { return m_pData; }
 protected:
     COMPONENT_HANDLE            m_hHandle{};    /* Unique identifier for version-safe access */
     DataType*                   m_pData{};      /* Direct pointer to the raw data in the pool */

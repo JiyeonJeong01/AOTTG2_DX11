@@ -15,8 +15,6 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CPrototype_System final : public CBase
 {
     DECLARE_SINGLETON(CPrototype_System)
-
-
 public:
     HRESULT Initialize() { return S_OK; }
     void    Clear();

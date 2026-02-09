@@ -1,13 +1,19 @@
 ﻿#include "Timer.h"
 
-NS_BEGIN(Engine)
+#include "Engine_Log.h"
 
-CTimer::CTimer()
+NS_BEGIN(Engine)
+    CTimer::CTimer()
 	: m_fTimeDelta(0.f)
 {
 	ZeroMemory(&m_LastTime, sizeof(LARGE_INTEGER));
 	ZeroMemory(&m_FrameTime, sizeof(LARGE_INTEGER));
 	ZeroMemory(&m_CpuTick, sizeof(LARGE_INTEGER));
+}
+
+CTimer::~CTimer()
+{
+
 }
 
 HRESULT CTimer::Initialize()
@@ -32,23 +38,17 @@ _float CTimer::Update_Timer()
 	return m_fTimeDelta;
 }
 
-CTimer* CTimer::Create()
+std::unique_ptr<CTimer> CTimer::Create()
 {
-	CTimer* pInstance = new CTimer;
+	auto pInstance = std::make_unique<CTimer>();
 
 	if (FAILED(pInstance->Initialize()))
 	{
-		Engine::Safe_Release(pInstance);
+        _DEBUG_ERROR_BREAK("Create instance failed");
 		return nullptr;
 	}
 
 	return pInstance;
-}
-
-void CTimer::Free()
-{
-	__super::Free();
-
 }
 
 NS_END

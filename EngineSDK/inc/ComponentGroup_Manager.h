@@ -27,7 +27,7 @@ private:
 	vector<uint32_t>		m_FreeIndices{ };
 
 public :
-	static CComponentGroup_Manager* Create();
+    static std::unique_ptr<CComponentGroup_Manager>  Create();
 };
 
 NS_END

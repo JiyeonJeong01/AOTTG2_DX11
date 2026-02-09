@@ -9,8 +9,9 @@ class CProfilerPanel : public CEditorPanel
 {
 public:
     CProfilerPanel(const std::string& strPanelName);
-    ~CProfilerPanel() override = default;
+    ~CProfilerPanel() override;
 
+public :
     HRESULT Initialize() override;
     void Update() override;
     void Render() override;
@@ -87,10 +88,7 @@ private:
     const float FRAME_BUDGET_MS = 1000.0f / TARGET_FPS;
 
 public:
-    static CProfilerPanel* Create(const std::string& strPanelName);
-
-private:
-    void Free() override;
+    static std::unique_ptr<CProfilerPanel> Create(const std::string& strPanelName);
 };
 
 NS_END

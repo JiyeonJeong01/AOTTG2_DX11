@@ -27,7 +27,6 @@
     <ClCompile Include="..\..\ThirdParty\imgui_tables.cpp" />
     <ClCompile Include="..\..\ThirdParty\imgui_widgets.cpp" />
     <ClCompile Include="..\Private\ConsolePanel.cpp" />
-    <ClCompile Include="..\Private\EditorPanel.cpp" />
     <ClCompile Include="..\Private\GUI_System.cpp" />
     <ClCompile Include="..\Private\HierarchyPanel.cpp" />
     <ClCompile Include="..\Private\InspectorPanel.cpp" />

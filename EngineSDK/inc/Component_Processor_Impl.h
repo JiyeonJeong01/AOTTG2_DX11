@@ -15,7 +15,6 @@ public:
 
     CComponent_Processor_Impl(const CComponent_Processor_Impl&) = delete;
     CComponent_Processor_Impl& operator=(const CComponent_Processor_Impl&) = delete;
-
     CComponent_Processor_Impl(CComponent_Processor_Impl&&) noexcept = default;
     CComponent_Processor_Impl& operator=(CComponent_Processor_Impl&&) noexcept = default;
 

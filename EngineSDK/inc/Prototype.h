@@ -47,11 +47,11 @@ public :
     static CPrototype* Create();
 };
 
-#define CHECK_PROTO_CLONE_FAIL(condition, message)    \
-    if (condition) {                            \
-        _DEBUG_ERROR_BREAK(message);            \
-        Safe_Release(pInstance);                \
-        return nullptr;                         \
+#define CHECK_PROTO_CLONE_FAIL(condition, message)      \
+    if (condition) {                                    \
+        _DEBUG_ERROR_BREAK(message);                    \
+        SYS_GAMEOBJECT.Destroy_Object(pInstance);       \
+        return nullptr;                                 \
     }
 
 NS_END

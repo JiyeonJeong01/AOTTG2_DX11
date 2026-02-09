@@ -10,12 +10,12 @@ namespace Engine
 
 NS_BEGIN(Editor)
 
-class CEditorPanel : public CBase
+class CEditorPanel
 {
 public:
     CEditorPanel(const std::string& strPanel)
         : m_strPanelName(strPanel), m_bOpen(true) { }
-    virtual ~CEditorPanel() = default;
+    virtual ~CEditorPanel() {};
 
     virtual HRESULT Initialize() { return S_OK; }
     virtual void Update() {}    

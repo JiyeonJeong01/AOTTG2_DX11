@@ -7,6 +7,36 @@ CGraphic_Device::CGraphic_Device()
 {
 }
 
+CGraphic_Device::~CGraphic_Device()
+{
+    Safe_Release(m_pSwapChain);
+    Safe_Release(m_pDepthStencilView);
+    Safe_Release(m_pBackBufferRTV);
+    Safe_Release(m_pDeviceContext);
+
+
+#if defined(DEBUG) || defined(_DEBUG)
+    ID3D11Debug* d3dDebug;
+    HRESULT hr = m_pDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3dDebug));
+    if (SUCCEEDED(hr))
+    {
+        OutputDebugStringW(L"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \r ");
+        OutputDebugStringW(L"                                                                    D3D11 Live Object ref Count Checker \r ");
+        OutputDebugStringW(L"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \r ");
+
+        hr = d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+
+        OutputDebugStringW(L"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \r ");
+        OutputDebugStringW(L"                                                                    D3D11 Live Object ref Count Checker END \r ");
+        OutputDebugStringW(L"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \r ");
+    }
+    if (d3dDebug != nullptr)            d3dDebug->Release();
+#endif
+
+
+    Safe_Release(m_pDevice);
+}
+
 HRESULT CGraphic_Device::Initialize(HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY, _Out_ ID3D11Device** ppDevice, _Out_ ID3D11DeviceContext** ppContext)
 {
 	_uint		iFlag = 0;
@@ -178,47 +208,17 @@ HRESULT CGraphic_Device::Ready_DepthStencilView(_uint iWinCX, _uint iWinCY)
 	return S_OK;
 }
 
-CGraphic_Device* CGraphic_Device::Create(HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY, ID3D11Device** ppDevice, ID3D11DeviceContext** ppDeviceContextOut)
+std::unique_ptr<CGraphic_Device> CGraphic_Device::Create(HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY, ID3D11Device** ppDevice, ID3D11DeviceContext** ppDeviceContextOut)
 {
-	CGraphic_Device* pInstance = new CGraphic_Device();
+    auto pInstance = std::make_unique<CGraphic_Device>();
 
 	if (FAILED(pInstance->Initialize(hWnd, isWindowed, iWinSizeX, iWinSizeY, ppDevice, ppDeviceContextOut)))
 	{
-		MSG_BOX("Failed to Created : CGraphic_Device");
-		Safe_Release(pInstance);
+        MSG_BOX("Failed to Created : CGraphic_Device");
+        return nullptr;
 	}
 
 	return pInstance;
-}
-
-void CGraphic_Device::Free()
-{
-	Safe_Release(m_pSwapChain);
-	Safe_Release(m_pDepthStencilView);
-	Safe_Release(m_pBackBufferRTV);
-	Safe_Release(m_pDeviceContext);
-
-
-#if defined(DEBUG) || defined(_DEBUG)
-	ID3D11Debug* d3dDebug;
-	HRESULT hr = m_pDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3dDebug));
-	if (SUCCEEDED(hr))
-	{
-		OutputDebugStringW(L"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \r ");
-		OutputDebugStringW(L"                                                                    D3D11 Live Object ref Count Checker \r ");
-		OutputDebugStringW(L"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \r ");
-
-		hr = d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-
-		OutputDebugStringW(L"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \r ");
-		OutputDebugStringW(L"                                                                    D3D11 Live Object ref Count Checker END \r ");
-		OutputDebugStringW(L"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \r ");
-	}
-	if (d3dDebug != nullptr)            d3dDebug->Release();
-#endif
-
-
-	Safe_Release(m_pDevice);
 }
 
 NS_END

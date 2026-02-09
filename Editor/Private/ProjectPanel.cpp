@@ -10,6 +10,11 @@ CProjectPanel::CProjectPanel(const std::string& strPanelName)
     : CEditorPanel(strPanelName)
 {
 }
+
+CProjectPanel::~CProjectPanel()
+{
+}
+
 ASSET_SELECTION CProjectPanel::Build_Selection(const std::filesystem::path& p) const
 {
     ASSET_SELECTION sel{};
@@ -800,20 +805,15 @@ std::string CProjectPanel::Make_Unique_Folder_Name_Impl(const std::filesystem::p
 /* =======================================================================*/
 /* ============================ Factory/Free =============================*/
 /* =======================================================================*/
-CProjectPanel* CProjectPanel::Create(const std::string& strPanelName)
+std::unique_ptr<CProjectPanel> CProjectPanel::Create(const std::string& strPanelName)
 {
-    CProjectPanel* p = new CProjectPanel(strPanelName);
-    if (FAILED(p->Initialize()))
+    auto pInstance = std::make_unique<CProjectPanel>(strPanelName);
+    if (FAILED(pInstance->Initialize()))
     {
-        p->Free();
+        _DEBUG_ERROR_BREAK("CProjectPanel create failed");
         return nullptr;
     }
-    return p;
-}
-
-void CProjectPanel::Free()
-{
-    __super::Free();
+    return pInstance;
 }
 
 NS_END

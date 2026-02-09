@@ -1,13 +1,13 @@
 ﻿  #pragma once
-#include "Base.h"
+#include "Engine_Define.h"
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CComponent_Processor abstract : public CBase
+class ENGINE_DLL CComponent_Processor abstract
 {
 public:
 	CComponent_Processor() {};
-    virtual ~CComponent_Processor() override = default;
+    virtual ~CComponent_Processor() = default;
 
 public :
 	virtual HRESULT	Initialize() { return S_OK; };
@@ -21,9 +21,6 @@ public :
 protected :
 	ID3D11Device*			m_pDevice = { nullptr };
 	ID3D11DeviceContext*	m_pContext = { nullptr };
-
-	/* TODO 확장 */
-	/* DirtyList 혹은 Dirty Flag를 사용하게 할 것인지 고민해보자. */
 };
 
 NS_END

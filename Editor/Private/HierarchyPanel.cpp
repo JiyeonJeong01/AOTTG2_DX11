@@ -12,6 +12,10 @@ CHierarchyPanel::CHierarchyPanel(const std::string& strPanelName)
 {
 }
 
+CHierarchyPanel::~CHierarchyPanel()
+{
+}
+
 HRESULT CHierarchyPanel::Initialize()
 {
     Refresh_Roots();
@@ -633,7 +637,7 @@ void CHierarchyPanel::Handle_DragDrop(Engine::CGameObject* pObj)
 Engine::CGameObject* CHierarchyPanel::Create_Empty_Object(Engine::CGameObject* pParent)
 {
     std::string szBaseName = "New GameObject";
-    Engine::CGameObject* pNew = CGameObject::Create(Layer::DEFAULT_LAYER, szBaseName, pParent);
+    Engine::CGameObject* pNew = SYS_GAMEOBJECT.Create_Object(Layer::DEFAULT_LAYER, szBaseName, pParent);
 
     return pNew;
 }
@@ -760,20 +764,15 @@ bool CHierarchyPanel::String_IContains(const std::string& haystack, const std::s
     return Editor_Util::Str_IContains(haystack, needle);
 }
 
-CHierarchyPanel* CHierarchyPanel::Create(const std::string& strPanelName)
+std::unique_ptr<CHierarchyPanel> CHierarchyPanel::Create(const std::string& strPanelName)
 {
-    CHierarchyPanel* pInstance = new CHierarchyPanel(strPanelName);
+    auto pInstance = std::make_unique<CHierarchyPanel>(strPanelName);
     if (FAILED(pInstance->Initialize()))
     {
-        Safe_Release(pInstance);
         _DEBUG_ERROR_BREAK("CHierarchyPanel Create failed");
+        return nullptr;
     }
     return pInstance;
-}
-
-void CHierarchyPanel::Free()
-{
-    CEditorPanel::Free();
 }
 
 NS_END

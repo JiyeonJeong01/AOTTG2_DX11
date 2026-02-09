@@ -9,8 +9,22 @@ NS_BEGIN(Engine)
 template <typename TProxy>
 TProxy CComponent_System::Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle)
 {
+    const uint32_t iIndex = SCAST(_uint, eComType);
+    if (iIndex >= SCAST(_uint, COMPONENT_TYPE::END) || !m_pComProcessors[iIndex])
+    {
+        _DEBUG_ERROR_BREAK("Processor not registered for this component type.");
+        return TProxy(nullptr, COMPONENT_HANDLE{});
+    }
+
     using PROCESSOR_T = typename TProxy::ProcessorType;
-    PROCESSOR_T* pProcessor = static_cast<PROCESSOR_T*>(  m_pComProcessors[static_cast<uint32_t>(eComType)].get());
+
+#ifdef _DEBUG
+    PROCESSOR_T* pProcessor = dynamic_cast<PROCESSOR_T*>(m_pComProcessors[iIndex].get());
+    _DEBUG_ENGINE_ASSERT_MSG(pProcessor != nullptr, "Processor type mismatch for this component type!");
+#else
+    PROCESSOR_T* pProcessor = static_cast<PROCESSOR_T*>(m_pComProcessors[iIndex].get());
+#endif
+
     return pProcessor->Get_Proxy(handle);
 }
 

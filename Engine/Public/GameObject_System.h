@@ -1,18 +1,18 @@
 ﻿#pragma once
 
-#include "Base.h"
+#include "Engine_Define.h"
 
 NS_BEGIN(Engine)
 
 class CGameObject;
 
-class ENGINE_DLL CGameObject_System final : public CBase
+class ENGINE_DLL CGameObject_System final
 {
     DECLARE_SINGLETON(CGameObject_System)
 
 public:
     HRESULT         Initialize(uint32_t iMaxLayers = 32, uint32_t iPoolSize = 2048);
-    CGameObject*    Create_Object(Layer::LAYER_ID iLayer, const string& strName);
+    CGameObject*    Create_Object(Layer::LAYER_ID iLayer = Layer::DEFAULT_LAYER, const string& strName = "GameObject", CGameObject* pParent = nullptr);
     void            Destroy_Object(CGameObject* pObj);
 
     void            Set_Layer(CGameObject* pObj, Layer::LAYER_ID iNewLayer);
@@ -20,26 +20,23 @@ public:
     void            Gather_By_Mask(Layer::LAYER_MASK mask, std::vector<CGameObject*>& outObjects) const;
     void            Get_Roots(std::vector<CGameObject*>& outRoots);
 
-private:
-    uint32_t        m_iLayerCount = Layer::MAX_LAYERS;
-
-    std::array<std::vector<CGameObject*>, Layer::MAX_LAYERS> m_layerBuckets{};
-
-    std::vector<GAMEOBJECT_DATA>    m_dataPool;
-    std::vector<CGameObject*>       m_wrapperPool;
-    std::queue<uint32_t>            m_freeIndices;
-
-public:
     GAMEOBJECT_DATA&    Access_Data_Raw(GAMEOBJECT_HANDLE hObj);
     CGameObject*        Get_Wrapper(GAMEOBJECT_HANDLE hObj);
     _bool               Is_Valid_Handle(GAMEOBJECT_HANDLE hObj) const;
 
 private:
+    uint32_t                                    m_iLayerCount = Layer::MAX_LAYERS;
+    std::array<std::vector<CGameObject*>,       Layer::MAX_LAYERS> m_layerBuckets{};
+    std::vector<GAMEOBJECT_DATA>                m_dataPool;
+    std::vector<std::unique_ptr<CGameObject>>   m_wrapperPool;  /* Exclusive ownership */
+    std::queue<uint32_t>                        m_freeIndices;
+    std::vector<uint32_t>                       m_pendingDestroys;
+
+
+private:
     void Remove_From_LayerBucket(CGameObject* pObj);
     void Add_To_LayerBucket(CGameObject* pObj, Layer::LAYER_ID layer = Layer::DEFAULT_LAYER);
     void Flush_PendingDestroy();
-
-    void Free() override;
 };
 
 NS_END

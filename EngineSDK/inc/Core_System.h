@@ -1,10 +1,15 @@
 ﻿#pragma once
 
-#include "Base.h"
+#include "Engine_Define.h"
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CCore_System final : public CBase
+class CGraphic_Device;
+class CTimer_System;
+class CScene_Manager;
+class CPrototype_Manager;
+
+class ENGINE_DLL CCore_System final
 {
 	DECLARE_SINGLETON(CCore_System)
 
@@ -31,17 +36,11 @@ public: /* For.Scene_Manager */
 //    CBase* Clone_Prototype(PROTOTYPE ePrototype, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
 
 private:
-	class CGraphic_Device*		m_pGraphic_Device{ };
-	class CTimer_System*		m_pTimerSystem{ };
-    class CLevel_Manager*       m_pLevel_Manager { };
-    class CPrototype_Manager*   m_pPrototype_Manager { };
+	std::unique_ptr<CGraphic_Device>		m_pGraphic_Device{ };
+    std::unique_ptr<CTimer_System>		    m_pTimerSystem{ };
 
     ID3D11Device*               m_pDevice{};
     ID3D11DeviceContext*        m_pContext{};
-
-public:
-	void Free() override;
-
 };
 
 NS_END

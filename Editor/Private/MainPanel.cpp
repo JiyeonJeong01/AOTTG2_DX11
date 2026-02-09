@@ -14,22 +14,23 @@ CMainPanel::CMainPanel(const std::string& strPanelName)
 {
 }
 
+CMainPanel::~CMainPanel()
+{
+}
+
 HRESULT CMainPanel::Initialize()
 {
-    CConsolePanel* pConsole = CConsolePanel::Create(PANEL_CONSOLE);
-    Add_Panel(pConsole);
+    auto pConsole = CConsolePanel::Create(PANEL_CONSOLE);
+    auto pHierarchy = CHierarchyPanel::Create(PANEL_HIERARCHY);
+    auto pProject = CProjectPanel::Create(PANEL_PROJECT);
+    auto pInspector = CInspectorPanel::Create(PANEL_INSPECTOR, pHierarchy.get(), pProject.get());
+    auto pProfile = CProfilerPanel::Create(PANEL_PROFILE);
 
-    CHierarchyPanel* pHierarchy = CHierarchyPanel::Create(PANEL_HIERARCHY);
-    Add_Panel(pHierarchy);
-
-    CProjectPanel* pProject = CProjectPanel::Create(PANEL_PROJECT);
-    Add_Panel(pProject);
-
-    CInspectorPanel* pInspector = CInspectorPanel::Create(PANEL_INSPECTOR, pHierarchy, pProject);
-    Add_Panel(pInspector);
-
-    CProfilerPanel* pProfile = CProfilerPanel::Create(PANEL_PROFILE);
-    Add_Panel(pProfile);
+    Add_Panel(std::move(pConsole));
+    Add_Panel(std::move(pHierarchy));
+    Add_Panel(std::move(pProject));
+    Add_Panel(std::move(pInspector));
+    Add_Panel(std::move(pProfile));
 
     const std::filesystem::path assetRootPath = ProjectConfig::PATH + ProjectConfig::ROOT;
 
@@ -41,25 +42,26 @@ void CMainPanel::Update()
     if (!m_bOpen)
         return;
 
-    for (auto* panel : m_panels)
+    for (const auto& upPanel : m_panels)
     {
-        if (!panel)
+        CEditorPanel* pPanel = upPanel.get();
+        if (!pPanel)
         {
             _DEBUG_ERROR_BREAK("CMainPanel Update failed : panel is nullptr");
             continue;
         }
-        panel->Update();
+        pPanel->Update();
     }
 }
 
-void CMainPanel::Add_Panel(Editor::CEditorPanel* pPanel)
+void CMainPanel::Add_Panel(std::unique_ptr<Editor::CEditorPanel> pPanel)
 {
     if (!pPanel)
     {
         _DEBUG_WARN("Add_Panel failed : pPanel is nullptr");
         return;
     }
-    m_panels.push_back(pPanel);
+    m_panels.push_back(std::move(pPanel));
 }
 
 void CMainPanel::Render()
@@ -225,13 +227,14 @@ void CMainPanel::Draw_Menu_File()
 void CMainPanel::Draw_Menu_Window()
 {
     /* Panel on/off */
-    for (auto* p : m_panels)
+    for (const auto& upPanel  : m_panels)
     {
-        if (!p) continue;
+        CEditorPanel* pPanel = upPanel.get();
+        if (!pPanel) continue;
 
-        bool bOpen = (bool)p->IsOpen();
-        if (ImGui::MenuItem(p->GetTitle().c_str(), nullptr, &bOpen))
-            p->SetOpen(bOpen);
+        bool bOpen = (bool)pPanel->IsOpen();
+        if (ImGui::MenuItem(pPanel->GetTitle().c_str(), nullptr, &bOpen))
+            pPanel->SetOpen(bOpen);
     }
 }
 
@@ -338,33 +341,30 @@ void CMainPanel::Draw_Dockspace()
 
 void CMainPanel::Draw_Panels()
 {
-    for (auto* panel : m_panels)
+    for (const auto& upPanel : m_panels)
     {
-        if (!panel)
+        CEditorPanel* pPanel = upPanel.get();
+
+        if (!pPanel)
         {
             _DEBUG_ERROR_BREAK("CMainPanel DrawPanels failed : panel is nullptr");
             continue;
         }
-        if (!panel->IsOpen())
+        if (!pPanel->IsOpen())
             continue;
-        panel->Render();
+        pPanel->Render();
     }
 }
 
-CMainPanel* CMainPanel::Create(const std::string& strPanelName)
+std::unique_ptr<CMainPanel> CMainPanel::Create(const std::string& strPanelName)
 {
-    CMainPanel* pInstance = new CMainPanel(strPanelName);
+    auto pInstance = std::make_unique<CMainPanel>(strPanelName);
     if (FAILED(pInstance->Initialize()))
     {
-        Safe_Release(pInstance);
         _DEBUG_ERROR_BREAK("CMainPanel Create failed");
+        return nullptr;
     }
     return pInstance;
-}
-
-void CMainPanel::Free()
-{
-    CEditorPanel::Free();
 }
 
 NS_END

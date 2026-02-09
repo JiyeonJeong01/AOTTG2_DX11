@@ -1,14 +1,15 @@
 ﻿#pragma once
 
-#include "Base.h"
+#include "Engine_Define.h"
 
 NS_BEGIN(Engine)
 
-class CGraphic_Device final : public CBase
+class CGraphic_Device final
 {
-private:
+public:
 	CGraphic_Device();
-	virtual ~CGraphic_Device() = default;
+	~CGraphic_Device();
+
 public:
 	HRESULT Initialize(HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY,
 		                _Inout_ ID3D11Device** ppDevice, _Inout_ ID3D11DeviceContext** ppContext);
@@ -32,8 +33,7 @@ private:
 	HRESULT Ready_DepthStencilView(_uint iWinCX, _uint iWinCY);
 
 public:
-	static CGraphic_Device* Create(_In_ HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY, _Out_ ID3D11Device** ppDevice, _Out_ ID3D11DeviceContext** ppDeviceContextOut);
-	virtual void Free() override;
+	static std::unique_ptr<CGraphic_Device> Create(_In_ HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY, _Out_ ID3D11Device** ppDevice, _Out_ ID3D11DeviceContext** ppDeviceContextOut);
 };
 
 NS_END

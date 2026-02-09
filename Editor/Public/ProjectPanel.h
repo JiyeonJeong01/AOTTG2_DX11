@@ -6,9 +6,9 @@ NS_BEGIN(Editor)
 
 class CProjectPanel final : public CEditorPanel
 {
-private:
+public:
     CProjectPanel(const std::string& strPanelName);
-    ~CProjectPanel() override = default;
+    ~CProjectPanel() override;
 
 public:
     HRESULT Initialize() override;
@@ -114,10 +114,7 @@ private:
     static std::string Make_Unique_Folder_Name_Impl(const std::filesystem::path& parent, const std::string& baseName);
 
 public:
-    static CProjectPanel* Create(const std::string& strPanelName);
-
-private:
-    void Free() override;
+    static std::unique_ptr<CProjectPanel> Create(const std::string& strPanelName);
 };
 
 NS_END

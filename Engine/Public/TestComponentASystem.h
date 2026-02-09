@@ -18,8 +18,7 @@ private :
 	void Process_A(_float fDT);
 
 public :
-    static CTestComponentASystem* Create();
-    void Free() override;
+    static std::unique_ptr<CTestComponentASystem> Create();
 };
 
 NS_END

@@ -81,9 +81,6 @@
     <ClCompile Include="..\Private\InspectorPanel.cpp">
       <Filter>01. Editor Panel\Inspector</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\EditorPanel.cpp">
-      <Filter>01. Editor Panel\_Base</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\MainPanel.cpp">
       <Filter>01. Editor Panel\Main</Filter>
     </ClCompile>

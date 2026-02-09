@@ -76,6 +76,10 @@ CProfilerPanel::CProfilerPanel(const std::string& strPanelName)
 {
 }
 
+CProfilerPanel::~CProfilerPanel()
+{
+}
+
 HRESULT CProfilerPanel::Initialize()
 {
     m_prevFrame = clock::now();
@@ -428,20 +432,15 @@ void CProfilerPanel::Draw_Memory()
     ImGui::BulletText("Private     : %zu MB", mem.privateBytesMB);
 }
 
-CProfilerPanel* CProfilerPanel::Create(const std::string& strPanelName)
+std::unique_ptr<CProfilerPanel> CProfilerPanel::Create(const std::string& strPanelName)
 {
-    CProfilerPanel* pInstance = new CProfilerPanel(strPanelName);
+    auto pInstance = std::make_unique<CProfilerPanel>(strPanelName);
     if (FAILED(pInstance->Initialize()))
     {
-        Safe_Release(pInstance);
         _DEBUG_ERROR_BREAK("CProfilerPanel Create failed");
+        return nullptr;
     }
     return pInstance;
-}
-
-void CProfilerPanel::Free()
-{
-    __super::Free();
 }
 
 NS_END

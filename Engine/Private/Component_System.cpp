@@ -15,10 +15,11 @@ CComponent_System::~CComponent_System() = default;
 
 HRESULT CComponent_System::Initialize()
 {
-    m_pComGroupMgr = std::unique_ptr<CComponentGroup_Manager>(CComponentGroup_Manager::Create());
+    m_pComGroupMgr = CComponentGroup_Manager::Create();
 
-    m_pComProcessors.push_back(std::unique_ptr<CComponent_Processor>(CTestComponentASystem::Create()));
-    m_pComProcessors.push_back(std::unique_ptr<CComponent_Processor>(CTestComponentBSystem::Create()));
+    m_pComProcessors.resize(SCAST(_uint, COMPONENT_TYPE::END));
+    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TEST_A)] = CTestComponentASystem::Create();
+    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TEST_B)] = CTestComponentBSystem::Create();
 
 	return S_OK;
 }
@@ -31,7 +32,11 @@ void CComponent_System::Update(_float fDT)
 
 void CComponent_System::LateUpdate(_float fDT)
 {
-	// for (auto& pProcessor : m_ComProcessors)
+    for (auto& pProcessor : m_pComProcessors)
+    {
+        if (pProcessor)
+            pProcessor->Update(fDT);
+    }
 }
 
 void CComponent_System::FixedUpdate(_float fDT)
@@ -44,7 +49,13 @@ void CComponent_System::Render()
 
 COMPONENT_HANDLE CComponent_System::Create_Component_By_Type(COMPONENT_TYPE eComType)
 {
-	return m_pComProcessors[SCAST(_uint, eComType)]->Create_Component_Data();
+    const uint32_t iIndex = SCAST(_uint, eComType);
+    if (iIndex >= SCAST(_uint, COMPONENT_TYPE::END) || !m_pComProcessors[iIndex])
+    {
+        _DEBUG_ERROR_BREAK("Processor not registered for this component type.");
+        return COMPONENT_HANDLE{};
+    }
+    return m_pComProcessors[iIndex]->Create_Component_Data();
 }
 
 void CComponent_System::Create_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec)
@@ -64,6 +75,17 @@ void CComponent_System::Create_From_Spec(CGameObject* pObj, const COMPONENT_SPEC
     }
 
     fn(this, eType, pObj, pSpec);
+}
+
+void CComponent_System::Remove_Component_By_Type(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle)
+{
+    const uint32_t iIndex = SCAST(_uint, eComType);
+    if (iIndex >= SCAST(_uint, COMPONENT_TYPE::END) || !m_pComProcessors[iIndex])
+    {
+        _DEBUG_ERROR_BREAK("Processor not registered for this component type.");
+        return ;
+    }
+    m_pComProcessors[iIndex]->Remove_Component(handle);
 }
 
 void CComponent_System::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pBase)

@@ -77,7 +77,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     SYS_GUI.Initialize();
 
     const string strMain = "PANEL_MAIN";
-    Editor::CMainPanel* pMainPanel = Editor::CMainPanel::Create(strMain);
+    unique_ptr<Editor::CMainPanel> upMainPanel = Editor::CMainPanel::Create(strMain);
     
 
     // 기본 메시지 루프입니다:
@@ -108,8 +108,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
             SYS_GUI.Update();
 
-            pMainPanel->Update();
-            pMainPanel->Render();
+            upMainPanel->Update();
+            upMainPanel->Render();
 
             SYS_GUI.Render_GUI();
 

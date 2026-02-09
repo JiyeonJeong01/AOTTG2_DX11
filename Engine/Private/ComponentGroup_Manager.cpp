@@ -63,11 +63,9 @@ void CComponentGroup_Manager::Free_Group(uint32_t iGroupID)
 	m_FreeIndices.push_back(iGroupID);
 }
 
-CComponentGroup_Manager* CComponentGroup_Manager::Create()
+std::unique_ptr<CComponentGroup_Manager>  CComponentGroup_Manager::Create()
 {
-	CComponentGroup_Manager* pInstance = new CComponentGroup_Manager();
-
-	return pInstance;
+    return std::make_unique<CComponentGroup_Manager>();
 }
 
 NS_END

@@ -11,6 +11,10 @@ CConsolePanel::CConsolePanel(const std::string& strPanelName)
 {
 }
 
+CConsolePanel::~CConsolePanel()
+{
+}
+
 HRESULT CConsolePanel::Initialize()
 {
     m_pSink = dynamic_cast<CGUI_Sink*>(SYS_LOG.Set_Sink(CLogger::LOG_TYPE::GUI));
@@ -166,20 +170,15 @@ void CConsolePanel::Draw_Log_List()
     ImGui::EndChild();
 }
 
-CConsolePanel* CConsolePanel::Create(const std::string& strPanelName)
+std::unique_ptr<CConsolePanel> CConsolePanel::Create(const std::string& strPanelName)
 {
-    CConsolePanel* pInstance = new CConsolePanel(strPanelName);
+    auto pInstance = std::make_unique<CConsolePanel>(strPanelName);
     if (FAILED(pInstance->Initialize()))
     {
-        Safe_Release(pInstance);
         _DEBUG_ERROR_BREAK("CConsolePanel Create failed");
+        return nullptr;
     }
     return pInstance;
-}
-
-void CConsolePanel::Free()
-{
-    CEditorPanel::Free();
 }
 
 NS_END

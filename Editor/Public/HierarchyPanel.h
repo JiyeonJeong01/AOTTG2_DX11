@@ -14,8 +14,9 @@ class CHierarchyPanel final : public CEditorPanel
 {
 public:
     CHierarchyPanel(const std::string& strPanelName);
-    ~CHierarchyPanel() override = default;
+    ~CHierarchyPanel() override ;
 
+public :
     HRESULT Initialize() override;
     void Update() override;
     void Render() override;
@@ -109,9 +110,7 @@ private:
     static constexpr const char* PAYLOAD_GO_PTR = "HIERARCHY_GO_PTR";
 
 public:
-        static CHierarchyPanel* Create(const std::string& strPanelName);
-private:
-    void Free() override;
+        static std::unique_ptr<CHierarchyPanel>Create(const std::string& strPanelName);
 };
 
 NS_END

@@ -12,8 +12,9 @@ class CConsolePanel : public CEditorPanel
 {
 public :
     CConsolePanel(const std::string& strPanelName);
-    ~CConsolePanel() override = default;
+    ~CConsolePanel() override;
 
+public :
     HRESULT Initialize() override;
     void Update() override {}
     void Render() override;
@@ -49,9 +50,7 @@ private:
     std::vector<Engine::CLogger::RECORD> m_tmpDrain;
 
 public :
-    static CConsolePanel* Create(const std::string& strPanelName);
-private :
-    void Free() override;
+    static std::unique_ptr<CConsolePanel> Create(const std::string& strPanelName);
 };
 
 NS_END

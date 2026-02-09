@@ -16,9 +16,7 @@ private:
 	void Process_B(_float fDT);
 
 public:
-    static CTestComponentBSystem* Create();
-    void Free() override;
-
+    static std::unique_ptr<CTestComponentBSystem> Create();
 };
 
 NS_END
