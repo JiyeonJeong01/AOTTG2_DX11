@@ -11,5 +11,4 @@ namespace Client
     static unsigned int		g_iWinSizeY = 720;
 }
 
-#include "Engine_Define.h"
-#include "Engine_Log.h"
+#include "Engine_SDK.h"

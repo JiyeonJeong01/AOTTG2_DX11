@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Base.h"
+
 #include "GameObject_System.h"
 
 NS_BEGIN(Engine)

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Engine_Define.h"
+#include "Component_Struct.h"
 
 /**
  * @class CComponentGroup_Manager

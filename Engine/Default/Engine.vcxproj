@@ -161,10 +161,10 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Component_Processor.h" />
     <ClInclude Include="..\Public\Component_Processor_Impl.h" />
     <ClInclude Include="..\Public\Component_Spec.h" />
+    <ClInclude Include="..\Public\Component_Struct.h" />
     <ClInclude Include="..\Public\Component_System.h" />
     <ClInclude Include="..\Public\CLI_Sink.h" />
-    <ClInclude Include="..\Public\Core_Struct.h" />
-    <ClInclude Include="..\Public\Engine_Config.h" />
+    <ClInclude Include="..\Public\Engine_SDK.h" />
     <ClInclude Include="..\Public\Engine_Define.h" />
     <ClInclude Include="..\Public\Engine_Enum.h" />
     <ClInclude Include="..\Public\Engine_Function.h" />
@@ -179,6 +179,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Core_System.h" />
     <ClInclude Include="..\Public\GameObject.h" />
     <ClInclude Include="..\Public\GameObject_Event.h" />
+    <ClInclude Include="..\Public\GameObject_Struct.h" />
     <ClInclude Include="..\Public\Graphic_Device.h" />
     <ClInclude Include="..\Public\GUI_Sink.h" />
     <ClInclude Include="..\Public\ISink.h" />
@@ -190,6 +191,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Scene_Manager.h" />
     <ClInclude Include="..\Public\Logger.h" />
     <ClInclude Include="..\Public\Scene.h" />
+    <ClInclude Include="..\Public\Spec_Struct.h" />
     <ClInclude Include="..\Public\String_Utils.h" />
     <ClInclude Include="..\Public\TestComponentA.h" />
     <ClInclude Include="..\Public\TestComponentASystem.h" />

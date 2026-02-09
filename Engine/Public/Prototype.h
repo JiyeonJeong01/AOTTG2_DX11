@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-#include "Base.h"
-#include "Component_Spec.h"
+#include "Spec_Struct.h"
 
 NS_BEGIN(Engine)
 class CGameObject;
@@ -9,11 +8,11 @@ NS_END
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CPrototype final : public CBase
+class ENGINE_DLL CPrototype final
 {
 public:
     CPrototype();
-    explicit CPrototype(PROTOTYPE_SPEC tSpec);
+    explicit CPrototype(PROTOTYPE_SPEC&& tSpec);
     ~CPrototype();
 
 public:
@@ -31,7 +30,7 @@ public:
     }
 
     HRESULT Assemble(PROTOTYPE_SPEC&& tSpec);
-    CGameObject* Clone() const;
+    CGameObject* Clone(Layer::LAYER_ID iLayer = Layer::DEFAULT_LAYER) const;
 
 private:
     HRESULT Apply_Spec_To_Instance(CGameObject* pInstance) const;

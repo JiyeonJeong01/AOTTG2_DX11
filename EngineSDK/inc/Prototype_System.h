@@ -1,9 +1,11 @@
 ﻿#pragma once
 #include "Asset_GUID.h"
-#include "Base.h"
-#include "Prototype.h"
+
+#include "Spec_Struct.h"
 
 NS_BEGIN(Engine)
+class CPrototype;
+class CGameObject;
 
 /**
  * @class CPrototype_System
@@ -12,7 +14,7 @@ NS_BEGIN(Engine)
  * components and assets. It then instantiates and stores the original 'Master' CPrototype objects
  * in memory, which serve as the source for all future Clone() operations.
  */
-class ENGINE_DLL CPrototype_System final : public CBase
+class ENGINE_DLL CPrototype_System final
 {
     DECLARE_SINGLETON(CPrototype_System)
 public:
@@ -23,7 +25,7 @@ public:
     HRESULT Create_Prototype(const ASSET_GUID& tGUID, PROTOTYPE_SPEC&& spec);
 
     const CPrototype* Find(const ASSET_GUID& tGUID) const;
-    CGameObject* Clone(const ASSET_GUID& tGUID) const;
+    CGameObject* Clone(const ASSET_GUID& tGUID, Layer::LAYER_ID iLayer = Layer::DEFAULT_LAYER) const;
 
 private:
     std::unordered_map<ASSET_GUID, std::unique_ptr<CPrototype>, ASSET_GUID_HASHER> m_Prototypes;

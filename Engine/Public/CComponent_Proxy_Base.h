@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Engine_Define.h"
+#include "Component_Struct.h"
 
 template <typename TProxy> class CComponent_Processor_Impl;
 

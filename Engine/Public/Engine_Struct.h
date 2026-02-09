@@ -19,29 +19,6 @@ namespace  Engine
         const std::string ROOT = "Assets";
     }
 
-    typedef struct tagComponentHandle
-    {
-        uint32_t iHandle = 0;
-
-        uint32_t Get_Index() const { return iHandle & Component::INDEX_MASK; }
-        uint32_t Get_Version() const { return (iHandle & Component::VERSION_MASK) >> Component::VERSION_SHIFT; }
-
-        static tagComponentHandle Create(uint32_t index, uint32_t version)
-        {
-            tagComponentHandle h;
-            h.iHandle = (index & Component::INDEX_MASK) | ((version << Component::VERSION_SHIFT) & Component::VERSION_MASK);
-            return h;
-        }
-
-        bool operator==(const tagComponentHandle& other) const { return iHandle == other.iHandle; }
-        bool Is_Valid() const { return iHandle != 0; }
-    }COMPONENT_HANDLE;
-
-    typedef struct tagComponentGroup
-    {
-        COMPONENT_HANDLE            tPrimary; 
-        vector<COMPONENT_HANDLE>    tExtras;
-    }COMPONENT_GROUP;
 
     typedef struct ENGINE_DLL tagLabel
     {
@@ -62,97 +39,6 @@ namespace  Engine
         }
 
     }LABEL;
-
-    typedef struct tagGameObjectHandle
-    {
-        uint32_t    iIndex = 0;
-        uint32_t    iVersion = 0;
-
-        bool IsValid() const
-        {
-            return iIndex != 0;
-        }
-        bool operator==(const tagGameObjectHandle& other) const
-        {
-            return iIndex == other.iIndex && iVersion == other.iVersion;
-        }
-        bool operator!=(const tagGameObjectHandle& other) const
-        {
-            return !(*this == other);
-        }
-
-    }GAMEOBJECT_HANDLE;
-
-    typedef struct tagGameObjectData
-    {
-        uint32_t    iVersion = 1;       /* slot's current version */
-        _bool       bActive = false;
-        _bool       bPendingDestroy = false;
-
-        /* For layer access in O(1) */
-        Layer::LAYER_ID layer = Layer::INVALID_LAYER;
-        uint32_t iIndexInLayer = 0;
-
-        /* Components */
-        uint32_t iComponentSlots[COMPONENT_MAX] = { 0, };
-        Component::COMPONENT_MASK   componentMask = 0;
-
-        /* Hierarchy */
-        GAMEOBJECT_HANDLE               hParent{};
-        std::vector<GAMEOBJECT_HANDLE>  hChildren;
-
-        /* Reset helper */
-        void Reset()
-        {
-            bActive = false;
-            layer = Layer::INVALID_LAYER;
-            bPendingDestroy = false;
-            iIndexInLayer = 0;
-            std::fill(std::begin(iComponentSlots), std::end(iComponentSlots), 0);
-            componentMask = 0;
-            hParent = {};
-            hChildren.clear();
-        }
-
-    }GAMEOBJECT_DATA;
-
-#define COMPONENT_SPEC_TYPE(_TYPE)                                      \
-    static constexpr COMPONENT_TYPE TYPE = _TYPE;                       \
-    COMPONENT_TYPE Get_Type() const noexcept override { return TYPE; }
-
-    struct ENGINE_DLL COMPONENT_SPEC_BASE
-    {
-        virtual ~COMPONENT_SPEC_BASE() = default;
-        virtual COMPONENT_TYPE Get_Type() const noexcept = 0;
-    };
-
-    typedef struct ENGINE_DLL tagComponentSpecBundle
-    {
-        std::vector<COMPONENT_SPEC_BASE*> components;
-        template<typename TSpec>
-        const TSpec* Find_One() const
-        {
-            for (const auto& pSpec : components)
-            {
-                if (pSpec->Get_Type() == TSpec::TYPE)
-                    return SCAST(const TSpec*, pSpec);
-            }
-
-            return nullptr;
-        }
-
-    } COMPONENT_SPEC_BUNDLE;
-
-    typedef struct ENGINE_DLL tagPrototypeSpec
-    {
-        std::string  strName;
-
-        COMPONENT_SPEC_BUNDLE tComponentBundle;
-
-        std::vector<tagPrototypeSpec> children;
-
-        Layer::LAYER_ID layer = Layer::INVALID_LAYER;
-    }PROTOTYPE_SPEC;
 
 }
 

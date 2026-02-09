@@ -1,31 +1,30 @@
 ﻿#pragma once
 
-#include "Base.h"
+#include "Engine_Define.h"
 
 NS_BEGIN(Engine)
 
 class CScene;
 class CCore_System;
 
-class CScene_Manager final : public CBase
+class CScene_Manager final
 {
-private:
+public:
     CScene_Manager();
-    virtual ~CScene_Manager() = default;
+    ~CScene_Manager();
 
 public:
-    HRESULT Change_Scene(_uint iNewSceneIndex, class CScene* pNewScene);
+    HRESULT Change_Scene(_uint iNewSceneIndex, std::unique_ptr<CScene> pNewScene);
     void    Update(_float fTimeDelta);
     HRESULT Render();
 
 private:
-    CScene*         m_pCurrentScene = nullptr;
+    std::unique_ptr<CScene> m_pCurrentScene{};
 
     _uint			m_iCurrentSceneIndex = 0;
 
 public:
-    static CScene_Manager* Create();
-    virtual void Free() override;
+    static std::unique_ptr<CScene_Manager> Create();
 };
 
 NS_END

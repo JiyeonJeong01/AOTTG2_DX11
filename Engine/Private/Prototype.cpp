@@ -4,12 +4,11 @@
 #include "Component_System.h"
 #include "GameObject.h"
 
-
 CPrototype::CPrototype()
 {
 }
 
-CPrototype::CPrototype(PROTOTYPE_SPEC tSpec)
+CPrototype::CPrototype(PROTOTYPE_SPEC&& tSpec)
     : m_tSpec(std::move(tSpec))
 {
 }
@@ -24,7 +23,7 @@ HRESULT CPrototype::Assemble(PROTOTYPE_SPEC && tSpec)
 
     /* Update component bitmask to mark the presence of this type */
     m_componentMask = 0;
-    for (auto* pSpec : m_tSpec.tComponentBundle.components)
+    for (const auto& pSpec : m_tSpec.tComponentBundle.components)
     {
         const COMPONENT_TYPE eComType = pSpec->Get_Type();
         if (eComType == COMPONENT_TYPE::END)
@@ -39,10 +38,10 @@ HRESULT CPrototype::Assemble(PROTOTYPE_SPEC && tSpec)
     return S_OK;
 }
 
-CGameObject* CPrototype::Clone() const
+CGameObject* CPrototype::Clone(Layer::LAYER_ID iLayer ) const
 {
     /* Create instance */
-    CGameObject* pInstance = SYS_GAMEOBJECT.Create_Object(m_tSpec.layer, m_tSpec.strName);
+    CGameObject* pInstance = SYS_GAMEOBJECT.Create_Object(iLayer, m_tSpec.strName);
 
     CHECK_PROTO_CLONE_FAIL(FAILED(Apply_Spec_To_Instance(pInstance)), "CPrototype clone failed : can't apply spec to instance.");
     CHECK_PROTO_CLONE_FAIL(FAILED(Clone_Children(pInstance)), "CPrototype clone failed : child instantiation failed.");
@@ -55,12 +54,12 @@ HRESULT CPrototype::Apply_Spec_To_Instance(CGameObject* pInstance) const
     if (!pInstance)
         return E_FAIL;
 
-    for (auto* pSpec : m_tSpec.tComponentBundle.components)
+    for (const auto& pSpec : m_tSpec.tComponentBundle.components)
     {
-        if (!pSpec)
+        if (!pSpec.get())
             return E_FAIL;
 
-        SYS_COMPONENT.Create_From_Spec(pInstance, pSpec);
+        SYS_COMPONENT.Create_From_Spec(pInstance, pSpec.get());
     }
 
     pInstance->Set_ComponentMask(m_componentMask);

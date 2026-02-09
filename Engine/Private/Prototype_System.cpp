@@ -1,5 +1,7 @@
 ﻿#include "Prototype_System.h"
 #include "Engine_Log.h"
+#include "Prototype.h"
+#include "GameObject.h"
 
 NS_BEGIN(Engine)
 
@@ -47,7 +49,7 @@ const CPrototype* CPrototype_System::Find(const ASSET_GUID& tGUID) const
     return it->second.get();
 }
 
-CGameObject* CPrototype_System::Clone(const ASSET_GUID& tGUID) const
+CGameObject* CPrototype_System::Clone(const ASSET_GUID& tGUID, Layer::LAYER_ID iLayer) const
 {
     const CPrototype* pProto = Find(tGUID);
     if (!pProto)

@@ -2,7 +2,6 @@
 #include "GUI_Sink.h"
 
 #include "Editor_Util.h"
-#include "Engine_Log.h"
 
 NS_BEGIN(Editor)
 

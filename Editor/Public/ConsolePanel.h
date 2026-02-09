@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "EditorPanel.h"
-#include "Logger.h"   
 namespace Engine
 {
     class CGUI_Sink;

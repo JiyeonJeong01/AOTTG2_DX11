@@ -1,13 +1,14 @@
 ﻿#pragma once
-#include "Base.h"
+#include "Engine_Define.h"
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CScene : public CBase, public LABEL
+class ENGINE_DLL CScene : public LABEL
 {
-protected:
+public :
+    CScene();
     CScene(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    virtual ~CScene() = default;
+    virtual ~CScene();
 
 public:
     virtual HRESULT Initialize();
@@ -18,8 +19,8 @@ protected:
     ID3D11Device*           m_pDevice = { nullptr };
     ID3D11DeviceContext*    m_pContext = { nullptr };
 
-public:
-    virtual void Free() override;
+public :
+    static std::unique_ptr<CScene> Create();
 };
 
 NS_END

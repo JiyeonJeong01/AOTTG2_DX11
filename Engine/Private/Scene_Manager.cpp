@@ -9,18 +9,16 @@ CScene_Manager::CScene_Manager()
 {
 }
 
-HRESULT CScene_Manager::Change_Scene(_uint iNewSceneIndex, CScene* pNewScene)
+CScene_Manager::~CScene_Manager()
+{
+}
+
+HRESULT CScene_Manager::Change_Scene(_uint iNewSceneIndex, std::unique_ptr<CScene> pNewScene)
 {
     if (nullptr != m_pCurrentScene)
         SYS_CORE.Clear_Resources(m_iCurrentSceneIndex);
 
-    if (0 != Safe_Release(m_pCurrentScene))
-    {
-        return E_FAIL;
-    }
-
-    m_pCurrentScene = pNewScene;
-
+    m_pCurrentScene = std::move(pNewScene);
     m_iCurrentSceneIndex = iNewSceneIndex;
 
     return S_OK;
@@ -40,16 +38,10 @@ HRESULT CScene_Manager::Render()
     return S_OK;
 }
 
-CScene_Manager* CScene_Manager::Create()
+std::unique_ptr<CScene_Manager> CScene_Manager::Create()
 {
-    return new CScene_Manager();
+    return std::make_unique<CScene_Manager>();
 }
 
-void CScene_Manager::Free()
-{
-    __super::Free();
-
-    Safe_Release(m_pCurrentScene);
-}
 
 NS_END

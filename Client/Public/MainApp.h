@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "Client_Define.h"
-#include "Base.h"
 
 /* ================== TEST ================== */
 
@@ -42,7 +41,7 @@ public :
     Engine::CEvent<_int> m_intEvent;
     Engine::CEvent<_int, _float> m_intFloatEvent;
     class Tester* m_pTester{};
-    Engine::TEST_A_SPEC* m_pTestA{};
+    std::unique_ptr<Engine::TEST_A_SPEC> m_pTestA{};
 
 
 private :

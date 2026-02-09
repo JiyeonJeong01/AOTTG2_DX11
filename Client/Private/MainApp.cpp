@@ -22,7 +22,6 @@ CMainApp::CMainApp()
 CMainApp::~CMainApp()
 {
     delete m_pTester;
-    delete m_pTestA;
 
     SYS_CORE.DestroyInstance();
 }
@@ -51,17 +50,16 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
     // Somewhere test code
     PROTOTYPE_SPEC spec{};
     spec.strName = "TEST_PROTO";
-    spec.layer = Layer::DEFAULT_LAYER;
 
     // bundle 채우기 (예시)
     COMPONENT_SPEC_BUNDLE bundle{};
-    m_pTestA = new TEST_A_SPEC;
+    m_pTestA = std::make_unique<TEST_A_SPEC>();
     m_pTestA->vData[0] = { 0, 0, 0 };
     m_pTestA->vData[1] = { 1.f, 1.f, 1.f };
     m_pTestA->vData[2] = { 2.f, 2.f, 2.f };
     m_pTestA->vData[3] = { 3.f, 3.f, 3.f };
 
-    bundle.components.push_back(m_pTestA);
+    bundle.components.push_back(std::move(m_pTestA));
     spec.tComponentBundle = std::move(bundle);
 
     HRESULT hr = CPrototype_System::GetInstance().Create_Prototype(testGUID = ASSET_GUID::New_GUID(), std::move(spec));

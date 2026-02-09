@@ -4,6 +4,12 @@
 
 NS_BEGIN(Engine)
 
+CScene::CScene()
+    : LABEL("Untitled")
+, m_pDevice(nullptr), m_pContext(nullptr)
+{
+}
+
 CScene::CScene(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : LABEL("Untitled")
     , m_pDevice{ pDevice }
@@ -11,6 +17,12 @@ CScene::CScene(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     Safe_AddRef(m_pDevice);
     Safe_AddRef(m_pContext);
+}
+
+CScene::~CScene()
+{
+    Safe_Release(m_pDevice);
+    Safe_Release(m_pContext);
 }
 
 HRESULT CScene::Initialize()
@@ -27,12 +39,9 @@ HRESULT CScene::Render()
     return S_OK;
 }
 
-void CScene::Free()
+std::unique_ptr<CScene> CScene::Create()
 {
-    __super::Free();
-
-    Safe_Release(m_pDevice);
-    Safe_Release(m_pContext);
+    return make_unique<CScene>();
 }
 
 NS_END

@@ -38,7 +38,6 @@ using namespace std;
 #include "Engine_Struct.h"
 #include "Engine_Typedef.h"
 #include "Engine_Function.h"
-#include "Core_Struct.h"
 
 #include <type_traits>
 
