@@ -10,14 +10,12 @@ NS_BEGIN(Engine)
 
 class ENGINE_DLL CGUI_Sink final : public ISink
 {
-public:
+public :
     CGUI_Sink();
-    ~CGUI_Sink() override = default;
-
+    ~CGUI_Sink() override;
+public :
     void Write(const CLogger::RECORD& tRecord) override;
-
     void Drain(std::vector<CLogger::RECORD>& out);
-
     void Set_Max_Records(size_t iMax)
     {
         m_iMaxRecords = (iMax == 0 ? 1 : iMax); Enforce_Limit_Locked();
@@ -31,6 +29,9 @@ private:
     std::mutex m_mtx;
     std::deque<CLogger::RECORD> m_queue;  // 아직 UI로 전달 안 된 것
     size_t m_iMaxRecords = 5000;
+
+public :
+    static std::unique_ptr<CGUI_Sink> Create();
 };
 
 NS_END

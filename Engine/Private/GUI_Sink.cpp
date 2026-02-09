@@ -3,7 +3,12 @@
 #include "magic_enum.hpp"
 
 NS_BEGIN(Engine)
-    CGUI_Sink::CGUI_Sink()
+
+CGUI_Sink::CGUI_Sink()
+{
+}
+
+CGUI_Sink::~CGUI_Sink()
 {
 }
 
@@ -36,6 +41,11 @@ void CGUI_Sink::Enforce_Limit_Locked()
 {
     while (m_queue.size() > m_iMaxRecords)
         m_queue.pop_front();
+}
+
+std::unique_ptr<CGUI_Sink> CGUI_Sink::Create()
+{
+    return std::make_unique<CGUI_Sink>();
 }
 
 NS_END

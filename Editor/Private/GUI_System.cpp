@@ -12,6 +12,16 @@ Editor::CGUI_System::CGUI_System()
 
 Editor::CGUI_System::~CGUI_System()
 {
+    if (!m_bImguiInited)
+        return;
+
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+
+    ImGui::DestroyContext(m_pGuiContext);
+    m_pGuiContext = nullptr;
+
+    m_bImguiInited = false;
 }
 
 HRESULT Editor::CGUI_System::Initialize()
@@ -46,6 +56,8 @@ HRESULT Editor::CGUI_System::Initialize()
 
     if (!ImGui_ImplDX11_Init(m_pDevice, m_pContext))
         return E_FAIL;
+
+    m_bImguiInited = true;
 
     /* --- ImGui style setting --- */
     Setup_ImGuiStyle();

@@ -25,9 +25,9 @@ NS_BEGIN(Editor)
         uint64_t lastTouchedFrame = 0;
     };
 
-    static thread_local std::vector<SScopeActive> g_tlsStack;
+//    static thread_local std::vector<SScopeActive> g_tlsStack;
 
-    static std::unordered_map<std::string, SScopeStatsInternal> g_scopes;
+    //static std::unordered_map<std::string, SScopeStatsInternal> g_scopes;
 
     static uint64_t g_frameIndex = 0;
 
@@ -132,63 +132,63 @@ void CProfilerPanel::Begin_Scope(const char* pszName)
     SScopeActive a;
     a.name = pszName;
     a.t0 = clock::now();
-    g_tlsStack.push_back(a);
+    //g_tlsStack.push_back(a);
 }
 
 void CProfilerPanel::End_Scope()
 {
-    if (!g_capture) return;
-    if (g_tlsStack.empty()) return;
+    //if (!g_capture) return;
+    //if (g_tlsStack.empty()) return;
 
-    const auto t1 = clock::now();
+    //const auto t1 = clock::now();
 
-    SScopeActive a = g_tlsStack.back();
-    g_tlsStack.pop_back();
+    //SScopeActive a = g_tlsStack.back();
+    //g_tlsStack.pop_back();
 
-    const double ms = std::chrono::duration<double, std::milli>(t1 - a.t0).count();
+    //const double ms = std::chrono::duration<double, std::milli>(t1 - a.t0).count();
 
-    auto it = g_scopes.find(a.name);
-    if (it == g_scopes.end())
-    {
-        SScopeStatsInternal s;
-        s.ui.name = a.name;
-        s.ui.last_ms = ms;
-        s.ui.avg_ms = ms;
-        s.ui.min_ms = ms;
-        s.ui.max_ms = ms;
-        s.ui.samples = 1;
-        s.ui.bEnabled = true;
+    //auto it = g_scopes.find(a.name);
+    //if (it == g_scopes.end())
+    //{
+    //    SScopeStatsInternal s;
+    //    s.ui.name = a.name;
+    //    s.ui.last_ms = ms;
+    //    s.ui.avg_ms = ms;
+    //    s.ui.min_ms = ms;
+    //    s.ui.max_ms = ms;
+    //    s.ui.samples = 1;
+    //    s.ui.bEnabled = true;
 
-        Push_Window(s, ms);
-        s.ui.avg_ms = Get_Window_Avg(s);
+    //    Push_Window(s, ms);
+    //    s.ui.avg_ms = Get_Window_Avg(s);
 
-        s.lastTouchedFrame = g_frameIndex;
+    //    s.lastTouchedFrame = g_frameIndex;
 
-        g_scopes.emplace(s.ui.name, std::move(s));
-    }
-    else
-    {
-        SScopeStatsInternal& s = it->second;
+    //    g_scopes.emplace(s.ui.name, std::move(s));
+    //}
+    //else
+    //{
+    //    SScopeStatsInternal& s = it->second;
 
-        s.ui.last_ms = ms;
-        s.ui.samples++;
+    //    s.ui.last_ms = ms;
+    //    s.ui.samples++;
 
-        if (s.ui.samples == 1)
-        {
-            s.ui.min_ms = ms;
-            s.ui.max_ms = ms;
-        }
-        else
-        {
-            s.ui.min_ms = min(s.ui.min_ms, ms);
-            s.ui.max_ms = max(s.ui.max_ms, ms);
-        }
+    //    if (s.ui.samples == 1)
+    //    {
+    //        s.ui.min_ms = ms;
+    //        s.ui.max_ms = ms;
+    //    }
+    //    else
+    //    {
+    //        s.ui.min_ms = min(s.ui.min_ms, ms);
+    //        s.ui.max_ms = max(s.ui.max_ms, ms);
+    //    }
 
-        Push_Window(s, ms);
-        s.ui.avg_ms = Get_Window_Avg(s);
+    //    Push_Window(s, ms);
+    //    s.ui.avg_ms = Get_Window_Avg(s);
 
-        s.lastTouchedFrame = g_frameIndex;
-    }
+    //    s.lastTouchedFrame = g_frameIndex;
+    //}
 }
 
 /* ---------------- Internals ---------------- */
@@ -244,31 +244,31 @@ void CProfilerPanel::Prune_Dead_Scopes()
     /* prune scopes not touched for long time to keep panel clean */
     const uint64_t kKeepFrames = (uint64_t)max(60, g_avgWindow * 10);
 
-    for (auto it = g_scopes.begin(); it != g_scopes.end(); )
-    {
-        const uint64_t age = (g_frameIndex - it->second.lastTouchedFrame);
-        if (age > kKeepFrames)
-            it = g_scopes.erase(it);
-        else
-            ++it;
-    }
+    //for (auto it = g_scopes.begin(); it != g_scopes.end(); )
+    //{
+    //    const uint64_t age = (g_frameIndex - it->second.lastTouchedFrame);
+    //    if (age > kKeepFrames)
+    //        it = g_scopes.erase(it);
+    //    else
+    //        ++it;
+    //}
 }
 
 void CProfilerPanel::Reset_Stats()
 {
-    for (auto& kv : g_scopes)
-    {
-        auto& s = kv.second;
-        s.ui.last_ms = 0.0;
-        s.ui.avg_ms = 0.0;
-        s.ui.min_ms = 0.0;
-        s.ui.max_ms = 0.0;
-        s.ui.samples = 0;
+    //for (auto& kv : g_scopes)
+    //{
+    //    auto& s = kv.second;
+    //    s.ui.last_ms = 0.0;
+    //    s.ui.avg_ms = 0.0;
+    //    s.ui.min_ms = 0.0;
+    //    s.ui.max_ms = 0.0;
+    //    s.ui.samples = 0;
 
-        s.window.clear();
-        s.window_sum = 0.0;
-        s.lastTouchedFrame = g_frameIndex;
-    }
+    //    s.window.clear();
+    //    s.window_sum = 0.0;
+    //    s.lastTouchedFrame = g_frameIndex;
+    //}
 }
 
 CProfilerPanel::PROGRESS_MEMORY CProfilerPanel::Get_Process_Memory()
@@ -324,103 +324,103 @@ void CProfilerPanel::Draw_Frame_Info()
 
 void CProfilerPanel::Draw_Scopes()
 {
-    /* collect rows */
-    struct Row
-    {
-        const CProfilerPanel::SCOPE_STATS* p = nullptr;
-        double sortKey = 0.0;
-    };
+    ///* collect rows */
+    //struct Row
+    //{
+    //    const CProfilerPanel::SCOPE_STATS* p = nullptr;
+    //    double sortKey = 0.0;
+    //};
 
-    std::vector<Row> rows;
-    rows.reserve(g_scopes.size());
+    //std::vector<Row> rows;
+    //rows.reserve(g_scopes.size());
 
-    for (auto& kv : g_scopes)
-    {
-        auto& st = kv.second.ui;
+    //for (auto& kv : g_scopes)
+    //{
+    //    auto& st = kv.second.ui;
 
-        if (!m_bShowDisabled && !kv.second.ui.bEnabled)
-            continue;
+    //    if (!m_bShowDisabled && !kv.second.ui.bEnabled)
+    //        continue;
 
-        if (!Str_IContains(st.name, m_strFilter))
-            continue;
+    //    if (!Str_IContains(st.name, m_strFilter))
+    //        continue;
 
-        Row r;
-        r.p = &st;
-        r.sortKey = m_bSortByCost ? st.avg_ms : 0.0;
-        rows.push_back(r);
-    }
+    //    Row r;
+    //    r.p = &st;
+    //    r.sortKey = m_bSortByCost ? st.avg_ms : 0.0;
+    //    rows.push_back(r);
+    //}
 
-    if (m_bSortByCost)
-    {
-        std::sort(rows.begin(), rows.end(),
-            [](const Row& a, const Row& b) { return a.sortKey > b.sortKey; });
-    }
-    else
-    {
-        std::sort(rows.begin(), rows.end(),
-            [](const Row& a, const Row& b) { return a.p->name < b.p->name; });
-    }
+    //if (m_bSortByCost)
+    //{
+    //    std::sort(rows.begin(), rows.end(),
+    //        [](const Row& a, const Row& b) { return a.sortKey > b.sortKey; });
+    //}
+    //else
+    //{
+    //    std::sort(rows.begin(), rows.end(),
+    //        [](const Row& a, const Row& b) { return a.p->name < b.p->name; });
+    //}
 
-    if ((int)rows.size() > m_iMaxScopeRows)
-        rows.resize((size_t)m_iMaxScopeRows);
+    //if ((int)rows.size() > m_iMaxScopeRows)
+    //    rows.resize((size_t)m_iMaxScopeRows);
 
-    if (ImGui::BeginTable("##ProfilerScopes", 6, ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable))
-    {
-        ImGui::TableSetupColumn("On", ImGuiTableColumnFlags_WidthFixed, 36.f);
-        ImGui::TableSetupColumn("Scope");
-        ImGui::TableSetupColumn("Last (ms)");
-        ImGui::TableSetupColumn("Avg (ms)");
-        ImGui::TableSetupColumn("Min (ms)");
-        ImGui::TableSetupColumn("Max (ms)");
-        ImGui::TableHeadersRow();
+    //if (ImGui::BeginTable("##ProfilerScopes", 6, ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable))
+    //{
+    //    ImGui::TableSetupColumn("On", ImGuiTableColumnFlags_WidthFixed, 36.f);
+    //    ImGui::TableSetupColumn("Scope");
+    //    ImGui::TableSetupColumn("Last (ms)");
+    //    ImGui::TableSetupColumn("Avg (ms)");
+    //    ImGui::TableSetupColumn("Min (ms)");
+    //    ImGui::TableSetupColumn("Max (ms)");
+    //    ImGui::TableHeadersRow();
 
-        for (Row& r : rows)
-        {
-            const SCOPE_STATS& s = *r.p;
+    //    for (Row& r : rows)
+    //    {
+    //        const SCOPE_STATS& s = *r.p;
 
-            ImGui::TableNextRow();
+    //        ImGui::TableNextRow();
 
-            /* On */
-            ImGui::TableSetColumnIndex(0);
-            {
-                bool bEnabled = s.bEnabled;
+    //        /* On */
+    //        ImGui::TableSetColumnIndex(0);
+    //        {
+    //            bool bEnabled = s.bEnabled;
 
-                /* We need to toggle the real stored flag: find by name */
-                auto it = g_scopes.find(s.name);
-                if (it != g_scopes.end())
-                {
-                    bEnabled = it->second.ui.bEnabled;
-                    ImGui::PushID(it->second.ui.name.c_str());
-                    if (ImGui::Checkbox("##en", &bEnabled))
-                        it->second.ui.bEnabled = bEnabled;
-                    ImGui::PopID();
-                }
-                else
-                {
-                    ImGui::TextUnformatted("-");
-                }
-            }
+    //            /* We need to toggle the real stored flag: find by name */
+    //            auto it = g_scopes.find(s.name);
+    //            if (it != g_scopes.end())
+    //            {
+    //                bEnabled = it->second.ui.bEnabled;
+    //                ImGui::PushID(it->second.ui.name.c_str());
+    //                if (ImGui::Checkbox("##en", &bEnabled))
+    //                    it->second.ui.bEnabled = bEnabled;
+    //                ImGui::PopID();
+    //            }
+    //            else
+    //            {
+    //                ImGui::TextUnformatted("-");
+    //            }
+    //        }
 
-            ImGui::TableSetColumnIndex(1);
-            ImGui::TextUnformatted(s.name.c_str());
+    //        ImGui::TableSetColumnIndex(1);
+    //        ImGui::TextUnformatted(s.name.c_str());
 
-            ImGui::TableSetColumnIndex(2);
-            ImGui::Text("%.3f", (float)s.last_ms);
+    //        ImGui::TableSetColumnIndex(2);
+    //        ImGui::Text("%.3f", (float)s.last_ms);
 
-            ImGui::TableSetColumnIndex(3);
-            ImGui::Text("%.3f", (float)s.avg_ms);
+    //        ImGui::TableSetColumnIndex(3);
+    //        ImGui::Text("%.3f", (float)s.avg_ms);
 
-            ImGui::TableSetColumnIndex(4);
-            ImGui::Text("%.3f", (float)s.min_ms);
+    //        ImGui::TableSetColumnIndex(4);
+    //        ImGui::Text("%.3f", (float)s.min_ms);
 
-            ImGui::TableSetColumnIndex(5);
-            ImGui::Text("%.3f", (float)s.max_ms);
-        }
+    //        ImGui::TableSetColumnIndex(5);
+    //        ImGui::Text("%.3f", (float)s.max_ms);
+    //    }
 
-        ImGui::EndTable();
-    }
+    //    ImGui::EndTable();
+    //}
 
-    ImGui::Spacing();
+    //ImGui::Spacing();
 }
 
 void CProfilerPanel::Draw_Memory()

@@ -5,6 +5,14 @@
 
 NS_BEGIN(Engine)
 
+CCLI_Sink::CCLI_Sink()
+{
+}
+
+CCLI_Sink::~CCLI_Sink()
+{
+}
+
 void CCLI_Sink::Write(const CLogger::RECORD& tRecord)
 {
     // Change Color
@@ -18,14 +26,9 @@ void CCLI_Sink::Write(const CLogger::RECORD& tRecord)
     printf("%s", tRecord.strMsg.c_str());
 }
 
-CCLI_Sink* CCLI_Sink::Create()
+std::unique_ptr<CCLI_Sink> CCLI_Sink::Create()
 {
-    return new CCLI_Sink();
-}
-
-void CCLI_Sink::Free()
-{
-	ISink::Free();
+    return std::make_unique<CCLI_Sink>();
 }
 
 NS_END

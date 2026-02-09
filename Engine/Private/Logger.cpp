@@ -29,19 +29,17 @@ HRESULT CLogger::Initialize()
 
 ISink* CLogger::Set_Sink(LOG_TYPE eType)
 {
-	Safe_Release(m_pSink);
-
     switch (eType)
     {
     case LOG_TYPE::CLI:
-        m_pSink = new CCLI_Sink;
+        m_pSink = CCLI_Sink::Create();
         break;
     case LOG_TYPE::GUI:
-        m_pSink = new CGUI_Sink;
+        m_pSink = CGUI_Sink::Create();
         break;
     }
 
-    return m_pSink;
+    return m_pSink.get();
 }
 
 void CLogger::Log(SEVERITY_TYPE eSeverity, DOMAIN_TYPE eDomain, const char* szFile, const char* szFunc,

@@ -23,6 +23,8 @@ private:
 private :
     void    Setup_ImGuiStyle();
 
+    _bool   m_bImguiInited = false;
+
 public:
     static CGUI_System* Create(HWND hWnd, ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 };

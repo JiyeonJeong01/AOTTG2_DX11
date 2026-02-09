@@ -38,7 +38,7 @@ private:
     void _Enforce_Limit();
 
 private:
-    CGUI_Sink* m_pSink = nullptr;
+    CGUI_Sink* m_pSink{ };
 
     std::deque<Engine::CLogger::RECORD> m_lines;
     size_t m_iMaxLines = 2000;

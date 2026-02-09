@@ -43,7 +43,7 @@ public :
 	static string	FormatV(const char* szFmt, ...);
 
 private :
-	ISink* m_pSink{};
+    std::unique_ptr<ISink> m_pSink{};
     string Get_TimeStamp() const;
 
     virtual void	Free() {};

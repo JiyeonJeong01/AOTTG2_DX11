@@ -1,12 +1,12 @@
 ﻿#pragma once
-#include "Base.h"
+#include "Engine_Define.h"
 #include "Logger.h"
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL ISink : public CBase 
+class ENGINE_DLL ISink
 {
-protected :
+public :
 	virtual ~ISink() = default;
 public :
 	virtual void Write(const CLogger::RECORD& tRecord) = 0;

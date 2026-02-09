@@ -37,6 +37,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
+#ifdef _DEBUG
+    //_CrtSetBreakAlloc(405);
+#endif
+
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -99,10 +103,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
         if (fTimeAcc >= FRAME_DT)
         {
-            Editor::CProfilerPanel::CScope _update("Engine::Update");
+            //Editor::CProfilerPanel::CScope _update("Engine::Update");
             pMainApp->Update(SYS_CORE.Compute_FrameDT());
 
-            Editor::CProfilerPanel::CScope _render("Engine::Render");
+            //Editor::CProfilerPanel::CScope _render("Engine::Render");
             pMainApp->Begin_Render();
             pMainApp->Render();
 
@@ -122,6 +126,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
     }
 
+    SYS_GUI.DestroyInstance();
 
     if (0 != Safe_Release(pMainApp))
         return FALSE;

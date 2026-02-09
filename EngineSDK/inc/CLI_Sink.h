@@ -5,15 +5,14 @@ NS_BEGIN(Engine)
 
 class CCLI_Sink final :  public ISink
 {
-private:
-	~CCLI_Sink() = default;
-public :
+public:
+    CCLI_Sink();
+    ~CCLI_Sink() override;
+public:
 	void Write(const CLogger::RECORD& tRecord) override;
 
 public :
-	static CCLI_Sink* Create();
-private:
-	void Free() override;
+	static std::unique_ptr<CCLI_Sink> Create();
 };
 
 NS_END
