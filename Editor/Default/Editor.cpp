@@ -103,10 +103,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
         if (fTimeAcc >= FRAME_DT)
         {
-            //Editor::CProfilerPanel::CScope _update("Engine::Update");
+            Editor::CProfilerPanel::CScope _update("Engine::Update");
             pMainApp->Update(SYS_CORE.Compute_FrameDT());
 
-            //Editor::CProfilerPanel::CScope _render("Engine::Render");
+            Editor::CProfilerPanel::CScope _render("Engine::Render");
             pMainApp->Begin_Render();
             pMainApp->Render();
 

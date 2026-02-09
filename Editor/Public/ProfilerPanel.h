@@ -1,8 +1,7 @@
-﻿// ProfilerPanel.h
-#pragma once
+﻿#pragma once
 
 #include "EditorPanel.h"
-#include <psapi.h>
+
 NS_BEGIN(Editor)
 
 class CProfilerPanel : public CEditorPanel
@@ -11,7 +10,7 @@ public:
     CProfilerPanel(const std::string& strPanelName);
     ~CProfilerPanel() override;
 
-public :
+public:
     HRESULT Initialize() override;
     void Update() override;
     void Render() override;
@@ -28,10 +27,8 @@ public:
 
         uint64_t samples = 0;
         _bool bEnabled = true;
-    }SCOPE_STATS;
+    } SCOPE_STATS;
 
-
-    /* Recording API (thread-local stack) */
     static void Begin_Scope(const char* pszName);
     static void End_Scope();
 
@@ -42,14 +39,13 @@ public:
         ~CScope() { End_Scope(); }
     };
 
-    /* feed external frame time (otherwise panel computes FPS itself) */
     static void Set_Frame_Time_External(double frame_ms);
 
     typedef struct tagProcessMemory
     {
         size_t workingSetMB = 0;
         size_t privateBytesMB = 0;
-    }PROGRESS_MEMORY;
+    } PROGRESS_MEMORY;
 
     PROGRESS_MEMORY Get_Process_Memory();
 
@@ -66,19 +62,18 @@ private:
     void Prune_Dead_Scopes();
 
 private:
-    /* UI state */
     std::string m_strFilter;
     bool        m_bCapture = true;
     bool        m_bSortByCost = true;
     bool        m_bShowDisabled = false;
 
-    int         m_iAvgWindow = 120;    // frames for rolling average (for FPS + scope avg)
-    int         m_iMaxScopeRows = 256;  // safety cap
+    int         m_iAvgWindow = 120;
+    int         m_iMaxScopeRows = 256;
 
-public :
-    /* Frame tracking */
+public:
     using clock = std::chrono::steady_clock;
     clock::time_point m_prevFrame = {};
+
 private:
     double      m_frameMS_last = 0.0;
     double      m_frameMS_avg = 0.0;
@@ -89,6 +84,11 @@ private:
 
 public:
     static std::unique_ptr<CProfilerPanel> Create(const std::string& strPanelName);
+
+    struct ProfilerRuntime;
+    std::unique_ptr<ProfilerRuntime> m_pRuntime;
+
+    static CProfilerPanel* s_pActive;
 };
 
 NS_END

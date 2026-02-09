@@ -1,74 +1,75 @@
 ﻿#include "ProfilerPanel.h"
-
 #include <Engine_Log.h>
 
-NS_BEGIN(Editor)
-    namespace
-{
-    /* ---- Global profiler storage ---- */
+#include <psapi.h>
 
+NS_BEGIN(Editor)
+
+CProfilerPanel* CProfilerPanel::s_pActive = nullptr;
+
+struct CProfilerPanel::ProfilerRuntime
+{
     struct SScopeActive
     {
         const char* name = nullptr;
-        CProfilerPanel::clock::time_point t0;
+        clock::time_point t0;
     };
 
     struct SScopeStatsInternal
     {
-        CProfilerPanel::SCOPE_STATS ui;
+        SCOPE_STATS ui;
 
-        /* rolling average over last N samples (frame window) */
         std::deque<double> window;
         double window_sum = 0.0;
 
-        /* housekeeping */
         uint64_t lastTouchedFrame = 0;
     };
 
-//    static thread_local std::vector<SScopeActive> g_tlsStack;
+    std::vector<SScopeActive> scopeStack;
+    std::unordered_map<std::string, SScopeStatsInternal> scopes;
 
-    //static std::unordered_map<std::string, SScopeStatsInternal> g_scopes;
+    uint64_t frameIndex = 0;
+    int      avgWindow = 120;
+    bool     capture = true;
 
-    static uint64_t g_frameIndex = 0;
+    bool     externalFrameTime = false;
+    double   externalFrameMS = 0.0;
 
-    static int g_avgWindow = 120;
-    static bool g_capture = true;
+    std::deque<double> frameWin;
+    double frameSum = 0.0;
+};
 
-    static bool g_externalFrameTime = false;
-    static double g_externalFrameMS = 0.0;
+static bool Str_IContains(const std::string& hay, const std::string& needle)
+{
+    if (needle.empty()) return true;
 
-    static bool Str_IContains(const std::string& hay, const std::string& needle)
+    auto tolow = [](unsigned char c) { return (char)std::tolower(c); };
+
+    std::string h; h.reserve(hay.size());
+    std::string n; n.reserve(needle.size());
+
+    for (char c : hay) h.push_back(tolow((unsigned char)c));
+    for (char c : needle) n.push_back(tolow((unsigned char)c));
+
+    return (h.find(n) != std::string::npos);
+}
+
+static void Push_Window(CProfilerPanel::ProfilerRuntime::SScopeStatsInternal& s, double v, int maxWindow)
+{
+    s.window.push_back(v);
+    s.window_sum += v;
+
+    while ((int)s.window.size() > maxWindow)
     {
-        if (needle.empty()) return true;
-
-        auto tolow = [](unsigned char c) { return (char)std::tolower(c); };
-
-        std::string h; h.reserve(hay.size());
-        std::string n; n.reserve(needle.size());
-
-        for (char c : hay) h.push_back(tolow((unsigned char)c));
-        for (char c : needle) n.push_back(tolow((unsigned char)c));
-
-        return (h.find(n) != std::string::npos);
+        s.window_sum -= s.window.front();
+        s.window.pop_front();
     }
+}
 
-    static void Push_Window(SScopeStatsInternal& s, double v)
-    {
-        s.window.push_back(v);
-        s.window_sum += v;
-
-        while ((int)s.window.size() > g_avgWindow)
-        {
-            s.window_sum -= s.window.front();
-            s.window.pop_front();
-        }
-    }
-
-    static double Get_Window_Avg(const SScopeStatsInternal& s)
-    {
-        if (s.window.empty()) return 0.0;
-        return s.window_sum / (double)s.window.size();
-    }
+static double Get_Window_Avg(const CProfilerPanel::ProfilerRuntime::SScopeStatsInternal& s)
+{
+    if (s.window.empty()) return 0.0;
+    return s.window_sum / (double)s.window.size();
 }
 
 CProfilerPanel::CProfilerPanel(const std::string& strPanelName)
@@ -78,15 +79,17 @@ CProfilerPanel::CProfilerPanel(const std::string& strPanelName)
 
 CProfilerPanel::~CProfilerPanel()
 {
+    if (s_pActive == this)
+        s_pActive = nullptr;
 }
 
 HRESULT CProfilerPanel::Initialize()
 {
     m_prevFrame = clock::now();
+    m_pRuntime = std::make_unique<ProfilerRuntime>();
 
-    /* Sync globals */
-    g_avgWindow = max(1, m_iAvgWindow);
-    g_capture = m_bCapture;
+    // Active panel for static Begin/End routing
+    s_pActive = this;
 
     return S_OK;
 }
@@ -116,101 +119,94 @@ void CProfilerPanel::Render()
     ImGui::End();
 }
 
-void CProfilerPanel::Set_Frame_Time_External(double frame_ms)
-{
-    g_externalFrameTime = true;
-    g_externalFrameMS = frame_ms;
-}
-
-/* ---------------- Recording API ---------------- */
-
 void CProfilerPanel::Begin_Scope(const char* pszName)
 {
-    if (!g_capture) return;
+    if (!s_pActive) return;
+    auto& rt = *s_pActive->m_pRuntime;
+
+    if (!rt.capture) return;
     if (!pszName || !pszName[0]) return;
 
-    SScopeActive a;
+    ProfilerRuntime::SScopeActive a;
     a.name = pszName;
     a.t0 = clock::now();
-    //g_tlsStack.push_back(a);
+    rt.scopeStack.push_back(a);
 }
 
 void CProfilerPanel::End_Scope()
 {
-    //if (!g_capture) return;
-    //if (g_tlsStack.empty()) return;
+    if (!s_pActive) return;
+    auto& rt = *s_pActive->m_pRuntime;
 
-    //const auto t1 = clock::now();
+    if (!rt.capture) return;
+    if (rt.scopeStack.empty()) return;
 
-    //SScopeActive a = g_tlsStack.back();
-    //g_tlsStack.pop_back();
+    const auto t1 = clock::now();
 
-    //const double ms = std::chrono::duration<double, std::milli>(t1 - a.t0).count();
+    auto a = rt.scopeStack.back();
+    rt.scopeStack.pop_back();
 
-    //auto it = g_scopes.find(a.name);
-    //if (it == g_scopes.end())
-    //{
-    //    SScopeStatsInternal s;
-    //    s.ui.name = a.name;
-    //    s.ui.last_ms = ms;
-    //    s.ui.avg_ms = ms;
-    //    s.ui.min_ms = ms;
-    //    s.ui.max_ms = ms;
-    //    s.ui.samples = 1;
-    //    s.ui.bEnabled = true;
+    const double ms = std::chrono::duration<double, std::milli>(t1 - a.t0).count();
 
-    //    Push_Window(s, ms);
-    //    s.ui.avg_ms = Get_Window_Avg(s);
+    auto& entry = rt.scopes[a.name]; // creates if not exists
+    auto& s = entry;
 
-    //    s.lastTouchedFrame = g_frameIndex;
+    if (!s.ui.bEnabled)
+        return;
 
-    //    g_scopes.emplace(s.ui.name, std::move(s));
-    //}
-    //else
-    //{
-    //    SScopeStatsInternal& s = it->second;
+    if (s.ui.samples == 0)
+    {
+        s.ui.name = a.name;
+        s.ui.min_ms = ms;
+        s.ui.max_ms = ms;
+        s.ui.bEnabled = true;
+    }
+    else
+    {
+        s.ui.min_ms = min(s.ui.min_ms, ms);
+        s.ui.max_ms = max(s.ui.max_ms, ms);
+    }
 
-    //    s.ui.last_ms = ms;
-    //    s.ui.samples++;
+    s.ui.last_ms = ms;
+    s.ui.samples++;
 
-    //    if (s.ui.samples == 1)
-    //    {
-    //        s.ui.min_ms = ms;
-    //        s.ui.max_ms = ms;
-    //    }
-    //    else
-    //    {
-    //        s.ui.min_ms = min(s.ui.min_ms, ms);
-    //        s.ui.max_ms = max(s.ui.max_ms, ms);
-    //    }
+    Push_Window(s, ms, rt.avgWindow);
+    s.ui.avg_ms = Get_Window_Avg(s);
 
-    //    Push_Window(s, ms);
-    //    s.ui.avg_ms = Get_Window_Avg(s);
+    s.lastTouchedFrame = rt.frameIndex;
 
-    //    s.lastTouchedFrame = g_frameIndex;
-    //}
 }
 
-/* ---------------- Internals ---------------- */
+void CProfilerPanel::Set_Frame_Time_External(double frame_ms)
+{
+    if (!s_pActive) return;
+    auto& rt = *s_pActive->m_pRuntime;
+
+    rt.externalFrameTime = true;
+    rt.externalFrameMS = frame_ms;
+}
 
 void CProfilerPanel::On_Frame_Begin()
 {
-    ++g_frameIndex;
+    auto& rt = *m_pRuntime;
 
-    /* apply UI-config -> global */
-    g_avgWindow = max(1, m_iAvgWindow);
-    g_capture = m_bCapture;
+    rt.frameIndex++;
+
+    rt.avgWindow = max(1, m_iAvgWindow);
+    rt.capture = m_bCapture;
 }
 
 void CProfilerPanel::On_Frame_End()
 {
+    auto& rt = *m_pRuntime;
+
     const auto now = clock::now();
 
     double frameMS = 0.0;
-    if (g_externalFrameTime)
+    if (rt.externalFrameTime)
     {
-        frameMS = g_externalFrameMS;
-        g_externalFrameTime = false; /* one-shot by default */
+        frameMS = rt.externalFrameMS;
+        rt.externalFrameTime = false;
     }
     else
     {
@@ -221,19 +217,16 @@ void CProfilerPanel::On_Frame_End()
     m_frameMS_last = frameMS;
     m_fps_last = (frameMS > 0.0001) ? (1000.0 / frameMS) : 0.0;
 
-    /* rolling avg */
-    static std::deque<double> s_frameWin;
-    static double s_frameSum = 0.0;
-
-    s_frameWin.push_back(frameMS);
-    s_frameSum += frameMS;
-    while ((int)s_frameWin.size() > g_avgWindow)
+    // rolling avg (per-runtime)
+    rt.frameWin.push_back(frameMS);
+    rt.frameSum += frameMS;
+    while ((int)rt.frameWin.size() > rt.avgWindow)
     {
-        s_frameSum -= s_frameWin.front();
-        s_frameWin.pop_front();
+        rt.frameSum -= rt.frameWin.front();
+        rt.frameWin.pop_front();
     }
 
-    m_frameMS_avg = s_frameWin.empty() ? 0.0 : (s_frameSum / (double)s_frameWin.size());
+    m_frameMS_avg = rt.frameWin.empty() ? 0.0 : (rt.frameSum / (double)rt.frameWin.size());
     m_fps_avg = (m_frameMS_avg > 0.0001) ? (1000.0 / m_frameMS_avg) : 0.0;
 
     Prune_Dead_Scopes();
@@ -241,51 +234,54 @@ void CProfilerPanel::On_Frame_End()
 
 void CProfilerPanel::Prune_Dead_Scopes()
 {
-    /* prune scopes not touched for long time to keep panel clean */
-    const uint64_t kKeepFrames = (uint64_t)max(60, g_avgWindow * 10);
+    auto& rt = *m_pRuntime;
 
-    //for (auto it = g_scopes.begin(); it != g_scopes.end(); )
-    //{
-    //    const uint64_t age = (g_frameIndex - it->second.lastTouchedFrame);
-    //    if (age > kKeepFrames)
-    //        it = g_scopes.erase(it);
-    //    else
-    //        ++it;
-    //}
+    const uint64_t kKeepFrames = (uint64_t)max(60, rt.avgWindow * 10);
+
+    for (auto it = rt.scopes.begin(); it != rt.scopes.end(); )
+    {
+        const uint64_t age = (rt.frameIndex - it->second.lastTouchedFrame);
+        if (age > kKeepFrames)
+            it = rt.scopes.erase(it);
+        else
+            ++it;
+    }
 }
 
 void CProfilerPanel::Reset_Stats()
 {
-    //for (auto& kv : g_scopes)
-    //{
-    //    auto& s = kv.second;
-    //    s.ui.last_ms = 0.0;
-    //    s.ui.avg_ms = 0.0;
-    //    s.ui.min_ms = 0.0;
-    //    s.ui.max_ms = 0.0;
-    //    s.ui.samples = 0;
+    auto& rt = *m_pRuntime;
 
-    //    s.window.clear();
-    //    s.window_sum = 0.0;
-    //    s.lastTouchedFrame = g_frameIndex;
-    //}
+    for (auto& kv : rt.scopes)
+    {
+        auto& s = kv.second;
+        s.ui.last_ms = 0.0;
+        s.ui.avg_ms = 0.0;
+        s.ui.min_ms = 0.0;
+        s.ui.max_ms = 0.0;
+        s.ui.samples = 0;
+
+        s.window.clear();
+        s.window_sum = 0.0;
+        s.lastTouchedFrame = rt.frameIndex;
+    }
 }
 
 CProfilerPanel::PROGRESS_MEMORY CProfilerPanel::Get_Process_Memory()
 {
     PROCESS_MEMORY_COUNTERS_EX pmc{};
     GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+
     PROGRESS_MEMORY out;
     out.workingSetMB = pmc.WorkingSetSize / (1024 * 1024);
     out.privateBytesMB = pmc.PrivateUsage / (1024 * 1024);
     return out;
 }
 
-
 void CProfilerPanel::Draw_Toolbar()
 {
     if (ImGui::Checkbox("Capture", &m_bCapture))
-        g_capture = m_bCapture;
+        m_pRuntime->capture = m_bCapture;
 
     ImGui::SameLine();
     if (ImGui::Button("Reset"))
@@ -300,7 +296,7 @@ void CProfilerPanel::Draw_Toolbar()
     ImGui::SameLine();
     ImGui::SetNextItemWidth(140.f);
     ImGui::InputInt("AvgWindow", &m_iAvgWindow);
-    if (m_iAvgWindow < 1) m_iAvgWindow = 1;
+    if (m_iAvgWindow < 1)    m_iAvgWindow = 1;
     if (m_iAvgWindow > 1000) m_iAvgWindow = 1000;
 
     ImGui::SameLine();
@@ -311,116 +307,88 @@ void CProfilerPanel::Draw_Toolbar()
 void CProfilerPanel::Draw_Frame_Info()
 {
     ImGui::Text("FPS (Last / Avg): %d / %d", (_uint)m_fps_last, (_uint)m_fps_avg);
-    ImGui::Text("Frame ms (Last / Avg): %.1f / %.1f", (float)m_frameMS_last, (float)m_frameMS_avg);
-
-    /* A tiny “looks cool” bar, still simple */
-
-    const float ms = (float)m_frameMS_last;
-    float norm = ms / FRAME_BUDGET_MS;
-
-    if (norm < 0.f) norm = 0.f;
-    if (norm > 2.f) norm = 2.f;
+    ImGui::Text("Frame ms (Last / Avg): %.2f / %.2f", (float)m_frameMS_last, (float)m_frameMS_avg);
 }
 
 void CProfilerPanel::Draw_Scopes()
 {
-    ///* collect rows */
-    //struct Row
-    //{
-    //    const CProfilerPanel::SCOPE_STATS* p = nullptr;
-    //    double sortKey = 0.0;
-    //};
+    auto& rt = *m_pRuntime;
 
-    //std::vector<Row> rows;
-    //rows.reserve(g_scopes.size());
+    struct Row
+    {
+        SCOPE_STATS* p = nullptr;
+        double sortKey = 0.0;
+    };
 
-    //for (auto& kv : g_scopes)
-    //{
-    //    auto& st = kv.second.ui;
+    std::vector<Row> rows;
+    rows.reserve(rt.scopes.size());
 
-    //    if (!m_bShowDisabled && !kv.second.ui.bEnabled)
-    //        continue;
+    for (auto& kv : rt.scopes)
+    {
+        auto& st = kv.second.ui;
 
-    //    if (!Str_IContains(st.name, m_strFilter))
-    //        continue;
+        if (!Str_IContains(st.name, m_strFilter))
+            continue;
 
-    //    Row r;
-    //    r.p = &st;
-    //    r.sortKey = m_bSortByCost ? st.avg_ms : 0.0;
-    //    rows.push_back(r);
-    //}
+        Row r;
+        r.p = &st;
+        r.sortKey = m_bSortByCost ? st.avg_ms : 0.0;
+        rows.push_back(r);
+    }
 
-    //if (m_bSortByCost)
-    //{
-    //    std::sort(rows.begin(), rows.end(),
-    //        [](const Row& a, const Row& b) { return a.sortKey > b.sortKey; });
-    //}
-    //else
-    //{
-    //    std::sort(rows.begin(), rows.end(),
-    //        [](const Row& a, const Row& b) { return a.p->name < b.p->name; });
-    //}
+    if (m_bSortByCost)
+    {
+        std::sort(rows.begin(), rows.end(),
+            [](const Row& a, const Row& b) { return a.sortKey > b.sortKey; });
+    }
+    else
+    {
+        std::sort(rows.begin(), rows.end(),
+            [](const Row& a, const Row& b) { return a.p->name < b.p->name; });
+    }
 
-    //if ((int)rows.size() > m_iMaxScopeRows)
-    //    rows.resize((size_t)m_iMaxScopeRows);
+    if ((int)rows.size() > m_iMaxScopeRows)
+        rows.resize((size_t)m_iMaxScopeRows);
 
-    //if (ImGui::BeginTable("##ProfilerScopes", 6, ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable))
-    //{
-    //    ImGui::TableSetupColumn("On", ImGuiTableColumnFlags_WidthFixed, 36.f);
-    //    ImGui::TableSetupColumn("Scope");
-    //    ImGui::TableSetupColumn("Last (ms)");
-    //    ImGui::TableSetupColumn("Avg (ms)");
-    //    ImGui::TableSetupColumn("Min (ms)");
-    //    ImGui::TableSetupColumn("Max (ms)");
-    //    ImGui::TableHeadersRow();
+    if (ImGui::BeginTable("##ProfilerScopes", 6, ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable))
+    {
+        ImGui::TableSetupColumn("On", ImGuiTableColumnFlags_WidthFixed, 36.f);
+        ImGui::TableSetupColumn("Scope");
+        ImGui::TableSetupColumn("Last (ms)");
+        ImGui::TableSetupColumn("Avg (ms)");
+        ImGui::TableSetupColumn("Min (ms)");
+        ImGui::TableSetupColumn("Max (ms)");
+        ImGui::TableHeadersRow();
 
-    //    for (Row& r : rows)
-    //    {
-    //        const SCOPE_STATS& s = *r.p;
+        for (Row& r : rows)
+        {
+            SCOPE_STATS& s = *r.p;
 
-    //        ImGui::TableNextRow();
+            ImGui::TableNextRow();
 
-    //        /* On */
-    //        ImGui::TableSetColumnIndex(0);
-    //        {
-    //            bool bEnabled = s.bEnabled;
+            ImGui::TableSetColumnIndex(0);
+            ImGui::PushID(s.name.c_str());
+            ImGui::Checkbox("##en", &s.bEnabled);
+            ImGui::PopID();
 
-    //            /* We need to toggle the real stored flag: find by name */
-    //            auto it = g_scopes.find(s.name);
-    //            if (it != g_scopes.end())
-    //            {
-    //                bEnabled = it->second.ui.bEnabled;
-    //                ImGui::PushID(it->second.ui.name.c_str());
-    //                if (ImGui::Checkbox("##en", &bEnabled))
-    //                    it->second.ui.bEnabled = bEnabled;
-    //                ImGui::PopID();
-    //            }
-    //            else
-    //            {
-    //                ImGui::TextUnformatted("-");
-    //            }
-    //        }
+            ImGui::TableSetColumnIndex(1);
+            ImGui::TextUnformatted(s.name.c_str());
 
-    //        ImGui::TableSetColumnIndex(1);
-    //        ImGui::TextUnformatted(s.name.c_str());
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%.3f", (float)s.last_ms);
 
-    //        ImGui::TableSetColumnIndex(2);
-    //        ImGui::Text("%.3f", (float)s.last_ms);
+            ImGui::TableSetColumnIndex(3);
+            ImGui::Text("%.3f", (float)s.avg_ms);
 
-    //        ImGui::TableSetColumnIndex(3);
-    //        ImGui::Text("%.3f", (float)s.avg_ms);
+            ImGui::TableSetColumnIndex(4);
+            ImGui::Text("%.3f", (float)s.min_ms);
 
-    //        ImGui::TableSetColumnIndex(4);
-    //        ImGui::Text("%.3f", (float)s.min_ms);
+            ImGui::TableSetColumnIndex(5);
+            ImGui::Text("%.3f", (float)s.max_ms);
+        }
 
-    //        ImGui::TableSetColumnIndex(5);
-    //        ImGui::Text("%.3f", (float)s.max_ms);
-    //    }
-
-    //    ImGui::EndTable();
-    //}
-
-    //ImGui::Spacing();
+        ImGui::EndTable();
+    }
 }
 
 void CProfilerPanel::Draw_Memory()

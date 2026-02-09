@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Engine_Define.h"
+#include <psapi.h>
 
 namespace Editor
 {
@@ -30,6 +31,7 @@ namespace Editor
             return !path.empty();
         }
     }ASSET_SELECTION;
+
 
 }
 
