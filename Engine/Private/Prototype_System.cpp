@@ -30,7 +30,7 @@ HRESULT CPrototype_System::Create_Prototype(const ASSET_GUID& tGUID, PROTOTYPE_S
     if (it != m_Prototypes.end())
         return E_FAIL;
 
-    CPrototype* pProto = CPrototype::Create();
+    auto pProto = CPrototype::Create();
 
     if (FAILED(pProto->Assemble(std::move(spec))))
         return E_FAIL;
@@ -44,7 +44,7 @@ const CPrototype* CPrototype_System::Find(const ASSET_GUID& tGUID) const
     auto it = m_Prototypes.find(tGUID);
     if (it == m_Prototypes.end())
         return nullptr;
-    return it->second;
+    return it->second.get();
 }
 
 CGameObject* CPrototype_System::Clone(const ASSET_GUID& tGUID) const

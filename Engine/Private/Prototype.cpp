@@ -5,6 +5,19 @@
 #include "GameObject.h"
 
 
+CPrototype::CPrototype()
+{
+}
+
+CPrototype::CPrototype(PROTOTYPE_SPEC tSpec)
+    : m_tSpec(std::move(tSpec))
+{
+}
+
+CPrototype::~CPrototype()
+{
+}
+
 HRESULT CPrototype::Assemble(PROTOTYPE_SPEC && tSpec)
 {
     m_tSpec = std::move(tSpec);
@@ -83,7 +96,7 @@ HRESULT CPrototype::Clone_Children(CGameObject* pParent) const
     return S_OK;
 }
 
-CPrototype* CPrototype::Create()
+std::unique_ptr<CPrototype> CPrototype::Create()
 {
-    return new CPrototype;
+    return std::make_unique<CPrototype>();
 }

@@ -26,7 +26,7 @@ public:
     CGameObject* Clone(const ASSET_GUID& tGUID) const;
 
 private:
-    std::unordered_map<ASSET_GUID, CPrototype*, ASSET_GUID_HASHER> m_Prototypes;
+    std::unordered_map<ASSET_GUID, std::unique_ptr<CPrototype>, ASSET_GUID_HASHER> m_Prototypes;
 };
 
 NS_END

@@ -12,10 +12,9 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CPrototype final : public CBase
 {
 public:
-    CPrototype() = default;
-    explicit CPrototype(PROTOTYPE_SPEC tSpec)
-        : m_tSpec(std::move(tSpec)) {
-    }
+    CPrototype();
+    explicit CPrototype(PROTOTYPE_SPEC tSpec);
+    ~CPrototype();
 
 public:
     const std::string& Get_Name() const noexcept
@@ -44,7 +43,7 @@ private:
     Component::COMPONENT_MASK  m_componentMask = 0;
 
 public :
-    static CPrototype* Create();
+    static std::unique_ptr<CPrototype> Create();
 };
 
 #define CHECK_PROTO_CLONE_FAIL(condition, message)      \
