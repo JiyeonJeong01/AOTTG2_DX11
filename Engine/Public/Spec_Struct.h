@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Asset_GUID.h"
+#include "Identity.h"
 #include "Engine_Enum.h"
 
 NS_BEGIN(Engine)
@@ -16,6 +16,8 @@ typedef struct ENGINE_DLL tagCOmponentSpecBase
     virtual COMPONENT_TYPE Get_Type() const noexcept = 0;
 
     virtual std::unique_ptr<tagCOmponentSpecBase> Clone() const = 0;
+    virtual void ToJson(json& j) const = 0;
+    virtual _bool FromJson(const json& j) = 0;
 
 }COMPONENT_SPEC_BASE;
 
@@ -58,12 +60,12 @@ typedef struct ENGINE_DLL tagPrototypeSpec
 
 typedef struct tagSceneObjecSpec
 {
-    UUID uuid;
+    INSTANCE_UUID uuid;
     ASSET_GUID protoGuid;
 
     std::string name;
     Layer::LAYER_ID layer;
-    UUID parent;
+    INSTANCE_UUID parent;
 
     COMPONENT_SPEC_BUNDLE overrides;
 

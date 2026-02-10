@@ -29,6 +29,9 @@ using namespace DirectX;
 //#include "DirectXTK/DDSTextureLoader.h"
 //#include "DirectXTK/WICTextureLoader.h"
 
+#include "../ThirdParty/json.hpp"
+using json = nlohmann::json;
+
 using namespace std;
 
 #pragma warning(disable : 4251)

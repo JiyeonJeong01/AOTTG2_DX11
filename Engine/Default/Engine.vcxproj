@@ -150,7 +150,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ThirdParty\magic_enum.hpp" />
-    <ClInclude Include="..\Public\Asset_GUID.h" />
+    <ClInclude Include="..\Public\Identity.h" />
     <ClInclude Include="..\Public\Asset_Meta.h" />
     <ClInclude Include="..\Public\Asset_Registry.h" />
     <ClInclude Include="..\Public\Base.h" />

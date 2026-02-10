@@ -21,8 +21,8 @@ void CPrototype_System::Clear()
     m_Prototypes.clear();
 }
 
-/* Create a master prototype using the asset GUID and register it to the system for future cloning */
-HRESULT CPrototype_System::Create_Prototype(const ASSET_GUID& tGUID, PROTOTYPE_SPEC&& spec)
+/* Create and Register a master prototype using the new asset GUID and register it to the system for future cloning */
+HRESULT CPrototype_System::Register_Prototype(const ASSET_GUID& tGUID, PROTOTYPE_SPEC&& spec)
 {
     if (!tGUID.Is_Valid())
         return E_FAIL;
@@ -41,6 +41,12 @@ HRESULT CPrototype_System::Create_Prototype(const ASSET_GUID& tGUID, PROTOTYPE_S
     return S_OK;
 }
 
+HRESULT CPrototype_System::Load_Prototype_From_File(const ASSET_GUID& tGUID)
+{
+
+    return S_OK;
+}
+
 const CPrototype* CPrototype_System::Find(const ASSET_GUID& tGUID) const
 {
     auto it = m_Prototypes.find(tGUID);
@@ -49,13 +55,13 @@ const CPrototype* CPrototype_System::Find(const ASSET_GUID& tGUID) const
     return it->second.get();
 }
 
-CGameObject* CPrototype_System::Clone(const ASSET_GUID& tGUID, Layer::LAYER_ID iLayer) const
+CGameObject* CPrototype_System::Clone(const ASSET_GUID& tGUID, Layer::LAYER_ID iLayer, const string& strName, const INSTANCE_UUID& tUUID) const
 {
     const CPrototype* pProto = Find(tGUID);
     if (!pProto)
         return nullptr;
 
-    return pProto->Clone();
+    return pProto->Clone(iLayer, strName, tUUID);
 }
 
 NS_END

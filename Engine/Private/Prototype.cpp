@@ -38,10 +38,10 @@ HRESULT CPrototype::Assemble(PROTOTYPE_SPEC && tSpec)
     return S_OK;
 }
 
-CGameObject* CPrototype::Clone(Layer::LAYER_ID iLayer ) const
+CGameObject* CPrototype::Clone(Layer::LAYER_ID iLayer, const string& strName, const INSTANCE_UUID& tUUID) const
 {
     /* Create instance */
-    CGameObject* pInstance = SYS_GAMEOBJECT.Create_Object(iLayer, m_tSpec.strName);
+    CGameObject* pInstance = SYS_GAMEOBJECT.Create_Object(iLayer, strName, nullptr, tUUID);
 
     CHECK_PROTO_CLONE_FAIL(FAILED(Apply_Spec_To_Instance(pInstance)), "CPrototype clone failed : can't apply spec to instance.");
     CHECK_PROTO_CLONE_FAIL(FAILED(Clone_Children(pInstance)), "CPrototype clone failed : child instantiation failed.");

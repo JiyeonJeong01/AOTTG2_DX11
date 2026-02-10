@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Asset_GUID.h"
+#include "Identity.h"
 
 #include "Spec_Struct.h"
 
@@ -22,10 +22,14 @@ public:
     void    Clear();
 
 public:
-    HRESULT Create_Prototype(const ASSET_GUID& tGUID, PROTOTYPE_SPEC&& spec);
+    HRESULT Register_Prototype(const ASSET_GUID& tGUID, PROTOTYPE_SPEC&& spec);
+    HRESULT Load_Prototype_From_File(const ASSET_GUID& tGUID);
 
     const CPrototype* Find(const ASSET_GUID& tGUID) const;
-    CGameObject* Clone(const ASSET_GUID& tGUID, Layer::LAYER_ID iLayer = Layer::DEFAULT_LAYER) const;
+    CGameObject* Clone(const ASSET_GUID& tGUID,
+                        Layer::LAYER_ID iLayer = Layer::DEFAULT_LAYER,
+                        const string& strName = "GameObject_clone",
+                        const INSTANCE_UUID& tUUID = INSTANCE_UUID{}) const;
 
 private:
     std::unordered_map<ASSET_GUID, std::unique_ptr<CPrototype>, ASSET_GUID_HASHER> m_Prototypes;

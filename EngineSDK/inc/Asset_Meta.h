@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Asset_GUID.h"
+#include "Identity.h"
 #include "Engine_Log.h"
 
 NS_BEGIN(Engine)

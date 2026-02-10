@@ -228,7 +228,7 @@
     <ClInclude Include="..\Public\Resource_System.h">
       <Filter>00. System\08. Resource</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Asset_GUID.h">
+    <ClInclude Include="..\Public\Identity.h">
       <Filter>00. System\08. Resource\Asset</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Asset_Meta.h">

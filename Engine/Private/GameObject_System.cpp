@@ -64,7 +64,7 @@ HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
     return S_OK;
 }
 
-CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent)
+CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent, const INSTANCE_UUID& tUUID)
 {
     if (m_freeIndices.empty())
     {
@@ -95,6 +95,8 @@ CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const str
     /* Reset data */
     data.Reset();
     data.bActive = true;
+    data.layer = iLayer;
+    data.tUUID = tUUID;
 
     pWrapper->m_hSelf.iIndex = idx;
     pWrapper->m_hSelf.iVersion = data.iVersion;
@@ -241,6 +243,25 @@ void CGameObject_System::Get_Roots(std::vector<CGameObject*>& outRoots)
     }
 }
 
+void CGameObject_System::Set_UUID(CGameObject* pObj, const INSTANCE_UUID& tUUID)
+{
+    if (!pObj || !pObj->IsValid())
+        return;
+
+    GAMEOBJECT_DATA& tData = Access_Data_Raw(pObj->Get_Handle());
+
+    tData.tUUID = tUUID;
+}
+
+const INSTANCE_UUID& CGameObject_System::Get_UUID(CGameObject* pObj)
+{
+    if (!pObj || !pObj->IsValid())
+        return INSTANCE_UUID{};
+
+    GAMEOBJECT_DATA& tData = Access_Data_Raw(pObj->Get_Handle());
+    return tData.tUUID;
+}
+
 void CGameObject_System::Remove_From_LayerBucket(CGameObject* pObj)
 {
     if (!pObj || !pObj->IsValid())
@@ -315,7 +336,7 @@ void CGameObject_System::Add_To_LayerBucket(CGameObject* pObj, Layer::LAYER_ID l
     GAMEOBJECT_DATA& data = Access_Data_Raw(hObj);
 
     /* Remove this object from its current layer bucket. */
-    if (data.layer != Layer::INVALID_LAYER)
+    if (data.layer != Layer::INVALID_LAYER && data.layer != layer)
         Remove_From_LayerBucket(pObj);
 
     auto& bucket = m_layerBuckets[layer];

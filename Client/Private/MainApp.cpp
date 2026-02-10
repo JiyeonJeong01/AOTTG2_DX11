@@ -62,7 +62,7 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
     bundle.components.push_back(std::move(m_pTestA));
     spec.tComponentBundle = std::move(bundle);
 
-    HRESULT hr = CPrototype_System::GetInstance().Create_Prototype(testGUID = ASSET_GUID::New_GUID(), std::move(spec));
+    HRESULT hr = CPrototype_System::GetInstance().Register_Prototype(testGUID = ASSET_GUID::New_GUID(), std::move(spec));
     if (hr > 0)
         LOG_INFO("Prototype 등록됨");
 
