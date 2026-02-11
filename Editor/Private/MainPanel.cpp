@@ -6,6 +6,7 @@
 #include "InspectorPanel.h"
 #include "ProjectPanel.h"
 #include "ProfilerPanel.h"
+#include "ScenePanel.h"
 
 NS_BEGIN(Editor)
 
@@ -25,12 +26,14 @@ HRESULT CMainPanel::Initialize()
     auto pProject = CProjectPanel::Create(PANEL_PROJECT);
     auto pInspector = CInspectorPanel::Create(PANEL_INSPECTOR, pHierarchy.get(), pProject.get());
     auto pProfile = CProfilerPanel::Create(PANEL_PROFILE);
+    auto pScene = CScenePanel::Create(PANEL_SCENE);
 
     Add_Panel(std::move(pConsole));
     Add_Panel(std::move(pHierarchy));
     Add_Panel(std::move(pProject));
     Add_Panel(std::move(pInspector));
     Add_Panel(std::move(pProfile));
+    Add_Panel(std::move(pScene));
 
     const std::filesystem::path assetRootPath = ProjectConfig::PATH + ProjectConfig::ROOT;
 

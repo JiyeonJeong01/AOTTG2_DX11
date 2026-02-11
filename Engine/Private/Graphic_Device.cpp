@@ -13,6 +13,11 @@ CGraphic_Device::~CGraphic_Device()
     Safe_Release(m_pDepthStencilView);
     Safe_Release(m_pBackBufferRTV);
     Safe_Release(m_pDeviceContext);
+    Safe_Release(m_pSceneDSV);
+    Safe_Release(m_pSceneDepthTex);
+    Safe_Release(m_pSceneSRV);
+    Safe_Release(m_pSceneRTV);
+    Safe_Release(m_pSceneTex);
 
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -108,6 +113,105 @@ HRESULT CGraphic_Device::Present()
 		return E_FAIL;
 
 	return m_pSwapChain->Present(0, 0);
+}
+
+HRESULT CGraphic_Device::Ready_SceneRenderTarget(_uint w, _uint h)
+{
+    if (!m_pDevice) return E_FAIL;
+    if (w == 0 || h == 0) return E_FAIL;
+
+    if (m_pSceneTex && m_iSceneW == w && m_iSceneH == h)
+        return S_OK;
+
+    // 기존 해제
+    Safe_Release(m_pSceneDSV);
+    Safe_Release(m_pSceneDepthTex);
+    Safe_Release(m_pSceneSRV);
+    Safe_Release(m_pSceneRTV);
+    Safe_Release(m_pSceneTex);
+
+    // Color
+    D3D11_TEXTURE2D_DESC td{};
+    td.Width = w;
+    td.Height = h;
+    td.MipLevels = 1;
+    td.ArraySize = 1;
+    td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    td.SampleDesc.Count = 1;
+    td.Usage = D3D11_USAGE_DEFAULT;
+    td.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+
+    if (FAILED(m_pDevice->CreateTexture2D(&td, nullptr, &m_pSceneTex)))
+        return E_FAIL;
+    if (FAILED(m_pDevice->CreateRenderTargetView(m_pSceneTex, nullptr, &m_pSceneRTV)))
+        return E_FAIL;
+    if (FAILED(m_pDevice->CreateShaderResourceView(m_pSceneTex, nullptr, &m_pSceneSRV)))
+        return E_FAIL;
+
+    // Depth
+    D3D11_TEXTURE2D_DESC dd{};
+    dd.Width = w;
+    dd.Height = h;
+    dd.MipLevels = 1;
+    dd.ArraySize = 1;
+    dd.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    dd.SampleDesc.Count = 1;
+    dd.Usage = D3D11_USAGE_DEFAULT;
+    dd.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+    if (FAILED(m_pDevice->CreateTexture2D(&dd, nullptr, &m_pSceneDepthTex)))
+        return E_FAIL;
+    if (FAILED(m_pDevice->CreateDepthStencilView(m_pSceneDepthTex, nullptr, &m_pSceneDSV)))
+        return E_FAIL;
+
+    m_iSceneW = w;
+    m_iSceneH = h;
+    return S_OK;
+}
+
+void CGraphic_Device::Bind_SceneRT()
+{
+    ID3D11RenderTargetView* rtvs[] = { m_pSceneRTV };
+    m_pDeviceContext->OMSetRenderTargets(1, rtvs, m_pSceneDSV);
+
+    D3D11_VIEWPORT vp{};
+    vp.TopLeftX = 0;
+    vp.TopLeftY = 0;
+    vp.Width = (float)m_iSceneW;
+    vp.Height = (float)m_iSceneH;
+    vp.MinDepth = 0.f;
+    vp.MaxDepth = 1.f;
+    m_pDeviceContext->RSSetViewports(1, &vp);
+}
+
+void CGraphic_Device::Bind_BackBuffer()
+{
+    ID3D11RenderTargetView* rtvs[] = { m_pBackBufferRTV };
+    m_pDeviceContext->OMSetRenderTargets(1, rtvs, m_pDepthStencilView);
+}
+
+void CGraphic_Device::Clear_SceneRTV(const _float4* pClearColor)
+{
+    if (!m_pDeviceContext || !m_pSceneRTV)
+        return;
+    const float pink[4] = { 1.f, 0.f, 1.f, 1.f };
+    m_pDeviceContext->ClearRenderTargetView(m_pSceneRTV, pink);
+    //m_pDeviceContext->ClearRenderTargetView(
+    //    m_pSceneRTV,
+    //    reinterpret_cast<const float*>(pClearColor)
+    //);
+}
+
+void CGraphic_Device::Clear_SceneDSV()
+{
+    if (!m_pDeviceContext || !m_pSceneDSV)
+        return ;
+
+    m_pDeviceContext->ClearDepthStencilView(
+        m_pSceneDSV,
+        D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+        1.f, 0
+    );
 }
 
 

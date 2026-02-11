@@ -19,10 +19,19 @@ public :
     HRESULT     Draw();
     void        Clear_Resources(_uint iLevelIndex);
 
-    void        Share_GraphicDevice(_Out_ ID3D11Device** ppDevice, _Out_ ID3D11DeviceContext** ppContext);
+    void        Share_GraphicDevice(_Out_ ID3D11Device** ppDevice = nullptr,
+                                    _Out_ ID3D11DeviceContext** ppContext = nullptr,
+                                    _Out_ ID3D11ShaderResourceView** ppSceneSRV = nullptr);
 public :
 	HRESULT		Clear_Buffers(const _float4* pClearColor) const;
 	HRESULT		Present() const;
+
+public :
+    HRESULT Ready_SceneRenderTarget(_uint w, _uint h);
+    void Bind_SceneRT();
+    void Bind_BackBuffer();
+    void Clear_SceneRTV(const _float4* pClearColor);
+    void Clear_SceneDSV();
 
 public: /* For.Timer_Manager */
 	_float Compute_SystemDT() const;
@@ -41,6 +50,8 @@ private:
 
     ID3D11Device*               m_pDevice{};
     ID3D11DeviceContext*        m_pContext{};
+    ID3D11ShaderResourceView*   m_pSceneSRV{};
+
 };
 
 NS_END

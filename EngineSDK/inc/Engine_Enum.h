@@ -9,7 +9,7 @@ namespace Engine
 
 	enum class LAYER_TYPE		{ NONE, BACKGROUND, PLAYER, FLOOR, PARTICLE, MAX = 16, };
     enum class COMPONENT_TYPE : uint8_t { TEST_A, TEST_B,
-                                        TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, TEXTURE, ANIMATOR, CAMERA, AUDIO_LISTENER, AUDIO_SOURCE, END };
+                                        TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, TEXTURE, ANIMATOR, CAMERA, AUDIO_LISTENER, AUDIO_SOURCE, SHADER, END };
 	enum                                { COMPONENT_MAX = static_cast<uint32_t>(COMPONENT_TYPE::END) };
 
 	enum class RESOURCE_TYPE : uint8_t  { TEXTURE, MESH, MATERIAL, ANIMATION, AUDIO_CLIP, SHADER, PREFAB, END };

@@ -133,17 +133,16 @@ typedef struct ENGINE_DLL tagTextureSpec final : public COMPONENT_SPEC_BASE
         return std::make_unique<tagTextureSpec>(*this);
     }
 
-    void ToJson(json& j) const override
-    {
+    void ToJson(json& j) const override {
         j["Type"] = SCAST(_uint, Get_Type());
-
-        if (pFilePathPattern)
-        {
+        if (pFilePathPattern) {
             std::wstring ws(pFilePathPattern);
-            j["FilePath"] = std::string(ws.begin(), ws.end());
+            std::string s;
+            for (auto c : ws) s += static_cast<char>(c);
+            j["FilePath"] = s;
         }
         j["NumSRVs"] = iNumSRVs;
-    };
+    }
 
     _bool FromJson(const json& j) override
     {

@@ -43,6 +43,9 @@
     <Filter Include="01. Editor Panel\Main">
       <UniqueIdentifier>{1c9f5ee4-e6f3-47c6-9a9c-8884fd4db20b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Editor Panel\View">
+      <UniqueIdentifier>{bfac240f-4f47-488e-8a3e-4efe175eea3c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Editor.cpp">
@@ -89,6 +92,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\ProfilerPanel.cpp">
       <Filter>01. Editor Panel\Profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ScenePanel.cpp">
+      <Filter>01. Editor Panel\View</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\ProfilerPanel.h">
       <Filter>01. Editor Panel\Profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ScenePanel.h">
+      <Filter>01. Editor Panel\View</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

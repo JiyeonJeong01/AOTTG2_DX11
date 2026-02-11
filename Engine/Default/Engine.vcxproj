@@ -119,8 +119,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../ThirdParty;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d11.lib;DirectXTKd.lib;Effects11d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../ThirdParty;../../ThirdParty/Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Client\Bin\"
@@ -145,7 +145,8 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;DirectXTK.lib;Effects11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../ThirdParty;../../ThirdParty/Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -185,8 +186,11 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\ISink.h" />
     <ClInclude Include="..\Public\GameObject_System.h" />
     <ClInclude Include="..\Public\Engine_MathDX.h" />
+    <ClInclude Include="..\Public\Material.h" />
+    <ClInclude Include="..\Public\MeshBuilder.h" />
     <ClInclude Include="..\Public\Prototype.h" />
     <ClInclude Include="..\Public\Prototype_System.h" />
+    <ClInclude Include="..\Public\Mesh.h" />
     <ClInclude Include="..\Public\Resource_System.h" />
     <ClInclude Include="..\Public\Scene_Manager.h" />
     <ClInclude Include="..\Public\Logger.h" />
@@ -220,6 +224,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\GUI_Sink.cpp" />
     <ClCompile Include="..\Private\ISink.cpp" />
     <ClCompile Include="..\Private\GameObject_System.cpp" />
+    <ClCompile Include="..\Private\MeshBuilder.cpp" />
     <ClCompile Include="..\Private\Prototype.cpp" />
     <ClCompile Include="..\Private\Prototype_System.cpp" />
     <ClCompile Include="..\Private\Resource_System.cpp" />

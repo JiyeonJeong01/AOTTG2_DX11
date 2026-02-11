@@ -104,10 +104,14 @@ void CCore_System::Clear_Resources(_uint iLevelIndex)
 {
 }
 
-void CCore_System::Share_GraphicDevice(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
+void CCore_System::Share_GraphicDevice(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext, ID3D11ShaderResourceView** ppSceneSRV)
 {
-    *ppDevice = m_pDevice;
-    *ppContext = m_pContext;
+    if (ppDevice)    
+        *ppDevice = m_pDevice;
+    if (ppContext)
+        *ppContext = m_pContext;
+    if (ppSceneSRV)
+        *ppSceneSRV = m_pGraphic_Device->Get_SceneSRV();
 }
 
 HRESULT CCore_System::Clear_Buffers(const _float4* pClearColor) const
@@ -124,6 +128,31 @@ HRESULT CCore_System::Clear_Buffers(const _float4* pClearColor) const
 HRESULT CCore_System::Present() const
 {
 	return m_pGraphic_Device->Present();
+}
+
+HRESULT CCore_System::Ready_SceneRenderTarget(_uint w, _uint h)
+{
+    return m_pGraphic_Device->Ready_SceneRenderTarget(w, h);
+}
+
+void CCore_System::Bind_SceneRT()
+{
+    m_pGraphic_Device->Bind_SceneRT();
+}
+
+void CCore_System::Bind_BackBuffer()
+{
+    m_pGraphic_Device->Bind_BackBuffer();
+}
+
+void CCore_System::Clear_SceneRTV(const _float4* pClearColor)
+{
+    m_pGraphic_Device->Clear_SceneRTV(pClearColor);
+}
+
+void CCore_System::Clear_SceneDSV()
+{
+    m_pGraphic_Device->Clear_SceneDSV();
 }
 
 _float CCore_System::Compute_SystemDT() const

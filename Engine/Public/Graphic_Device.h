@@ -19,6 +19,15 @@ public:
 
 	HRESULT Present();
 
+    /* ------------------ TEST ------------------ */
+    HRESULT Ready_SceneRenderTarget(_uint w, _uint h);
+    void Bind_SceneRT();
+    void Bind_BackBuffer();
+    void Clear_SceneRTV(const _float4* pClearColor);
+    void Clear_SceneDSV();
+    
+    ID3D11ShaderResourceView* Get_SceneSRV() const { return m_pSceneSRV; }
+
 private:
 	ID3D11Device*           m_pDevice { };
 	ID3D11DeviceContext*    m_pDeviceContext { };
@@ -26,6 +35,17 @@ private:
 
 	ID3D11RenderTargetView* m_pBackBufferRTV { };
 	ID3D11DepthStencilView* m_pDepthStencilView { };
+
+
+    /* 오프스크린 */
+    ID3D11Texture2D*        m_pSceneTex = nullptr;
+    ID3D11RenderTargetView* m_pSceneRTV = nullptr;
+    ID3D11ShaderResourceView* m_pSceneSRV = nullptr;
+    ID3D11Texture2D*        m_pSceneDepthTex = nullptr;
+    ID3D11DepthStencilView* m_pSceneDSV = nullptr;
+
+    _uint m_iSceneW = 0;
+    _uint m_iSceneH = 0;
 
 private:
 	HRESULT Ready_SwapChain(HWND hWnd, WINMODE isWindowed, _uint iWinCX, _uint iWinCY);

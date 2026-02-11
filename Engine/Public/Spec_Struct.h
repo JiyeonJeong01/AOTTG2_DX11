@@ -75,6 +75,23 @@ typedef struct tagSceneObjecSpec
     tagSceneObjecSpec& operator=(const tagSceneObjecSpec&) = delete;
     tagSceneObjecSpec(tagSceneObjecSpec&&) = default;
     tagSceneObjecSpec& operator=(tagSceneObjecSpec&&) = default;
+
+    tagSceneObjecSpec(
+        const INSTANCE_UUID& _uuid,
+        const ASSET_GUID& _protoGuid,
+        const std::string& _name,
+        Layer::LAYER_ID _layer,
+        const INSTANCE_UUID& _parent,
+        COMPONENT_SPEC_BUNDLE&& _overrides
+    )
+        : uuid(_uuid)
+        , protoGuid(_protoGuid)
+        , name(_name)
+        , layer(_layer)
+        , parent(_parent)
+        , overrides(std::move(_overrides))
+    {
+    }
 }SCENE_OBJECT_SPEC;
 
 
