@@ -33,7 +33,8 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
 void CComponent_System::Update(_float fDT)
 {
 	for (auto& pProcessor : m_pComProcessors)
-		pProcessor->Update(fDT);
+        if (pProcessor) 
+    		pProcessor->Update(fDT);
 }
 
 void CComponent_System::LateUpdate(_float fDT)

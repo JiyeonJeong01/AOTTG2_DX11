@@ -8,6 +8,8 @@
 #include "Tester.h"
 #include "Prototype_System.h"
 #include "Component_Spec.h"
+#include "Transform.h"
+#include "MeshRenderer.h"
 
 static ASSET_GUID testGUID{};
 /* ============================ */
@@ -36,7 +38,8 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
         Engine::CGameObject* pObj = SYS_GAMEOBJECT.Create_Object();
         pObj->Add_Component<CTestComponentA>(COMPONENT_TYPE::TEST_A);
         pObj->Add_Component<CTestComponentB>(COMPONENT_TYPE::TEST_B);
-        pObj->Add_Component<CTestComponentA>(COMPONENT_TYPE::TEST_A);
+        pObj->Add_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
+        pObj->Add_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
 
         auto comA = pObj->Get_Component<CTestComponentA>(COMPONENT_TYPE::TEST_A);
         auto comB = pObj->Get_Component<CTestComponentB>(COMPONENT_TYPE::TEST_B);
@@ -99,6 +102,8 @@ void CMainApp::Update(_float fDT)
     {
         Engine::CGameObject* pObj = CPrototype_System::GetInstance().Clone(testGUID);
     }
+
+    SYS_CORE.Update_Engine(fDT);
 
 }
 

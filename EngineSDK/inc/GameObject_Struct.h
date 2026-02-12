@@ -65,4 +65,6 @@ typedef struct tagGameObjectData
 
 }GAMEOBJECT_DATA;
 
+static constexpr INSTANCE_UUID DUMMY_UUID{};
+
 NS_END

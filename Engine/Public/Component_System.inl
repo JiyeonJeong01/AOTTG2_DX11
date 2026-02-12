@@ -17,13 +17,7 @@ TProxy CComponent_System::Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE ha
     }
 
     using PROCESSOR_T = typename TProxy::ProcessorType;
-
-#ifdef _DEBUG
-    PROCESSOR_T* pProcessor = dynamic_cast<PROCESSOR_T*>(m_pComProcessors[iIndex].get());
-    _DEBUG_ENGINE_ASSERT_MSG(pProcessor != nullptr, "Processor type mismatch for this component type!");
-#else
     PROCESSOR_T* pProcessor = static_cast<PROCESSOR_T*>(m_pComProcessors[iIndex].get());
-#endif
 
     return pProcessor->Get_Proxy(handle);
 }

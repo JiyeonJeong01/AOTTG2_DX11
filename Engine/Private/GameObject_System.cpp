@@ -256,7 +256,7 @@ void CGameObject_System::Set_UUID(CGameObject* pObj, const INSTANCE_UUID& tUUID)
 const INSTANCE_UUID& CGameObject_System::Get_UUID(CGameObject* pObj)
 {
     if (!pObj || !pObj->IsValid())
-        return INSTANCE_UUID{};
+        return DUMMY_UUID;
 
     GAMEOBJECT_DATA& tData = Access_Data_Raw(pObj->Get_Handle());
     return tData.tUUID;

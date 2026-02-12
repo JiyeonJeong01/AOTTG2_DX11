@@ -22,10 +22,6 @@ class CTransform_Processor;
 class ENGINE_DLL CTransform final : public CComponent_Proxy_Base<TRANSFORM_DATA, CTransform>
 {
 public:
-    using ProcessorType = CTransform_Processor;
-    using DataType = TRANSFORM_DATA;
-
-public:
     CTransform() : CComponent_Proxy_Base() { m_eComType = COMPONENT_TYPE::TRANSFORM; }
     CTransform(DataType* pData, COMPONENT_HANDLE handle)
     : CComponent_Proxy_Base(pData, handle) { m_eComType = COMPONENT_TYPE::TRANSFORM; }
