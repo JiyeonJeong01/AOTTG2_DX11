@@ -1,5 +1,7 @@
 ﻿#include "MeshBuilder.h"
 
+#include "Render_Struct.h"
+
 HRESULT CMeshBuilder::Create_Mesh(ID3D11Device* pDevice, const MESH_DESC& tDesc, MESH_ENTRY& outEntry)
 {
     if (!pDevice || !tDesc.pVertices || !tDesc.iVertextStride || !tDesc.iVertexCnt || !tDesc.pIndices || !tDesc.iIndexCnt)
@@ -46,8 +48,6 @@ HRESULT CMeshBuilder::Create_Mesh(ID3D11Device* pDevice, const MESH_DESC& tDesc,
     outEntry.iIndexCount = tDesc.iIndexCnt;
     outEntry.eTopology = tDesc.eTopology;
     outEntry.iVBOffset = 0;
-
-
     return S_OK;
 }
 

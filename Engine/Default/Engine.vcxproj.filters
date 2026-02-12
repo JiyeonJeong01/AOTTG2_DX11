@@ -94,6 +94,18 @@
     <Filter Include="01. Utility\04. Component\04. Material">
       <UniqueIdentifier>{e794008c-1777-4d04-97cc-177e13e0d614}</UniqueIdentifier>
     </Filter>
+    <Filter Include="97. ShaderFile">
+      <UniqueIdentifier>{c17b9a42-0a7e-4321-80b8-f16e46f0c732}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\05. Shader">
+      <UniqueIdentifier>{650a95cd-1679-4e53-8acf-2d8f99800886}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\06. MeshRenderer">
+      <UniqueIdentifier>{e949251b-00ae-4c7b-8686-90ce6dfe4a92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. System\03. Renderer">
+      <UniqueIdentifier>{491b0f15-92bc-4b59-9516-60f8f3e09104}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -267,6 +279,27 @@
     <ClInclude Include="..\Public\Material.h">
       <Filter>01. Utility\04. Component\04. Material</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\MaterialBuilder.h">
+      <Filter>01. Utility\04. Component\04. Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Shader.h">
+      <Filter>01. Utility\04. Component\05. Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ShaderBuilder.h">
+      <Filter>01. Utility\04. Component\05. Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MeshRenderer.h">
+      <Filter>01. Utility\04. Component\06. MeshRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CRender_System.h">
+      <Filter>00. System\03. Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MeshRenderer_Processor.h">
+      <Filter>01. Utility\04. Component\06. MeshRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Render_Struct.h">
+      <Filter>99. Defines\Engine_Struct</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -365,6 +398,21 @@
     <ClCompile Include="..\Private\MeshBuilder.cpp">
       <Filter>01. Utility\04. Component\03. Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\MaterialBuilder.cpp">
+      <Filter>01. Utility\04. Component\04. Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ShaderBuilder.cpp">
+      <Filter>01. Utility\04. Component\05. Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MeshRenderer.cpp">
+      <Filter>01. Utility\04. Component\06. MeshRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CRender_System.cpp">
+      <Filter>00. System\03. Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MeshRenderer_Processor.cpp">
+      <Filter>01. Utility\04. Component\06. MeshRenderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Public\GameObject.inl">
@@ -373,5 +421,10 @@
     <None Include="..\Public\Component_System.inl">
       <Filter>01. Utility\04. Component\100. ComponentSystem</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Public\SolidColor.hlsl">
+      <Filter>97. ShaderFile</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

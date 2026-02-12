@@ -10,7 +10,7 @@ class ENGINE_DLL CComponent_System final
 {
     DECLARE_SINGLETON(CComponent_System)
 public :
-	HRESULT Initialize();
+	HRESULT Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void Update(_float fDT);
 	void LateUpdate(_float fDT);
 	void FixedUpdate(_float fDT);
@@ -36,7 +36,10 @@ private :
     void Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pBase);
 
 private :
-	vector<std::unique_ptr<CComponent_Processor>>	m_pComProcessors{ };
+
+    ID3D11Device*           m_pDevice{};
+    ID3D11DeviceContext*    m_pContext{};
+    vector<std::unique_ptr<CComponent_Processor>>	m_pComProcessors{ };
     std::unique_ptr<CComponentGroup_Manager> 		m_pComGroupMgr{ };
 
     using FACTORY_FN = void(*)(CComponent_System*, COMPONENT_TYPE, CGameObject*, const COMPONENT_SPEC_BASE*);

@@ -159,4 +159,45 @@ typedef struct ENGINE_DLL tagTextureSpec final : public COMPONENT_SPEC_BASE
     _uint iNumSRVs = 1;
 } TEXTURE_SPEC;
 
+typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
+{
+    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::MESH_RENDERER)
+
+    ASSET_GUID  meshGUID{};
+    ASSET_GUID  materialGUID{};
+
+    uint16_t passIndex = 0;
+
+    uint32_t     flags = RF_NONE;
+    RENDER_LAYER layer = RENDER_LAYER::NONBLEND;
+
+    float sortZ = 0.f;
+
+    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
+    {
+        return std::make_unique<tagMeshRendererSpec>(*this);
+    }
+
+    void ToJson(json& j) const override
+    {
+        j["MeshGUID"] = meshGUID.To_String_Utf8();
+        j["MaterialGUID"] = materialGUID.To_String_Utf8();
+        j["PassIndex"] = passIndex;
+        j["Flags"] = flags;
+        j["Layer"] = (uint8_t)layer;
+        j["SortZ"] = sortZ;
+    }
+    _bool FromJson(const json& j) override
+    {
+        ASSET_GUID::Try_Utf8_To_GUID(j.value("MeshGUID", ""), meshGUID);
+        ASSET_GUID::Try_Utf8_To_GUID(j.value("MaterialGUID", ""), materialGUID);
+        passIndex = (uint16_t)j.value("PassIndex", 0);
+        flags = (uint32_t)j.value("Flags", 0);
+        layer = (RENDER_LAYER)j.value("Layer", (uint8_t)RENDER_LAYER::NONBLEND);
+        sortZ = (float)j.value("SortZ", 0.0f);
+
+        return meshGUID.Is_Valid() && materialGUID.Is_Valid();
+    }
+}MESH_RENDERER_SPEC;
+
 NS_END

@@ -103,7 +103,8 @@ private:                                                    \
 #define SYS_LOG		            GET_INSTANCE(Engine::CLogger)
 #define SYS_COMPONENT           GET_INSTANCE(Engine::CComponent_System)
 #define SYS_GAMEOBJECT          GET_INSTANCE(Engine::CGameObject_System)
-#define SYS_RESOURCE            GET_INSTANCE(Engine::CAsset_Registry)
+#define SYS_ASSET               GET_INSTANCE(Engine::CAsset_Registry)
+#define SYS_RESOURCE            GET_INSTANCE(Engine::CResource_System)
 
 //#define INPUT		GET_INSTANCE(CInputSystem)
 //#define TIME		GET_INSTANCE(CTimeManager)

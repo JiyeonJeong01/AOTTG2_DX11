@@ -5,6 +5,8 @@
 //===============TEST===============
 #include "TestComponentASystem.h"
 #include "TestComponentBSystem.h"
+#include "Transform_Processor.h"
+#include "MeshRenderer_Processor.h"
 //==================================
 
 IMPLEMENT_SINGLETON(CComponent_System)
@@ -13,13 +15,17 @@ CComponent_System::CComponent_System() = default;
 CComponent_System::~CComponent_System() = default;
 
 
-HRESULT CComponent_System::Initialize()
+HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
+
+
     m_pComGroupMgr = CComponentGroup_Manager::Create();
 
     m_pComProcessors.resize(SCAST(_uint, COMPONENT_TYPE::END));
     m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TEST_A)] = CTestComponentASystem::Create();
     m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TEST_B)] = CTestComponentBSystem::Create();
+    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TRANSFORM)] = CTransform_Processor::Create();
+    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::MESH_RENDERER)] = CMeshRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CTransform_Processor*, m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TRANSFORM)].get()));
 
 	return S_OK;
 }

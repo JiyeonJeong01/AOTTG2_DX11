@@ -40,18 +40,6 @@ namespace  Engine
 
     }LABEL;
 
-    typedef struct tagVertexPositionColor
-    {
-        XMFLOAT3			vPosition;
-        XMFLOAT4			vColor;
-    }VTXCOL;
-
-    typedef struct tagVertexPositionTexcoord
-    {
-        XMFLOAT3			vPosition;
-        XMFLOAT2			vTexcoord;
-    }VTXTEX;
-
 }
 
 #endif // Engine_Struct_h__

@@ -129,6 +129,12 @@ xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Editor\Bin\"
 xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.lib" "$(SolutionDir)EngineSDK\lib\"
 xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Command>
     </PostBuildEvent>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -151,6 +157,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ThirdParty\magic_enum.hpp" />
+    <ClInclude Include="..\Public\CRender_System.h" />
     <ClInclude Include="..\Public\Identity.h" />
     <ClInclude Include="..\Public\Asset_Meta.h" />
     <ClInclude Include="..\Public\Asset_Registry.h" />
@@ -187,14 +194,20 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\GameObject_System.h" />
     <ClInclude Include="..\Public\Engine_MathDX.h" />
     <ClInclude Include="..\Public\Material.h" />
+    <ClInclude Include="..\Public\MaterialBuilder.h" />
     <ClInclude Include="..\Public\MeshBuilder.h" />
+    <ClInclude Include="..\Public\MeshRenderer.h" />
+    <ClInclude Include="..\Public\MeshRenderer_Processor.h" />
     <ClInclude Include="..\Public\Prototype.h" />
     <ClInclude Include="..\Public\Prototype_System.h" />
     <ClInclude Include="..\Public\Mesh.h" />
+    <ClInclude Include="..\Public\Render_Struct.h" />
     <ClInclude Include="..\Public\Resource_System.h" />
     <ClInclude Include="..\Public\Scene_Manager.h" />
     <ClInclude Include="..\Public\Logger.h" />
     <ClInclude Include="..\Public\Scene.h" />
+    <ClInclude Include="..\Public\Shader.h" />
+    <ClInclude Include="..\Public\ShaderBuilder.h" />
     <ClInclude Include="..\Public\Spec_Struct.h" />
     <ClInclude Include="..\Public\String_Utils.h" />
     <ClInclude Include="..\Public\TestComponentA.h" />
@@ -215,6 +228,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\ComponentGroup_Manager.cpp" />
     <ClCompile Include="..\Private\Component_System.cpp" />
     <ClCompile Include="..\Private\CLI_Sink.cpp" />
+    <ClCompile Include="..\Private\CRender_System.cpp" />
     <ClCompile Include="..\Private\EventData.cpp" />
     <ClCompile Include="..\Private\Event_Manager.cpp" />
     <ClCompile Include="..\Private\Core_System.cpp" />
@@ -224,13 +238,17 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\GUI_Sink.cpp" />
     <ClCompile Include="..\Private\ISink.cpp" />
     <ClCompile Include="..\Private\GameObject_System.cpp" />
+    <ClCompile Include="..\Private\MaterialBuilder.cpp" />
     <ClCompile Include="..\Private\MeshBuilder.cpp" />
+    <ClCompile Include="..\Private\MeshRenderer.cpp" />
+    <ClCompile Include="..\Private\MeshRenderer_Processor.cpp" />
     <ClCompile Include="..\Private\Prototype.cpp" />
     <ClCompile Include="..\Private\Prototype_System.cpp" />
     <ClCompile Include="..\Private\Resource_System.cpp" />
     <ClCompile Include="..\Private\Scene_Manager.cpp" />
     <ClCompile Include="..\Private\Logger.cpp" />
     <ClCompile Include="..\Private\Scene.cpp" />
+    <ClCompile Include="..\Private\ShaderBuilder.cpp" />
     <ClCompile Include="..\Private\TestComponentA.cpp" />
     <ClCompile Include="..\Private\TestComponentASystem.cpp" />
     <ClCompile Include="..\Private\TestComponentB.cpp" />
@@ -245,6 +263,9 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
   <ItemGroup>
     <None Include="..\Public\Component_System.inl" />
     <None Include="..\Public\GameObject.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Public\SolidColor.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,17 +1,17 @@
 ﻿#ifndef Engine_Enum_h__
 #define Engine_Enum_h__
 
-
-
 namespace Engine
 {
 	enum class WINMODE { FULL, WIN };
 
 	enum class LAYER_TYPE		{ NONE, BACKGROUND, PLAYER, FLOOR, PARTICLE, MAX = 16, };
-    enum class COMPONENT_TYPE : uint8_t { TEST_A, TEST_B,
-                                        TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, TEXTURE, ANIMATOR, CAMERA, AUDIO_LISTENER, AUDIO_SOURCE, SHADER, END };
+    enum class COMPONENT_TYPE : uint8_t { TEST_A, TEST_B, TEXTURE, 
+                                        TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, MESH_RENDERER, ANIMATOR, CAMERA, AUDIO_LISTENER, AUDIO_SOURCE, SHADER, END };
 	enum                                { COMPONENT_MAX = static_cast<uint32_t>(COMPONENT_TYPE::END) };
-
+    enum class RENDER_LAYER : uint8_t   { PRIORITY = 0, NONBLEND, BLEND, UI, END };
+    enum RENDER_FLAGS : uint32_t        { RF_NONE = 0, RF_CAST_SHADOW = 1 << 0, RF_RECEIVE_SHADOW = 1 << 1, RF_DISABLE_CULL = 1 << 2, };
+    enum class VERTEX_DECL : uint8_t    { VTXCOL = 0, VTXTEX, };
 	enum class RESOURCE_TYPE : uint8_t  { TEXTURE, MESH, MATERIAL, ANIMATION, AUDIO_CLIP, SHADER, PREFAB, END };
 	enum class COLLIDER_TYPE : uint8_t  { SPHERE, BOX, CAPSULE, END };
 	enum class BODY_TYPE : uint8_t      { STATIC, KINEMATIC, DYNAMIC, END };

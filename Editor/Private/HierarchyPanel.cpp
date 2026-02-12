@@ -306,7 +306,7 @@ void CHierarchyPanel::Draw_DropTarget()
         {
             const Engine::ASSET_GUID* pg = SCAST(const Engine::ASSET_GUID*, p->Data);
 
-            const Engine::ASSET_RECORD* rec = SYS_RESOURCE.Find(*pg);
+            const Engine::ASSET_RECORD* rec = SYS_ASSET.Find(*pg);
             if (rec)
             {
                 // GUID + path 로그

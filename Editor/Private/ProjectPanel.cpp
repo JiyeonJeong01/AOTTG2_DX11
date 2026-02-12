@@ -367,7 +367,7 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
         {
             Engine::ASSET_GUID g{};
-            if (SYS_RESOURCE.Try_Get_GUID(tAsset.path, g))
+            if (SYS_ASSET.Try_Get_GUID(tAsset.path, g))
             {
                 ImGui::SetDragDropPayload("ASSET_GUID", &g, sizeof(g));
                 ImGui::Text("Asset: %s", tAsset.name.c_str());
@@ -535,7 +535,7 @@ void CProjectPanel::Refresh_File_List()
         it.path = entry.path();
         it.name = Editor_Util::To_UTF8(entry.path().filename());
         it.isDirectory = true;
-        it.type = SYS_RESOURCE.Detect_Type(it.path, true);
+        it.type = SYS_ASSET.Detect_Type(it.path, true);
         m_Assets.push_back(std::move(it));
     }
 
@@ -549,7 +549,7 @@ void CProjectPanel::Refresh_File_List()
         it.path = entry.path();
         it.name = Editor_Util::To_UTF8(entry.path().filename());
         it.isDirectory = false;
-        it.type = SYS_RESOURCE.Detect_Type(it.path, false);
+        it.type = SYS_ASSET.Detect_Type(it.path, false);
         m_Assets.push_back(std::move(it));
     }
 

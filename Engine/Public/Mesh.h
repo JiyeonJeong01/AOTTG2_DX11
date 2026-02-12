@@ -4,8 +4,10 @@
 #include "Engine_Log.h"
 
 NS_BEGIN(Engine)
-
-typedef struct ENGINE_DLL tagMeshDesc
+    /**
+     * \brief To build mesh
+     */
+    typedef struct ENGINE_DLL tagMeshDesc
 {
     const void* pVertices{ };
     _uint       iVertextStride{ };
@@ -40,7 +42,7 @@ public:
         return (pVB != nullptr) && (pIB != nullptr) && (iVertexStride != 0) && (iIndexCount != 0);
     }
 
-    void Bind_IA(ID3D11DeviceContext* pCtx) const
+    void Bind_IA(ID3D11DeviceContext* pCtx, UINT iStartSlot = 0) const
     {
 #ifdef _DEBUG
         /* TODO : 안정화되면 enum으로 생성하게 바꾸자. 매 프레임 이거 검사하는 건 좀 에바. */
@@ -55,7 +57,7 @@ public:
         ID3D11Buffer* vbs[] = { pVB.Get() };
         UINT iStrides[] = { (UINT)iVertexStride };
         UINT iOffsets[] = { (UINT)iVBOffset };
-        pCtx->IASetVertexBuffers(0, 1, vbs, iStrides, iOffsets);
+        pCtx->IASetVertexBuffers(iStartSlot, 1, vbs, iStrides, iOffsets);
         pCtx->IASetIndexBuffer(pIB.Get(), eIndexFormat, 0);
         pCtx->IASetPrimitiveTopology(eTopology);
     }
@@ -68,6 +70,13 @@ public:
 
         const UINT cnt = (indexCount == 0) ? (UINT)iIndexCount : (UINT)indexCount;
         pCtx->DrawIndexed(cnt, (UINT)firstIndex, 0);
+    }
+
+    void Draw_Instanced(ID3D11DeviceContext* pCtx, UINT instanceCount, _uint firstIndex = 0, _uint indexCount = 0) const
+    {
+        if (!pCtx || instanceCount == 0) return;
+        const UINT cnt = (indexCount == 0) ? (UINT)iIndexCount : (UINT)indexCount;
+        pCtx->DrawIndexedInstanced(cnt, instanceCount, (UINT)firstIndex, 0, 0);
     }
 
 }MESH_ENTRY;

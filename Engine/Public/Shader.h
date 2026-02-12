@@ -1,37 +1,29 @@
 ﻿#pragma once
-
-#include "CComponent_Proxy_Base.h"
+#include "Engine_Define.h"
 
 NS_BEGIN(Engine)
 
-typedef struct ENGINE_DLL tagShaderData final
+typedef struct ENGINE_DLL tagShaderEntry final
 {
-    
-}SHADER_DATA;
+    Microsoft::WRL::ComPtr<ID3DX11Effect> pEffect{}; /* .fx file  */
+    ID3DX11EffectTechnique* pTech = nullptr;
 
-class CShader_Processor;
+    struct PASS_CACHE
+    {
+        ID3DX11EffectPass* pPass = nullptr;
+        Microsoft::WRL::ComPtr<ID3D11InputLayout> pInputLayout{ };
+    };
 
-class ENGINE_DLL CShader final : public CComponent_Proxy_Base<SHADER_DATA, CShader>
-{
+    std::vector<PASS_CACHE> pPasses;
+
+    VERTEX_DECL eDecl = VERTEX_DECL::VTXCOL;
+
 public:
-    using ProcessorType = CShader_Processor;
-    using DataType = SHADER_DATA;
-
-public:
-    CShader() : CComponent_Proxy_Base() { m_eComType = COMPONENT_TYPE::SHADER; }
-    CShader(DataType* pData, COMPONENT_HANDLE handle)
-        : CComponent_Proxy_Base(pData, handle) {
-        m_eComType = COMPONENT_TYPE::SHADER;
+    _bool Is_Valid() const noexcept
+    {
+        return pEffect != nullptr && pTech != nullptr && !pPasses.empty();
     }
-    ~CShader() override = default;
-public:
-    ID3DX11EffectTechnique* Get_Technique(uint32_t idx = 0) const;
-    ID3DX11EffectPass*      Get_Pass(uint32_t passIdx) const;
-    HRESULT                 Apply(uint32_t passIdx);
 
-private:
-    ID3DX11Effect*          m_pEffect = { nullptr };
-    _uint		            m_iNumPasses = {};
-};
+} SHADER_ENTRY;
 
 NS_END
