@@ -4,6 +4,11 @@
 #include "Engine_Log.h"
 #include "Asset_Registry.h"
 
+#include "Transform.h"
+#include "MeshRenderer.h"
+#include "Material.h"
+#include "Shader.h"
+
 NS_BEGIN(Editor)
 
 CInspectorPanel::CInspectorPanel(const std::string& strPanelName)
@@ -176,15 +181,20 @@ void CInspectorPanel::Draw_Transform()
     if (!ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
         return;
 
+    CTransform transform = m_pTarget->Get_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
+    TRANSFORM_DATA* pData = transform._Data();
+
     /* Transform is not implemented yet */
-    _float vPos[3] = { 0,0,0 };
-    _float vRot[3] = { 0,0,0 };
-    _float vScl[3] = { 1,1,1 };
+    _float vPos[3] = { pData->vPosition.x, pData->vPosition.y, pData->vPosition.z };
+    _float vScl[3] = { pData->vScale.x, pData->vScale.y, pData->vScale.z };
+    _float3 f3Rot = transform.Get_Rotation_Euler();
+
+    _float vRot[3] = { f3Rot.x, f3Rot.y, f3Rot.z };
 
     /* Need to call to read Transform data */
     _bool bChanged = false;
 
-    ImGui::TextUnformatted("Position");
+    ImGui::TextUnformatted("Position ");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(-1.f);
     bChanged |= ImGui::DragFloat3("##Pos", vPos, 0.1f);
@@ -194,14 +204,19 @@ void CInspectorPanel::Draw_Transform()
     ImGui::SetNextItemWidth(-1.f);
     bChanged |= ImGui::DragFloat3("##Rot", vRot, 0.1f);
 
-    ImGui::TextUnformatted("Scale");
+    ImGui::TextUnformatted("Scale     ");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(-1.f);
     bChanged |= ImGui::DragFloat3("##Scl", vScl, 0.01f);
 
     if (bChanged)
     {
-        /* Write back to engine Transform */
+        pData->vPosition = { vPos[0], vPos[1], vPos[2] };
+        pData->vScale = { vScl[0], vScl[1], vScl[2] };
+        _float3 newEulerDeg{ vRot[0], vRot[1], vRot[2] };
+        transform.Set_Rotation_Euler(newEulerDeg);
+
+        pData->bDirty = true;
     }
 }
 
@@ -210,18 +225,109 @@ void CInspectorPanel::Draw_Components()
     if (!ImGui::CollapsingHeader("Components", ImGuiTreeNodeFlags_DefaultOpen))
         return;
 
-    ImGui::TextDisabled("TODO: Draw engine components here.");
+    Draw_CurrentComponents();
 
-    if (ImGui::Button("Add Component"))
+    ImVec2 size(ImGui::GetContentRegionAvail().x, 50.f);
+    if (ImGui::Button("Add Component", size))
     {
         ImGui::OpenPopup("##AddComponentPopup");
     }
 
-    if (ImGui::BeginPopup("##AddComponentPopup"))
+    Draw_AddComponentPopup();
+}
+
+void CInspectorPanel::Draw_CurrentComponents()
+{
+    Component::COMPONENT_MASK mask = m_pTarget->Get_ComponentMask();
+
+    for (uint32_t i = 0; i < SCAST(uint32_t, COMPONENT_MAX); ++i)
     {
-        ImGui::TextUnformatted("Not implemented.");
-        ImGui::EndPopup();
+        if ((mask & Component::Component_Bit((COMPONENT_TYPE)i)) == 0)
+            continue;
+
+        COMPONENT_TYPE eType = (COMPONENT_TYPE)i;
+        Draw_ComponentByType(eType);
     }
+
+}
+
+void CInspectorPanel::Draw_ComponentByType(COMPONENT_TYPE eComType)
+{
+    if (eComType == COMPONENT_TYPE::MESH_RENDERER)
+    {
+        CMeshRenderer mr = m_pTarget->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+        if (!mr.Is_Valid())
+            return;
+
+        MESH_RENDERER_DATA* pData = mr._Data();
+        if (!pData)
+            return;
+
+        if (!ImGui::TreeNodeEx("MeshRenderer", ImGuiTreeNodeFlags_DefaultOpen))
+            return;
+
+        bool bChanged = false;
+
+        // --- Mesh ---
+        ImGui::TextUnformatted("Mesh");
+        ImGui::SameLine();
+        ImGui::Text("%u", pData->hMesh);
+
+        // --- Material ---
+        ImGui::TextUnformatted("Material");
+        ImGui::SameLine();
+        ImGui::Text("%u", pData->hMaterial);
+
+        // --- Pass ---
+        //uint16_t pass = pData->;
+        //if (ImGui::DragScalar("Pass", ImGuiDataType_U16, &pass, 1.f))
+        //{
+        //    pData->passIndex = pass;
+        //    bChanged = true;
+        //}
+
+        // --- Layer ---
+        int layer = (int)pData->layer;
+        if (ImGui::DragInt("Layer", &layer, 1, 0, 10))
+        {
+            pData->layer = (RENDER_LAYER)layer;
+            bChanged = true;
+        }
+
+        // --- Flags ---
+        uint32_t flags = pData->flags;
+        if (ImGui::InputScalar("Flags", ImGuiDataType_U32, &flags))
+        {
+            pData->flags = flags;
+            bChanged = true;
+        }
+
+        //if (bChanged)
+        //{
+        //    pData->bDirty = true;
+        //}
+
+        ImGui::TreePop();
+    }
+}
+
+void CInspectorPanel::Draw_AddComponentPopup()
+{
+    if (!ImGui::BeginPopup("##AddComponentPopup"))
+        return;
+
+    if (ImGui::MenuItem("Transform"))
+    {
+        m_pTarget->Add_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
+        ImGui::CloseCurrentPopup();
+    }
+    if (ImGui::MenuItem("MeshRenderer"))
+    {
+        m_pTarget->Add_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+        ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::EndPopup();
 }
 
 void CInspectorPanel::Draw_Asset()

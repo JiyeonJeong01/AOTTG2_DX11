@@ -190,6 +190,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\GameObject_Struct.h" />
     <ClInclude Include="..\Public\Graphic_Device.h" />
     <ClInclude Include="..\Public\GUI_Sink.h" />
+    <ClInclude Include="..\Public\Input_System.h" />
     <ClInclude Include="..\Public\ISink.h" />
     <ClInclude Include="..\Public\GameObject_System.h" />
     <ClInclude Include="..\Public\Engine_MathDX.h" />
@@ -236,6 +237,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\GameObject_Event.cpp" />
     <ClCompile Include="..\Private\Graphic_Device.cpp" />
     <ClCompile Include="..\Private\GUI_Sink.cpp" />
+    <ClCompile Include="..\Private\Input_System.cpp" />
     <ClCompile Include="..\Private\ISink.cpp" />
     <ClCompile Include="..\Private\GameObject_System.cpp" />
     <ClCompile Include="..\Private\MaterialBuilder.cpp" />
@@ -263,9 +265,6 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
   <ItemGroup>
     <None Include="..\Public\Component_System.inl" />
     <None Include="..\Public\GameObject.inl" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\Public\SolidColor.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

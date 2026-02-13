@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "CComponent_Proxy_Base.h"
 
+NS_BEGIN(Engine)
+
 typedef struct ENGINE_DLL tagMeshRendererData final
 {
     COMPONENT_HANDLE hTransform{};
@@ -15,7 +17,7 @@ typedef struct ENGINE_DLL tagMeshRendererData final
     uint8_t  pad[3] = {};
 }MESH_RENDERER_DATA;
 
-class CMeshRenderer : public CComponent_Proxy_Base<MESH_RENDERER_DATA, CMeshRenderer>
+class ENGINE_DLL CMeshRenderer : public CComponent_Proxy_Base<MESH_RENDERER_DATA, CMeshRenderer>
 {
 public :
     CMeshRenderer() : CComponent_Proxy_Base() { m_eComType = COMPONENT_TYPE::MESH_RENDERER; }
@@ -45,3 +47,4 @@ public :
 
 };
 
+NS_END

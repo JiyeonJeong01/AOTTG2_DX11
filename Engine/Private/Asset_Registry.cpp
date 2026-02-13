@@ -190,7 +190,14 @@ std::filesystem::path CAsset_Registry::Normalize_Path(const std::filesystem::pat
 }
 
 
+std::filesystem::path CAsset_Registry::Get_Asset_Path(const ASSET_GUID& tGUID)
+{
+    auto pRecord = SYS_ASSET.Find(tGUID);
+    if (pRecord)
+        return pRecord->path; // ASSET_RECORD에 저장된 물리 경로 반환
 
+    return {};
+}
 
 
 NS_END

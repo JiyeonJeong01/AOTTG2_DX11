@@ -80,6 +80,14 @@ typedef struct tagAssetGUID
         out.value = g;
         return true;
     }
+
+    tagAssetGUID() : value(GUID_NULL) {};
+
+    tagAssetGUID(const std::string& str)
+    {
+        value = GUID_NULL;
+        Try_Utf8_To_GUID(str, *this);
+    }
 }ASSET_GUID;
 
 typedef struct tagInstanceUUID
@@ -198,5 +206,14 @@ typedef struct ENGINE_DLL tagAssetRecord
     tagAssetRecord(ASSET_GUID g, ASSET_TYPE t, std::filesystem::path p, _bool b)
         : tGUID(std::move(g)), eType(std::move(t)), path(std::move(p)), bDirectory(b) {}
 }ASSET_RECORD;
+
+typedef struct ENGINE_DLL DefaultAssetGuid
+{
+    static inline ASSET_GUID MESH_CUBE;
+    static inline ASSET_GUID MESH_SPHERE;
+    static inline ASSET_GUID MESH_RECT;
+    static inline ASSET_GUID SHADER_VTXCOL { "8DC78FD9-915E-452C-B277-921ECAFBFE64" };
+}DEFAULT_ASSET_GUID;
+
 
 NS_END

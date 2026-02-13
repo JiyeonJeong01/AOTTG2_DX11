@@ -9,7 +9,8 @@ namespace  Engine
 	typedef struct tagEngineDesc
 	{
 		HWND				hWnd;
-		WINMODE		eWinMode;
+        HINSTANCE           hInst;
+		WINMODE		        eWinMode;
 		std::pair<unsigned int, unsigned int> iViewportSize;
 	} ENGINE_DESC;
 

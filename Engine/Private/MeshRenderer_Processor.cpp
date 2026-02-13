@@ -3,6 +3,7 @@
 #include "Resource_System.h"
 #include "Component_Spec.h"
 #include "Transform_Processor.h"
+#include "Core_System.h"
 
 CMeshRenderer_Processor::CMeshRenderer_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CTransform_Processor* pTransformProcessor)
     : m_pDevice(pDevice), m_pContext(pContext), m_pTransformProcessor(pTransformProcessor)
@@ -21,12 +22,12 @@ HRESULT CMeshRenderer_Processor::Initialize()
 
 void CMeshRenderer_Processor::Update(_float fDT)
 {
+    Immediate_Render_All();
 
 }
 
 void CMeshRenderer_Processor::LateUpdate(_float fDT)
 {
-
 }
 
 void CMeshRenderer_Processor::Begin_Frame()
@@ -56,8 +57,8 @@ void CMeshRenderer_Processor::Build_Queue(std::vector<DRAW_CMD>& outCmds)
                 continue;
             auto* pData = pPage->Get_Ptr(i);
             if (!pData || !pData->bEnabled) continue;
-            if (pData->hMesh == 0 || pData->hMaterial == 0)
-                continue;
+            //if (pData->hMesh == 0 || pData->hMaterial == 0)
+            //    continue;
 
             DRAW_CMD cmd{};
             cmd.hMesh = pData->hMesh;
@@ -74,6 +75,8 @@ void CMeshRenderer_Processor::Build_Queue(std::vector<DRAW_CMD>& outCmds)
 
 void CMeshRenderer_Processor::Immediate_Render_All()
 {
+    SYS_CORE.Bind_SceneRT();
+
     if (!m_pTransformProcessor /* || !m_pCam */)
         return;
     std::vector<DRAW_CMD> cmds;
@@ -130,13 +133,35 @@ void CMeshRenderer_Processor::Execute_Draw(const DRAW_CMD& cmd)
     if (passIndex >= pShader->pPasses.size())
         return;
 
-    /* Set matrix */
-    const _matrix matWorld = m_pTransformProcessor->Get_Proxy(cmd.hTransform).Get_WorldXM();
-    const _matrix matView = XMMatrixTranslation(0, 0, 5.0f);
+    ///* Set matrix */
+    //const _matrix matWorld = XMMatrixIdentity(); // (0, 0, 0) 위치, 회전 없음, 크기 1
+    //// const _matrix matWorld = m_pTransformProcessor->Get_Proxy(cmd.hTransform).Get_WorldXM();
+    //const _matrix matView = XMMatrixTranslation(0, 0, 5.0f);
+    //const _matrix matProj = XMMatrixPerspectiveFovLH(XM_PIDIV2, 16.0f / 9.0f, 0.01f, 1000.0f);
+    //pMat->pWorld->SetMatrix(reinterpret_cast<const float*>(&matWorld));
+    //pMat->pView->SetMatrix(reinterpret_cast<const float*>(&matView));
+    //pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&matProj));
+
+    const _matrix matWorld = XMMatrixIdentity();
+
+    // 2. 뷰: 카메라를 (0, 0, -5)에 두고 (0, 0, 0)을 바라보게 함 (가장 안전한 방법)
+    const _vector vEye = XMVectorSet(0.f, 0.f, -5.f, 0.f);
+    const _vector vAt = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+    const _vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+    const _matrix matView = XMMatrixLookAtLH(vEye, vAt, vUp);
+
+    // 3. 투영: 시야각 90도
     const _matrix matProj = XMMatrixPerspectiveFovLH(XM_PIDIV2, 16.0f / 9.0f, 0.01f, 1000.0f);
-    pMat->pWorld->SetMatrix(reinterpret_cast<const float*>(&matWorld));
-    pMat->pView->SetMatrix(reinterpret_cast<const float*>(&matView));
-    pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&matProj));
+
+    /* ★ 핵심: HLSL 전달을 위해 전치(Transpose) 수행 ★ */
+    _matrix matW = XMMatrixTranspose(matWorld);
+    _matrix matV = XMMatrixTranspose(matView);
+    _matrix matP = XMMatrixTranspose(matProj);
+
+    // 전치된 행렬을 넣어줘야 셰이더가 올바르게 계산합니다.
+    pMat->pWorld->SetMatrix(reinterpret_cast<const float*>(&matW));
+    pMat->pView->SetMatrix(reinterpret_cast<const float*>(&matV));
+    pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&matP));
 
     /* TODO : Set Texture*/
 

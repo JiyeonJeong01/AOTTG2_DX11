@@ -10,6 +10,8 @@
 #include "Component_Spec.h"
 #include "Transform.h"
 #include "MeshRenderer.h"
+#include "Resource_System.h"
+
 
 static ASSET_GUID testGUID{};
 /* ============================ */
@@ -40,6 +42,12 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
         pObj->Add_Component<CTestComponentB>(COMPONENT_TYPE::TEST_B);
         pObj->Add_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
         pObj->Add_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+        auto mr = pObj->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+        auto* d = mr._Data();
+        d->hMaterial = SYS_RESOURCE.Load_Material_Temp(DEFAULT_ASSET_GUID::SHADER_VTXCOL, 0); // 임시: material=shader
+        d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_CUBE);      // 또는 CreateCubeMesh()
+        d->layer = RENDER_LAYER::NONBLEND;
+        d->flags = RF_NONE;
 
         auto comA = pObj->Get_Component<CTestComponentA>(COMPONENT_TYPE::TEST_A);
         auto comB = pObj->Get_Component<CTestComponentB>(COMPONENT_TYPE::TEST_B);

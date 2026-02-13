@@ -1,13 +1,17 @@
 ﻿#include "Core_System.h"
 
-#include "Graphic_Device.h"
-
+/* --- main --- */
 #include "GameObject_System.h"
 #include "Component_System.h"
-
-#include "Timer_System.h"
+#include "Input_System.h"
 #include "Logger.h"
 #include "Asset_Registry.h"
+#include "Resource_System.h"
+
+/* --- sub --- */
+#include "Graphic_Device.h"
+#include "Timer_System.h"
+
 
 NS_BEGIN(Engine)
 
@@ -24,6 +28,7 @@ CCore_System::~CCore_System()
     SYS_GAMEOBJECT.DestroyInstance();
     SYS_ASSET.DestroyInstance();
     SYS_LOG.DestroyInstance();
+    SYS_INPUT.DestroyInstance();
 }
 
 HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice,
@@ -40,6 +45,9 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
         if (nullptr == m_pGraphic_Device)
             return E_FAIL;
     }
+
+    m_pDevice = *ppDevice;
+    m_pContext = *ppContext;
 
     /* --- Timer ---*/
     {
@@ -75,7 +83,7 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
         }
     }
 
-    /* --- Resource System --- */
+    /* --- Asset System --- */
     {
         if (FAILED(SYS_ASSET.Initialize(ProjectConfig::PATH + ProjectConfig::ROOT)))
         {
@@ -84,8 +92,24 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
         }
     }
 
-    m_pDevice = *ppDevice;
-    m_pContext = *ppContext;
+    /* --- Resource System --- */
+    {
+        if (FAILED(SYS_RESOURCE.Initialize(*ppDevice, *ppContext)))
+        {
+            MSG_BOX("Resource System failed Initialize");
+            return E_FAIL;
+        }
+    }
+
+    /* --- Input System --- */
+    {
+        if (FAILED(SYS_INPUT.Initialize(EngineDesc.hWnd, EngineDesc.hInst)))
+        {
+            MSG_BOX("Input System failed Initialize");
+            return E_FAIL;
+        }
+    }
+
 
 	return S_OK;
 }

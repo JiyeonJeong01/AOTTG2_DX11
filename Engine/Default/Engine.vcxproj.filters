@@ -106,6 +106,9 @@
     <Filter Include="00. System\03. Renderer">
       <UniqueIdentifier>{491b0f15-92bc-4b59-9516-60f8f3e09104}</UniqueIdentifier>
     </Filter>
+    <Filter Include="00. System\04. Input">
+      <UniqueIdentifier>{b3a6ea6b-eefc-469a-b993-73836903a878}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -300,6 +303,9 @@
     <ClInclude Include="..\Public\Render_Struct.h">
       <Filter>99. Defines\Engine_Struct</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Input_System.h">
+      <Filter>00. System\04. Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -413,6 +419,9 @@
     <ClCompile Include="..\Private\MeshRenderer_Processor.cpp">
       <Filter>01. Utility\04. Component\06. MeshRenderer</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Input_System.cpp">
+      <Filter>00. System\04. Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Public\GameObject.inl">
@@ -421,10 +430,5 @@
     <None Include="..\Public\Component_System.inl">
       <Filter>01. Utility\04. Component\100. ComponentSystem</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\Public\SolidColor.hlsl">
-      <Filter>97. ShaderFile</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>

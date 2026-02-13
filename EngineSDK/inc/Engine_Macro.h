@@ -105,10 +105,9 @@ private:                                                    \
 #define SYS_GAMEOBJECT          GET_INSTANCE(Engine::CGameObject_System)
 #define SYS_ASSET               GET_INSTANCE(Engine::CAsset_Registry)
 #define SYS_RESOURCE            GET_INSTANCE(Engine::CResource_System)
+#define SYS_INPUT		        GET_INSTANCE(Engine::CInput_System)
 
-//#define INPUT		GET_INSTANCE(CInputSystem)
-//#define TIME		GET_INSTANCE(CTimeManager)
-//#define DT				   
+
 //#define RESOURCES	GET_INSTANCE(CResourceManager)
 //#define SCENE		GET_INSTANCE(CSceneManager)
 //#define SOUND		GET_INSTANCE(CSoundManager)

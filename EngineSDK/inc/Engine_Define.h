@@ -48,8 +48,9 @@ using namespace std;
 
 #include <type_traits>
 
-#define DIRECTINPUT_VERSION		0x8000
+#define DIRECTINPUT_VERSION		0x0800
 #include <dinput.h>
+#pragma comment(lib, "dinput8.lib")
 
 #ifdef _DEBUG
 

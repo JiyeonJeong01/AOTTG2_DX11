@@ -43,6 +43,9 @@ private:
     void Draw_Basic_Info();
     void Draw_Transform();
     void Draw_Components();     /* TODO : engine-specific */
+    void Draw_CurrentComponents();
+    void Draw_ComponentByType(COMPONENT_TYPE eComType);
+    void Draw_AddComponentPopup();
 
     void Draw_Asset();
     void Draw_None();

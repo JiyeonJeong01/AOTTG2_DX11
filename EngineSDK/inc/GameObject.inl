@@ -38,6 +38,10 @@ TProxy CGameObject::Add_Component(COMPONENT_TYPE eComType)
         SYS_COMPONENT.Add_To_Group(iGroupID, hNewHandle);
     }
 
+    Component::COMPONENT_MASK mask = Get_ComponentMask();
+    mask |= Component::Component_Bit(eComType);
+    Set_ComponentMask(mask);
+
     return SYS_COMPONENT.Get_Proxy<TProxy>(eComType, hNewHandle);
 }
 

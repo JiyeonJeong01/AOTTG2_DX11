@@ -17,7 +17,10 @@ CComponent_System::~CComponent_System() = default;
 
 HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
+    static_assert((uint32_t)COMPONENT_TYPE::END <= 32);
 
+    m_pDevice = pDevice;
+    m_pContext = pContext;
 
     m_pComGroupMgr = CComponentGroup_Manager::Create();
 

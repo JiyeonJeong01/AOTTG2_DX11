@@ -60,6 +60,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     ENGINE_DESC EngineDesc{};
     EngineDesc.eWinMode = WINMODE::WIN;
     EngineDesc.hWnd = g_hWnd;
+    EngineDesc.hInst = g_hInst;
     EngineDesc.iViewportSize = {Client::g_iWinSizeX, Client::g_iWinSizeY };
 
     pMainApp = Client::CMainApp::Create(EngineDesc);

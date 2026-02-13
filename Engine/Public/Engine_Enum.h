@@ -28,5 +28,8 @@ namespace Engine
 	enum class SEVERITY_TYPE : uint8_t  { INFO, WARN, ERR, ASSERTION, END };
 	enum class DOMAIN_TYPE : uint8_t    { ENGINE, CLIENT, EDITOR, END };
 
+    /* ------ INPUT ------ */
+    enum class MOUSE_MOVE_AXIS : uint8_t{ HORIZONTAL, VERTICAL, DEPTH, END };
+    enum class MOUSE_BUTTON : uint8_t   { LEFT, RIGHT, MIDDLE, END };
 }
 #endif // Engine_Enum_h__

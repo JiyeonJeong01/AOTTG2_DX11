@@ -21,7 +21,7 @@ public:
 
 public:
     uint32_t Load_Mesh(const ASSET_GUID& tGUID);
-    uint32_t Load_Material(const ASSET_GUID& guid);
+    uint32_t Load_Material(const ASSET_GUID& tGUID);
     uint32_t Load_Material(const MATERIAL_ENTRY& desc);
     uint32_t Load_Shader(const ASSET_GUID& tGUID);
     uint32_t Load_Texture(const ASSET_GUID& tGUID);
@@ -41,7 +41,8 @@ private :
 
     /* ---- MATERIAL ---- */
     std::vector<MATERIAL_ENTRY> m_Materials;
-    std::unordered_map<uint64_t, uint32_t> m_MaterialKeyMap; // (hShader, passIndex) -> handle
+    std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_MaterialGUIDMap; // (hShader, passIndex) -> handle
+    std::unordered_map<uint64_t, uint32_t> m_MaterialComboMap;
 
     /* ---- SHADER ---- */
     std::vector<SHADER_ENTRY> m_Shaders;

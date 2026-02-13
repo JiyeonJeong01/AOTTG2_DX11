@@ -27,6 +27,7 @@ public :
 
     /* path -> GUID */
     _bool   Try_Get_GUID(const std::filesystem::path& inPath, ASSET_GUID& outGUID) const;
+    static std::filesystem::path Get_Asset_Path(const ASSET_GUID& tGUID);
 
     /* GUID -> ASSET_RECORD */
     const ASSET_RECORD* Find(const ASSET_GUID& tGUID) const;
