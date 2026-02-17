@@ -25,6 +25,9 @@ typedef struct tagComponentHandle
     bool Is_Valid() const { return iHandle != 0; }
 }COMPONENT_HANDLE;
 
+static inline COMPONENT_HANDLE INVALID_HANDLE{ };
+static inline uint32_t INVALID_HANDLE_UINT = { 0 };
+
 typedef struct tagComponentGroup
 {
     COMPONENT_HANDLE            tPrimary;

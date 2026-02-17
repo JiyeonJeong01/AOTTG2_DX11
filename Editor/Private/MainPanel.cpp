@@ -1,6 +1,7 @@
 ﻿#include "MainPanel.h"
 #include "Engine_Log.h"
 
+#include "Core_System.h"
 #include "ConsolePanel.h"
 #include "HierarchyPanel.h"
 #include "InspectorPanel.h"

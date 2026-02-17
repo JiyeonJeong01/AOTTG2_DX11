@@ -12,6 +12,10 @@ typedef struct ENGINE_DLL tagMaterialEntry final
     ID3DX11EffectMatrixVariable* pWorld = nullptr;
     ID3DX11EffectMatrixVariable* pView = nullptr;
     ID3DX11EffectMatrixVariable* pProj = nullptr;
+public :
+    _bool Is_Valid() const {
+        return (hShader != 0) && (pWorld != nullptr) && (pView != nullptr) && (pProj != nullptr);
+    }
 } MATERIAL_ENTRY;
 
 NS_END

@@ -29,6 +29,11 @@ public :
     _bool   Try_Get_GUID(const std::filesystem::path& inPath, ASSET_GUID& outGUID) const;
     static std::filesystem::path Get_Asset_Path(const ASSET_GUID& tGUID);
 
+    /* builtin -> GUID */
+    void Register_Builtin_Asset();
+    void Register_Builtin_Inner(const ASSET_GUID& tGUID, ASSET_TYPE eType);
+
+
     /* GUID -> ASSET_RECORD */
     const ASSET_RECORD* Find(const ASSET_GUID& tGUID) const;
 

@@ -29,6 +29,13 @@ HRESULT CAsset_Registry::Initialize(const std::filesystem::path& assetRoot)
         return E_FAIL;
     }
 
+    Clear();
+
+
+    /* Built-in */
+    Register_Builtin_Asset();
+
+    /* File */
     Rebuild();
     return S_OK;
 }
@@ -41,8 +48,6 @@ void CAsset_Registry::Clear()
 
 void CAsset_Registry::Rebuild()
 {
-    Clear();
-
     if (m_assetRoot.empty() || !std::filesystem::exists(m_assetRoot))
         return;
 
@@ -81,12 +86,17 @@ void CAsset_Registry::Rebuild()
             auto itGUID = m_byGUID.find(tGUID);
             if (itGUID != m_byGUID.end())
             {
+                if (itGUID->second.path == normPath)
+                {
+                    return;
+                }
+
                 ASSET_GUID ng = ASSET_GUID::New_GUID();
                 Write_MetaFile(Make_MetaPath(normPath), ng, szType);
                 tGUID = ng;
             }
 
-            ASSET_RECORD tRec{ tGUID, eType, normPath, bDir };
+            ASSET_RECORD tRec{ tGUID, eType, ASSET_SRC::FILE, normPath, bDir };
 
             /* Registry Logging */
             m_byPathUtf8.emplace(strKeyPath, tGUID);
@@ -129,7 +139,6 @@ const ASSET_RECORD* CAsset_Registry::Find(const ASSET_GUID& tGUID) const
     auto it = m_byGUID.find(tGUID);
     if (it == m_byGUID.end())
         return nullptr;
-
     return &it->second;
 }
 
@@ -199,6 +208,30 @@ std::filesystem::path CAsset_Registry::Get_Asset_Path(const ASSET_GUID& tGUID)
     return {};
 }
 
+
+void CAsset_Registry::Register_Builtin_Asset()
+{
+    Register_Builtin_Inner(DEFAULT_ASSET_GUID::MESH_RECT, ASSET_TYPE::MESH);
+    Register_Builtin_Inner(DEFAULT_ASSET_GUID::MESH_CUBE, ASSET_TYPE::MESH);
+    Register_Builtin_Inner(DEFAULT_ASSET_GUID::MESH_SPHERE, ASSET_TYPE::MESH);
+
+    //Register_Builtin_Inner(DEFAULT_ASSET_GUID::SHADER_VTXCOL, ASSET_TYPE::SHADER);
+    Register_Builtin_Inner(DEFAULT_ASSET_GUID::MATERIAL, ASSET_TYPE::MATERIAL);
+}
+
+void CAsset_Registry::Register_Builtin_Inner(const ASSET_GUID& tGUID, ASSET_TYPE eType)
+{
+    if (Find(tGUID))
+        return;
+
+    ASSET_RECORD rec{};
+    rec.eSrc = eType == ASSET_TYPE::SHADER ? ASSET_SRC::FILE : ASSET_SRC::BUILTIN;
+    rec.eType = eType;
+    rec.tGUID = tGUID;
+    rec.bDirectory = false;
+
+    m_byGUID.emplace(tGUID, std::move(rec));
+}
 
 NS_END
 

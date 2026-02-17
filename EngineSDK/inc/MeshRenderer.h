@@ -5,9 +5,9 @@ NS_BEGIN(Engine)
 
 typedef struct ENGINE_DLL tagMeshRendererData final
 {
-    COMPONENT_HANDLE hTransform{};
-    uint32_t hMesh = 0;
-    uint32_t hMaterial = 0;
+    COMPONENT_HANDLE hTransform = INVALID_HANDLE;
+    uint32_t hMesh = INVALID_HANDLE_UINT;
+    uint32_t hMaterial = INVALID_HANDLE_UINT;
 
     uint32_t     flags = RF_NONE;
     RENDER_LAYER layer = RENDER_LAYER::NONBLEND;

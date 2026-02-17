@@ -199,20 +199,23 @@ typedef struct ENGINE_DLL tagAssetRecord
 {
     ASSET_GUID              tGUID{};
     ASSET_TYPE              eType{ ASSET_TYPE::UNKNOWN };
+    ASSET_SRC               eSrc{ ASSET_SRC::FILE };
+
     std::filesystem::path   path{};
     _bool                   bDirectory{ false };
 
     tagAssetRecord() = default;
-    tagAssetRecord(ASSET_GUID g, ASSET_TYPE t, std::filesystem::path p, _bool b)
-        : tGUID(std::move(g)), eType(std::move(t)), path(std::move(p)), bDirectory(b) {}
+    tagAssetRecord(ASSET_GUID g, ASSET_TYPE t, ASSET_SRC eSrc, std::filesystem::path p, _bool b)
+        : tGUID(std::move(g)), eType(std::move(t)), eSrc(eSrc), path(std::move(p)), bDirectory(b) {}
 }ASSET_RECORD;
 
 typedef struct ENGINE_DLL DefaultAssetGuid
 {
-    static inline ASSET_GUID MESH_CUBE;
-    static inline ASSET_GUID MESH_SPHERE;
-    static inline ASSET_GUID MESH_RECT;
-    static inline ASSET_GUID SHADER_VTXCOL { "8DC78FD9-915E-452C-B277-921ECAFBFE64" };
+    static inline ASSET_GUID MESH_CUBE{ "11111111-1111-1111-1111-111111111111" };
+    static inline ASSET_GUID MESH_RECT{ "22222222-2222-2222-2222-222222222222" };
+    static inline ASSET_GUID MESH_SPHERE{ "33333333-3333-3333-3333-333333333333" };
+    static inline ASSET_GUID MATERIAL{ "44444444-4444-4444-4444-444444444444" };
+    static inline ASSET_GUID SHADER_VTXCOL { "FA9F00D0-9F1B-4014-A3FA-AAA5A31F7946" };
 }DEFAULT_ASSET_GUID;
 
 

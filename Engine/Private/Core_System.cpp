@@ -121,6 +121,8 @@ void CCore_System::Update_Engine(_float fTimeDelta)
 
 HRESULT CCore_System::Draw()
 {
+    SYS_COMPONENT.Render();
+
     return S_OK;
 }
 
@@ -128,55 +130,58 @@ void CCore_System::Clear_Resources(_uint iLevelIndex)
 {
 }
 
-void CCore_System::Share_GraphicDevice(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext, ID3D11ShaderResourceView** ppSceneSRV)
+void CCore_System::Share_GraphicDevice(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
 {
     if (ppDevice)    
         *ppDevice = m_pDevice;
     if (ppContext)
         *ppContext = m_pContext;
-    if (ppSceneSRV)
-        *ppSceneSRV = m_pGraphic_Device->Get_SceneSRV();
 }
 
-HRESULT CCore_System::Clear_Buffers(const _float4* pClearColor) const
+void CCore_System::Share_SceneSRV(ID3D11ShaderResourceView** ppSRV)
 {
-	if (FAILED(m_pGraphic_Device->Clear_BackBuffer_View(pClearColor)))
+    if (!ppSRV) return;
+    *ppSRV = m_pGraphic_Device ? m_pGraphic_Device->Get_SceneSRV() : nullptr;
+}
+
+HRESULT CCore_System::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
+{
+    return m_pGraphic_Device->Ensure_SceneRenderTarget(iWidth, iHeight);
+}
+
+void CCore_System::Bind_DefaultRTV()
+{
+    m_pGraphic_Device->Bind_DefaultRTV();
+}
+
+void CCore_System::Bind_SceneRTV()
+{
+    m_pGraphic_Device->Bind_SceneRTV();
+}
+
+HRESULT CCore_System::Clear_Default_Buffers(const _float4* pClearColor) const
+{
+	if (FAILED(m_pGraphic_Device->Clear_Default_RTV(pClearColor)))
 		return E_FAIL;
 
-	if (FAILED(m_pGraphic_Device->Clear_DepthStencil_View()))
+	if (FAILED(m_pGraphic_Device->Clear_Default_DSV()))
 		return E_FAIL;
 
 	return S_OK;
 }
 
+HRESULT CCore_System::Clear_Scene_Buffers(const _float4* pClearColor) const
+{
+    if (FAILED(m_pGraphic_Device->Clear_Scene_RTV(pClearColor)))
+        return E_FAIL;
+
+    if (FAILED(m_pGraphic_Device->Clear_Scene_DSV()))
+        return E_FAIL;
+}
+
 HRESULT CCore_System::Present() const
 {
 	return m_pGraphic_Device->Present();
-}
-
-HRESULT CCore_System::Ready_SceneRenderTarget(_uint w, _uint h)
-{
-    return m_pGraphic_Device->Ready_SceneRenderTarget(w, h);
-}
-
-void CCore_System::Bind_SceneRT()
-{
-    m_pGraphic_Device->Bind_SceneRT();
-}
-
-void CCore_System::Bind_BackBuffer()
-{
-    m_pGraphic_Device->Bind_BackBuffer();
-}
-
-void CCore_System::Clear_SceneRTV(const _float4* pClearColor)
-{
-    m_pGraphic_Device->Clear_SceneRTV(pClearColor);
-}
-
-void CCore_System::Clear_SceneDSV()
-{
-    m_pGraphic_Device->Clear_SceneDSV();
 }
 
 _float CCore_System::Compute_SystemDT() const

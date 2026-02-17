@@ -21,6 +21,8 @@ FILE* debug;
 constexpr float FRAME_DT = 1.f / 60.f;
 constexpr float FIXED_DT = 0.02f;
 
+_float4 g_vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };
+
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -76,9 +78,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _float      fTimeAcc = {};
     _float      fFixedAcc = {};
 
-    /* =================================== TEST =====================================*/
     SYS_GUI.Initialize();
-
     const string strMain = "PANEL_MAIN";
     unique_ptr<Editor::CMainPanel> upMainPanel = Editor::CMainPanel::Create(strMain);
     
@@ -102,21 +102,29 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
         if (fTimeAcc >= FRAME_DT)
         {
-            Editor::CProfilerPanel::CScope _update("Engine::Update");
-            pMainApp->Update(SYS_CORE.Compute_FrameDT());
+            _float fDT = SYS_CORE.Compute_FrameDT();
 
+            Editor::CProfilerPanel::CScope _update("Engine::Begin_Render");
+            pMainApp->Update(fDT);
+            upMainPanel->Update();
+
+            /* --- Render --- */
             Editor::CProfilerPanel::CScope _render("Engine::Render");
-            pMainApp->Begin_Render();
+            SYS_CORE.Bind_SceneRTV();
+            _float4 g_vClearColor = { 0.88f, 0.18f, 0.18f, 1.0f };
+            SYS_CORE.Clear_Scene_Buffers(&g_vClearColor);
+
             pMainApp->Render();
 
-            SYS_GUI.Update();
-
-            upMainPanel->Update();
+            SYS_CORE.Bind_DefaultRTV();
+            _float4 k_vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };
+            SYS_CORE.Clear_Default_Buffers(&k_vClearColor);
+            SYS_GUI.Begin_Render();
             upMainPanel->Render();
 
-            SYS_GUI.Render_GUI();
+            SYS_GUI.End_Render();
 
-            pMainApp->End_Render();
+            SYS_CORE.Present();
 
             /* FIXED DT*/
             // pMainApp->Fixed_Update(FIXED_DT);

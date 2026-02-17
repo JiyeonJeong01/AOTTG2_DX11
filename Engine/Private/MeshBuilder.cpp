@@ -4,17 +4,17 @@
 
 HRESULT CMeshBuilder::Create_Mesh(ID3D11Device* pDevice, const MESH_DESC& tDesc, MESH_ENTRY& outEntry)
 {
-    if (!pDevice || !tDesc.pVertices || !tDesc.iVertextStride || !tDesc.iVertexCnt || !tDesc.pIndices || !tDesc.iIndexCnt)
+    if (!pDevice || !tDesc.pVertices || !tDesc.iVertexStride || !tDesc.iVertexCnt || !tDesc.pIndices || !tDesc.iIndexCnt)
         return E_FAIL;
 
     /* Vertex buffer */
     D3D11_BUFFER_DESC vbDesc{};
-    vbDesc.ByteWidth = (UINT)(tDesc.iVertextStride * tDesc.iVertexCnt);
+    vbDesc.ByteWidth = (UINT)(tDesc.iVertexStride * tDesc.iVertexCnt);
     vbDesc.Usage = D3D11_USAGE_DEFAULT;
     vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     vbDesc.CPUAccessFlags = 0;
     vbDesc.MiscFlags = 0;
-    vbDesc.StructureByteStride = (UINT)tDesc.iVertextStride;
+    vbDesc.StructureByteStride = (UINT)tDesc.iVertexStride;
 
     D3D11_SUBRESOURCE_DATA vbInit{};
     vbInit.pSysMem = tDesc.pVertices;
@@ -42,13 +42,29 @@ HRESULT CMeshBuilder::Create_Mesh(ID3D11Device* pDevice, const MESH_DESC& tDesc,
 
     outEntry.pVB = pVB;
     outEntry.pIB = pIB;
-    outEntry.iVertexStride = tDesc.iVertextStride;
+    outEntry.iVertexStride = tDesc.iVertexStride;
     outEntry.iVertexCount = tDesc.iVertexCnt;
     outEntry.eIndexFormat = tDesc.eIndexFormat;
     outEntry.iIndexCount = tDesc.iIndexCnt;
     outEntry.eTopology = tDesc.eTopology;
     outEntry.iVBOffset = 0;
     return S_OK;
+}
+
+HRESULT CMeshBuilder::Create_Mesh_By_Geometry(ID3D11Device* pDevice, Geometry eGeometry, MESH_ENTRY& outEntry)
+{
+    switch (eGeometry)
+    {
+    case Geometry::Circle :
+    case Geometry::Rect :
+        return Create_Rect_VtxTex(pDevice, outEntry);
+    case Geometry::Sphere :
+        return Create_Sphere_VtxCol(pDevice, outEntry);
+    case Geometry::Cube :
+        return Create_Cube_VtxCol(pDevice, outEntry);
+    }
+
+    return E_FAIL;
 }
 
 HRESULT CMeshBuilder::Create_Rect_VtxTex(ID3D11Device* pDevice, MESH_ENTRY& outEntry)
@@ -63,7 +79,7 @@ HRESULT CMeshBuilder::Create_Rect_VtxTex(ID3D11Device* pDevice, MESH_ENTRY& outE
 
     MESH_DESC d{};
     d.pVertices = v;
-    d.iVertextStride = sizeof(VTXTEX);
+    d.iVertexStride = sizeof(VTXTEX);
     d.iVertexCnt = 4;
 
     d.pIndices = idx;
@@ -97,7 +113,7 @@ HRESULT CMeshBuilder::Create_Cube_VtxCol(ID3D11Device* pDevice, MESH_ENTRY& outE
 
     MESH_DESC d{};
     d.pVertices = v;
-    d.iVertextStride = sizeof(VTXCOL);
+    d.iVertexStride = sizeof(VTXCOL);
     d.iVertexCnt = 8;
     d.pIndices = idx;
     d.iIndexCnt = 36;
@@ -143,7 +159,7 @@ HRESULT CMeshBuilder::Create_Sphere_VtxCol(ID3D11Device* pDevice, MESH_ENTRY& ou
 
     MESH_DESC d{};
     d.pVertices = vertices.data();
-    d.iVertextStride = sizeof(VTXCOL);
+    d.iVertexStride = sizeof(VTXCOL);
     d.iVertexCnt = (uint32_t)vertices.size();
     d.pIndices = indices.data();
     d.iIndexCnt = (uint32_t)indices.size();

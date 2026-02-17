@@ -4,13 +4,11 @@
 #include "Engine_Log.h"
 
 NS_BEGIN(Engine)
-    /**
-     * \brief To build mesh
-     */
-    typedef struct ENGINE_DLL tagMeshDesc
+
+typedef struct ENGINE_DLL tagMeshDesc
 {
     const void* pVertices{ };
-    _uint       iVertextStride{ };
+    _uint       iVertexStride{ };
     _uint       iVertexCnt{ };
 
     const void* pIndices{ };
@@ -29,7 +27,7 @@ typedef struct ENGINE_DLL tagMeshEntry
     _uint                       iVertexStride = 0;
     _uint                       iVertexCount = 0; /* optional */
 
-    DXGI_FORMAT                 eIndexFormat = DXGI_FORMAT_R32_UINT;
+    DXGI_FORMAT                 eIndexFormat = DXGI_FORMAT_R16_UINT;
     _uint                       iIndexCount = 0;
 
     D3D11_PRIMITIVE_TOPOLOGY    eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;

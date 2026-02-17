@@ -17,12 +17,13 @@ HRESULT CScenePanel::Initialize()
 
 void CScenePanel::Update()
 {
-    // 입력 처리(원하면): m_bHovered일 때만 카메라 이동 등
+
+
 }
 
 void CScenePanel::Render()
 {
-    // 너 베이스 패널이 Begin/End를 여기서 하든 밖에서 하든 맞춰
+
     if (!ImGui::Begin(m_strPanelName.c_str()))
     {
         ImGui::End();
@@ -60,9 +61,6 @@ void CScenePanel::Draw_Viewport()
     }
 
     Ensure_RenderTarget(w, h);
-    Render_Scene(w, h);
-
-    // ImGui::Image는 SRV를 ImTextureID로 던짐 (DX11 백엔드 기준)
     ImGui::Image((ImTextureID)m_pSceneSRV, avail);
 }
 
@@ -75,17 +73,11 @@ void CScenePanel::Ensure_RenderTarget(_uint w, _uint h)
     m_iViewH = h;
 
     SYS_CORE.Ready_SceneRenderTarget(w, h);
-    SYS_CORE.Share_GraphicDevice(nullptr, nullptr, &m_pSceneSRV);
+    SYS_CORE.Share_SceneSRV(&m_pSceneSRV); // 이제 nullptr 안 뜨게 됨
 }
 
 void CScenePanel::Render_Scene(_uint w, _uint h)
 {
-    SYS_CORE.Bind_SceneRT();
-
-    const _float4 clear = { 0.08f, 0.08f, 0.09f, 1.f };
-    SYS_CORE.Clear_SceneRTV(&clear); 
-    SYS_CORE.Clear_SceneDSV();
-
     // 여기서 "텍스처 없는 VIBuffer" 한 방
     // 1) 간단 셰이더 바인드(상수색 PS)
     // 2) 카메라 상수 버퍼 세팅(임시 고정 카메라라도)
@@ -104,7 +96,6 @@ void CScenePanel::Render_Scene(_uint w, _uint h)
         // SYS_DEBUGDRAW.DrawAxis();
     }
 
-    SYS_CORE.Bind_BackBuffer();
 }
 
 std::unique_ptr<CScenePanel> CScenePanel::Create(const std::string& strPanelName)

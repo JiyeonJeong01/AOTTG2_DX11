@@ -10,15 +10,13 @@ CGraphic_Device::CGraphic_Device()
 CGraphic_Device::~CGraphic_Device()
 {
     Safe_Release(m_pSwapChain);
-    Safe_Release(m_pDepthStencilView);
-    Safe_Release(m_pBackBufferRTV);
+    Safe_Release(m_pDefaultDSV);
+    Safe_Release(m_pDefaultRTV);
     Safe_Release(m_pDeviceContext);
-    Safe_Release(m_pSceneDSV);
-    Safe_Release(m_pSceneDepthTex);
-    Safe_Release(m_pSceneSRV);
+    Safe_Release(m_pSceneTexture);
     Safe_Release(m_pSceneRTV);
-    Safe_Release(m_pSceneTex);
-
+    Safe_Release(m_pSceneSRV);
+    Safe_Release(m_pSceneDSV);
 
 #if defined(DEBUG) || defined(_DEBUG)
     ID3D11Debug* d3dDebug;
@@ -57,15 +55,15 @@ HRESULT CGraphic_Device::Initialize(HWND hWnd, WINMODE isWindowed, _uint iWinSiz
 	if (FAILED(Ready_SwapChain(hWnd, isWindowed, iWinSizeX, iWinSizeY)))
 		return E_FAIL;
 
-	if (FAILED(Ready_BackBufferRenderTargetView()))
+	if (FAILED(Ready_Default_RTV()))
 		return E_FAIL;
 
-	if (FAILED(Ready_DepthStencilView(iWinSizeX, iWinSizeY)))
+	if (FAILED(Ready_Default_DSV(iWinSizeX, iWinSizeY)))
 		return E_FAIL;
 
-	ID3D11RenderTargetView* pRTVs[] = { m_pBackBufferRTV, };
+	ID3D11RenderTargetView* pRTVs[] = { m_pDefaultRTV, };
 
-    m_pDeviceContext->OMSetRenderTargets(1, pRTVs, m_pDepthStencilView);
+    m_pDeviceContext->OMSetRenderTargets(1, pRTVs, m_pDefaultDSV);
 
 	D3D11_VIEWPORT			ViewPortDesc;
 	ZeroMemory(&ViewPortDesc, sizeof(D3D11_VIEWPORT));
@@ -76,6 +74,9 @@ HRESULT CGraphic_Device::Initialize(HWND hWnd, WINMODE isWindowed, _uint iWinSiz
 	ViewPortDesc.MinDepth = 0.f;
 	ViewPortDesc.MaxDepth = 1.f;
 
+    m_iWinW = iWinSizeX;
+    m_iWinH = iWinSizeY;
+
 	m_pDeviceContext->RSSetViewports(1, &ViewPortDesc);
 
 	*ppDevice = m_pDevice;
@@ -83,26 +84,99 @@ HRESULT CGraphic_Device::Initialize(HWND hWnd, WINMODE isWindowed, _uint iWinSiz
 
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pDeviceContext);
-
 	return S_OK;
 }
 
-HRESULT CGraphic_Device::Clear_BackBuffer_View(const _float4* pClearColor)
+HRESULT CGraphic_Device::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
+{
+    if (nullptr == m_pDevice) return E_FAIL;
+
+    // --- Create Scene Texture & RTV & SRV ---
+    D3D11_TEXTURE2D_DESC textureDesc{};
+    textureDesc.Width = iWidth;
+    textureDesc.Height = iHeight;
+    textureDesc.MipLevels = 1;
+    textureDesc.ArraySize = 1;
+    textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    textureDesc.SampleDesc.Count = 1;
+    textureDesc.SampleDesc.Quality = 0;
+    textureDesc.Usage = D3D11_USAGE_DEFAULT;
+
+    textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    textureDesc.CPUAccessFlags = 0;
+    textureDesc.MiscFlags = 0;
+
+    if (FAILED(m_pDevice->CreateTexture2D(&textureDesc, nullptr, &m_pSceneTexture)))
+        return E_FAIL;
+
+    if (FAILED(m_pDevice->CreateRenderTargetView(m_pSceneTexture, nullptr, &m_pSceneRTV)))
+        return E_FAIL;
+
+    if (FAILED(m_pDevice->CreateShaderResourceView(m_pSceneTexture, nullptr, &m_pSceneSRV)))
+        return E_FAIL;
+
+
+    // --- Create Scene Depth Stencil View ---
+    ID3D11Texture2D* pDepthStencilTexture = nullptr;
+    D3D11_TEXTURE2D_DESC dsDesc{};
+    dsDesc.Width = iWidth;
+    dsDesc.Height = iHeight;
+    dsDesc.MipLevels = 1;
+    dsDesc.ArraySize = 1;
+    dsDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    dsDesc.SampleDesc.Count = 1;
+    dsDesc.SampleDesc.Quality = 0;
+    dsDesc.Usage = D3D11_USAGE_DEFAULT;
+    dsDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+    if (FAILED(m_pDevice->CreateTexture2D(&dsDesc, nullptr, &pDepthStencilTexture)))
+        return E_FAIL;
+
+    if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr, &m_pSceneDSV)))
+        return E_FAIL;
+
+    Safe_Release(pDepthStencilTexture);
+
+    return S_OK;
+}
+
+
+HRESULT CGraphic_Device::Clear_Default_RTV(const _float4* pClearColor)
 {
 	if (nullptr == m_pDeviceContext)
 		return E_FAIL;
 
-	m_pDeviceContext->ClearRenderTargetView(m_pBackBufferRTV, reinterpret_cast<const _float*>(pClearColor));
+	m_pDeviceContext->ClearRenderTargetView(m_pDefaultRTV, reinterpret_cast<const _float*>(pClearColor));
 
 	return S_OK;
 }
 
-HRESULT CGraphic_Device::Clear_DepthStencil_View()
+HRESULT CGraphic_Device::Clear_Default_DSV()
 {
 	if (nullptr == m_pDeviceContext)
 		return E_FAIL;
 
-	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+	m_pDeviceContext->ClearDepthStencilView(m_pDefaultDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+
+	return S_OK;
+}
+
+HRESULT CGraphic_Device::Clear_Scene_RTV(const _float4* pClearColor)
+{
+	if (nullptr == m_pDeviceContext || nullptr == m_pSceneRTV)
+		return E_FAIL;
+
+	m_pDeviceContext->ClearRenderTargetView(m_pSceneRTV, reinterpret_cast<const _float*>(pClearColor));
+
+	return S_OK;
+}
+
+HRESULT CGraphic_Device::Clear_Scene_DSV()
+{
+	if (nullptr == m_pDeviceContext || nullptr == m_pSceneDSV)
+		return E_FAIL;
+
+	m_pDeviceContext->ClearDepthStencilView(m_pSceneDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
 
 	return S_OK;
 }
@@ -115,105 +189,45 @@ HRESULT CGraphic_Device::Present()
 	return m_pSwapChain->Present(0, 0);
 }
 
-HRESULT CGraphic_Device::Ready_SceneRenderTarget(_uint w, _uint h)
+void CGraphic_Device::Bind_SceneRTV()
 {
-    if (!m_pDevice) return E_FAIL;
+    m_pDeviceContext->OMSetRenderTargets(1, &m_pSceneRTV, m_pSceneDSV);
+    Set_Viewport(m_iSceneW, m_iSceneH);
+}
+
+HRESULT CGraphic_Device::Ensure_SceneRenderTarget(_uint w, _uint h)
+{
     if (w == 0 || h == 0) return E_FAIL;
+    if (m_iSceneW == w && m_iSceneH == h && m_pSceneSRV) return S_OK;
 
-    if (m_pSceneTex && m_iSceneW == w && m_iSceneH == h)
-        return S_OK;
-
-    // 기존 해제
     Safe_Release(m_pSceneDSV);
-    Safe_Release(m_pSceneDepthTex);
     Safe_Release(m_pSceneSRV);
     Safe_Release(m_pSceneRTV);
-    Safe_Release(m_pSceneTex);
-
-    // Color
-    D3D11_TEXTURE2D_DESC td{};
-    td.Width = w;
-    td.Height = h;
-    td.MipLevels = 1;
-    td.ArraySize = 1;
-    td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    td.SampleDesc.Count = 1;
-    td.Usage = D3D11_USAGE_DEFAULT;
-    td.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-
-    if (FAILED(m_pDevice->CreateTexture2D(&td, nullptr, &m_pSceneTex)))
-        return E_FAIL;
-    if (FAILED(m_pDevice->CreateRenderTargetView(m_pSceneTex, nullptr, &m_pSceneRTV)))
-        return E_FAIL;
-    if (FAILED(m_pDevice->CreateShaderResourceView(m_pSceneTex, nullptr, &m_pSceneSRV)))
-        return E_FAIL;
-
-    // Depth
-    D3D11_TEXTURE2D_DESC dd{};
-    dd.Width = w;
-    dd.Height = h;
-    dd.MipLevels = 1;
-    dd.ArraySize = 1;
-    dd.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    dd.SampleDesc.Count = 1;
-    dd.Usage = D3D11_USAGE_DEFAULT;
-    dd.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-    if (FAILED(m_pDevice->CreateTexture2D(&dd, nullptr, &m_pSceneDepthTex)))
-        return E_FAIL;
-    if (FAILED(m_pDevice->CreateDepthStencilView(m_pSceneDepthTex, nullptr, &m_pSceneDSV)))
-        return E_FAIL;
+    Safe_Release(m_pSceneTexture);
 
     m_iSceneW = w;
     m_iSceneH = h;
-    return S_OK;
+
+    return Ready_SceneRenderTarget(w, h);
 }
 
-void CGraphic_Device::Bind_SceneRT()
+void CGraphic_Device::Set_Viewport(_uint w, _uint h)
 {
-    ID3D11RenderTargetView* rtvs[] = { m_pSceneRTV };
-    m_pDeviceContext->OMSetRenderTargets(1, rtvs, m_pSceneDSV);
-
     D3D11_VIEWPORT vp{};
     vp.TopLeftX = 0;
     vp.TopLeftY = 0;
-    vp.Width = (float)m_iSceneW;
-    vp.Height = (float)m_iSceneH;
+    vp.Width = (_float)w;
+    vp.Height = (_float)h;
     vp.MinDepth = 0.f;
     vp.MaxDepth = 1.f;
     m_pDeviceContext->RSSetViewports(1, &vp);
 }
 
-void CGraphic_Device::Bind_BackBuffer()
+void CGraphic_Device::Bind_DefaultRTV()
 {
-    ID3D11RenderTargetView* rtvs[] = { m_pBackBufferRTV };
-    m_pDeviceContext->OMSetRenderTargets(1, rtvs, m_pDepthStencilView);
+    m_pDeviceContext->OMSetRenderTargets(1, &m_pDefaultRTV, m_pDefaultDSV);
+    Set_Viewport(m_iWinW, m_iWinH);
 }
-
-void CGraphic_Device::Clear_SceneRTV(const _float4* pClearColor)
-{
-    if (!m_pDeviceContext || !m_pSceneRTV)
-        return;
-    const float pink[4] = { 1.f, 0.f, 1.f, 1.f };
-    m_pDeviceContext->ClearRenderTargetView(m_pSceneRTV, pink);
-    //m_pDeviceContext->ClearRenderTargetView(
-    //    m_pSceneRTV,
-    //    reinterpret_cast<const float*>(pClearColor)
-    //);
-}
-
-void CGraphic_Device::Clear_SceneDSV()
-{
-    if (!m_pDeviceContext || !m_pSceneDSV)
-        return ;
-
-    m_pDeviceContext->ClearDepthStencilView(
-        m_pSceneDSV,
-        D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
-        1.f, 0
-    );
-}
-
 
 HRESULT CGraphic_Device::Ready_SwapChain(HWND hWnd, WINMODE isWindowed, _uint iWinCX, _uint iWinCY)
 {
@@ -260,7 +274,7 @@ HRESULT CGraphic_Device::Ready_SwapChain(HWND hWnd, WINMODE isWindowed, _uint iW
 }
 
 
-HRESULT CGraphic_Device::Ready_BackBufferRenderTargetView()
+HRESULT CGraphic_Device::Ready_Default_RTV()
 {
 	if (nullptr == m_pDevice)
 		return E_FAIL;
@@ -270,7 +284,7 @@ HRESULT CGraphic_Device::Ready_BackBufferRenderTargetView()
 	if (FAILED(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferTexture)))
 		return E_FAIL;
 
-	if (FAILED(m_pDevice->CreateRenderTargetView(pBackBufferTexture, nullptr, &m_pBackBufferRTV)))
+	if (FAILED(m_pDevice->CreateRenderTargetView(pBackBufferTexture, nullptr, &m_pDefaultRTV)))
 		return E_FAIL;
 
 	Safe_Release(pBackBufferTexture);
@@ -278,7 +292,7 @@ HRESULT CGraphic_Device::Ready_BackBufferRenderTargetView()
 	return S_OK;
 }
 
-HRESULT CGraphic_Device::Ready_DepthStencilView(_uint iWinCX, _uint iWinCY)
+HRESULT CGraphic_Device::Ready_Default_DSV(_uint iWinCX, _uint iWinCY)
 {
 	if (nullptr == m_pDevice)
 		return E_FAIL;
@@ -304,7 +318,7 @@ HRESULT CGraphic_Device::Ready_DepthStencilView(_uint iWinCX, _uint iWinCY)
 	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, &pDepthStencilTexture)))
 		return E_FAIL;
 
-	if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr, &m_pDepthStencilView)))
+	if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr, &m_pDefaultDSV)))
 		return E_FAIL;
 
 	Safe_Release(pDepthStencilTexture);

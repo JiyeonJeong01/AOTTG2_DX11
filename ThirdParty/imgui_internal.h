@@ -278,7 +278,7 @@ extern IMGUI_API ImGuiContext* GImGui;  // Current implicit context pointer
 // Misc Macros
 #define IM_PI                           3.14159265358979323846f
 #ifdef _WIN32
-#define IM_NEWLINE                      "\r\n"   // Play it nice with Windows users (Update: since 2018-05, Notepad finally appears to support Unix-style carriage returns!)
+#define IM_NEWLINE                      "\r\n"   // Play it nice with Windows users (Begin_Render: since 2018-05, Notepad finally appears to support Unix-style carriage returns!)
 #else
 #define IM_NEWLINE                      "\n"
 #endif
@@ -1204,7 +1204,7 @@ struct IMGUI_API ImGuiMenuColumns
     ImU32       NextTotalWidth;
     ImU16       Spacing;
     ImU16       OffsetIcon;         // Always zero for now
-    ImU16       OffsetLabel;        // Offsets are locked in Update()
+    ImU16       OffsetLabel;        // Offsets are locked in Begin_Render()
     ImU16       OffsetShortcut;
     ImU16       OffsetMark;
     ImU16       Widths[4];          // Width of:   Icon, Label, Shortcut, Mark  (accumulators for current frame)
@@ -2163,7 +2163,7 @@ struct ImGuiViewportP : public ImGuiViewport
     // Calculate work rect pos/size given a set of offset (we have 1 pair of offset for rect locked from last frame data, and 1 pair for currently building rect)
     ImVec2  CalcWorkRectPos(const ImVec2& inset_min) const                           { return ImVec2(Pos.x + inset_min.x, Pos.y + inset_min.y); }
     ImVec2  CalcWorkRectSize(const ImVec2& inset_min, const ImVec2& inset_max) const { return ImVec2(ImMax(0.0f, Size.x - inset_min.x - inset_max.x), ImMax(0.0f, Size.y - inset_min.y - inset_max.y)); }
-    void    UpdateWorkRect()            { WorkPos = CalcWorkRectPos(WorkInsetMin); WorkSize = CalcWorkRectSize(WorkInsetMin, WorkInsetMax); } // Update public fields
+    void    UpdateWorkRect()            { WorkPos = CalcWorkRectPos(WorkInsetMin); WorkSize = CalcWorkRectSize(WorkInsetMin, WorkInsetMax); } // Begin_Render public fields
 
     // Helpers to retrieve ImRect (we don't need to store BuildWorkRect as every access tend to change it, hence the code asymmetry)
     ImRect  GetMainRect() const         { return ImRect(Pos.x, Pos.y, Pos.x + Size.x, Pos.y + Size.y); }

@@ -30,7 +30,6 @@ typedef struct ENGINE_DLL  tagDrawCmd final
     uint32_t indexCount = 0;
 }DRAW_CMD;
 
-/* Blueprints for gpu to interpret memory chuncks  */
 static constexpr D3D11_INPUT_ELEMENT_DESC VTXCOL_LAYOUT[] =
 {
     { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -41,6 +40,18 @@ static constexpr D3D11_INPUT_ELEMENT_DESC VTXTEX_LAYOUT[] =
 {
     { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
     { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+};
+
+typedef struct ENGINE_DLL tagILDesc
+{
+    const D3D11_INPUT_ELEMENT_DESC* pDesc;
+    uint32_t                        iCount;
+}IL_DESC;
+
+/* Blueprints for gpu to interpret memory chuncks  */
+static constexpr IL_DESC g_IL_TABLE[] = {
+    { VTXCOL_LAYOUT, _countof(VTXCOL_LAYOUT) },
+    { VTXTEX_LAYOUT, _countof(VTXTEX_LAYOUT) }
 };
 
 NS_END

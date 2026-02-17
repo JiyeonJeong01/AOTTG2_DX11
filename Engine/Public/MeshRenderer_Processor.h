@@ -17,6 +17,7 @@ public:
     HRESULT Initialize() override;
     void Update(_float fDT) override;
     void LateUpdate(_float fDT) override;
+    void Render();
 
     void Begin_Frame();
     void End_Frame();

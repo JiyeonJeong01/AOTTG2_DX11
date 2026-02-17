@@ -26,7 +26,8 @@ Editor::CGUI_System::~CGUI_System()
 
 HRESULT Editor::CGUI_System::Initialize()
 {
-    SYS_CORE.Share_GraphicDevice(&m_pDevice, &m_pContext, nullptr);
+    SYS_CORE.Share_GraphicDevice(&m_pDevice, &m_pContext);
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -65,14 +66,14 @@ HRESULT Editor::CGUI_System::Initialize()
     return S_OK;
 }
 
-void Editor::CGUI_System::Update()
+void Editor::CGUI_System::Begin_Render()
 {
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 }
 
-void Editor::CGUI_System::Render_GUI()
+void Editor::CGUI_System::End_Render()
 {
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

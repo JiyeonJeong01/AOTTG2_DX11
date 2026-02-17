@@ -45,7 +45,7 @@ public :
 
 
 private :
-    list<CGameObject*> m_GameObjects;
+    _float4		vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };
 
     /* ========================================== */
 

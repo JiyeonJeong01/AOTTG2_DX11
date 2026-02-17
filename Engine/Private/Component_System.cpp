@@ -55,6 +55,7 @@ void CComponent_System::FixedUpdate(_float fDT)
 
 void CComponent_System::Render()
 {
+    SCAST(CMeshRenderer_Processor*, m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::MESH_RENDERER)].get())->Render();
 }
 
 COMPONENT_HANDLE CComponent_System::Create_Component_By_Type(COMPONENT_TYPE eComType)
