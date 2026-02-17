@@ -8,8 +8,15 @@ TProxy CGameObject::Add_Component(COMPONENT_TYPE eComType)
     if (!IsValid())
         return TProxy{};
 
+    if (!Component::Is_Multi_Allowed(eComType))
+    {
+        auto existing = Get_Component<TProxy>(eComType);
+        if (existing.Is_Valid())
+            return existing;
+    }
+
     GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
-    COMPONENT_HANDLE hNewHandle = SYS_COMPONENT.Create_Component_By_Type(eComType);
+    COMPONENT_HANDLE hNewHandle = SYS_COMPONENT.Create_Component_By_Type(eComType, m_hSelf);
 
     /* A handle value of 0 means an invalid component */
     if (hNewHandle.iHandle == Component::INVALID_COMPONENT_SLOT)

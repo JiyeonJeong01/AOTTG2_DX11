@@ -1,9 +1,11 @@
-#pragma once
+﻿#pragma once
 #include "CComponent_Proxy_Base.h"
 
 NS_BEGIN(Engine)
 
 struct TEST_DATA_B {
+    GAMEOBJECT_HANDLE hGameObject{ };
+
     _float3 vData[4];
     _float  fAcc;
 };

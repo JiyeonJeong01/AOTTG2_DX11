@@ -5,6 +5,7 @@ NS_BEGIN(Engine)
 
 typedef struct ENGINE_DLL tagMeshRendererData final
 {
+    GAMEOBJECT_HANDLE hGameObject{ };
     COMPONENT_HANDLE hTransform = INVALID_HANDLE;
     uint32_t hMesh = INVALID_HANDLE_UINT;
     uint32_t hMaterial = INVALID_HANDLE_UINT;

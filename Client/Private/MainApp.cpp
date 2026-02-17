@@ -40,7 +40,6 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
         Engine::CGameObject* pObj = SYS_GAMEOBJECT.Create_Object();
         pObj->Add_Component<CTestComponentA>(COMPONENT_TYPE::TEST_A);
         pObj->Add_Component<CTestComponentB>(COMPONENT_TYPE::TEST_B);
-        pObj->Add_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
 
         pObj->Add_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
         auto mr = pObj->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);

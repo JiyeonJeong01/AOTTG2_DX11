@@ -1,6 +1,7 @@
 ﻿#include "GameObject_System.h"
 #include "GameObject.h"
 #include "Engine_Log.h"
+#include "Transform.h"
 
 NS_BEGIN(Engine)
 
@@ -106,6 +107,15 @@ CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const str
         pWrapper->Set_Parent(pParent);
 
     Add_To_LayerBucket(pWrapper, iLayer);
+
+    CTransform tr = pWrapper->Add_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
+    if (!tr.Is_Valid())
+    {
+        /* rollback */
+        _DEBUG_ERROR_BREAK("Failed add transform component to GameObject");
+        Destroy_Object(pWrapper);
+        return nullptr;
+    }
 
     return pWrapper;
 }

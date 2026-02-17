@@ -3,7 +3,8 @@
 #include "Resource_System.h"
 #include "Component_Spec.h"
 #include "Transform_Processor.h"
-#include "Core_System.h"
+#include "Engine_Math.h"
+#include "GameObject.h"
 
 CMeshRenderer_Processor::CMeshRenderer_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CTransform_Processor* pTransformProcessor)
     : m_pDevice(pDevice), m_pContext(pContext), m_pTransformProcessor(pTransformProcessor)
@@ -115,6 +116,15 @@ HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_HANDLE handle, c
     return S_OK;
 }
 
+void CMeshRenderer_Processor::Initialize_Component_Data(COMPONENT_HANDLE hComponent)
+{
+    auto pData = m_Pool.Get_Data_By_Handle(hComponent);
+
+    CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hGameObject);
+
+    pData->hTransform = pObj->Get_Component<CTransform>(COMPONENT_TYPE::TRANSFORM).Get_Handle();
+}
+
 uint64_t CMeshRenderer_Processor::Make_SortKey(const DRAW_CMD& cmd, const MESH_RENDERER_DATA& tData) const
 {
     /* [63:60] layer (4 bit)*/
@@ -129,7 +139,6 @@ uint64_t CMeshRenderer_Processor::Make_SortKey(const DRAW_CMD& cmd, const MESH_R
 
 void CMeshRenderer_Processor::Execute_Draw(const DRAW_CMD& cmd)
 {
-
     ID3D11RenderTargetView* curRTV = nullptr;
     ID3D11DepthStencilView* curDSV = nullptr;
     m_pContext->OMGetRenderTargets(1, &curRTV, &curDSV);
@@ -154,7 +163,7 @@ void CMeshRenderer_Processor::Execute_Draw(const DRAW_CMD& cmd)
     if (passIndex >= pShader->pPasses.size())
         return;
 
-    const _matrix matWorld = XMMatrixIdentity();
+    const _matrix matWorld = Engine::Math::Load(m_pTransformProcessor->Get_Proxy(cmd.hTransform)->matWorld);
 
     const _vector vEye = XMVectorSet(0.f, 5.f, -5.f, 0.f);
     const _vector vAt = XMVectorSet(0.f, 0.f, 0.f, 0.f);

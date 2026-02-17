@@ -4,6 +4,8 @@
 NS_BEGIN(Engine)
 
 struct TEST_DATA_A {
+    GAMEOBJECT_HANDLE hGameObject{ };
+
     _float3 vData[4];
     _float  fAcc;
 };

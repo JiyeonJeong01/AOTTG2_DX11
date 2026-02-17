@@ -2,10 +2,10 @@
 #include "Engine_Define.h"
 #include "Spec_Struct.h"
 #include "Component_Struct.h"
+#include "GameObject_Struct.h"
 
-NS_BEGIN(Engine)
-
-class ENGINE_DLL CComponent_Processor abstract
+  NS_BEGIN(Engine)
+      class ENGINE_DLL CComponent_Processor abstract
 {
 public:
 	CComponent_Processor() {};
@@ -16,7 +16,7 @@ public :
 	virtual void	Update(_float fDT) { };
 	virtual void	LateUpdate(_float fDT) { };
 
-	virtual COMPONENT_HANDLE Create_Component_Data() { return COMPONENT_HANDLE{}; }
+	virtual COMPONENT_HANDLE Create_Component_Data(GAMEOBJECT_HANDLE hGameObject) { return COMPONENT_HANDLE{}; }
 	virtual void Remove_Component(COMPONENT_HANDLE hHandle) {};
     virtual HRESULT Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) { return S_OK; };
 

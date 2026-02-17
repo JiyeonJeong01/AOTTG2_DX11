@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Component.h"
 
 NS_BEGIN(Engine)
@@ -7,8 +7,10 @@ class CRigidbody;
 
 typedef struct tagCollision
 {
-	class CObject*		pCounterObject;			// Ãæµ¹ ´çÇÑ ¿ÀºêÁ§Æ®
-	class Collider*		pCounterCollider;		// Ãæµ¹ ´çÇÑ ¿ÀºêÁ§Æ®ÀÇ Äİ¶óÀÌ´õ
+    //GAMEOBJECT_HANDLE hGameObject{ };
+
+	class CObject*		pCounterObject;			// ì¶©ëŒ ë‹¹í•œ ì˜¤ë¸Œì íŠ¸
+	class Collider*		pCounterCollider;		// ì¶©ëŒ ë‹¹í•œ ì˜¤ë¸Œì íŠ¸ì˜ ì½œë¼ì´ë”
 	class Rigidbody*	pCounterRigidbody;
 
 	_float3		vN;

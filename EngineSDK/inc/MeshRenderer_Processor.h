@@ -26,7 +26,9 @@ public:
 
     HRESULT Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) override;
 
-    /* 각 컴포넌트에 필요한 로직들 */
+private :
+    void Initialize_Component_Data(COMPONENT_HANDLE hComponent) override;
+
 private:
     uint64_t Make_SortKey(const DRAW_CMD& cmd, const MESH_RENDERER_DATA& d) const;
     void Execute_Draw(const DRAW_CMD& cmd);

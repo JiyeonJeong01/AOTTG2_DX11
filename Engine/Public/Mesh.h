@@ -19,7 +19,7 @@ typedef struct ENGINE_DLL tagMeshDesc
     D3D11_PRIMITIVE_TOPOLOGY eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 }MESH_DESC;
 
-typedef struct ENGINE_DLL tagMeshEntry
+typedef struct ENGINE_DLL tagMeshEntry 
 {
     Microsoft::WRL::ComPtr<ID3D11Buffer> pVB{ };
     Microsoft::WRL::ComPtr<ID3D11Buffer> pIB{ };

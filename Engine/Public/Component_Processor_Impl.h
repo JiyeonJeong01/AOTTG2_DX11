@@ -22,9 +22,15 @@ protected:
 	CComponent_Pool<TProxy> m_Pool;
 
 public :
-    COMPONENT_HANDLE Create_Component_Data() override
+    COMPONENT_HANDLE Create_Component_Data(GAMEOBJECT_HANDLE hGameObject) override
 	{
-		return m_Pool.Allocate();
+		COMPONENT_HANDLE hComponent = m_Pool.Allocate();
+        auto pData = m_Pool.Get_Data_By_Handle(hComponent);
+        pData->hGameObject = hGameObject;
+
+        Initialize_Component_Data(hComponent);
+
+        return hComponent;
 	}
 
     void Remove_Component(COMPONENT_HANDLE hHandle) override
@@ -36,4 +42,7 @@ public :
 	{
 		return m_Pool.Get_Proxy(hHandle);
 	}
+
+protected :
+    virtual void Initialize_Component_Data(COMPONENT_HANDLE hComponent) {};
 };
