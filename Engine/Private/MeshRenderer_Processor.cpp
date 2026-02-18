@@ -120,7 +120,7 @@ void CMeshRenderer_Processor::Initialize_Component_Data(COMPONENT_HANDLE hCompon
 {
     auto pData = m_Pool.Get_Data_By_Handle(hComponent);
 
-    CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hGameObject);
+    CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
 
     pData->hTransform = pObj->Get_Component<CTransform>(COMPONENT_TYPE::TRANSFORM).Get_Handle();
 }

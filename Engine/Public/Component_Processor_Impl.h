@@ -26,7 +26,7 @@ public :
 	{
 		COMPONENT_HANDLE hComponent = m_Pool.Allocate();
         auto pData = m_Pool.Get_Data_By_Handle(hComponent);
-        pData->hGameObject = hGameObject;
+        pData->hObject = hGameObject;
 
         Initialize_Component_Data(hComponent);
 

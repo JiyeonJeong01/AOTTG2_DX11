@@ -199,6 +199,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\MeshBuilder.h" />
     <ClInclude Include="..\Public\MeshRenderer.h" />
     <ClInclude Include="..\Public\MeshRenderer_Processor.h" />
+    <ClInclude Include="..\Public\Physics_Struct.h" />
     <ClInclude Include="..\Public\Prototype.h" />
     <ClInclude Include="..\Public\Prototype_System.h" />
     <ClInclude Include="..\Public\Mesh.h" />
@@ -221,6 +222,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Timer_System.h" />
     <ClInclude Include="..\Public\Transform.h" />
     <ClInclude Include="..\Public\Transform_Processor.h" />
+    <ClInclude Include="..\Public\UIObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Asset_Registry.cpp" />
@@ -261,6 +263,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Timer_System.cpp" />
     <ClCompile Include="..\Private\Transform.cpp" />
     <ClCompile Include="..\Private\Transform_Processor.cpp" />
+    <ClCompile Include="..\Private\UIObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Public\Component_System.inl" />
