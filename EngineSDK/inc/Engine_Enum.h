@@ -6,9 +6,11 @@ namespace Engine
 	enum class WINMODE { FULL, WIN };
 
 	enum class LAYER_TYPE		{ NONE, BACKGROUND, PLAYER, FLOOR, PARTICLE, MAX = 16, };
+
+    /* ------ Component ------ */
     enum class COMPONENT_TYPE : uint8_t { TEST_A, TEST_B, TEXTURE, 
                                         TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, MESH_RENDERER, ANIMATOR, CAMERA, AUDIO_LISTENER, AUDIO_SOURCE, END };
-    enum class UI_COMPONENT_TYPE : uint8_t { RECT_TRANSFORM, CANVAS_RENDERER, IMAGE, END };
+    enum class UI_COMPONENT_TYPE : uint8_t { RECT_TRANSFORM, CANVAS_RENDERER, IMAGE, BUTTON, END };
 	enum                                { COMPONENT_MAX = static_cast<uint32_t>(COMPONENT_TYPE::END) };
 	enum                                { UI_COMPONENT_MAX = static_cast<uint32_t>(UI_COMPONENT_TYPE::END) };
 

@@ -66,7 +66,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _float      fTimeAcc = {};
     _float      fFixedAcc = {};
 
-    // 기본 메시지 루프입니다:
+    // 기본 메시지 루프입니다. 
     while (true)
     {
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -79,19 +79,37 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 TranslateMessage(&msg);
                 DispatchMessage(&msg);
             }
+            continue; // 메시지 처리한 프레임은 여기서 끊는 게 보통 더 안전
         }
 
-        fTimeAcc += SYS_CORE.Compute_SystemDT();
+        const _float sysDT = SYS_CORE.Compute_SystemDT();
+        fTimeAcc += sysDT;
 
         if (fTimeAcc >= FRAME_DT)
         {
-            pMainApp->Update(SYS_CORE.Compute_FrameDT());
+            const _float fDT = SYS_CORE.Compute_FrameDT();
+            pMainApp->Update(fDT);
+
+            /* --- Render --- */
+            SYS_CORE.Bind_DefaultRTV();
+
+            _float4 g_vClearColor = { 0.88f, 0.18f, 0.18f, 1.0f };
+            SYS_CORE.Clear_Default_Buffers(&g_vClearColor);
+
             pMainApp->Render();
 
-            /* FIXED DT*/
-            // pMainApp->Fixed_Update(FIXED_DT);
+            SYS_CORE.Present();
 
-            fTimeAcc = 0.f;
+            /* FIXED DT
+            fFixedAcc += fDT;
+            if (fFixedAcc >= FIXED_DT)
+            {
+                pMainApp->Fixed_Update(FIXED_DT);
+                fFixedAcc -= FIXED_DT;
+            }
+            */
+
+            fTimeAcc = 0.f; /* TODO : fTimeAcc -= FRAME_DT 가 프레임 드랍에는 더 강해서 전환 고려  */
         }
     }
 

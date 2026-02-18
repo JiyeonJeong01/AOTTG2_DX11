@@ -187,7 +187,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Core_System.h" />
     <ClInclude Include="..\Public\GameObject.h" />
     <ClInclude Include="..\Public\GameObject_Event.h" />
-    <ClInclude Include="..\Public\GameObject_Struct.h" />
+    <ClInclude Include="..\Public\Object_Struct.h" />
     <ClInclude Include="..\Public\Graphic_Device.h" />
     <ClInclude Include="..\Public\GUI_Sink.h" />
     <ClInclude Include="..\Public\Input_System.h" />

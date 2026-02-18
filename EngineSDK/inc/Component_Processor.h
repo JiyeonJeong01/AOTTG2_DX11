@@ -2,7 +2,7 @@
 #include "Engine_Define.h"
 #include "Spec_Struct.h"
 #include "Component_Struct.h"
-#include "GameObject_Struct.h"
+#include "Object_Struct.h"
 
   NS_BEGIN(Engine)
       class ENGINE_DLL CComponent_Processor abstract
