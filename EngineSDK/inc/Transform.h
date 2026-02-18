@@ -6,7 +6,7 @@ NS_BEGIN(Engine)
 
 typedef struct ENGINE_DLL tagTransformData final
 {
-    GAMEOBJECT_HANDLE hObject{ };
+    OBJECT_HANDLE hObject{ };
 
     /* TRS truth */
     _float3     vPosition{ 0,0,0 };

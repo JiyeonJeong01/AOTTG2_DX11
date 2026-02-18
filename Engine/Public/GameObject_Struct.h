@@ -10,26 +10,6 @@
 
 NS_BEGIN(Engine)
 
-typedef struct tagGameObjectHandle
-{
-    uint32_t    iIndex = 0;
-    uint32_t    iVersion = 0;
-
-    bool IsValid() const
-    {
-        return iIndex != 0;
-    }
-    bool operator==(const tagGameObjectHandle& other) const
-    {
-        return iIndex == other.iIndex && iVersion == other.iVersion;
-    }
-    bool operator!=(const tagGameObjectHandle& other) const
-    {
-        return !(*this == other);
-    }
-
-}GAMEOBJECT_HANDLE;
-
 typedef struct tagGameObjectData
 {
     uint32_t    iVersion = 1;       /* slot's current version */
@@ -46,8 +26,8 @@ typedef struct tagGameObjectData
     Component::COMPONENT_MASK   componentMask = 0;
 
     /* Hierarchy */
-    GAMEOBJECT_HANDLE               hParent{};
-    std::vector<GAMEOBJECT_HANDLE>  hChildren;
+    OBJECT_HANDLE               hParent{};
+    std::vector<OBJECT_HANDLE>  hChildren;
 
     /* Reset helper */
     void Reset()

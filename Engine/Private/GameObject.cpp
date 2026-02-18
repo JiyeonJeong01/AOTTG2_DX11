@@ -8,8 +8,7 @@ static GAMEOBJECT_DATA g_DummyData;
 CGameObject::CGameObject(uint32_t iPoolIndex)
     : tagLabel("GameObject")
 {
-    m_hSelf.iIndex = iPoolIndex;
-    m_hSelf.iVersion = 0;
+    m_hSelf = OBJECT_HANDLE(iPoolIndex, 0, false);
 }
 
 CGameObject::~CGameObject()
@@ -79,9 +78,9 @@ CGameObject* CGameObject::Get_Parent()
     if (!IsValid())
         return nullptr;
 
-    GAMEOBJECT_HANDLE hParent = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).hParent;
+    OBJECT_HANDLE hParent = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).hParent;
 
-    if (!hParent.IsValid())
+    if (!hParent.Is_Valid())
         return nullptr;
 
     return SYS_GAMEOBJECT.Get_Wrapper(hParent);
@@ -95,7 +94,7 @@ HRESULT CGameObject::Set_Parent(CGameObject* pNewParent)
     if (pNewParent == this)
         return E_FAIL;
 
-    GAMEOBJECT_HANDLE hNewParent = pNewParent ? pNewParent->Get_Handle() : GAMEOBJECT_HANDLE{};
+    OBJECT_HANDLE hNewParent = pNewParent ? pNewParent->Get_Handle() : OBJECT_HANDLE{};
 
     GAMEOBJECT_DATA& tMyData = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
 
@@ -104,7 +103,7 @@ HRESULT CGameObject::Set_Parent(CGameObject* pNewParent)
         return S_OK;
 
     /* Remove this GameObject from the old parent's children list. */
-    if (tMyData.hParent.IsValid())
+    if (tMyData.hParent.Is_Valid())
     {
         CGameObject* pOldParentWrapper = SYS_GAMEOBJECT.Get_Wrapper(tMyData.hParent);
         if (pOldParentWrapper)
@@ -115,7 +114,7 @@ HRESULT CGameObject::Set_Parent(CGameObject* pNewParent)
 
     /* Register this GameObject to the new parent's children list. */
     tMyData.hParent = hNewParent;
-    if (hNewParent.IsValid())
+    if (hNewParent.Is_Valid())
     {
         if (pNewParent)
         {
@@ -142,7 +141,7 @@ HRESULT CGameObject::Remove_Child(CGameObject* pChild)
     return pChild->Set_Parent(nullptr);
 }
 
-void CGameObject::Add_Child_Inner(GAMEOBJECT_HANDLE hChild)
+void CGameObject::Add_Child_Inner(OBJECT_HANDLE hChild)
 {
     if (!IsValid())
         return;
@@ -156,7 +155,7 @@ void CGameObject::Add_Child_Inner(GAMEOBJECT_HANDLE hChild)
     }
 }
 
-void CGameObject::Remove_Child_Inner(GAMEOBJECT_HANDLE hChild)
+void CGameObject::Remove_Child_Inner(OBJECT_HANDLE hChild)
 {
     if (!IsValid())
         return;
@@ -190,10 +189,10 @@ std::vector<CGameObject*> CGameObject::Get_Children() const
     return result;
 }
 
-GAMEOBJECT_HANDLE CGameObject::Get_Handle() const
+OBJECT_HANDLE CGameObject::Get_Handle() const
 {
     if (!IsValid())
-        return GAMEOBJECT_HANDLE{};
+        return OBJECT_HANDLE{};
 
     return m_hSelf;
 }

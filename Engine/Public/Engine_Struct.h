@@ -41,6 +41,33 @@ namespace  Engine
 
     }LABEL;
 
+    typedef struct tagObjectHandle {
+        uint32_t raw = 0;
+
+        static constexpr uint32_t VERSION_SHIFT = 16;
+        static constexpr uint32_t UI_SHIFT = 31;
+
+        static constexpr uint32_t INDEX_MASK = 0x0000FFFFu;
+        static constexpr uint32_t VERSION_MASK = 0x7FFF0000u;
+        static constexpr uint32_t UI_MASK = 1u << UI_SHIFT;
+
+        tagObjectHandle() = default;
+        tagObjectHandle(uint32_t idx, uint32_t ver, _bool isUI)
+            : raw((idx& INDEX_MASK) |
+                (((ver & 0x7FFFu) << VERSION_SHIFT) & VERSION_MASK) |
+                (isUI ? UI_MASK : 0u)) {
+        }
+
+        uint32_t Index()   const { return raw & INDEX_MASK; }
+        uint32_t Version() const { return (raw & VERSION_MASK) >> VERSION_SHIFT; }
+
+        _bool     Is_UI()    const { return (raw & UI_MASK) != 0; }
+        _bool     Is_Valid() const { return (raw & INDEX_MASK) != 0; }
+
+        _bool operator==(const tagObjectHandle& other) const { return raw == other.raw; }
+        _bool operator!=(const tagObjectHandle& other) const { return raw != other.raw; }
+    }OBJECT_HANDLE;
+
 }
 
 #endif // Engine_Struct_h__

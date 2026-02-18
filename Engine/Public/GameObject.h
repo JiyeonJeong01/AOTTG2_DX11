@@ -17,7 +17,7 @@ public:
     void Render();
 
 protected:
-    GAMEOBJECT_HANDLE     m_hSelf{};
+    OBJECT_HANDLE     m_hSelf{};
 
 public:
     /* Components */
@@ -41,7 +41,7 @@ public:
 
     std::vector<CGameObject*>   Get_Children() const;
 
-    GAMEOBJECT_HANDLE           Get_Handle() const;
+    OBJECT_HANDLE           Get_Handle() const;
     _bool                       IsValid() const;
 
     /* etc */
@@ -52,8 +52,8 @@ public:
     Component::COMPONENT_MASK   Get_ComponentMask() const;
 
 private:
-    void Add_Child_Inner(GAMEOBJECT_HANDLE hChild);
-    void Remove_Child_Inner(GAMEOBJECT_HANDLE hChild);
+    void Add_Child_Inner(OBJECT_HANDLE hChild);
+    void Remove_Child_Inner(OBJECT_HANDLE hChild);
 
 public:
     CGameObject* Clone();

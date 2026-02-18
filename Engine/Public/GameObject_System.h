@@ -27,9 +27,9 @@ public:
     void                    Set_UUID(CGameObject* pObj, const INSTANCE_UUID& tUUID);
     const INSTANCE_UUID&    Get_UUID(CGameObject* pObj);
 
-    GAMEOBJECT_DATA&    Access_Data_Raw(GAMEOBJECT_HANDLE hObj);
-    CGameObject*        Get_Wrapper(GAMEOBJECT_HANDLE hObj);
-    _bool               Is_Valid_Handle(GAMEOBJECT_HANDLE hObj) const;
+    GAMEOBJECT_DATA&    Access_Data_Raw(OBJECT_HANDLE hObj);
+    CGameObject*        Get_Wrapper(OBJECT_HANDLE hObj);
+    _bool               Is_Valid_Handle(OBJECT_HANDLE hObj) const;
 
 private:
     uint32_t                                    m_iLayerCount = Layer::MAX_LAYERS;

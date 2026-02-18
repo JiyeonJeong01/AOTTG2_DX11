@@ -22,25 +22,25 @@ protected:
 	CComponent_Pool<TProxy> m_Pool;
 
 public :
-    COMPONENT_HANDLE Create_Component_Data(GAMEOBJECT_HANDLE hGameObject) override
+    COMPONENT_HANDLE Create_Component_Data(OBJECT_HANDLE hObject) override
 	{
 		COMPONENT_HANDLE hComponent = m_Pool.Allocate();
         auto pData = m_Pool.Get_Data_By_Handle(hComponent);
-        pData->hObject = hGameObject;
+        pData->hObject = hObject;
 
         Initialize_Component_Data(hComponent);
 
         return hComponent;
 	}
 
-    void Remove_Component(COMPONENT_HANDLE hHandle) override
+    void Remove_Component(COMPONENT_HANDLE hComponent) override
 	{
-		m_Pool.Deallocate(hHandle);
+		m_Pool.Deallocate(hComponent);
 	}
 
-    TProxy Get_Proxy(COMPONENT_HANDLE hHandle)
+    TProxy Get_Proxy(COMPONENT_HANDLE hComponent)
 	{
-		return m_Pool.Get_Proxy(hHandle);
+		return m_Pool.Get_Proxy(hComponent);
 	}
 
 protected :

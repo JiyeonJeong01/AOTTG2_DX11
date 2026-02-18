@@ -99,8 +99,7 @@ CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const str
     data.layer = iLayer;
     data.tUUID = tUUID;
 
-    pWrapper->m_hSelf.iIndex = idx;
-    pWrapper->m_hSelf.iVersion = data.iVersion;
+    pWrapper->m_hSelf = OBJECT_HANDLE(idx, data.iVersion, false);
 
     pWrapper->Set_Label(strName);
     if (pParent)
@@ -128,21 +127,21 @@ void CGameObject_System::Destroy_Object(CGameObject* pObj)
         return;
     }
 
-    const GAMEOBJECT_HANDLE handle = pObj->Get_Handle();
-    if (handle.iIndex == 0 /* dummy */ || handle.iIndex >= m_dataPool.size())
+    const OBJECT_HANDLE handle = pObj->Get_Handle();
+    if (handle.Index() == 0 /* dummy */ || handle.Index() >= m_dataPool.size())
         return;
 
-    GAMEOBJECT_DATA& data = m_dataPool[handle.iIndex];
+    GAMEOBJECT_DATA& data = m_dataPool[handle.Index()];
 
     if (data.bPendingDestroy)
         return;
     data.bPendingDestroy = true;
-    m_pendingDestroys.push_back(handle.iIndex);
+    m_pendingDestroys.push_back(handle.Index());
 
     Remove_From_LayerBucket(pObj);
 
     /* Clean up the relationship with the parent. */
-    if (data.hParent.IsValid())
+    if (data.hParent.Is_Valid())
     {
         CGameObject* pParent = Get_Wrapper(data.hParent);
         if (pParent && pParent->IsValid())
@@ -247,7 +246,7 @@ void CGameObject_System::Get_Roots(std::vector<CGameObject*>& outRoots)
             if (!pObj || !pObj->IsValid())
                 continue;
 
-            if (!Access_Data_Raw(pObj->Get_Handle()).hParent.IsValid())
+            if (!Access_Data_Raw(pObj->Get_Handle()).hParent.Is_Valid())
                 outRoots.push_back(pObj);
         }
     }
@@ -342,7 +341,7 @@ void CGameObject_System::Add_To_LayerBucket(CGameObject* pObj, Layer::LAYER_ID l
     if (layer == Layer::INVALID_LAYER || layer >= m_iLayerCount)
         layer = Layer::DEFAULT_LAYER;
 
-    const GAMEOBJECT_HANDLE hObj = pObj->Get_Handle();
+    const OBJECT_HANDLE hObj = pObj->Get_Handle();
     GAMEOBJECT_DATA& data = Access_Data_Raw(hObj);
 
     /* Remove this object from its current layer bucket. */
@@ -389,38 +388,50 @@ void CGameObject_System::Flush_PendingDestroy()
     m_pendingDestroys.clear();
 }
 
-GAMEOBJECT_DATA& CGameObject_System::Access_Data_Raw(GAMEOBJECT_HANDLE hObj)
+GAMEOBJECT_DATA& CGameObject_System::Access_Data_Raw(OBJECT_HANDLE hObj)
 {
-    if (hObj.iIndex == 0 || hObj.iIndex >= m_dataPool.size())
+#ifdef _DEBUG
+    if (hObj.Is_UI()) _DEBUG_ERROR_BREAK("UI handle passed to GameObject_System");
+#endif
+
+    if (hObj.Index() == 0 || hObj.Index() >= m_dataPool.size())
     {
         _DEBUG_ERROR_BREAK("Access_Data_Raw failed: invalid index.");
         return m_dataPool[0]; // 0번 더미
     }
-    return m_dataPool[hObj.iIndex];
+    return m_dataPool[hObj.Index()];
 }
 
-CGameObject* CGameObject_System::Get_Wrapper(GAMEOBJECT_HANDLE hObj)
+CGameObject* CGameObject_System::Get_Wrapper(OBJECT_HANDLE hObj)
 {
-    if (hObj.iIndex == 0 || hObj.iIndex >= m_wrapperPool.size())
+#ifdef _DEBUG
+    if (hObj.Is_UI()) _DEBUG_ERROR_BREAK("UI handle passed to GameObject_System");
+#endif
+
+    if (hObj.Index() == 0 || hObj.Index() >= m_wrapperPool.size())
         return nullptr;
 
-    const auto& data = m_dataPool[hObj.iIndex];
+    const auto& data = m_dataPool[hObj.Index()];
     if (!data.bActive)
         return nullptr;
 
-    if (m_dataPool[hObj.iIndex].iVersion != hObj.iVersion)
+    if (data.iVersion != hObj.Version())
         return nullptr;
 
-    return m_wrapperPool[hObj.iIndex].get();
+    return m_wrapperPool[hObj.Index()].get();
 }
 
-bool CGameObject_System::Is_Valid_Handle(GAMEOBJECT_HANDLE hObj) const
+bool CGameObject_System::Is_Valid_Handle(OBJECT_HANDLE hObj) const
 {
-    if (hObj.iIndex == 0 || hObj.iIndex >= m_dataPool.size())
+#ifdef _DEBUG
+    if (hObj.Is_UI()) _DEBUG_ERROR_BREAK("UI handle passed to GameObject_System");
+#endif
+
+    if (hObj.Index() == 0 || hObj.Index() >= m_dataPool.size())
         return false;
 
-    const auto& tData = m_dataPool[hObj.iIndex];
-    return tData.bActive && (tData.iVersion == hObj.iVersion);
+    const auto& tData = m_dataPool[hObj.Index()];
+    return tData.bActive && (tData.iVersion == hObj.Version());
 }
 
 NS_END

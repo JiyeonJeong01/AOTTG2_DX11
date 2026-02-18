@@ -58,7 +58,7 @@ void CComponent_System::Render()
     SCAST(CMeshRenderer_Processor*, m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::MESH_RENDERER)].get())->Render();
 }
 
-COMPONENT_HANDLE CComponent_System::Create_Component_By_Type(COMPONENT_TYPE eComType, GAMEOBJECT_HANDLE hGameObject)
+COMPONENT_HANDLE CComponent_System::Create_Component_By_Type(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject)
 {
     const uint32_t iIndex = SCAST(_uint, eComType);
     if (iIndex >= SCAST(_uint, COMPONENT_TYPE::END) || !m_pComProcessors[iIndex])
@@ -66,7 +66,7 @@ COMPONENT_HANDLE CComponent_System::Create_Component_By_Type(COMPONENT_TYPE eCom
         _DEBUG_ERROR_BREAK("Processor not registered for this component type.");
         return COMPONENT_HANDLE{};
     }
-    return m_pComProcessors[iIndex]->Create_Component_Data(hGameObject);
+    return m_pComProcessors[iIndex]->Create_Component_Data(hObject);
 }
 
 void CComponent_System::Create_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec)
