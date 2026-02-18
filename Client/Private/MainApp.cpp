@@ -37,22 +37,29 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 
     /* TEST : Create GameObject with various components */
     for (int i = 0; i < 1; ++i) {
-        Engine::CGameObject* pObj = SYS_GAMEOBJECT.Create_GameObject();
-        pObj->Add_Component<CTestComponentA>(COMPONENT_TYPE::TEST_A);
-        pObj->Add_Component<CTestComponentB>(COMPONENT_TYPE::TEST_B);
+        {
+            Engine::CGameObject* pObj = SYS_GAMEOBJECT.Create_GameObject();
+            pObj->Add_Component<CTestComponentA>(COMPONENT_TYPE::TEST_A);
+            pObj->Add_Component<CTestComponentB>(COMPONENT_TYPE::TEST_B);
 
-        pObj->Add_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
-        auto mr = pObj->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
-        auto* d = mr._Data();
-        d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXCOL); // 임시: material=shader
-        d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_CUBE);      // 또는 CreateCubeMesh()
-        d->layer = RENDER_LAYER::NONBLEND;
-        d->flags = RF_NONE;
+            pObj->Add_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+            auto mr = pObj->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+            auto* d = mr._Data();
+            d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXCOL); // 임시: material=shader
+            d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_CUBE);      // 또는 CreateCubeMesh()
+            d->layer = RENDER_LAYER::NONBLEND;
+            d->flags = RF_NONE;
 
-        auto comA = pObj->Get_Component<CTestComponentA>(COMPONENT_TYPE::TEST_A);
-        auto comB = pObj->Get_Component<CTestComponentB>(COMPONENT_TYPE::TEST_B);
-        auto comsA = pObj->Get_Components<CTestComponentA>(COMPONENT_TYPE::TEST_A);
-        auto comsB = pObj->Get_Components<CTestComponentB>(COMPONENT_TYPE::TEST_B);
+            auto comA = pObj->Get_Component<CTestComponentA>(COMPONENT_TYPE::TEST_A);
+            auto comB = pObj->Get_Component<CTestComponentB>(COMPONENT_TYPE::TEST_B);
+            auto comsA = pObj->Get_Components<CTestComponentA>(COMPONENT_TYPE::TEST_A);
+            auto comsB = pObj->Get_Components<CTestComponentB>(COMPONENT_TYPE::TEST_B);
+        }
+
+        {
+            Engine::CGameObject* pObj = SYS_GAMEOBJECT.Create_UIObject();
+        }
+
     }
 
     // Somewhere test code
@@ -105,7 +112,7 @@ void CMainApp::Update(_float fDT)
     }
     if (GetAsyncKeyState('A') & 0x8000)
     {
-        Engine::CGameObject* pObj = CPrototype_System::GetInstance().Clone(testGUID);
+        //Engine::CGameObject* pObj = CPrototype_System::GetInstance().Clone(testGUID);
     }
 
     SYS_CORE.Update_Engine(fDT);

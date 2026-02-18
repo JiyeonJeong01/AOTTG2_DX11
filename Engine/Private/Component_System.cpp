@@ -2,11 +2,12 @@
 #include "Component_Processor.h"
 #include "ComponentGroup_Manager.h"
 
+#include "Transform_Processor.h"
+#include "MeshRenderer_Processor.h"
+#include "RectTransform_Processor.h"
 //===============TEST===============
 #include "TestComponentASystem.h"
 #include "TestComponentBSystem.h"
-#include "Transform_Processor.h"
-#include "MeshRenderer_Processor.h"
 //==================================
 
 IMPLEMENT_SINGLETON(CComponent_System)
@@ -29,6 +30,7 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
     m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TEST_B)] = CTestComponentBSystem::Create();
     m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TRANSFORM)] = CTransform_Processor::Create();
     m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::MESH_RENDERER)] = CMeshRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CTransform_Processor*, m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TRANSFORM)].get()));
+    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::RECT_TRANSFORM)] = CRectTransform_Processor::Create();
 
 	return S_OK;
 }

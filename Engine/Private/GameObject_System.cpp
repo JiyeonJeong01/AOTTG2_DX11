@@ -419,9 +419,6 @@ void CGameObject_System::Flush_PendingDestroy()
 
 GAMEOBJECT_DATA& CGameObject_System::Access_Data_Raw(OBJECT_HANDLE hObj)
 {
-#ifdef _DEBUG
-    if (hObj.Is_UI()) _DEBUG_ERROR_BREAK("UI handle passed to GameObject_System");
-#endif
 
     if (hObj.Index() == 0 || hObj.Index() >= m_dataPool.size())
     {
@@ -433,10 +430,6 @@ GAMEOBJECT_DATA& CGameObject_System::Access_Data_Raw(OBJECT_HANDLE hObj)
 
 CGameObject* CGameObject_System::Get_Wrapper(OBJECT_HANDLE hObj)
 {
-#ifdef _DEBUG
-    if (hObj.Is_UI()) _DEBUG_ERROR_BREAK("UI handle passed to GameObject_System");
-#endif
-
     if (hObj.Index() == 0 || hObj.Index() >= m_wrapperPool.size())
         return nullptr;
 
@@ -452,9 +445,6 @@ CGameObject* CGameObject_System::Get_Wrapper(OBJECT_HANDLE hObj)
 
 bool CGameObject_System::Is_Valid_Handle(OBJECT_HANDLE hObj) const
 {
-#ifdef _DEBUG
-    if (hObj.Is_UI()) _DEBUG_ERROR_BREAK("UI handle passed to GameObject_System");
-#endif
 
     if (hObj.Index() == 0 || hObj.Index() >= m_dataPool.size())
         return false;

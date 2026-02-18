@@ -7,6 +7,7 @@
 #include "Transform.h"
 #include "MeshRenderer.h"
 #include "Material.h"
+#include "RectTransform.h"
 #include "Shader.h"
 
 NS_BEGIN(Editor)
@@ -96,7 +97,7 @@ void CInspectorPanel::Render()
         Draw_Basic_Info();
         ImGui::Separator();
 
-        Draw_Transform();
+        Draw_RequiredComponent();
         ImGui::Separator();
 
         Draw_Components();
@@ -173,6 +174,58 @@ void CInspectorPanel::Draw_Basic_Info()
 
         m_pTarget->Set_Label(m_nameBuffer.c_str());
         return;
+    }
+}
+
+void CInspectorPanel::Draw_RequiredComponent()
+{
+    if (!m_pTarget)
+        return;
+    Component::COMPONENT_MASK mask = m_pTarget->Get_ComponentMask();
+
+    if ((m_pTarget->Get_ComponentMask() & Component::Component_Bit(COMPONENT_TYPE::TRANSFORM)) != 0)
+        Draw_Transform();
+    else if ((m_pTarget->Get_ComponentMask() & Component::Component_Bit(COMPONENT_TYPE::RECT_TRANSFORM)) != 0)
+        Draw_RectTransform();
+}
+
+void CInspectorPanel::Draw_RectTransform()
+{
+    if (!ImGui::CollapsingHeader("RectTransform", ImGuiTreeNodeFlags_DefaultOpen))
+        return;
+
+    CRectTransform rt = m_pTarget->Get_Component<CRectTransform>(COMPONENT_TYPE::RECT_TRANSFORM);
+    if (!rt.Is_Valid())
+        return;
+
+    RECTTRANSFORM_DATA* pData = rt._Data();
+    if (!pData)
+        return;
+
+
+    _int vPos[2] = { SCAST(_int, pData->vPosPx.x),  SCAST(_int, pData->vPosPx.y) };
+    _int vSize[2] = { SCAST(_int,pData->vSizePx.x), SCAST(_int,pData->vSizePx.y) };
+
+    _bool bChanged = false;
+
+    ImGui::TextUnformatted("Position");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(-1.f);
+    bChanged |= ImGui::DragInt2("##UIPos", vPos, 1);
+
+    ImGui::TextUnformatted("Size      ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(-1.f);
+    bChanged |= ImGui::DragInt2("##UISize", vSize, 1);
+
+    if (vSize[0] < 0) vSize[0] = 0;
+    if (vSize[1] < 0) vSize[1] = 0;
+
+    if (bChanged)
+    {
+        pData->vPosPx = { SCAST(_float, vPos[0]),  SCAST(_float, vPos[1]) };
+        pData->vSizePx = { SCAST(_float, vSize[0]), SCAST(_float, vSize[1]) };
+        pData->bDirty = true;
     }
 }
 
