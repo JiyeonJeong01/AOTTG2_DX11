@@ -106,9 +106,6 @@
     <Filter Include="01. Utility\03. Object\GameObject">
       <UniqueIdentifier>{cb7fe595-1f43-46cb-923c-28e1448c0e59}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\03. Object\UIObject">
-      <UniqueIdentifier>{c32cd546-a3d0-412e-a68e-ccc0dc18da63}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Utility\04. Component\01. Transform">
       <UniqueIdentifier>{e8bfaf4b-8d9b-4fa2-8595-49b769c2ff03}</UniqueIdentifier>
     </Filter>
@@ -117,6 +114,9 @@
     </Filter>
     <Filter Include="01. Utility\04. Component\00. ComponentSystem">
       <UniqueIdentifier>{d5e3e4b3-c60b-49f6-ac28-14ed45faef63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\08. RectTransform">
+      <UniqueIdentifier>{b4dc3252-22a3-44d4-807c-83e83a9230d2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -318,8 +318,11 @@
     <ClInclude Include="..\Public\GameObject_System.h">
       <Filter>01. Utility\03. Object\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\UIObject.h">
-      <Filter>01. Utility\03. Object\UIObject</Filter>
+    <ClInclude Include="..\Public\RectTransform.h">
+      <Filter>01. Utility\04. Component\08. RectTransform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\RectTransform_Processor.h">
+      <Filter>01. Utility\04. Component\08. RectTransform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -437,8 +440,11 @@
     <ClCompile Include="..\Private\GameObject_System.cpp">
       <Filter>01. Utility\03. Object\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UIObject.cpp">
-      <Filter>01. Utility\03. Object\UIObject</Filter>
+    <ClCompile Include="..\Private\RectTransform.cpp">
+      <Filter>01. Utility\04. Component\08. RectTransform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RectTransform_Processor.cpp">
+      <Filter>01. Utility\04. Component\08. RectTransform</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

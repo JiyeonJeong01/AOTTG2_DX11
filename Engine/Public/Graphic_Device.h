@@ -14,6 +14,8 @@ public:
 	HRESULT Initialize(HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY,
 		                _Inout_ ID3D11Device** ppDevice, _Inout_ ID3D11DeviceContext** ppContext);
 
+    void    On_Resize(_uint iWidth, _uint iHeight);
+
 	HRESULT Clear_Default_RTV(const _float4* pClearColor);
 	HRESULT Clear_Default_DSV();
     HRESULT Clear_Scene_RTV(const _float4* pClearColor);

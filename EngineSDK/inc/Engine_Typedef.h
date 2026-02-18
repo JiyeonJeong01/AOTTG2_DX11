@@ -76,9 +76,11 @@ namespace Engine
     {
         using LAYER_ID = uint8_t;
         using LAYER_MASK = uint32_t;
+        constexpr uint32_t MAX_LAYERS = 32;
+
         constexpr LAYER_ID INVALID_LAYER = 0xff;
         constexpr LAYER_ID DEFAULT_LAYER = 0;
-        constexpr uint32_t MAX_LAYERS = 32;
+        constexpr LAYER_ID UI_LAYER = MAX_LAYERS - 1;
 
         constexpr LAYER_MASK To_Bit(LAYER_ID layer)
         {

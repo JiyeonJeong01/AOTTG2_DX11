@@ -9,11 +9,8 @@ namespace Engine
 
     /* ------ Component ------ */
     enum class COMPONENT_TYPE : uint8_t { TEST_A, TEST_B, TEXTURE, 
-                                        TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, MESH_RENDERER, ANIMATOR, CAMERA, AUDIO_LISTENER, AUDIO_SOURCE, END };
-    enum class UI_COMPONENT_TYPE : uint8_t { RECT_TRANSFORM, CANVAS_RENDERER, IMAGE, BUTTON, END };
-	enum                                { COMPONENT_MAX = static_cast<uint32_t>(COMPONENT_TYPE::END) };
-	enum                                { UI_COMPONENT_MAX = static_cast<uint32_t>(UI_COMPONENT_TYPE::END) };
-
+                                        TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, MESH_RENDERER, ANIMATOR, CAMERA, RECT_TRANSFORM, CANVAS_RENDERER, AUDIO_LISTENER, AUDIO_SOURCE, END };
+    enum                                { COMPONENT_MAX = static_cast<uint32_t>(COMPONENT_TYPE::END) };
 
     enum class RENDER_LAYER : uint8_t   { PRIORITY = 0, NONBLEND, BLEND, UI, END };
     enum RENDER_FLAGS : uint32_t        { RF_NONE = 0, RF_CAST_SHADOW = 1 << 0, RF_RECEIVE_SHADOW = 1 << 1, RF_DISABLE_CULL = 1 << 2, };

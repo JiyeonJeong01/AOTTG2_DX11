@@ -19,6 +19,8 @@ public :
     HRESULT     Draw();
     void        Clear_Resources(_uint iLevelIndex);
 
+    void        On_Resize(_uint iWidth, _uint iHeight);
+
     void        Share_GraphicDevice(_Out_ ID3D11Device** ppDevice = nullptr, _Out_ ID3D11DeviceContext** ppContext = nullptr);
     void        Share_SceneSRV(_Out_ ID3D11ShaderResourceView** ppSRV);
     HRESULT     Ready_SceneRenderTarget(_uint iWidth, _uint iHeight);

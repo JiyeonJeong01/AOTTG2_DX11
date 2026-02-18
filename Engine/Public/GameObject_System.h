@@ -13,8 +13,12 @@ class ENGINE_DLL CGameObject_System final
 
 public:
     HRESULT         Initialize(uint32_t iMaxLayers = 32, uint32_t iPoolSize = 2048);
-    CGameObject*    Create_Object(Layer::LAYER_ID iLayer = Layer::DEFAULT_LAYER,
+    CGameObject*    Create_GameObject(Layer::LAYER_ID iLayer = Layer::DEFAULT_LAYER,
                                     const string& strName = "GameObject",
+                                    CGameObject* pParent = nullptr,
+                                    const INSTANCE_UUID& tUUID = INSTANCE_UUID{});
+    CGameObject*    Create_UIObject(Layer::LAYER_ID iLayer = Layer::UI_LAYER,
+                                    const string& strName = "UIObject",
                                     CGameObject* pParent = nullptr,
                                     const INSTANCE_UUID& tUUID = INSTANCE_UUID{});
     void            Destroy_Object(CGameObject* pObj);
@@ -32,6 +36,9 @@ public:
     _bool               Is_Valid_Handle(OBJECT_HANDLE hObj) const;
 
 private:
+    CGameObject* Create_Object(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent, const INSTANCE_UUID& tUUID);
+
+private :
     uint32_t                                    m_iLayerCount = Layer::MAX_LAYERS;
     std::array<std::vector<CGameObject*>,       Layer::MAX_LAYERS> m_layerBuckets{};
     std::vector<GAMEOBJECT_DATA>                m_dataPool;
@@ -45,5 +52,6 @@ private:
     void Add_To_LayerBucket(CGameObject* pObj, Layer::LAYER_ID layer = Layer::DEFAULT_LAYER);
     void Flush_PendingDestroy();
 };
+
 
 NS_END

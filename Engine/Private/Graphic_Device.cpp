@@ -87,6 +87,19 @@ HRESULT CGraphic_Device::Initialize(HWND hWnd, WINMODE isWindowed, _uint iWinSiz
 	return S_OK;
 }
 
+void CGraphic_Device::On_Resize(_uint iWidth, _uint iHeight)
+{
+    /* TODO -------------------------------------------------------------*/
+    /* TODO -------------------------------------------------------------*/
+    /* TODO -------------------------------------------------------------*/
+    /* TODO -------------------------------------------------------------*/
+    /* TODO                             RESIZE 처리                      */
+    /* TODO -------------------------------------------------------------*/
+    /* TODO -------------------------------------------------------------*/
+    /* TODO -------------------------------------------------------------*/
+    /* TODO -------------------------------------------------------------*/
+}
+
 HRESULT CGraphic_Device::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
 {
     if (nullptr == m_pDevice) return E_FAIL;

@@ -246,7 +246,7 @@ CGameObject* CGameObject::Clone()
     std::string cloneName = std::string(Get_Label()) + "_Clone";
 
     const GAMEOBJECT_DATA& tData = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
-    CGameObject* pClone = SYS_GAMEOBJECT.Create_Object(tData.layer, cloneName, nullptr);
+    CGameObject* pClone = SYS_GAMEOBJECT.Create_GameObject(tData.layer, cloneName, nullptr);
     if (!pClone)
         return nullptr;
 

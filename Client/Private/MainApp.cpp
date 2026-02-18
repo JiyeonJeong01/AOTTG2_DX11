@@ -37,7 +37,7 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 
     /* TEST : Create GameObject with various components */
     for (int i = 0; i < 1; ++i) {
-        Engine::CGameObject* pObj = SYS_GAMEOBJECT.Create_Object();
+        Engine::CGameObject* pObj = SYS_GAMEOBJECT.Create_GameObject();
         pObj->Add_Component<CTestComponentA>(COMPONENT_TYPE::TEST_A);
         pObj->Add_Component<CTestComponentB>(COMPONENT_TYPE::TEST_B);
 

@@ -1,13 +1,23 @@
 ﻿#pragma once
 #include "Engine_Define.h"
+#include "Render_Struct.h"
 
-class CRender_System
+NS_BEGIN(Engine)
+
+class CRender_System final
 {
-    //virtual ~IRenderBackend() = default;
-    //virtual ID3D11DeviceContext* Get_Context() = 0;
+    DECLARE_SINGLETON(CRender_System)
 
-    //virtual CShader_Storage* Get_ShaderStorage() = 0;
-    //virtual CMaterial_Storage* Get_MaterialStorage() = 0;
-    //virtual CMesh_Storage* Get_MeshStorage() = 0;
+public :
+    HRESULT Initialize(_uint iWidth, _uint iHeight);
+    
+    void    Render();
+
+    void    On_Resize(_uint iWidth, _uint iHeight);
+    const UI_GLOBAL& Get_UI_Global() { return m_gUI; }
+
+private :
+    UI_GLOBAL   m_gUI{};
 };
 
+NS_END

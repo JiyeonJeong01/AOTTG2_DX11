@@ -106,6 +106,7 @@ private:                                                    \
 #define SYS_ASSET               GET_INSTANCE(Engine::CAsset_Registry)
 #define SYS_RESOURCE            GET_INSTANCE(Engine::CResource_System)
 #define SYS_INPUT		        GET_INSTANCE(Engine::CInput_System)
+#define SYS_RENDER		        GET_INSTANCE(Engine::CRender_System)
 
 
 //#define RESOURCES	GET_INSTANCE(CResourceManager)

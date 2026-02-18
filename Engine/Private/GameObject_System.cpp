@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Engine_Log.h"
 #include "Transform.h"
+#include "RectTransform.h"
 
 NS_BEGIN(Engine)
 
@@ -65,7 +66,8 @@ HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
     return S_OK;
 }
 
-CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent, const INSTANCE_UUID& tUUID)
+CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const string& strName,
+    CGameObject* pParent, const INSTANCE_UUID& tUUID)
 {
     if (m_freeIndices.empty())
     {
@@ -88,7 +90,7 @@ CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const str
 
     if (!pWrapper)
     {
-        _DEBUG_ERROR_BREAK("Create_Object failed: wrapper is null.");
+        _DEBUG_ERROR_BREAK("Create_GameObject failed: wrapper is null.");
         m_freeIndices.push(idx); /* Return allocated index */
         return nullptr;
     }
@@ -99,13 +101,21 @@ CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const str
     data.layer = iLayer;
     data.tUUID = tUUID;
 
-    pWrapper->m_hSelf = OBJECT_HANDLE(idx, data.iVersion, false);
+    pWrapper->m_hSelf = OBJECT_HANDLE(idx, data.iVersion, iLayer == Layer::UI_LAYER ? true : false);
 
     pWrapper->Set_Label(strName);
     if (pParent)
         pWrapper->Set_Parent(pParent);
 
     Add_To_LayerBucket(pWrapper, iLayer);
+
+    return pWrapper;
+}
+
+
+CGameObject* CGameObject_System::Create_GameObject(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent, const INSTANCE_UUID& tUUID)
+{
+    CGameObject* pWrapper = Create_Object(iLayer, strName, pParent, tUUID);
 
     CTransform tr = pWrapper->Add_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
     if (!tr.Is_Valid())
@@ -115,6 +125,25 @@ CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const str
         Destroy_Object(pWrapper);
         return nullptr;
     }
+
+    return pWrapper;
+}
+
+CGameObject* CGameObject_System::Create_UIObject(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent,
+    const INSTANCE_UUID& tUUID)
+{
+    CGameObject* pWrapper = Create_Object(iLayer, strName, pParent, tUUID);
+    CRectTransform tr = pWrapper->Add_Component<CRectTransform>(COMPONENT_TYPE::RECT_TRANSFORM);
+    if (!tr.Is_Valid())
+    {
+        /* rollback */
+        _DEBUG_ERROR_BREAK("Failed add rect transform component to UIObject");
+        Destroy_Object(pWrapper);
+        return nullptr;
+    }
+
+    if (!pWrapper->Get_Handle().Is_UI())
+        _DEBUG_ERROR_BREAK("Create UIObject, but it has GameObject handle");
 
     return pWrapper;
 }

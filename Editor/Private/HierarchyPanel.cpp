@@ -637,7 +637,7 @@ void CHierarchyPanel::Handle_DragDrop(Engine::CGameObject* pObj)
 Engine::CGameObject* CHierarchyPanel::Create_Empty_Object(Engine::CGameObject* pParent)
 {
     std::string szBaseName = "New GameObject";
-    Engine::CGameObject* pNew = SYS_GAMEOBJECT.Create_Object(Layer::DEFAULT_LAYER, szBaseName, pParent);
+    Engine::CGameObject* pNew = SYS_GAMEOBJECT.Create_GameObject(Layer::DEFAULT_LAYER, szBaseName, pParent);
 
     return pNew;
 }

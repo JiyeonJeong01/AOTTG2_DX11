@@ -110,7 +110,6 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
         }
     }
 
-
 	return S_OK;
 }
 
@@ -128,6 +127,11 @@ HRESULT CCore_System::Draw()
 
 void CCore_System::Clear_Resources(_uint iLevelIndex)
 {
+}
+
+void CCore_System::On_Resize(_uint iWidth, _uint iHeight)
+{
+    m_pGraphic_Device->On_Resize(iWidth, iHeight);
 }
 
 void CCore_System::Share_GraphicDevice(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)

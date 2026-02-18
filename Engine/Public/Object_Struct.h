@@ -70,7 +70,7 @@ typedef struct tagUIObjectData
     float           rotation = 0.f;        // 2D면 z-rot만
 
     // ---- Components ----
-    uint32_t                    iComponentSlots[UI_COMPONENT_MAX] = { 0, };
+    uint32_t                    iComponentSlots[COMPONENT_MAX] = { 0, };
     Component::COMPONENT_MASK   componentMask = 0;
 
     // ---- UI Hierarchy ----

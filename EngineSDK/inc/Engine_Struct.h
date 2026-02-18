@@ -68,6 +68,18 @@ namespace  Engine
         _bool operator!=(const tagObjectHandle& other) const { return raw != other.raw; }
     }OBJECT_HANDLE;
 
+    typedef struct tagUIGlobal
+    {
+        _float4x4 matView{};
+        _float4x4 matProj{};
+        _float2   vViewport{};
+        tagUIGlobal()
+        {
+            XMStoreFloat4x4(&matView, XMMatrixIdentity());
+            XMStoreFloat4x4(&matProj, XMMatrixIdentity());
+        }
+    }UI_GLOBAL;
+
 }
 
 #endif // Engine_Struct_h__

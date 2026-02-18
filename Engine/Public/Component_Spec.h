@@ -120,8 +120,47 @@ typedef struct ENGINE_DLL tagTransformSpec final : public COMPONENT_SPEC_BASE
         }
     };
 
-
 } TRANSFORM_SPEC;
+
+typedef struct ENGINE_DLL tagRectTransformSpec final : public COMPONENT_SPEC_BASE
+{
+    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::RECT_TRANSFORM)
+
+    _float2 vPosPx{ 0.f, 0.f };
+    _float2 vSizePx{ 100.f, 100.f };
+
+    [[nodiscard]]
+    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
+    {
+        return std::make_unique<tagRectTransformSpec>(*this);
+    }
+
+    void ToJson(json& j) const override
+    {
+        j["Type"] = SCAST(_uint, Get_Type());
+        j["PosPx"] = { vPosPx.x, vPosPx.y };
+        j["SizePx"] = { vSizePx.x, vSizePx.y };
+    }
+
+    _bool FromJson(const json& j) override
+    {
+        try
+        {
+            if (j.contains("PosPx") && j["PosPx"].is_array() && j["PosPx"].size() >= 2)
+                vPosPx = { j["PosPx"][0], j["PosPx"][1] };
+
+            if (j.contains("SizePx") && j["SizePx"].is_array() && j["SizePx"].size() >= 2)
+                vSizePx = { j["SizePx"][0], j["SizePx"][1] };
+
+            return true;
+        }
+        catch (...)
+        {
+            return false;
+        }
+    }
+
+} RECTTRANSFORM_SPEC;
 
 typedef struct ENGINE_DLL tagTextureSpec final : public COMPONENT_SPEC_BASE
 {
