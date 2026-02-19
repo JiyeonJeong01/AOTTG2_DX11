@@ -1,13 +1,17 @@
 ﻿#define _EDITOR
 #include "framework.h"
 #include "Editor.h"
-
 #include "MainApp.h"
-
-#include "Core_System.h"
 #include "GUI_System.h"
 #include "MainPanel.h"
 #include "ProfilerPanel.h"
+
+#include "Core_System.h"
+#include "Event_System.h"
+
+#include "WindowResize_Event.h"
+
+
 
 #define MAX_LOADSTRING 100
 
@@ -202,14 +206,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         if (wParam == SIZE_MINIMIZED)
             break;
-
-            /* TODO ----------------------------------------------------------------------------------*/
-            /* TODO ----------------------------------------------------------------------------------*/
-            /* TODO ----------------------------------------------------------------------------------*/
-            /* TODO                                 RESIZE시 이벤트 추가하기                           */
-            /* TODO ----------------------------------------------------------------------------------*/
-            /* TODO ----------------------------------------------------------------------------------*/
-            /* TODO ----------------------------------------------------------------------------------*/
+        RESIZE_EVENT_DATA eData(w, h);
+        SYS_EVENT.Trigger(eData);
     }
     break;
     case WM_CLOSE:

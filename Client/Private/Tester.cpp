@@ -1,6 +1,7 @@
 ﻿#include "Tester.h"
 #include "Engine_Log.h"
 #include "MainApp.h"
+#include "Event.h"
 
 NS_BEGIN(Client)
 

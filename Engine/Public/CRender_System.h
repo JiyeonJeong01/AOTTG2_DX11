@@ -13,7 +13,7 @@ public :
     
     void    Render();
 
-    void    On_Resize(_uint iWidth, _uint iHeight);
+    void On_Resize(EVENT_DATA& eData);
     const UI_GLOBAL& Get_UI_Global() { return m_gUI; }
 
 private :

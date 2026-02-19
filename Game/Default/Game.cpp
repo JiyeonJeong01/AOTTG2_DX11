@@ -1,9 +1,10 @@
 ﻿#include "framework.h"
 #include "Game.h"
-
 #include "MainApp.h"
-#include "Core_System.h"
 
+#include "Core_System.h"
+#include "Event_System.h"
+#include "WindowResize_Event.h"
 
 #define MAX_LOADSTRING 100
 
@@ -141,8 +142,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
+    RECT rc = { 0, 0, Client::g_iWinSizeX, Client::g_iWinSizeY };
+    AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, TRUE);
+
+
     HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+        CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
 
     if (!hWnd)
     {
@@ -161,6 +166,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
+    case WM_SIZE:
+    {
+        const UINT w = LOWORD(lParam);
+        const UINT h = HIWORD(lParam);
+
+        if (wParam == SIZE_MINIMIZED)
+            break;
+        RESIZE_EVENT_DATA eData(w, h);
+        SYS_EVENT.Trigger(eData);
+    }
+    break;
     case WM_CREATE:
     {
         AllocConsole();

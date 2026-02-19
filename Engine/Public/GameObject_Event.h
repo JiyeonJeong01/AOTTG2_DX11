@@ -1,27 +1,19 @@
 ﻿#pragma once
-#include "EventData.h"
+#include "Engine_Define.h"
 
 NS_BEGIN(Engine)
 
 class CGameObject;
 
-class ENGINE_DLL CGameObject_Event : public CEventData
+typedef struct ENGINE_DLL tagGameObjectEventData : public EVENT_DATA
 {
-private :
-    CGameObject_Event(EVENT_TYPE eType, CGameObject* pGameObject)
-        : CEventData(eType), m_pGameObject(pGameObject) {}
-    ~CGameObject_Event() override = default;
-
 public :
-    CGameObject* Get_GameObject() { return m_pGameObject; }
+    tagGameObjectEventData(EVENT_TYPE eType, CGameObject* pGameObject)
+        : EVENT_DATA(eType), m_pGameObject(pGameObject) {
+    };
+    ~tagGameObjectEventData() override = default;
 
-private :
     CGameObject* m_pGameObject{};
-
-public :
-    static CGameObject_Event Create(EVENT_TYPE eType, CGameObject* pGameObject);
-private :
-    void Free() override;
-};
+}GAMEOBJECT_EVENT_DATA;
 
 NS_END

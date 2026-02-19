@@ -107,12 +107,12 @@ private:                                                    \
 #define SYS_RESOURCE            GET_INSTANCE(Engine::CResource_System)
 #define SYS_INPUT		        GET_INSTANCE(Engine::CInput_System)
 #define SYS_RENDER		        GET_INSTANCE(Engine::CRender_System)
+#define SYS_EVENT		        GET_INSTANCE(CEvent_System)
 
 
 //#define RESOURCES	GET_INSTANCE(CResourceManager)
 //#define SCENE		GET_INSTANCE(CSceneManager)
 //#define SOUND		GET_INSTANCE(CSoundManager)
-//#define EVENT		GET_INSTANCE(CEvent_Manager)
 
 }
 #endif // Engine_Macro_h__

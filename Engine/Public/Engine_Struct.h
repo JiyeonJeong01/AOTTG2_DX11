@@ -80,6 +80,12 @@ namespace  Engine
         }
     }UI_GLOBAL;
 
+    typedef struct ENGINE_DLL tagEventData
+    {
+        tagEventData(EVENT_TYPE type) : eType(type) {}
+        virtual ~tagEventData() = default;
+        const EVENT_TYPE eType;
+    }EVENT_DATA;
 }
 
 #endif // Engine_Struct_h__

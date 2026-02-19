@@ -1,23 +1,23 @@
 ﻿#pragma once
 #include "Event.h"
-#include "EventData.h"
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CEvent_Manager final
+class ENGINE_DLL CEvent_System final
 {
-    DECLARE_SINGLETON(CEvent_Manager)
-
+    DECLARE_SINGLETON(CEvent_System)
 public:
+    HRESULT Initialize();
+
     /* Subscribe for member function listeners */
     template <typename Object>
-    ListenerID Subscribe(EVENT_TYPE eType, void(Object::* func)(CEventData&), Object* pInstance)
+    ListenerID Subscribe(EVENT_TYPE eType, void(Object::* func)(EVENT_DATA&), Object* pInstance)
     {
         return m_Events[eType].Add_Listener(func, pInstance);
     }
 
     /* Subscribe for lambda of static function listeners */
-    ListenerID Subscribe(EVENT_TYPE eType, std::function<void(CEventData&)> handler)
+    ListenerID Subscribe(EVENT_TYPE eType, std::function<void(EVENT_DATA&)> handler)
     {
         return m_Events[eType].Add_Listener(handler);
     }
@@ -31,9 +31,9 @@ public:
             it->second.Remove_Listener(iID);
     }
 
-    void Trigger(CEventData& eventData)
+    void Trigger(EVENT_DATA& eventData)
     {
-        auto it = m_Events.find(eventData.GetType());
+        auto it = m_Events.find(eventData.eType);
 
         if (it != m_Events.end())
             it->second.Invoke(eventData);
@@ -48,8 +48,7 @@ public:
     }
 
 private:
-    using EventChannel = CEvent<CEventData&>;
-    std::unordered_map<EVENT_TYPE, EventChannel> m_Events;
+    std::unordered_map<EVENT_TYPE, CEvent<EVENT_DATA&>> m_Events;
 };
 
 NS_END

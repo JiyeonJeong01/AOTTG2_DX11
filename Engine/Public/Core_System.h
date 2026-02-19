@@ -19,7 +19,7 @@ public :
     HRESULT     Draw();
     void        Clear_Resources(_uint iLevelIndex);
 
-    void        On_Resize(_uint iWidth, _uint iHeight);
+    void        On_Resize(EVENT_DATA& eData);
 
     void        Share_GraphicDevice(_Out_ ID3D11Device** ppDevice = nullptr, _Out_ ID3D11DeviceContext** ppContext = nullptr);
     void        Share_SceneSRV(_Out_ ID3D11ShaderResourceView** ppSRV);
@@ -52,5 +52,4 @@ private:
     ID3D11ShaderResourceView*   m_pSceneSRV{};
 
 };
-
 NS_END

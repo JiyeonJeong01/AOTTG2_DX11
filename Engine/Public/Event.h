@@ -1,7 +1,5 @@
 ﻿#pragma once
-#include "Base.h"
-#include <map>
-#include <functional>
+#include "Engine_Define.h"
 
 NS_BEGIN(Engine)
 
@@ -9,13 +7,15 @@ using ListenerID = size_t;
 
 
 template <typename... Args>
-class CEvent : public CBase
+class CEvent
 {
 public:
     using Listener = std::function<void(Args...)>;
 
     CEvent() = default;
-    ~CEvent() override = default;
+    ~CEvent() {
+        Clear();
+    };
 
 public:
 
@@ -71,9 +71,6 @@ public:
 private:
     std::map<ListenerID, Listener> m_listeners;
     ListenerID m_iNextID = 0;
-
-private:
-    void Free() override { Clear(); }
 };
 
 NS_END

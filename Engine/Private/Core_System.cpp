@@ -7,11 +7,14 @@
 #include "Logger.h"
 #include "Asset_Registry.h"
 #include "Resource_System.h"
+#include "Event_System.h"
 
 /* --- sub --- */
 #include "Graphic_Device.h"
 #include "Timer_System.h"
 
+/* --- event --- */
+#include "WindowResize_Event.h"
 
 NS_BEGIN(Engine)
 
@@ -29,6 +32,7 @@ CCore_System::~CCore_System()
     SYS_ASSET.DestroyInstance();
     SYS_LOG.DestroyInstance();
     SYS_INPUT.DestroyInstance();
+    SYS_EVENT.DestroyInstance();
 }
 
 HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice,
@@ -110,6 +114,20 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
         }
     }
 
+    /* --- Event System --- */
+    {
+        if (FAILED(SYS_EVENT.Initialize()))
+        {
+            MSG_BOX("Event System failed Initialize");
+            return E_FAIL;
+        }
+    }
+
+
+
+    /* Register event */
+    SYS_EVENT.Subscribe(EVENT_TYPE::On_Window_Resize, &CCore_System::On_Resize, this);
+
 	return S_OK;
 }
 
@@ -129,9 +147,12 @@ void CCore_System::Clear_Resources(_uint iLevelIndex)
 {
 }
 
-void CCore_System::On_Resize(_uint iWidth, _uint iHeight)
+void CCore_System::On_Resize(EVENT_DATA& eData)
 {
-    m_pGraphic_Device->On_Resize(iWidth, iHeight);
+    assert(eData.eType == EVENT_TYPE::On_Window_Resize);
+
+    auto& eResizeData = SCAST(RESIZE_EVENT_DATA&, eData);
+    m_pGraphic_Device->On_Resize(eResizeData.iWidth, eResizeData.iHeight);
 }
 
 void CCore_System::Share_GraphicDevice(ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
@@ -181,6 +202,8 @@ HRESULT CCore_System::Clear_Scene_Buffers(const _float4* pClearColor) const
 
     if (FAILED(m_pGraphic_Device->Clear_Scene_DSV()))
         return E_FAIL;
+
+    return S_OK;
 }
 
 HRESULT CCore_System::Present() const
