@@ -22,7 +22,6 @@ public:
     void Begin_Frame();
     void End_Frame();
     void Build_Queue(std::vector<DRAW_CMD>& outCmds);
-    void Immediate_Render_All();
 
     HRESULT Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) override;
 
@@ -30,7 +29,7 @@ private :
     void Initialize_Component_Data(COMPONENT_HANDLE hComponent) override;
 
 private:
-    uint64_t Make_SortKey(const DRAW_CMD& cmd, const MESH_RENDERER_DATA& d) const;
+    uint64_t Make_SortKey(const MESH_RENDERER_DATA& d) const;
     void Execute_Draw(const DRAW_CMD& cmd);
 
 private :

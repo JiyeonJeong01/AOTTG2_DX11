@@ -162,9 +162,87 @@ typedef struct ENGINE_DLL tagRectTransformSpec final : public COMPONENT_SPEC_BAS
 
 } RECTTRANSFORM_SPEC;
 
+typedef struct ENGINE_DLL tagCanvasRendererSpec final : public COMPONENT_SPEC_BASE
+{
+    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::CANVAS_RENDERER)
+
+        ASSET_GUID materialGUID{};
+    ASSET_GUID textureGUID{};
+
+    _float4 vColor = { 1.f, 1.f, 1.f, 1.f };
+    RECT_F  rcUV = { 0.f, 0.f, 1.f, 1.f };
+    RECT_F  rcClip = { 0.f, 0.f, 0.f, 0.f };
+
+    uint32_t flags = CF_NONE;
+    RENDER_LAYER layer = RENDER_LAYER::UI;
+    _float sortZ = 0.f;
+
+    [[nodiscard]]
+    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
+    {
+        return std::make_unique<tagCanvasRendererSpec>(*this);
+    }
+
+    void ToJson(json& j) const override {
+        j["Type"] = SCAST(_uint, Get_Type());
+
+        if (materialGUID.Is_Valid())
+            j["MaterialGUID"] = materialGUID.To_String_Utf8();
+        if (textureGUID.Is_Valid())
+            j["TextureGUID"] = textureGUID.To_String_Utf8();
+
+        if (vColor.x != 1.f || vColor.y != 1.f || vColor.z != 1.f || vColor.w != 1.f)
+            j["vColor"] = { vColor.x, vColor.y, vColor.z, vColor.w };
+
+        if (rcUV.fLeft != 0.f || rcUV.fTop != 0.f || rcUV.fRight != 1.f || rcUV.fBottom != 1.f)
+            j["rcUV"] = { rcUV.fLeft, rcUV.fTop, rcUV.fRight, rcUV.fBottom };
+
+        if (rcClip.fLeft != 0.f || rcClip.fTop != 0.f || rcClip.fRight != 0.f || rcClip.fBottom != 0.f)
+            j["rcClip"] = { rcClip.fLeft, rcClip.fTop, rcClip.fRight, rcClip.fBottom };
+
+        if (flags != CF_NONE)
+            j["flags"] = flags;
+        if (layer != RENDER_LAYER::UI)
+            j["layer"] = SCAST(_uint, layer);
+        if (sortZ != 0.f)
+            j["sortZ"] = sortZ;
+    }
+
+    _bool FromJson(const json& j) override
+    {
+        try {
+            if (j.contains("MaterialGUID"))
+                ASSET_GUID::Try_Utf8_To_GUID(j["MaterialGUID"], materialGUID);
+            if (j.contains("TextureGUID"))
+                ASSET_GUID::Try_Utf8_To_GUID(j["TextureGUID"], textureGUID);
+
+            if (j.contains("vColor") && j["vColor"].is_array() && j["vColor"].size() >= 4)
+                vColor = { j["vColor"][0], j["vColor"][1], j["vColor"][2], j["vColor"][3] };
+
+            if (j.contains("rcUV") && j["rcUV"].is_array() && j["rcUV"].size() >= 4)
+                rcUV = { j["rcUV"][0], j["rcUV"][1], j["rcUV"][2], j["rcUV"][3] };
+
+            if (j.contains("rcClip") && j["rcClip"].is_array() && j["rcClip"].size() >= 4)
+                rcClip = { j["rcClip"][0], j["rcClip"][1], j["rcClip"][2], j["rcClip"][3] };
+
+            flags = j.value("flags", flags);
+            layer = (RENDER_LAYER)j.value("layer", (uint32_t)layer);
+            sortZ = j.value("sortZ", sortZ);
+
+            return true;
+        }
+        catch (...) {
+            return false;
+        }
+    }
+} CANVAS_RENDERER_SPEC;
+
 typedef struct ENGINE_DLL tagTextureSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::TEXTURE)
+
+    const _tchar* pFilePathPattern = nullptr;
+    _uint iNumSRVs = 1;
 
     [[nodiscard]]
     std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
@@ -194,8 +272,6 @@ typedef struct ENGINE_DLL tagTextureSpec final : public COMPONENT_SPEC_BASE
         return true;
     };
 
-    const _tchar* pFilePathPattern = nullptr;
-    _uint iNumSRVs = 1;
 } TEXTURE_SPEC;
 
 typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE

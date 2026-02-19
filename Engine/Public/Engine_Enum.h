@@ -12,9 +12,12 @@ namespace Engine
                                         TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, MESH_RENDERER, ANIMATOR, CAMERA, RECT_TRANSFORM, CANVAS_RENDERER, AUDIO_LISTENER, AUDIO_SOURCE, END };
     enum                                { COMPONENT_MAX = static_cast<uint32_t>(COMPONENT_TYPE::END) };
 
+    enum class DRAW_TYPE    : uint8_t   { MESH = 0, CANVAS, };
     enum class RENDER_LAYER : uint8_t   { PRIORITY = 0, NONBLEND, BLEND, UI, END };
-    enum RENDER_FLAGS : uint32_t        { RF_NONE = 0, RF_CAST_SHADOW = 1 << 0, RF_RECEIVE_SHADOW = 1 << 1, RF_DISABLE_CULL = 1 << 2, };
     enum class VERTEX_DECL : uint8_t    { VTXCOL = 0, VTXTEX, };
+
+    enum RENDER_FLAGS : uint32_t        { RF_NONE = 0, RF_CAST_SHADOW = 1 << 0, RF_RECEIVE_SHADOW = 1 << 1, RF_DISABLE_CULL = 1 << 2, };
+    enum CANVAS_FLAGS : uint32_t        { CF_NONE = 0, CF_CLIP_RECT = 1u << 0, CF_PIXEL_SNAP = 1u << 1, };
 
 	enum class COLLIDER_TYPE : uint8_t  { SPHERE, BOX, CAPSULE, END };
 	enum class BODY_TYPE : uint8_t      { STATIC, KINEMATIC, DYNAMIC, END };

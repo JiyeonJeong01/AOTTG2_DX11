@@ -157,6 +157,8 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ThirdParty\magic_enum.hpp" />
+    <ClInclude Include="..\Public\CanvasRenderer.h" />
+    <ClInclude Include="..\Public\CanvasRenderer_Processor.h" />
     <ClInclude Include="..\Public\CRender_System.h" />
     <ClInclude Include="..\Public\Identity.h" />
     <ClInclude Include="..\Public\Asset_Meta.h" />
@@ -228,6 +230,8 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
   <ItemGroup>
     <ClCompile Include="..\Private\Asset_Registry.cpp" />
     <ClCompile Include="..\Private\Base.cpp" />
+    <ClCompile Include="..\Private\CanvasRenderer.cpp" />
+    <ClCompile Include="..\Private\CanvasRenderer_Processor.cpp" />
     <ClCompile Include="..\Private\Collider.cpp" />
     <ClCompile Include="..\Private\ComponentGroup_Manager.cpp" />
     <ClCompile Include="..\Private\Component_System.cpp" />

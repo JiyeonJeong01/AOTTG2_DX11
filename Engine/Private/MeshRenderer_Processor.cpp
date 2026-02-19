@@ -29,7 +29,6 @@ HRESULT CMeshRenderer_Processor::Initialize()
 
 void CMeshRenderer_Processor::Update(_float fDT)
 {
-    Immediate_Render_All();
 
 }
 
@@ -84,22 +83,11 @@ void CMeshRenderer_Processor::Build_Queue(std::vector<DRAW_CMD>& outCmds)
             if (pData->hMesh == 0 || pData->hMaterial == 0)
                 continue;
 
-            DRAW_CMD cmd{};
-            cmd.hMesh = pData->hMesh;
-            cmd.hMaterial = pData->hMaterial;
-            cmd.hTransform = pData->hTransform;
-            cmd.flags = pData->flags;
-            cmd.firstIndex = 0;
-            cmd.indexCount = 0;
-            cmd.sortKey = Make_SortKey(cmd, *pData);
-            outCmds.push_back(cmd);
+            DRAW_CMD tCmd = DRAW_CMD::Create_Mesh(pData->hMesh, pData->hMaterial, pData->hTransform, pData->flags, 0, 0);
+            tCmd.sortKey = Make_SortKey(*pData);
+            outCmds.push_back(tCmd);
         }
     }
-}
-
-void CMeshRenderer_Processor::Immediate_Render_All()
-{
-
 }
 
 HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
@@ -125,15 +113,15 @@ void CMeshRenderer_Processor::Initialize_Component_Data(COMPONENT_HANDLE hCompon
     pData->hTransform = pObj->Get_Component<CTransform>(COMPONENT_TYPE::TRANSFORM).Get_Handle();
 }
 
-uint64_t CMeshRenderer_Processor::Make_SortKey(const DRAW_CMD& cmd, const MESH_RENDERER_DATA& tData) const
+uint64_t CMeshRenderer_Processor::Make_SortKey(const MESH_RENDERER_DATA& tData) const
 {
     /* [63:60] layer (4 bit)*/
     /* [59:28] material(32 bit) */
     /* [27:0 ] mesh(28 bit) */
     uint64_t key = 0;
     key |= (uint64_t)((uint8_t)tData.layer & 0xF) << 60;
-    key |= (uint64_t)(cmd.hMaterial) << 28;
-    key |= (uint64_t)(cmd.hMesh & 0x0FFFFFFF);
+    key |= (uint64_t)(tData.hMaterial) << 28;
+    key |= (uint64_t)(tData.hMesh & 0x0FFFFFFF);
     return key;
 }
 
@@ -150,8 +138,8 @@ void CMeshRenderer_Processor::Execute_Draw(const DRAW_CMD& cmd)
     if (curDSV) curDSV->Release();
 
 
-    const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(cmd.hMesh);
-    MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(cmd.hMaterial);
+    const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(cmd.mesh.hMesh);
+    MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(cmd.mesh.hMaterial);
 
     _DEBUG_NULL_BREAK_RETURN_MSG(pMesh, , "Mesh is nullptr.");
     _DEBUG_NULL_BREAK_RETURN_MSG(pMat, , "Material is nullptr.");
@@ -163,7 +151,7 @@ void CMeshRenderer_Processor::Execute_Draw(const DRAW_CMD& cmd)
     if (passIndex >= pShader->pPasses.size())
         return;
 
-    const _matrix matWorld = Engine::Math::Load(m_pTransformProcessor->Get_Proxy(cmd.hTransform)->matWorld);
+    const _matrix matWorld = Engine::Math::Load(m_pTransformProcessor->Get_Proxy(cmd.mesh.hTransform)->matWorld);
 
     const _vector vEye = XMVectorSet(0.f, 5.f, -5.f, 0.f);
     const _vector vAt = XMVectorSet(0.f, 0.f, 0.f, 0.f);
@@ -189,7 +177,7 @@ void CMeshRenderer_Processor::Execute_Draw(const DRAW_CMD& cmd)
 
     /* Mesh binding and draw call */
     pMesh->Bind_IA(m_pContext);
-    pMesh->Draw(m_pContext, cmd.firstIndex, cmd.indexCount);
+    pMesh->Draw(m_pContext, cmd.mesh.firstIndex, cmd.mesh.indexCount);
 }
 
 std::unique_ptr<CMeshRenderer_Processor> CMeshRenderer_Processor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CTransform_Processor* pTransform)

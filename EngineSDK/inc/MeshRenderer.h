@@ -26,26 +26,28 @@ public :
         : CComponent_Proxy_Base(pData, handle) {  m_eComType = COMPONENT_TYPE::MESH_RENDERER; }
     ~CMeshRenderer() override = default;
 
-public :
-    void Set_Enabled(_bool b) { m_pData->bEnabled = b ? 1 : 0; }
-    bool Is_Enabled() const { return m_pData->bEnabled != 0; }
+public:
+    // Settings
+    void Set_Enabled(_bool b);
+    bool Is_Enabled() const;
 
-    void Set_Mesh(uint32_t h) { m_pData->hMesh = h; }
-    void Set_Material(uint32_t h) { m_pData->hMaterial = h; }
+    void Set_Mesh(uint32_t h);
+    void Set_Material(uint32_t h);
 
-    void Set_Layer(RENDER_LAYER e) { m_pData->layer = e; }
-    void Set_Flags(uint32_t f) { m_pData->flags = f; }
-    void Add_Flags(uint32_t f) { m_pData->flags |= f; }
-    void Remove_Flags(uint32_t f) { m_pData->flags &= ~f; }
+    void Set_Layer(RENDER_LAYER e);
+    void Set_Flags(uint32_t f);
+    void Add_Flags(uint32_t f);
+    void Remove_Flags(uint32_t f);
+    void Set_SortZ(float z);
 
-    void Set_SortZ(float z) { m_pData->sortZ = z; }
-
-    COMPONENT_HANDLE    Get_Transform() const { return m_pData->hTransform; }
-    uint32_t            Get_Mesh() const { return m_pData->hMesh; }
-    uint32_t            Get_Material() const { return m_pData->hMaterial; }
-    uint32_t            Get_Flags() const { return m_pData->flags; }
-    RENDER_LAYER        Get_Layer() const { return m_pData->layer; }
-
+public:
+    // Getters
+    COMPONENT_HANDLE Get_Transform() const;
+    uint32_t         Get_Mesh() const;
+    uint32_t         Get_Material() const;
+    uint32_t         Get_Flags() const;
+    RENDER_LAYER     Get_Layer() const;
+    float            Get_SortZ() const;
 };
 
 NS_END

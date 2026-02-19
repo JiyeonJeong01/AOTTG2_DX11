@@ -1,11 +1,10 @@
 ﻿#pragma once
-#include "Base.h"
 #include "Event.h"
 #include "EventData.h"
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CEvent_Manager final : public CBase
+class ENGINE_DLL CEvent_Manager final
 {
     DECLARE_SINGLETON(CEvent_Manager)
 
@@ -51,9 +50,6 @@ public:
 private:
     using EventChannel = CEvent<CEventData&>;
     std::unordered_map<EVENT_TYPE, EventChannel> m_Events;
-
-private:
-    void Free() override { Clear(); }
 };
 
 NS_END

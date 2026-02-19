@@ -42,6 +42,13 @@ namespace Engine
     typedef		FXMMATRIX					_fmatrix;
     typedef		CXMMATRIX					_cmatrix;
 
+
+
+    typedef struct tagRectFloat
+    {
+        _float fLeft{}, fTop{}, fRight{}, fBottom{};
+    }RECT_F;
+
     namespace Component
     {
         using  COMPONENT_ID = uint32_t;

@@ -118,6 +118,9 @@
     <Filter Include="01. Utility\04. Component\08. RectTransform">
       <UniqueIdentifier>{b4dc3252-22a3-44d4-807c-83e83a9230d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\04. Component\09. CanvasRenderer">
+      <UniqueIdentifier>{99aaebfd-80f5-4b48-8a03-79b336e154e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -324,6 +327,12 @@
     <ClInclude Include="..\Public\RectTransform_Processor.h">
       <Filter>01. Utility\04. Component\08. RectTransform</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\CanvasRenderer.h">
+      <Filter>01. Utility\04. Component\09. CanvasRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CanvasRenderer_Processor.h">
+      <Filter>01. Utility\04. Component\09. CanvasRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -445,6 +454,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\RectTransform_Processor.cpp">
       <Filter>01. Utility\04. Component\08. RectTransform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CanvasRenderer.cpp">
+      <Filter>01. Utility\04. Component\09. CanvasRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CanvasRenderer_Processor.cpp">
+      <Filter>01. Utility\04. Component\09. CanvasRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
