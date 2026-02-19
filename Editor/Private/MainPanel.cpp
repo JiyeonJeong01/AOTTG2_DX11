@@ -363,11 +363,8 @@ void CMainPanel::Draw_Panels()
 std::unique_ptr<CMainPanel> CMainPanel::Create(const std::string& strPanelName)
 {
     auto pInstance = std::make_unique<CMainPanel>(strPanelName);
-    if (FAILED(pInstance->Initialize()))
-    {
-        _DEBUG_ERROR_BREAK("CMainPanel Create failed");
-        return nullptr;
-    }
+
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "CMainPanel Create failed");
     return pInstance;
 }
 

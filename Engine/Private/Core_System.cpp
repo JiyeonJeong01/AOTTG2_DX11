@@ -8,6 +8,7 @@
 #include "Asset_Registry.h"
 #include "Resource_System.h"
 #include "Event_System.h"
+#include "CRender_System.h"
 
 /* --- sub --- */
 #include "Graphic_Device.h"
@@ -30,9 +31,11 @@ CCore_System::~CCore_System()
     SYS_COMPONENT.DestroyInstance();
     SYS_GAMEOBJECT.DestroyInstance();
     SYS_ASSET.DestroyInstance();
-    SYS_LOG.DestroyInstance();
     SYS_INPUT.DestroyInstance();
+    SYS_LOG.DestroyInstance();
+    SYS_ASSET.DestroyInstance();
     SYS_EVENT.DestroyInstance();
+    SYS_RENDER.DestroyInstance();
 }
 
 HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice,
@@ -61,71 +64,31 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
     }
 
     /* --- Component System ---*/
-    {
-        if (FAILED(SYS_COMPONENT.Initialize(m_pDevice, m_pContext)))
-        {
-            MSG_BOX("Component System failed Initialize");
-            return E_FAIL;
-        }
-    }
+    IF_FAIL_RETURN_MSG_BREAK(SYS_COMPONENT.Initialize(m_pDevice, m_pContext), E_FAIL, "Component System failed Initialize");
 
     /* --- Object System --- */
-    {
-        if (FAILED(SYS_GAMEOBJECT.Initialize()))
-        {
-            MSG_BOX("Object System failed Initialize");
-            return E_FAIL;
-        }
-    }
+    IF_FAIL_RETURN_MSG_BREAK(SYS_GAMEOBJECT.Initialize(), E_FAIL, "Object System failed Initialize");
 
     /* --- Log System --- */
-    {
-        if (FAILED(SYS_LOG.Initialize()))
-        {
-            MSG_BOX("Log System failed Initialize");
-            return E_FAIL;
-        }
-    }
+    IF_FAIL_RETURN_MSG_BREAK(SYS_LOG.Initialize(), E_FAIL, "Log System failed Initialize");
 
     /* --- Asset System --- */
-    {
-        if (FAILED(SYS_ASSET.Initialize(ProjectConfig::PATH + ProjectConfig::ROOT)))
-        {
-            MSG_BOX("Resource System failed Initialize");
-            return E_FAIL;
-        }
-    }
+    IF_FAIL_RETURN_MSG_BREAK(SYS_ASSET.Initialize(ProjectConfig::PATH + ProjectConfig::ROOT), E_FAIL, "Asset System failed Initialize");
 
     /* --- Resource System --- */
-    {
-        if (FAILED(SYS_RESOURCE.Initialize(*ppDevice, *ppContext)))
-        {
-            MSG_BOX("Resource System failed Initialize");
-            return E_FAIL;
-        }
-    }
+    IF_FAIL_RETURN_MSG_BREAK(SYS_RESOURCE.Initialize(*ppDevice, *ppContext), E_FAIL, "Resource System failed Initialize");
 
     /* --- Input System --- */
-    {
-        if (FAILED(SYS_INPUT.Initialize(EngineDesc.hWnd, EngineDesc.hInst)))
-        {
-            MSG_BOX("Input System failed Initialize");
-            return E_FAIL;
-        }
-    }
+    IF_FAIL_RETURN_MSG_BREAK(SYS_INPUT.Initialize(EngineDesc.hWnd, EngineDesc.hInst), E_FAIL, "Input System failed Initialize");
 
     /* --- Event System --- */
-    {
-        if (FAILED(SYS_EVENT.Initialize()))
-        {
-            MSG_BOX("Event System failed Initialize");
-            return E_FAIL;
-        }
-    }
+    IF_FAIL_RETURN_MSG_BREAK(SYS_EVENT.Initialize(), E_FAIL, "Event System failed Initialize");
+
+    /* --- Event System --- */
+    IF_FAIL_RETURN_MSG_BREAK(SYS_RENDER.Initialize(EngineDesc.iViewportSize.first, EngineDesc.iViewportSize.second), E_FAIL, "Renderer System failed Initialize");
 
 
-
-    /* Register event */
+    /* --- Register event --- */
     SYS_EVENT.Subscribe(EVENT_TYPE::On_Window_Resize, &CCore_System::On_Resize, this);
 
 	return S_OK;

@@ -44,8 +44,7 @@ public:
     {
 #ifdef _DEBUG
         /* TODO : 안정화되면 enum으로 생성하게 바꾸자. 매 프레임 이거 검사하는 건 좀 에바. */
-        if (eIndexFormat != DXGI_FORMAT_R16_UINT &&
-            eIndexFormat != DXGI_FORMAT_R32_UINT)
+        if (eIndexFormat != DXGI_FORMAT_R16_UINT && eIndexFormat != DXGI_FORMAT_R32_UINT)
         {
             _DEBUG_ERROR_BREAK("Invalid index format! Only R16/R32 allowed.");
         }

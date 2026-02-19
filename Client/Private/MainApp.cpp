@@ -79,7 +79,7 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 
     HRESULT hr = CPrototype_System::GetInstance().Register_Prototype(testGUID = ASSET_GUID::New_GUID(), std::move(spec));
     if (hr > 0)
-        LOG_INFO("Prototype 등록됨");
+        _DEBUG_INFO("Prototype 등록됨");
 
     m_pTester = Tester::Create();
     m_pTester->Initialize_Tester(this);

@@ -56,15 +56,12 @@ HRESULT CRectTransform_Processor::Initialize_From_Spec(COMPONENT_HANDLE handle, 
         const auto& ui = SYS_RENDER.Get_UI_Global();
         m_fWidth = ui.vViewport.x;
         m_fHeight = ui.vViewport.y;
-        if (m_fHeight == 0 || m_fWidth == 0)
-        {
-            _DEBUG_ERROR_BREAK("Initialize_From_Spec failed : Invalid viewport size");
-            return E_FAIL;
-        }
+
+        IF_TRUE_RETURN_MSG_BREAK((m_fHeight == 0 || m_fWidth == 0), E_FAIL, "Initialize_From_Spec failed : Invalid viewport size");
     }
 
     RECTTRANSFORM_DATA* pData = m_Pool.Get_Data_By_Handle(handle);
-    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid handle in Initialize_From_Spec");
+    IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "Invalid handle in Initialize_From_Spec");
 
     pData->vPosPx = SCAST(const RECTTRANSFORM_SPEC*, pSpec)->vPosPx;
     pData->vSizePx = SCAST(const RECTTRANSFORM_SPEC*, pSpec)->vSizePx;

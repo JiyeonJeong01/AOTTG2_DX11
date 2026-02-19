@@ -20,13 +20,13 @@
 //
 //void CCollider::Set_ColliderID(uint16_t id)
 //{
-//    _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, , "m_pData is nullptr");
+//    IF_NULL_RETURN_MSG_BREAK(m_pData, , "m_pData is nullptr");
 //    m_pData->iId = id;
 //}
 //
 //uint16_t CCollider::Get_ColliderID() const
 //{
-//    _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, 0, "m_pData is nullptr.");
+//    IF_NULL_RETURN_MSG_BREAK(m_pData, 0, "m_pData is nullptr.");
 //    return m_pData->iId;
 //}
 //

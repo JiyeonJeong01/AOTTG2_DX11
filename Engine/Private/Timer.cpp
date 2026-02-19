@@ -42,12 +42,7 @@ std::unique_ptr<CTimer> CTimer::Create()
 {
 	auto pInstance = std::make_unique<CTimer>();
 
-	if (FAILED(pInstance->Initialize()))
-	{
-        _DEBUG_ERROR_BREAK("Create instance failed");
-		return nullptr;
-	}
-
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "Create instance failed");
 	return pInstance;
 }
 

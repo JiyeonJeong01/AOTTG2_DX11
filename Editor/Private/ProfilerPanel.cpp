@@ -403,11 +403,8 @@ void CProfilerPanel::Draw_Memory()
 std::unique_ptr<CProfilerPanel> CProfilerPanel::Create(const std::string& strPanelName)
 {
     auto pInstance = std::make_unique<CProfilerPanel>(strPanelName);
-    if (FAILED(pInstance->Initialize()))
-    {
-        _DEBUG_ERROR_BREAK("CProfilerPanel Create failed");
-        return nullptr;
-    }
+
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "CProfilerPanel Create failed");
     return pInstance;
 }
 

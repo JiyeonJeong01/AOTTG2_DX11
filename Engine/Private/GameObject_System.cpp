@@ -26,17 +26,8 @@ CGameObject_System::~CGameObject_System()
 
 HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
 {
-    if (iMaxLayers <= Layer::DEFAULT_LAYER || iMaxLayers > Layer::MAX_LAYERS)
-    {
-        _DEBUG_ERROR_BREAK("CGameObject_System Initialize failed: invalid layer count.");
-        return E_FAIL;
-    }
-
-    if (iPoolSize < 2)
-    {
-        _DEBUG_ERROR_BREAK("CGameObject_System Initialize failed: pool size too small.");
-        return E_FAIL;
-    }
+    IF_TRUE_RETURN_MSG_BREAK((iMaxLayers <= Layer::DEFAULT_LAYER || iMaxLayers > Layer::MAX_LAYERS), E_FAIL, "CGameObject_System Initialize failed: invalid layer count.");
+    IF_TRUE_RETURN_MSG_BREAK((iPoolSize < 2), E_FAIL, "CGameObject_System Initialize failed: pool size too small.");
 
     m_iLayerCount = iMaxLayers;
 
@@ -69,11 +60,7 @@ HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
 CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const string& strName,
     CGameObject* pParent, const INSTANCE_UUID& tUUID)
 {
-    if (m_freeIndices.empty())
-    {
-        _DEBUG_ERROR_BREAK("GameObject Pool is Full!");
-        return nullptr;
-    }
+    IF_TRUE_RETURN_MSG_BREAK((m_freeIndices.empty()), nullptr, "GameObject Pool is Full!");
 
     if (iLayer == Layer::INVALID_LAYER || iLayer >= m_iLayerCount)
     {
@@ -141,20 +128,15 @@ CGameObject* CGameObject_System::Create_UIObject(Layer::LAYER_ID iLayer, const s
         Destroy_Object(pWrapper);
         return nullptr;
     }
-
-    if (!pWrapper->Get_Handle().Is_UI())
-        _DEBUG_ERROR_BREAK("Create UIObject, but it has GameObject handle");
+    IF_TRUE_RETURN_MSG_BREAK((!pWrapper->Get_Handle().Is_UI()), pWrapper, "Create UIObject, but it has GameObject handle");
 
     return pWrapper;
 }
 
 void CGameObject_System::Destroy_Object(CGameObject* pObj)
 {
-    if (!pObj || !pObj->IsValid())
-    {
-        _DEBUG_WARN("Destroy_Object failed : Invalid Object");
-        return;
-    }
+    IF_NULL_RETURN_MSG_BREAK(pObj, , "Destroy_Object failed : pObj is nullptr");
+    IF_TRUE_RETURN_MSG_BREAK(!pObj->IsValid(), , "Destroy_Object failed : pObj is invalid");
 
     const OBJECT_HANDLE handle = pObj->Get_Handle();
     if (handle.Index() == 0 /* dummy */ || handle.Index() >= m_dataPool.size())
@@ -201,15 +183,12 @@ void CGameObject_System::Destroy_Object(CGameObject* pObj)
 
 void CGameObject_System::Set_Layer(CGameObject* pObj, Layer::LAYER_ID iNewLayer)
 {
-    if (!pObj || !pObj->IsValid())
-    {
-        _DEBUG_ERROR_BREAK("Set_Layer failed : Invalid Object");
-        return;
-    }
+    IF_NULL_RETURN_MSG_BREAK(pObj, , "Destroy_Object failed : pObj is nullptr");
+    IF_TRUE_RETURN_MSG_BREAK(!pObj->IsValid(), , "Destroy_Object failed : pObj is invalid");
 
     if (iNewLayer >= m_iLayerCount || iNewLayer == Layer::INVALID_LAYER)
     {
-        _DEBUG_WARN("Invalid layer index; set to DEFAULT_LAYER.");
+        _DEBUG_ERROR_BREAK("Invalid layer index; set to DEFAULT_LAYER.");
         iNewLayer = Layer::DEFAULT_LAYER;
     }
 
@@ -224,12 +203,7 @@ void CGameObject_System::Set_Layer(CGameObject* pObj, Layer::LAYER_ID iNewLayer)
 const std::vector<CGameObject*>& CGameObject_System::Get_LayerObjects(Layer::LAYER_ID iLayer) const
 {
     static const std::vector<CGameObject*> s_Empty;
-
-    if (iLayer >= m_iLayerCount || iLayer == Layer::INVALID_LAYER)
-    {
-        _DEBUG_WARN("Invalid layer index; returning empty.");
-        return s_Empty;
-    }
+    IF_TRUE_RETURN_MSG_BREAK((iLayer >= m_iLayerCount || iLayer == Layer::INVALID_LAYER), s_Empty, "Invalid layer index; returning empty.");
 
     return m_layerBuckets[iLayer];
 }
@@ -419,12 +393,7 @@ void CGameObject_System::Flush_PendingDestroy()
 
 GAMEOBJECT_DATA& CGameObject_System::Access_Data_Raw(OBJECT_HANDLE hObj)
 {
-
-    if (hObj.Index() == 0 || hObj.Index() >= m_dataPool.size())
-    {
-        _DEBUG_ERROR_BREAK("Access_Data_Raw failed: invalid index.");
-        return m_dataPool[0]; // 0번 더미
-    }
+    IF_TRUE_RETURN_MSG_BREAK((hObj.Index() == 0 || hObj.Index() >= m_dataPool.size()), m_dataPool[0], "Access_Data_Raw failed: invalid index.");
     return m_dataPool[hObj.Index()];
 }
 

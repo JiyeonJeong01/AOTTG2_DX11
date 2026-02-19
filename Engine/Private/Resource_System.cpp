@@ -94,11 +94,7 @@ uint32_t CResource_System::Load_Mesh(const ASSET_GUID& tGUID)
         return INVALID_HANDLE_UINT; // 지금은 파일 로드가 없으니 에러 리턴
     }
 
-    if (FAILED(hr))
-    {
-        _DEBUG_ERROR_BREAK("Failed to Create/Load Mesh");
-        return INVALID_HANDLE_UINT;
-    }
+    IF_FAIL_RETURN_MSG_BREAK(hr, INVALID_HANDLE_UINT, "Failed to Create/Load Mesh");
 
     uint32_t handle = (uint32_t)m_Meshes.size();
     m_Meshes.push_back(std::move(entry));
@@ -114,11 +110,7 @@ uint32_t CResource_System::Load_Shader(const ASSET_GUID& tGUID)
         return it->second;
 
     std::filesystem::path shaderPath = SYS_ASSET.Get_Asset_Path(tGUID);
-    if (shaderPath.empty())
-    {
-        LOG_ERROR("Shader Load Failed: GUID not found in Registry.");
-        return INVALID_HANDLE_UINT;
-    }
+    IF_TRUE_RETURN_MSG_BREAK(shaderPath.empty(), INVALID_HANDLE_UINT, "Shader Load Failed: GUID not found in Registry.");
 
     _uint			iHlslFlag = {};
 #ifdef _DEBUG
@@ -128,11 +120,8 @@ uint32_t CResource_System::Load_Shader(const ASSET_GUID& tGUID)
 
 #endif	
     SHADER_ENTRY entry{};
-    if(FAILED(D3DX11CompileEffectFromFile(shaderPath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, iHlslFlag, 0, m_pDevice, entry.pEffect.GetAddressOf(), nullptr)))
-    {
-        _DEBUG_ERROR_BREAK("Create Effect file failed");
-        return INVALID_HANDLE_UINT;
-    }
+    HRESULT hr = D3DX11CompileEffectFromFile(shaderPath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, iHlslFlag, 0, m_pDevice, entry.pEffect.GetAddressOf(), nullptr);
+    IF_FAIL_RETURN_MSG_BREAK(hr, INVALID_HANDLE_UINT, "Create Effect file failed");
 
     /* NOTE : Tech는 한 개인 경우만 고려한다. */
     entry.pTech = entry.pEffect->GetTechniqueByIndex(0);
@@ -156,11 +145,8 @@ uint32_t CResource_System::Load_Shader(const ASSET_GUID& tGUID)
         D3DX11_PASS_DESC PassDesc{};
         cache.pPass->GetDesc(&PassDesc);
 
-        if (FAILED(m_pDevice->CreateInputLayout(g_IL_TABLE[SCAST(_uint, entry.eDecl)].pDesc, g_IL_TABLE[SCAST(_uint, entry.eDecl)].iCount, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, cache.pInputLayout.GetAddressOf())))
-        {
-            _DEBUG_ERROR_BREAK("Create InputLayout failed! Shader: %ls, Pass Index: %d", shaderPath.c_str(), i);
-            return INVALID_HANDLE_UINT;
-        }
+        HRESULT hr = m_pDevice->CreateInputLayout(g_IL_TABLE[SCAST(_uint, entry.eDecl)].pDesc, g_IL_TABLE[SCAST(_uint, entry.eDecl)].iCount, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, cache.pInputLayout.GetAddressOf());
+        IF_FAIL_RETURN_MSG_BREAK(hr, INVALID_HANDLE_UINT, "Create InputLayout failed! Shader: %ls, Pass Index: %d", shaderPath.c_str(), i);
 
         entry.pPasses.push_back(cache);
     }
@@ -196,11 +182,7 @@ uint32_t CResource_System::Load_Material(const ASSET_GUID& tGUID)
 
 uint32_t CResource_System::Load_Material(const MATERIAL_ENTRY& tDesc)
 {
-    if (tDesc.hShader == INVALID_HANDLE_UINT)
-    {
-        _DEBUG_ERROR_BREAK("Load_Material failed: invalid shader handle(0).");
-        return INVALID_HANDLE_UINT;
-    }
+    IF_TRUE_RETURN_MSG_BREAK((tDesc.hShader == INVALID_HANDLE_UINT), INVALID_HANDLE_UINT, "Load_Material failed: invalid shader handle(0).");
 
     // 캐시 키: shader(32) + pass(16)
     const uint64_t key = (uint64_t(tDesc.hShader) << 16) | uint64_t(tDesc.passIndex);
@@ -209,22 +191,14 @@ uint32_t CResource_System::Load_Material(const MATERIAL_ENTRY& tDesc)
         return it->second;
 
     const SHADER_ENTRY* pShader = Get_Shader(tDesc.hShader);
-    if (!pShader || !pShader->Is_Valid())
-    {
-        _DEBUG_ERROR_BREAK("Load_Material failed: shader entry invalid.");
-        return INVALID_HANDLE_UINT;
-    }
 
-    if (tDesc.passIndex >= pShader->pPasses.size())
-    {
-        _DEBUG_ERROR_BREAK("Load_Material failed: passIndex out of range.");
-        return INVALID_HANDLE_UINT;
-    }
+    IF_NULL_RETURN_MSG_BREAK(pShader, INVALID_HANDLE_UINT, "Load_Material failed: pshader is nullptr");
+    IF_TRUE_RETURN_MSG_BREAK(!pShader->Is_Valid(), INVALID_HANDLE_UINT, "Load_Material failed: pshader is invalid.");
+    IF_TRUE_RETURN_MSG_BREAK(tDesc.passIndex >= pShader->pPasses.size(), INVALID_HANDLE_UINT, "Load_Material failed: passIndex out of range.");
 
     MATERIAL_ENTRY entry = tDesc;
     ID3DX11Effect* pFx = pShader->pEffect.Get();
-    if (!pFx)
-        return INVALID_HANDLE_UINT;
+    IF_NULL_RETURN_MSG_BREAK(pFx, INVALID_HANDLE_UINT, "Load_Material failed: pFX is nullptr");
 
     auto FindMatVar = [&](std::initializer_list<const char*> names) -> ID3DX11EffectMatrixVariable*
         {
@@ -245,14 +219,13 @@ uint32_t CResource_System::Load_Material(const MATERIAL_ENTRY& tDesc)
     entry.pProj = pFx->GetVariableByName("g_ProjMatrix")->AsMatrix();
 
 #ifdef _DEBUG
-    if (!entry.pWorld || !entry.pView || !entry.pProj)
-        _DEBUG_ERROR_BREAK("Material matrix variables missing. Check fx variable names.");
+    IF_NULL_RETURN_MSG_BREAK(entry.pWorld, INVALID_HANDLE_UINT, "Material matrix variables missing. Check fx variable names.");
+    IF_NULL_RETURN_MSG_BREAK(entry.pView, INVALID_HANDLE_UINT, "Material matrix variables missing. Check fx variable names.");
+    IF_NULL_RETURN_MSG_BREAK(entry.pProj, INVALID_HANDLE_UINT, "Material matrix variables missing. Check fx variable names.");
 
-    if (!entry.pWorld->IsValid() || !entry.pView->IsValid() || !entry.pProj->IsValid())
-    {
-        _DEBUG_ERROR_BREAK("Matrix variables not found in shader.");
-        return INVALID_HANDLE_UINT;
-    }
+    IF_TRUE_RETURN_MSG_BREAK(!entry.pWorld->IsValid(), INVALID_HANDLE_UINT, "Matrix variables not found in shader.");
+    IF_TRUE_RETURN_MSG_BREAK(!entry.pView->IsValid(), INVALID_HANDLE_UINT, "Matrix variables not found in shader.");
+    IF_TRUE_RETURN_MSG_BREAK(!entry.pProj->IsValid(), INVALID_HANDLE_UINT, "Matrix variables not found in shader.");
 #endif
 
     const uint32_t handle = (uint32_t)m_Materials.size();

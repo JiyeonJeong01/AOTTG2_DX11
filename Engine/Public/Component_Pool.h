@@ -123,7 +123,7 @@ public:
 
         /* TODO ================= TEST ===============================*/
         COMPONENT_HANDLE hTest = COMPONENT_HANDLE::Create(iGlobalIndex, pPage->iVersion[iOffset]);
-        LOG_INFO("Add Component with handle { %d }", hTest.iHandle);
+        _DEBUG_INFO("Add Component with handle { %d }", hTest.iHandle);
         /* TODO =======================================================*/
 
 
@@ -136,25 +136,11 @@ public:
         const uint32_t iPageIndex = iIndex >> PAGE_SHIFT;
         const uint32_t iOffset = iIndex & PAGE_OFFSET_MASK;
 
-        if (iPageIndex >= SCAST(uint32_t, m_pages.size()))
-        {
-            _DEBUG_ERROR_BREAK("Invalid Handle: Page index out of range!");
-            return;
-        }
+        IF_TRUE_RETURN_MSG_BREAK((iPageIndex >= SCAST(uint32_t, m_pages.size())), , "Invalid Handle: Page index out of range!");
 
         PAGE* pPage = m_pages[iPageIndex].get();
-
-        if (pPage->iVersion[iOffset] != handle.Get_Version())
-        {
-            _DEBUG_ERROR_BREAK("Invalid Handle: Version mismatch!");
-            return;
-        }
-
-        if (!pPage->Is_Active(iOffset))
-        {
-            _DEBUG_ERROR_BREAK("Invalid Handle: Already deallocated!");
-            return;
-        }
+        IF_TRUE_RETURN_MSG_BREAK((pPage->iVersion[iOffset] != handle.Get_Version()), , "Invalid Handle: Version mismatch!");
+        IF_TRUE_RETURN_MSG_BREAK((!pPage->Is_Active(iOffset)), , "Invalid Handle: Already deallocated!");
 
         DATA_T* pData = pPage->Get_Ptr(iOffset);
 
@@ -177,11 +163,8 @@ public:
     {
         /* Create and return a Proxy object initialized with the raw data address */
         DATA_T* pRawData = Get_Data_By_Handle(handle);
-        if (!pRawData)
-        {
-            _DEBUG_ERROR_BREAK("Can't find such data!");
-            return TProxy(nullptr, COMPONENT_HANDLE{});
-        }
+
+        IF_NULL_RETURN_MSG_BREAK(pRawData, TProxy(nullptr, COMPONENT_HANDLE{}), "Can't find such data!");
         return TProxy(pRawData, handle);
     }
 

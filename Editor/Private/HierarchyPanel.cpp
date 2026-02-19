@@ -310,24 +310,24 @@ void CHierarchyPanel::Draw_DropTarget()
             if (rec)
             {
                 // GUID + path 로그
-                LOG_INFO("Dropped Asset GUID=%s path=%s", pg->To_String_Utf8().c_str(), rec->path.string().c_str());
+                _DEBUG_INFO("Dropped Asset GUID=%s path=%s", pg->To_String_Utf8().c_str(), rec->path.string().c_str());
 
                 switch (rec->eType)
                 {
                 case Engine::ASSET_TYPE::PROTOTYPE:
-                    LOG_INFO("Prototype dropped");
+                    _DEBUG_INFO("Prototype dropped");
                     break;
                     case Engine::ASSET_TYPE::TEXTURE:
-                    LOG_INFO("Texture dropped");
+                    _DEBUG_INFO("Texture dropped");
                     break;
                 default:
-                    LOG_INFO("Other asset dropped");
+                    _DEBUG_INFO("Other asset dropped");
                     break;
                 }
             }
             else
             {
-                _DEBUG_WARN("Dropped GUID but not found in registry");
+                _DEBUG_INFO_BREAK("Dropped GUID but not found in registry");
             }
         }
         ImGui::EndDragDropTarget();
@@ -767,11 +767,8 @@ bool CHierarchyPanel::String_IContains(const std::string& haystack, const std::s
 std::unique_ptr<CHierarchyPanel> CHierarchyPanel::Create(const std::string& strPanelName)
 {
     auto pInstance = std::make_unique<CHierarchyPanel>(strPanelName);
-    if (FAILED(pInstance->Initialize()))
-    {
-        _DEBUG_ERROR_BREAK("CHierarchyPanel Create failed");
-        return nullptr;
-    }
+
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "CHierarchyPanel Create failed");
     return pInstance;
 }
 

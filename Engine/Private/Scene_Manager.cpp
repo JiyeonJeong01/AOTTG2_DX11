@@ -167,21 +167,14 @@ HRESULT CScene_Manager::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& 
     for (const auto& spec : tSpecs)
     {
         CGameObject* pSceneObj = CPrototype_System::GetInstance().Clone(spec.protoGuid, spec.layer, spec.name, spec.uuid);
-        if (!pSceneObj)
-        {
-            _DEBUG_ERROR_BREAK("Prototype clone failed : GameObject is nullptr.");
-            return E_FAIL;
-        }
+
+        IF_NULL_RETURN_MSG_BREAK(pSceneObj, E_FAIL, "Prototype clone failed : GameObject is nullptr.");
 
         if (FAILED(Apply_Overrides(pSceneObj, spec.overrides)))
             continue;
 
         auto [it, bInserted] = objectMap.emplace(spec.uuid, pSceneObj);
-        if (!bInserted)
-        {
-            _DEBUG_ERROR_BREAK("Duplicated UUID");
-            return E_FAIL;
-        }
+        IF_TRUE_RETURN_MSG_BREAK(!bInserted, E_FAIL, "Duplicated UUID");
     }
 
     for (const auto& spec : tSpecs)

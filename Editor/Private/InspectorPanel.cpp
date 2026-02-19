@@ -406,11 +406,8 @@ void CInspectorPanel::Draw_None()
 std::unique_ptr<CInspectorPanel> CInspectorPanel::Create(const std::string& strPanelName, CHierarchyPanel* pHierarcy, CProjectPanel* pProject)
 {
     auto pInstance = std::make_unique<CInspectorPanel>(strPanelName);
-    if (FAILED(pInstance->Initialize(pHierarcy, pProject)))
-    {
-        _DEBUG_ERROR_BREAK("CInspectorPanel Create failed");
-        return nullptr;
-    }
+
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(pHierarcy, pProject), nullptr, "CInspectorPanel Create failed");
     return pInstance;
 }
 

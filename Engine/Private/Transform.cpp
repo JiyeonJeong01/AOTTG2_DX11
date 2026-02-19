@@ -4,7 +4,7 @@
 
 void CTransform::Translate(_fvector vWorldDir, SPACE eSpace)
 {
-    _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, , "m_pData is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_pData, , "m_pData is nullptr.");
 
     _vector vMoveDir = vWorldDir;
 
@@ -27,7 +27,7 @@ void CTransform::Translate(_fvector vWorldDir, SPACE eSpace)
 
 void CTransform::Rotate(_fvector vWorldAxis, _float fDegree, SPACE eSpace)
 {
-    _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, , "m_pData is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_pData, , "m_pData is nullptr.");
 
     const _float fRadian = XMConvertToRadians(fDegree);
 
@@ -54,7 +54,7 @@ void CTransform::Rotate(_fvector vWorldAxis, _float fDegree, SPACE eSpace)
 
 void CTransform::Scale(const _float3& vLocalDelta)
 {
-    _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, , "m_pData is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_pData, , "m_pData is nullptr.");
 
     m_pData->vScale.x *= vLocalDelta.x;
     m_pData->vScale.y *= vLocalDelta.y;
@@ -65,7 +65,7 @@ void CTransform::Scale(const _float3& vLocalDelta)
 
 void CTransform::Set_Rotation_Euler(_float3 vEulerDegree)
 {
-    _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, , "m_pData is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_pData, , "m_pData is nullptr.");
 
     const _float fPitch = XMConvertToRadians(vEulerDegree.x);
     const _float fYaw = XMConvertToRadians(vEulerDegree.y);
@@ -80,7 +80,7 @@ void CTransform::Set_Rotation_Euler(_float3 vEulerDegree)
 
 void CTransform::Look_At(_fvector vTargetPos)
 {
-    _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, , "m_pData is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_pData, , "m_pData is nullptr.");
 
     const _vector vPos = MathDX::Load(m_pData->vPosition);
 
@@ -119,7 +119,7 @@ void CTransform::Look_At(_fvector vTargetPos)
 
 _float3 CTransform::Get_Rotation_Euler() const
 {
-    _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, {}, "m_pData is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_pData, {}, "m_pData is nullptr.");
 
     const _vector vQuat = XMQuaternionNormalize(MathDX::Load(m_pData->vRotationQuat));
     _float4 fQuat{};
@@ -152,14 +152,14 @@ _float3 CTransform::Get_Rotation_Euler() const
 
 _float4 CTransform::Get_Rotation_Quaternion() const
 {
-    _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, _float4{}, "m_pData is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_pData, _float4{}, "m_pData is nullptr.");
 
     return m_pData->vRotationQuat;
 }
 
 _matrix CTransform::Get_WorldXM() const
 {
-    _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, {}, "m_pData is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_pData, {}, "m_pData is nullptr.");
 
     return MathDX::Load(m_pData->matWorld);
 }
@@ -167,14 +167,14 @@ _matrix CTransform::Get_WorldXM() const
 
 _vector CTransform::Get_StateXM(STATE eState) const
 {
-    _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, {}, "m_pData is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_pData, {}, "m_pData is nullptr.");
 
     return MathDX::Load(reinterpret_cast<const _float4*>(&m_pData->matWorld.m[SCAST(_uint, eState)][0]));
 }
 
 _float3 CTransform::Get_Scale() const
 {
-    _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, _float3(1.f, 1.f, 1.f), "m_pData is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_pData, _float3(1.f, 1.f, 1.f), "m_pData is nullptr.");
 
     return m_pData->vScale;
 }
@@ -190,7 +190,7 @@ void CTransform::Set_Scale(const _float3& vScale)
 
 void CTransform::Set_Identity()
 {
-    _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, , "m_pData is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_pData, , "m_pData is nullptr.");
 
     MathDX::Store(m_pData->vPosition, XMVectorZero());
     MathDX::Store(m_pData->vRotationQuat, XMQuaternionIdentity());

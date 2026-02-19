@@ -68,11 +68,7 @@ std::unique_ptr<CTransform_Processor> CTransform_Processor::Create()
 {
     auto pInstance = std::make_unique<CTransform_Processor>();
 
-    if (FAILED(pInstance->Initialize()))
-    {
-        _DEBUG_ERROR_BREAK("Create instance failed");
-        return nullptr;
-    }
-
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "Create instance failed");
     return pInstance;
 }
+

@@ -48,11 +48,8 @@ _float CTimer_System::Get_FrameDT() const
 std::unique_ptr<CTimer_System> CTimer_System::Create()
 {
     auto pInstance = make_unique<CTimer_System>();
-	if (FAILED(pInstance->Initialize_System()))
-	{
-        _DEBUG_ERROR_BREAK("CTimer_System Create Failed");
-        return nullptr;
-	}
+
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize_System(), nullptr, "CTimer_System Create failed");
 	return pInstance;
 }
 

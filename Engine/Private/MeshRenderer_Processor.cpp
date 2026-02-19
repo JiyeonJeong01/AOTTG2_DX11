@@ -22,7 +22,7 @@ ID3D11DepthStencilState* g_dsOff = nullptr;
 
 HRESULT CMeshRenderer_Processor::Initialize()
 {
-    _DEBUG_NULL_BREAK_RETURN_MSG(m_pTransformProcessor, E_FAIL, "Transform Processor is nullptr");
+    IF_NULL_RETURN_MSG_BREAK(m_pTransformProcessor, E_FAIL, "Transform Processor is nullptr");
 
     return S_OK;
 }
@@ -141,11 +141,11 @@ void CMeshRenderer_Processor::Execute_Draw(const DRAW_CMD& cmd)
     const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(cmd.mesh.hMesh);
     MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(cmd.mesh.hMaterial);
 
-    _DEBUG_NULL_BREAK_RETURN_MSG(pMesh, , "Mesh is nullptr.");
-    _DEBUG_NULL_BREAK_RETURN_MSG(pMat, , "Material is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(pMesh, , "Mesh is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(pMat, , "Material is nullptr.");
 
     const SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(pMat->hShader);
-    _DEBUG_NULL_BREAK_RETURN_MSG(pShader, , "Shader is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(pShader, , "Shader is nullptr.");
 
     const uint16_t passIndex = pMat->passIndex;
     if (passIndex >= pShader->pPasses.size())
@@ -184,11 +184,6 @@ std::unique_ptr<CMeshRenderer_Processor> CMeshRenderer_Processor::Create(ID3D11D
 {
     auto pInstance = std::make_unique<CMeshRenderer_Processor>(pDevice, pContext, pTransform);
 
-    if (FAILED(pInstance->Initialize()))
-    {
-        _DEBUG_ERROR_BREAK("Create instance failed");
-        return nullptr;
-    }
-
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "Create instance failed");
     return pInstance;
 }

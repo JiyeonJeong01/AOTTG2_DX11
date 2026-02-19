@@ -637,7 +637,7 @@ _bool CProjectPanel::Rename_Path(const std::filesystem::path& src, const std::st
             ec.clear();
             std::filesystem::rename(oldMeta, newMeta, ec);
             if (ec)
-                LOG_WARN("Failed to rename meta: %s", oldMeta.string().c_str());
+                _DEBUG_INFO_BREAK("Failed to rename meta: %s", oldMeta.string().c_str());
         }
     }
 
@@ -670,7 +670,7 @@ _bool CProjectPanel::Delete_Path(const std::filesystem::path& target)
             ec.clear();
             std::filesystem::remove(metaPath, ec);
             if (ec)
-                LOG_WARN("Failed to delete meta: %s", metaPath.string().c_str());
+                _DEBUG_INFO_BREAK("Failed to delete meta: %s", metaPath.string().c_str());
         }
     }
 
@@ -808,11 +808,8 @@ std::string CProjectPanel::Make_Unique_Folder_Name_Impl(const std::filesystem::p
 std::unique_ptr<CProjectPanel> CProjectPanel::Create(const std::string& strPanelName)
 {
     auto pInstance = std::make_unique<CProjectPanel>(strPanelName);
-    if (FAILED(pInstance->Initialize()))
-    {
-        _DEBUG_ERROR_BREAK("CProjectPanel create failed");
-        return nullptr;
-    }
+
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "CProjectPanel Create failed");
     return pInstance;
 }
 

@@ -17,11 +17,8 @@ CConsolePanel::~CConsolePanel()
 HRESULT CConsolePanel::Initialize()
 {
     m_pSink = dynamic_cast<CGUI_Sink*>(SYS_LOG.Set_Sink(CLogger::LOG_TYPE::GUI));
-    if (!m_pSink)
-    {
-        _DEBUG_ERROR_BREAK("CConsolePanel Init failed : m_pSink is nullptr");
-        return E_FAIL;
-    }
+
+    IF_NULL_RETURN_MSG_BREAK(m_pSink, E_FAIL, "CConsolePanel Init failed : m_pSink is nullptr");
     return S_OK;
 }
 
@@ -172,11 +169,8 @@ void CConsolePanel::Draw_Log_List()
 std::unique_ptr<CConsolePanel> CConsolePanel::Create(const std::string& strPanelName)
 {
     auto pInstance = std::make_unique<CConsolePanel>(strPanelName);
-    if (FAILED(pInstance->Initialize()))
-    {
-        _DEBUG_ERROR_BREAK("CConsolePanel Create failed");
-        return nullptr;
-    }
+
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "CConsolePanel Create failed");
     return pInstance;
 }
 

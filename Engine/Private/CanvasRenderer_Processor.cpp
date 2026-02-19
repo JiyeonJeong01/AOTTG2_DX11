@@ -21,7 +21,7 @@ CCanvasRenderer_Processor::~CCanvasRenderer_Processor() = default;
 
 HRESULT CCanvasRenderer_Processor::Initialize(_uint iWidth, _uint iHeight)
 {
-    _DEBUG_NULL_BREAK_RETURN_MSG(m_pRectTransform_Processor, E_FAIL, "Transform Processor is nullptr");
+    IF_NULL_RETURN_MSG_BREAK(m_pRectTransform_Processor, E_FAIL, "Transform Processor is nullptr");
 
     m_hUIRectMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_RECT);
 
@@ -34,10 +34,10 @@ HRESULT CCanvasRenderer_Processor::Initialize(_uint iWidth, _uint iHeight)
     rd.DepthClipEnable = TRUE;
 
     rd.ScissorEnable = FALSE;
-    _DEBUG_FAIL_BREAK_RETURN_MSG(m_pDevice->CreateRasterizerState(&rd, m_rsNoScissor.GetAddressOf()), E_FAIL, "CCanvasRenderer_Processor initialize failed");
+    IF_FAIL_RETURN_MSG_BREAK(m_pDevice->CreateRasterizerState(&rd, m_rsNoScissor.GetAddressOf()), E_FAIL, "CCanvasRenderer_Processor initialize failed");
 
     rd.ScissorEnable = TRUE;
-    _DEBUG_FAIL_BREAK_RETURN_MSG(m_pDevice->CreateRasterizerState(&rd, m_rsScissor.GetAddressOf()), E_FAIL, "CCanvasRenderer_Processor initialize failed");
+    IF_FAIL_RETURN_MSG_BREAK(m_pDevice->CreateRasterizerState(&rd, m_rsScissor.GetAddressOf()), E_FAIL, "CCanvasRenderer_Processor initialize failed");
 
     return S_OK;
 }
@@ -183,11 +183,11 @@ void CCanvasRenderer_Processor::Execute_Draw(const DRAW_CMD& tCmd)
     const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(m_hUIRectMesh);
     MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(tCmd.canvas.hMaterial);
 
-    _DEBUG_NULL_BREAK_RETURN_MSG(pMesh, , "UI Rect Mesh is nullptr.");
-    _DEBUG_NULL_BREAK_RETURN_MSG(pMat, , "Material is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(pMesh, , "UI Rect Mesh is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(pMat, , "Material is nullptr.");
 
     const SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(pMat->hShader);
-    _DEBUG_NULL_BREAK_RETURN_MSG(pShader, , "Shader is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(pShader, , "Shader is nullptr.");
 
     const uint16_t passIndex = pMat->passIndex;
     if (passIndex >= pShader->pPasses.size())
@@ -195,7 +195,7 @@ void CCanvasRenderer_Processor::Execute_Draw(const DRAW_CMD& tCmd)
 
     // RectTransform world
     const auto rectTransform = m_pRectTransform_Processor->Get_Proxy(tCmd.canvas.hRectTransform);
-    _DEBUG_FALSE_BREAK_RETURN_MSG(rectTransform.Is_Valid(), , "RectTransform Proxy is nullptr.");
+    IF_TRUE_RETURN_MSG_BREAK(!rectTransform.Is_Valid(), , "RectTransform Proxy is invalid.");
 
     const _matrix matWorld = Engine::Math::Load(rectTransform->matWorld);
 
@@ -205,7 +205,7 @@ void CCanvasRenderer_Processor::Execute_Draw(const DRAW_CMD& tCmd)
 
     // ---- per-instance: Color / UV / Texture ----
     ID3DX11Effect* fx = pShader->pEffect.Get();
-    _DEBUG_NULL_BREAK_RETURN_MSG(fx, , "Shader effect is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(fx, , "Shader effect is nullptr.");
 
     // color
     if (auto* vColor = fx->GetVariableByName("g_Color")->AsVector())
@@ -264,12 +264,7 @@ std::unique_ptr<CCanvasRenderer_Processor> CCanvasRenderer_Processor::Create(ID3
 {
     auto pInstance = std::make_unique<CCanvasRenderer_Processor>(pDevice, pContext, pProcessor);
 
-    if (FAILED(pInstance->Initialize(iWidth, iHeight)))
-    {
-        _DEBUG_ERROR_BREAK("Create instance failed");
-        return nullptr;
-    }
-
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(iWidth, iHeight), nullptr, "Create instance failed");
     return pInstance;
 }
 

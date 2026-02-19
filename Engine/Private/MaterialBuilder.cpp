@@ -24,9 +24,9 @@ HRESULT CMaterialBuilder::Create(const SHADER_ENTRY& shader, uint16_t passIndex,
     outMaterial.pView = fx->GetVariableByName("g_ViewMatrix")->AsMatrix();
     outMaterial.pProj = fx->GetVariableByName("g_ProjMatrix")->AsMatrix();
 
-    _DEBUG_TRUE_BREAK_RETURN_MSG(!outMaterial.pWorld, E_FAIL, "g_WorldMatrix not found");
-    _DEBUG_TRUE_BREAK_RETURN_MSG(!outMaterial.pView, E_FAIL, "g_ViewMatrix not found");
-    _DEBUG_TRUE_BREAK_RETURN_MSG(!outMaterial.pProj, E_FAIL, "g_ProjMatrix not found");
+    IF_TRUE_RETURN_MSG_BREAK(!outMaterial.pWorld, E_FAIL, "g_WorldMatrix not found");
+    IF_TRUE_RETURN_MSG_BREAK(!outMaterial.pView, E_FAIL, "g_ViewMatrix not found");
+    IF_TRUE_RETURN_MSG_BREAK(!outMaterial.pProj, E_FAIL, "g_ProjMatrix not found");
 
     return S_OK;
 }

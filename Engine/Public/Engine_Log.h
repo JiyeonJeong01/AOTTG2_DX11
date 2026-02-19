@@ -23,10 +23,6 @@
 #define LOG_WARN(fmt, ...)  LOG_IMPL(SEVERITY_TYPE::WARN,  DOMAIN_TYPE::CLIENT, fmt, ##__VA_ARGS__)
 #define LOG_ERROR(fmt, ...) LOG_IMPL(SEVERITY_TYPE::ERR,   DOMAIN_TYPE::CLIENT, fmt, ##__VA_ARGS__)
 
-#define ENGINE_LOG_INFO(fmt, ...)  LOG_IMPL(SEVERITY_TYPE::INFO,  DOMAIN_TYPE::ENGINE, fmt, ##__VA_ARGS__)
-#define ENGINE_LOG_WARN(fmt, ...)  LOG_IMPL(SEVERITY_TYPE::WARN,  DOMAIN_TYPE::ENGINE, fmt, ##__VA_ARGS__)
-#define ENGINE_LOG_ERROR(fmt, ...) LOG_IMPL(SEVERITY_TYPE::ERR,   DOMAIN_TYPE::ENGINE, fmt, ##__VA_ARGS__)
-
 #define ERROR_BREAK(fmt, ...) \
   do { \
     LOG_ERROR(fmt, ##__VA_ARGS__); \
@@ -55,14 +51,6 @@
         }                                                       \
     } while (0)
 
-#define FALSE_BREAK_RETURN_MSG(_check, _return, fmt, ...)       \
-    do {                                                        \
-        if (!(_check)) {                                        \
-            ERROR_BREAK(fmt, ##__VA_ARGS__);                    \
-            return _return;                                     \
-        }                                                       \
-    } while (0)
-
 #define TRUE_BREAK_RETURN_MSG(_check, _return, fmt, ...)        \
     do {                                                        \
         if ((_check)) {                                         \
@@ -83,24 +71,23 @@
 #define _DEBUG_ERROR(fmt, ...)          LOG_ERROR(fmt, ##__VA_ARGS__)
 #define _DEBUG_WARN(fmt, ...)           LOG_WARN(fmt, ##__VA_ARGS__)
 #define _DEBUG_INFO(fmt, ...)           LOG_INFO(fmt, ##__VA_ARGS__)
-#define _DEBUG_NULL_BREAK_RETURN_MSG(_ptr, _return, fmt, ...)   NULL_BREAK_RETURN_MSG(_ptr, _return, fmt, ##__VA_ARGS__)
-#define _DEBUG_FAIL_BREAK_RETURN_MSG(_res, _return, fmt, ...)   FAIL_BREAK_RETURN_MSG(_res, _return, fmt, ##__VA_ARGS__)
-#define _DEBUG_FALSE_BREAK_RETURN_MSG(_check, _return, fmt, ...)   FALSE_BREAK_RETURN_MSG(_check, _return, fmt, ##__VA_ARGS__)
-#define _DEBUG_TRUE_BREAK_RETURN_MSG(_check, _return, fmt, ...)   TRUE_BREAK_RETURN_MSG(_check, _return, fmt, ##__VA_ARGS__)
+#define IF_NULL_RETURN_MSG_BREAK(_ptr, _return, fmt, ...)       NULL_BREAK_RETURN_MSG(_ptr, _return, fmt, ##__VA_ARGS__)
+#define IF_FAIL_RETURN_MSG_BREAK(_res, _return, fmt, ...)       FAIL_BREAK_RETURN_MSG(_res, _return, fmt, ##__VA_ARGS__)
+#define IF_TRUE_RETURN_MSG_BREAK(_check, _return, fmt, ...)     TRUE_BREAK_RETURN_MSG(_check, _return, fmt, ##__VA_ARGS__)
 #else
 #define _DEBUG_ERROR_BREAK(fmt, ...)    ((void)0)
 #define _DEBUG_INFO_BREAK(fmt, ...)     ((void)0)
 #define _DEBUG_ERROR(fmt, ...)          ((void)0)
 #define _DEBUG_WARN(fmt, ...)           ((void)0)
 #define _DEBUG_INFO(fmt, ...)           ((void)0)
-#define _DEBUG_NULL_BREAK_RETURN_MSG(_ptr, _return, fmt, ...) \
-        do { if (!(_ptr)) return _return; } while(0)
-#define _DEBUG_FAIL_BREAK_RETURN_MSG(_res, _return, fmt, ...) \
-        do { if (FAILED((_res))) return _return; } while(0)
-#define _DEBUG_FALSE_RETURN_MSG(_check, _return, fmt, ...)             \
-    do { if (!(_check)) { return _return; } } while (0)
-#define _DEBUG_TRUE_RETURN_MSG(_check, _return, fmt, ...)             \
-    do { if ((_check)) { return _return; } } while (0)
+#define IF_NULL_RETURN_MSG_BREAK(_ptr, _return, fmt, ...) \
+        do { if (nullptr == (_ptr)) return (_return); } while(0)
+
+#define IF_FAIL_RETURN_MSG_BREAK(_res, _return, fmt, ...) \
+        do { if (FAILED(_res)) return (_return); } while(0)
+
+#define IF_TRUE_RETURN_MSG_BREAK(_check, _return, fmt, ...) \
+        do { if ((_check)) return (_return); } while(0)
 #endif
 
 /* --- Assert macros --- */

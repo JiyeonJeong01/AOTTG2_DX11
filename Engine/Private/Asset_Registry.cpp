@@ -22,15 +22,9 @@ CAsset_Registry::~CAsset_Registry()
 HRESULT CAsset_Registry::Initialize(const std::filesystem::path& assetRoot)
 {
     m_assetRoot = Normalize_Path(assetRoot);
-
-    if (m_assetRoot.empty() || !std::filesystem::exists(m_assetRoot))
-    {
-        _DEBUG_ERROR_BREAK("AssetRegistry init failed: assetsRoot not found.");
-        return E_FAIL;
-    }
+    IF_TRUE_RETURN_MSG_BREAK((m_assetRoot.empty() || !std::filesystem::exists(m_assetRoot)), E_FAIL, "AssetRegistry init failed: assetsRoot not found.");
 
     Clear();
-
 
     /* Built-in */
     Register_Builtin_Asset();
@@ -111,7 +105,7 @@ void CAsset_Registry::Rebuild()
         addOne(p);
     }
 
-    LOG_INFO("AssetRegistry rebuilt. count=%llu", (unsigned long long)m_byGUID.size());
+    _DEBUG_INFO("AssetRegistry rebuilt. count=%llu", (unsigned long long)m_byGUID.size());
 }
 
 const std::filesystem::path& CAsset_Registry::Get_Root() const

@@ -65,19 +65,19 @@
 //
 //public:
 //    // common
-//    void Set_ColliderID(uint16_t id);// { _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, , "m_pData is nullptr."); m_pData->iId = id; }
-//    uint16_t Get_ColliderID() const; // { _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, 0, "m_pData is nullptr."); return m_pData->iId; }
+//    void Set_ColliderID(uint16_t id);// { IF_NULL_RETURN_MSG_BREAK(m_pData, , "m_pData is nullptr."); m_pData->iId = id; }
+//    uint16_t Get_ColliderID() const; // { IF_NULL_RETURN_MSG_BREAK(m_pData, 0, "m_pData is nullptr."); return m_pData->iId; }
 //
 //    void Set_ColType(BODY_TYPE eBody); // { _DEBUG_NULL_BREAK_RETURN(m_pData, ); m_pData->eColType = e; }
-//    BODY_TYPE Get_ColType() const; // { _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, COL_TYPE::C_STATIC, "m_pData is nullptr."); return m_pData->eColType; }
+//    BODY_TYPE Get_ColType() const; // { IF_NULL_RETURN_MSG_BREAK(m_pData, COL_TYPE::C_STATIC, "m_pData is nullptr."); return m_pData->eColType; }
 //
 //    void Set_OnCol(_bool b); // { _DEBUG_NULL_BREAK_RETURN(m_pData, ); m_pData->bOnCol = b; }
-//    _bool Get_OnCol() const; // { _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, false, "m_pData is nullptr."); return m_pData->bOnCol; }
+//    _bool Get_OnCol() const; // { IF_NULL_RETURN_MSG_BREAK(m_pData, false, "m_pData is nullptr."); return m_pData->bOnCol; }
 //
 //    void Set_OffsetLocal(const _float3& v); // { _DEBUG_NULL_BREAK_RETURN(m_pData, ); m_pData->vOffsetLocal = v; m_pData->bDirty = true; }
-//    _float3 Get_OffsetLocal() const; // { _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, _float3{}, "m_pData is nullptr."); return m_pData->vOffsetLocal; }
+//    _float3 Get_OffsetLocal() const; // { IF_NULL_RETURN_MSG_BREAK(m_pData, _float3{}, "m_pData is nullptr."); return m_pData->vOffsetLocal; }
 //
-//    const AABB_DESC& Get_AABBWorld() const; // { _DEBUG_NULL_BREAK_RETURN_MSG(m_pData, *(AABB_DESC*)nullptr, "m_pData is nullptr."); return m_pData->aabbWorld; }
+//    const AABB_DESC& Get_AABBWorld() const; // { IF_NULL_RETURN_MSG_BREAK(m_pData, *(AABB_DESC*)nullptr, "m_pData is nullptr."); return m_pData->aabbWorld; }
 //
 //public:
 //    // shape
