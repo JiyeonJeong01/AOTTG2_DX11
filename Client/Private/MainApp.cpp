@@ -11,6 +11,7 @@
 #include "Transform.h"
 #include "MeshRenderer.h"
 #include "Resource_System.h"
+#include "CanvasRenderer.h"
 
 
 static ASSET_GUID testGUID{};
@@ -57,7 +58,13 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
         }
 
         {
-            Engine::CGameObject* pObj = SYS_GAMEOBJECT.Create_UIObject();
+            Engine::CGameObject* pObj = SYS_GAMEOBJECT.Create_GameObjectUI();
+            pObj->Add_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
+            auto mr = pObj->Get_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
+            auto* d = mr._Data();
+            d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXCOL); // 임시: material=shader
+            d->layer = RENDER_LAYER::NONBLEND;
+            d->flags = RF_NONE;
         }
 
     }

@@ -41,16 +41,24 @@ private:
 private:
     void Draw_Header();
     void Draw_Basic_Info();
+    void Draw_ObjectLayer();
+    void Draw_LayerEditorPopup();
     void Draw_RequiredComponent();
-    void Draw_Transform();
-    void Draw_RectTransform();
-    void Draw_Components();     /* TODO : engine-specific */
+    void Draw_Components();
     void Draw_CurrentComponents();
-    void Draw_ComponentByType(COMPONENT_TYPE eComType);
     void Draw_AddComponentPopup();
-
     void Draw_Asset();
     void Draw_None();
+
+    /* Draw components by type  */
+    void Draw_ComponentByType(COMPONENT_TYPE eComType);
+
+    void Draw_Transform();
+    void Draw_RectTransform();
+    void Draw_MeshRenderer();
+    void Draw_CanvasRenderer();
+
+
 
     void Validate_Target();
 

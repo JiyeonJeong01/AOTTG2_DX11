@@ -3,6 +3,7 @@
 #include "Engine_Log.h"
 #include "Transform.h"
 #include "RectTransform.h"
+#include "LayerHelper.h"
 
 NS_BEGIN(Engine)
 
@@ -53,6 +54,8 @@ HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
         m_freeIndices.push(i);
         m_dataPool[i].Reset();
     }
+
+    m_pLayerHelper = CLayerHelper::Create(iMaxLayers);
 
     return S_OK;
 }
@@ -116,7 +119,7 @@ CGameObject* CGameObject_System::Create_GameObject(Layer::LAYER_ID iLayer, const
     return pWrapper;
 }
 
-CGameObject* CGameObject_System::Create_UIObject(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent,
+CGameObject* CGameObject_System::Create_GameObjectUI(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent,
     const INSTANCE_UUID& tUUID)
 {
     CGameObject* pWrapper = Create_Object(iLayer, strName, pParent, tUUID);
@@ -136,7 +139,7 @@ CGameObject* CGameObject_System::Create_UIObject(Layer::LAYER_ID iLayer, const s
 void CGameObject_System::Destroy_Object(CGameObject* pObj)
 {
     IF_NULL_RETURN_MSG_BREAK(pObj, , "Destroy_Object failed : pObj is nullptr");
-    IF_TRUE_RETURN_MSG_BREAK(!pObj->IsValid(), , "Destroy_Object failed : pObj is invalid");
+    IF_TRUE_RETURN_MSG_BREAK(!pObj->Is_Valid(), , "Destroy_Object failed : pObj is invalid");
 
     const OBJECT_HANDLE handle = pObj->Get_Handle();
     if (handle.Index() == 0 /* dummy */ || handle.Index() >= m_dataPool.size())
@@ -155,7 +158,7 @@ void CGameObject_System::Destroy_Object(CGameObject* pObj)
     if (data.hParent.Is_Valid())
     {
         CGameObject* pParent = Get_Wrapper(data.hParent);
-        if (pParent && pParent->IsValid())
+        if (pParent && pParent->Is_Valid())
         {
             pObj->Set_Parent(nullptr);
         }
@@ -171,7 +174,7 @@ void CGameObject_System::Destroy_Object(CGameObject* pObj)
         for (const auto& hChild : childrenCopy)
         {
             CGameObject* pChild = Get_Wrapper(hChild);
-            if (pChild && pChild->IsValid())
+            if (pChild && pChild->Is_Valid())
             {
                 pChild->Set_Parent(nullptr);
             }
@@ -184,7 +187,7 @@ void CGameObject_System::Destroy_Object(CGameObject* pObj)
 void CGameObject_System::Set_Layer(CGameObject* pObj, Layer::LAYER_ID iNewLayer)
 {
     IF_NULL_RETURN_MSG_BREAK(pObj, , "Destroy_Object failed : pObj is nullptr");
-    IF_TRUE_RETURN_MSG_BREAK(!pObj->IsValid(), , "Destroy_Object failed : pObj is invalid");
+    IF_TRUE_RETURN_MSG_BREAK(!pObj->Is_Valid(), , "Destroy_Object failed : pObj is invalid");
 
     if (iNewLayer >= m_iLayerCount || iNewLayer == Layer::INVALID_LAYER)
     {
@@ -231,7 +234,7 @@ void CGameObject_System::Gather_By_Mask(Layer::LAYER_MASK mask, std::vector<CGam
         const auto& bucket = m_layerBuckets[iLayer];
         for (CGameObject* pObj : bucket)
         {
-            if (pObj && pObj->IsValid())
+            if (pObj && pObj->Is_Valid())
                 outObjects.push_back(pObj);
         }
     }
@@ -246,7 +249,7 @@ void CGameObject_System::Get_Roots(std::vector<CGameObject*>& outRoots)
         const auto& bucket = m_layerBuckets[iLayer];
         for (CGameObject* pObj : bucket)
         {
-            if (!pObj || !pObj->IsValid())
+            if (!pObj || !pObj->Is_Valid())
                 continue;
 
             if (!Access_Data_Raw(pObj->Get_Handle()).hParent.Is_Valid())
@@ -257,7 +260,7 @@ void CGameObject_System::Get_Roots(std::vector<CGameObject*>& outRoots)
 
 void CGameObject_System::Set_UUID(CGameObject* pObj, const INSTANCE_UUID& tUUID)
 {
-    if (!pObj || !pObj->IsValid())
+    if (!pObj || !pObj->Is_Valid())
         return;
 
     GAMEOBJECT_DATA& tData = Access_Data_Raw(pObj->Get_Handle());
@@ -267,7 +270,7 @@ void CGameObject_System::Set_UUID(CGameObject* pObj, const INSTANCE_UUID& tUUID)
 
 const INSTANCE_UUID& CGameObject_System::Get_UUID(CGameObject* pObj)
 {
-    if (!pObj || !pObj->IsValid())
+    if (!pObj || !pObj->Is_Valid())
         return DUMMY_UUID;
 
     GAMEOBJECT_DATA& tData = Access_Data_Raw(pObj->Get_Handle());
@@ -276,7 +279,7 @@ const INSTANCE_UUID& CGameObject_System::Get_UUID(CGameObject* pObj)
 
 void CGameObject_System::Remove_From_LayerBucket(CGameObject* pObj)
 {
-    if (!pObj || !pObj->IsValid())
+    if (!pObj || !pObj->Is_Valid())
         return;
 
     GAMEOBJECT_DATA& tData = Access_Data_Raw(pObj->Get_Handle());
@@ -324,7 +327,7 @@ void CGameObject_System::Remove_From_LayerBucket(CGameObject* pObj)
         CGameObject* pMoved = bucket[iLastIdx];
         bucket[iRemoveIdx] = pMoved;
 
-        if (pMoved && pMoved->IsValid())
+        if (pMoved && pMoved->Is_Valid())
             Access_Data_Raw(pMoved->Get_Handle()).iIndexInLayer = iRemoveIdx;
     }
 
@@ -338,7 +341,7 @@ void CGameObject_System::Remove_From_LayerBucket(CGameObject* pObj)
 
 void CGameObject_System::Add_To_LayerBucket(CGameObject* pObj, Layer::LAYER_ID layer)
 {
-    if (!pObj || !pObj->IsValid())
+    if (!pObj || !pObj->Is_Valid())
         return;
 
     if (layer == Layer::INVALID_LAYER || layer >= m_iLayerCount)
@@ -420,6 +423,11 @@ bool CGameObject_System::Is_Valid_Handle(OBJECT_HANDLE hObj) const
 
     const auto& tData = m_dataPool[hObj.Index()];
     return tData.bActive && (tData.iVersion == hObj.Version());
+}
+
+CLayerHelper& CGameObject_System::Layers() const
+{
+    return *(m_pLayerHelper.get());
 }
 
 NS_END

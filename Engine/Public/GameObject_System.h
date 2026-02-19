@@ -6,6 +6,7 @@
 NS_BEGIN(Engine)
 
 class CGameObject;
+class CLayerHelper;
 
 class ENGINE_DLL CGameObject_System final
 {
@@ -17,7 +18,7 @@ public:
                                     const string& strName = "GameObject",
                                     CGameObject* pParent = nullptr,
                                     const INSTANCE_UUID& tUUID = INSTANCE_UUID{});
-    CGameObject*    Create_UIObject(Layer::LAYER_ID iLayer = Layer::UI_LAYER,
+    CGameObject*    Create_GameObjectUI(Layer::LAYER_ID iLayer = Layer::UI_LAYER,
                                     const string& strName = "UIObject",
                                     CGameObject* pParent = nullptr,
                                     const INSTANCE_UUID& tUUID = INSTANCE_UUID{});
@@ -35,12 +36,18 @@ public:
     CGameObject*        Get_Wrapper(OBJECT_HANDLE hObj);
     _bool               Is_Valid_Handle(OBJECT_HANDLE hObj) const;
 
+    /* --- Helpers ---*/
+public :
+    CLayerHelper& Layers() const;
+    std::unique_ptr<CLayerHelper>               m_pLayerHelper{};
+
 private:
     CGameObject* Create_Object(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent, const INSTANCE_UUID& tUUID);
-
 private :
+    using Objects = std::vector<CGameObject*>;
+
     uint32_t                                    m_iLayerCount = Layer::MAX_LAYERS;
-    std::array<std::vector<CGameObject*>,       Layer::MAX_LAYERS> m_layerBuckets{};
+    std::array<Objects, Layer::MAX_LAYERS>      m_layerBuckets{};
     std::vector<GAMEOBJECT_DATA>                m_dataPool;
     std::vector<std::unique_ptr<CGameObject>>   m_wrapperPool;  /* Exclusive ownership */
     std::queue<uint32_t>                        m_freeIndices;

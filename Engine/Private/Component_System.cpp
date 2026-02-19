@@ -5,6 +5,7 @@
 #include "Transform_Processor.h"
 #include "MeshRenderer_Processor.h"
 #include "RectTransform_Processor.h"
+#include "CanvasRenderer_Processor.h"
 //===============TEST===============
 #include "TestComponentASystem.h"
 #include "TestComponentBSystem.h"
@@ -16,7 +17,7 @@ CComponent_System::CComponent_System() = default;
 CComponent_System::~CComponent_System() = default;
 
 
-HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iWidth, _uint iHeight)
 {
     static_assert((uint32_t)COMPONENT_TYPE::END <= 32);
 
@@ -26,11 +27,19 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
     m_pComGroupMgr = CComponentGroup_Manager::Create();
 
     m_pComProcessors.resize(SCAST(_uint, COMPONENT_TYPE::END));
-    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TEST_A)] = CTestComponentASystem::Create();
-    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TEST_B)] = CTestComponentBSystem::Create();
-    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TRANSFORM)] = CTransform_Processor::Create();
-    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::MESH_RENDERER)] = CMeshRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CTransform_Processor*, m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TRANSFORM)].get()));
-    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::RECT_TRANSFORM)] = CRectTransform_Processor::Create();
+
+    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TEST_A)]
+        = CTestComponentASystem::Create();
+    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TEST_B)]
+        = CTestComponentBSystem::Create();
+    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TRANSFORM)]
+        = CTransform_Processor::Create();
+    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::MESH_RENDERER)]
+        = CMeshRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CTransform_Processor*, m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TRANSFORM)].get()));
+    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::RECT_TRANSFORM)]
+        = CRectTransform_Processor::Create();
+    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::CANVAS_RENDERER)]
+        = CCanvasRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CRectTransform_Processor*, m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::RECT_TRANSFORM)].get()), iWidth, iHeight);
 
 	return S_OK;
 }
@@ -47,7 +56,7 @@ void CComponent_System::LateUpdate(_float fDT)
     for (auto& pProcessor : m_pComProcessors)
     {
         if (pProcessor)
-            pProcessor->Update(fDT);
+            pProcessor->LateUpdate(fDT);
     }
 }
 
@@ -58,6 +67,7 @@ void CComponent_System::FixedUpdate(_float fDT)
 void CComponent_System::Render()
 {
     SCAST(CMeshRenderer_Processor*, m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::MESH_RENDERER)].get())->Render();
+    SCAST(CCanvasRenderer_Processor*, m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::CANVAS_RENDERER)].get())->Render();
 }
 
 COMPONENT_HANDLE CComponent_System::Create_Component_By_Type(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject)

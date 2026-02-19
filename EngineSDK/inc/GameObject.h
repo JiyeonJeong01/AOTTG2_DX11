@@ -41,8 +41,8 @@ public:
 
     std::vector<CGameObject*>   Get_Children() const;
 
-    OBJECT_HANDLE           Get_Handle() const;
-    _bool                       IsValid() const;
+    OBJECT_HANDLE               Get_Handle() const;
+    _bool                       Is_Valid() const;
 
     /* etc */
     void                        Set_Active(_bool bActive);
@@ -50,6 +50,8 @@ public:
 
     void                        Set_ComponentMask(Component::COMPONENT_MASK mask);
     Component::COMPONENT_MASK   Get_ComponentMask() const;
+
+    Layer::LAYER_ID             Get_Layer() const;
 
 private:
     void Add_Child_Inner(OBJECT_HANDLE hChild);

@@ -7,7 +7,6 @@
 #include "Engine_Math.h"
 #include "GameObject.h"
 #include "CRender_System.h"
-#include "Engine_Math.h"
 #include "Shader.h"
 
 NS_BEGIN(Engine)
@@ -38,6 +37,8 @@ HRESULT CCanvasRenderer_Processor::Initialize(_uint iWidth, _uint iHeight)
 
     rd.ScissorEnable = TRUE;
     IF_FAIL_RETURN_MSG_BREAK(m_pDevice->CreateRasterizerState(&rd, m_rsScissor.GetAddressOf()), E_FAIL, "CCanvasRenderer_Processor initialize failed");
+
+    SYS_COMPONENT.Register_Factory<CCanvasRenderer, CANVAS_RENDERER_SPEC>(COMPONENT_TYPE::CANVAS_RENDERER);
 
     return S_OK;
 }
@@ -83,7 +84,7 @@ void CCanvasRenderer_Processor::Build_Queue(std::vector<DRAW_CMD>& outCmds)
     if (!m_pRectTransform_Processor)
         return;
 
-    if (m_hUIRectMesh == INVALID_HANDLE_UINT || m_hUIRectMesh == 0)
+    if (m_hUIRectMesh == INVALID_HANDLE_UINT)
         return;
 
     const auto& Pages = m_Pool.GetPages();
@@ -100,7 +101,7 @@ void CCanvasRenderer_Processor::Build_Queue(std::vector<DRAW_CMD>& outCmds)
             auto* pData = pPage->Get_Ptr(i);
             if (!pData || !pData->bEnabled) continue;
 
-            if (pData->hMaterial == 0 || pData->hMaterial == INVALID_HANDLE_UINT)
+            if (pData->hMaterial == INVALID_HANDLE_UINT)
                 continue;
 
             DRAW_CMD tCmd = DRAW_CMD::Create_Canvas(pData->hMaterial, pData->hTexture, pData->hRectTransform, pData->flags, pData->sortZ, pData->rcUV, pData->vColor, pData->rcClip);
@@ -177,8 +178,8 @@ uint64_t CCanvasRenderer_Processor::Make_SortKey(const CANVAS_RENDERER_DATA& tDa
 
 void CCanvasRenderer_Processor::Execute_Draw(const DRAW_CMD& tCmd)
 {
-    // kind 체크(안 넣었으면 생략)
-    // if (tCmd.kind != DRAW_KIND::CANVAS) return;
+    if (tCmd.kind != DRAW_TYPE::CANVAS)
+        return;
 
     const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(m_hUIRectMesh);
     MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(tCmd.canvas.hMaterial);

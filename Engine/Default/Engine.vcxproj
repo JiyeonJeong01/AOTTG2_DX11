@@ -160,6 +160,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\CanvasRenderer.h" />
     <ClInclude Include="..\Public\CanvasRenderer_Processor.h" />
     <ClInclude Include="..\Public\CRender_System.h" />
+    <ClInclude Include="..\Public\LayerHelper.h" />
     <ClInclude Include="..\Public\WindowResize_Event.h" />
     <ClInclude Include="..\Public\Identity.h" />
     <ClInclude Include="..\Public\Asset_Meta.h" />
@@ -245,6 +246,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Input_System.cpp" />
     <ClCompile Include="..\Private\ISink.cpp" />
     <ClCompile Include="..\Private\GameObject_System.cpp" />
+    <ClCompile Include="..\Private\LayerHelper.cpp" />
     <ClCompile Include="..\Private\MaterialBuilder.cpp" />
     <ClCompile Include="..\Private\MeshBuilder.cpp" />
     <ClCompile Include="..\Private\MeshRenderer.cpp" />

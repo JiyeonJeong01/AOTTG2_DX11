@@ -121,6 +121,9 @@
     <Filter Include="01. Utility\04. Component\09. CanvasRenderer">
       <UniqueIdentifier>{99aaebfd-80f5-4b48-8a03-79b336e154e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\02. Layer">
+      <UniqueIdentifier>{b3f010fe-2dbd-49de-8799-430ce14c3032}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -333,6 +336,9 @@
     <ClInclude Include="..\Public\WindowResize_Event.h">
       <Filter>00. System\11. Event\Events</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\LayerHelper.h">
+      <Filter>01. Utility\02. Layer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -454,6 +460,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\CanvasRenderer_Processor.cpp">
       <Filter>01. Utility\04. Component\09. CanvasRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LayerHelper.cpp">
+      <Filter>01. Utility\02. Layer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -5,7 +5,7 @@
 template <typename TProxy>
 TProxy CGameObject::Add_Component(COMPONENT_TYPE eComType)
 {
-    if (!IsValid())
+    if (!Is_Valid())
         return TProxy{};
 
     if (!Component::Is_Multi_Allowed(eComType))
@@ -55,7 +55,7 @@ TProxy CGameObject::Add_Component(COMPONENT_TYPE eComType)
 template <typename TProxy>
 TProxy CGameObject::Get_Component(COMPONENT_TYPE eComType)
 {
-    if (!IsValid())
+    if (!Is_Valid())
         return TProxy{};
 
     const GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
@@ -89,7 +89,7 @@ TProxy CGameObject::Get_Component(COMPONENT_TYPE eComType)
 template <typename TProxy>
 std::vector<TProxy> CGameObject::Get_Components(COMPONENT_TYPE eComType)
 {
-    if (!IsValid())
+    if (!Is_Valid())
         return std::vector<TProxy>{};
 
     const GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
