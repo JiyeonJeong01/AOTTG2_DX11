@@ -19,7 +19,7 @@ TProxy CComponent_System::Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE ha
     using PROCESSOR_T = typename TProxy::ProcessorType;
     PROCESSOR_T* pProcessor = static_cast<PROCESSOR_T*>(m_pComProcessors[iIndex].get());
 
-    return pProcessor->Get_Proxy(handle);
+    return pProcessor->Get_Proxy(eComType, handle);
 }
 
 template <typename TProxy, typename TSpec>

@@ -5,13 +5,11 @@ NS_BEGIN(Engine)
 CCanvasRenderer::CCanvasRenderer()
     : CComponent_Proxy_Base()
 {
-    m_eComType = COMPONENT_TYPE::CANVAS_RENDERER;
 }
 
 CCanvasRenderer::CCanvasRenderer(DataType* pData, COMPONENT_HANDLE handle)
     : CComponent_Proxy_Base(pData, handle)
 {
-    m_eComType = COMPONENT_TYPE::CANVAS_RENDERER;
 }
 
 void CCanvasRenderer::Set_Enabled(_bool b)

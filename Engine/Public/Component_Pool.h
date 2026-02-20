@@ -16,7 +16,7 @@ class CComponent_Pool final
 public:
     /* Ensure that the TProxy type is derived from CComponent_Proxy_Base at compile-time */
     static_assert(
-        std::is_base_of_v<CComponent_Proxy_Base<typename TProxy::DataType, TProxy>, TProxy>,
+        std::is_base_of_v<CComponent_Proxy_Base<typename TProxy::DataType, TProxy, TProxy::ComponentType>, TProxy>,
         "Error: TProxy must inherit from CComponent_Proxy_Base!");
 
     /* Alias for the raw data type managed by this pool */

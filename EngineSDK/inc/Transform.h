@@ -21,12 +21,13 @@ typedef struct ENGINE_DLL tagTransformData final
 
 class CTransform_Processor;
 
-class ENGINE_DLL CTransform final : public CComponent_Proxy_Base<TRANSFORM_DATA, CTransform>
+class ENGINE_DLL CTransform final : public CComponent_Proxy_Base<TRANSFORM_DATA, CTransform, COMPONENT_TYPE::TRANSFORM>
 {
 public:
-    CTransform() : CComponent_Proxy_Base() { m_eComType = COMPONENT_TYPE::TRANSFORM; }
-    CTransform(DataType* pData, COMPONENT_HANDLE handle)
-    : CComponent_Proxy_Base(pData, handle) { m_eComType = COMPONENT_TYPE::TRANSFORM; }
+    static constexpr COMPONENT_TYPE kComponentType = COMPONENT_TYPE::TRANSFORM;
+
+    CTransform() : CComponent_Proxy_Base() { }
+    CTransform(DataType* pData, COMPONENT_HANDLE handle)  : CComponent_Proxy_Base(pData, handle) { }
     ~CTransform() override = default;
 
 public :

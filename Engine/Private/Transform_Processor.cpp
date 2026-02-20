@@ -15,7 +15,7 @@ void CTransform_Processor::LateUpdate(_float fDT)
 {
 }
 
-HRESULT CTransform_Processor::Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
+HRESULT CTransform_Processor::Initialize_From_Spec_Impl(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
 {
     TRANSFORM_DATA* pData = m_Pool.Get_Data_By_Handle(handle);
     _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Transform handle in Initialize_From_Spec");

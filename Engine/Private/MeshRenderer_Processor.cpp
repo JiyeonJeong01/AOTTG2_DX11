@@ -92,7 +92,7 @@ void CMeshRenderer_Processor::Build_Queue(std::vector<DRAW_CMD>& outCmds)
     }
 }
 
-HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
+HRESULT CMeshRenderer_Processor::Initialize_From_Spec_Impl(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
 {
     MESH_RENDERER_DATA* pData = m_Pool.Get_Data_By_Handle(handle);
     _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid MeshRenderer handle in Initialize_From_Spec");
@@ -153,7 +153,7 @@ void CMeshRenderer_Processor::Execute_Draw(const DRAW_CMD& cmd)
     if (passIndex >= pShader->pPasses.size())
         return;
 
-    const _matrix matWorld = Engine::Math::Load(m_pTransformProcessor->Get_Proxy(cmd.mesh.hTransform)->matWorld);
+    const _matrix matWorld = Engine::Math::Load(m_pTransformProcessor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, cmd.mesh.hTransform)->matWorld);
 
     const _vector vEye = XMVectorSet(0.f, 5.f, -5.f, 0.f);
     const _vector vAt = XMVectorSet(0.f, 0.f, 0.f, 0.f);

@@ -8,7 +8,7 @@ NS_BEGIN(Engine)
 
 class CRectTransform_Processor;
 
-class ENGINE_DLL CCanvasRenderer_Processor final : public CComponent_Processor_Impl<CCanvasRenderer>
+class ENGINE_DLL CCanvasRenderer_Processor final : public CComponent_Processor_Impl<CCanvasRenderer, COMPONENT_TYPE::CANVAS_RENDERER>
 {
 public:
     CCanvasRenderer_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CRectTransform_Processor* pRTProcessor);
@@ -25,7 +25,7 @@ public:
 
     void    Build_Queue(std::vector<DRAW_CMD>& outCmds);
 
-    HRESULT Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) override;
+    HRESULT Initialize_From_Spec_Impl(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) override;
 
 private:
     void    Initialize_Component_Data(COMPONENT_HANDLE hComponent) override;

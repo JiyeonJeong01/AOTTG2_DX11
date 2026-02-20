@@ -18,12 +18,12 @@ typedef struct ENGINE_DLL tagMeshRendererData final
     uint8_t  pad[3] = {};
 }MESH_RENDERER_DATA;
 
-class ENGINE_DLL CMeshRenderer : public CComponent_Proxy_Base<MESH_RENDERER_DATA, CMeshRenderer>
+class ENGINE_DLL CMeshRenderer : public CComponent_Proxy_Base<MESH_RENDERER_DATA, CMeshRenderer, COMPONENT_TYPE::MESH_RENDERER>
 {
 public :
-    CMeshRenderer() : CComponent_Proxy_Base() { m_eComType = COMPONENT_TYPE::MESH_RENDERER; }
+    CMeshRenderer() : CComponent_Proxy_Base() { }
     CMeshRenderer(DataType* pData, COMPONENT_HANDLE handle)
-        : CComponent_Proxy_Base(pData, handle) {  m_eComType = COMPONENT_TYPE::MESH_RENDERER; }
+        : CComponent_Proxy_Base(pData, handle) {  }
     ~CMeshRenderer() override = default;
 
 public:

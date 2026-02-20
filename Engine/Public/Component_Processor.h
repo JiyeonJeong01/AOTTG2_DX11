@@ -16,9 +16,9 @@ public :
 	virtual void	Update(_float fDT) { };
 	virtual void	LateUpdate(_float fDT) { };
 
-	virtual COMPONENT_HANDLE Create_Component_Data(OBJECT_HANDLE hObject) { return COMPONENT_HANDLE{}; }
-	virtual void Remove_Component(COMPONENT_HANDLE hHandle) {};
-    virtual HRESULT Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) { return S_OK; };
+	virtual COMPONENT_HANDLE    Create_Component_Data(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject) { return COMPONENT_HANDLE{}; }
+	virtual void                Remove_Component(COMPONENT_TYPE eComType, COMPONENT_HANDLE hHandle) {};
+    virtual HRESULT             Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) { return S_OK; };
 
 protected :
 	ID3D11Device*			m_pDevice = { nullptr };

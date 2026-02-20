@@ -19,14 +19,11 @@ typedef struct ENGINE_DLL tagRectTransformData final
 }RECTTRANSFORM_DATA;
 
 class ENGINE_DLL CRectTransform final
-    : public CComponent_Proxy_Base<RECTTRANSFORM_DATA, CRectTransform>
+    : public CComponent_Proxy_Base<RECTTRANSFORM_DATA, CRectTransform, COMPONENT_TYPE::RECT_TRANSFORM>
 {
 public:
-    CRectTransform() : CComponent_Proxy_Base() { m_eComType = COMPONENT_TYPE::RECT_TRANSFORM; }
-    CRectTransform(DataType* pData, COMPONENT_HANDLE h)
-        : CComponent_Proxy_Base(pData, h) {
-        m_eComType = COMPONENT_TYPE::RECT_TRANSFORM;
-    }
+    CRectTransform() : CComponent_Proxy_Base() { }
+    CRectTransform(DataType* pData, COMPONENT_HANDLE h) : CComponent_Proxy_Base(pData, h) { }
     ~CRectTransform() override = default;
 
 public:

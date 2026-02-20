@@ -111,7 +111,7 @@ void CCanvasRenderer_Processor::Build_Queue(std::vector<DRAW_CMD>& outCmds)
     }
 }
 
-HRESULT CCanvasRenderer_Processor::Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
+HRESULT CCanvasRenderer_Processor::Initialize_From_Spec_Impl(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
 {
     auto* pData = m_Pool.Get_Data_By_Handle(handle);
     _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid CanvasRenderer handle in Initialize_From_Spec");
@@ -195,7 +195,7 @@ void CCanvasRenderer_Processor::Execute_Draw(const DRAW_CMD& tCmd)
         return;
 
     // RectTransform world
-    const auto rectTransform = m_pRectTransform_Processor->Get_Proxy(tCmd.canvas.hRectTransform);
+    const auto rectTransform = m_pRectTransform_Processor->Get_Proxy(COMPONENT_TYPE::RECT_TRANSFORM, tCmd.canvas.hRectTransform);
     IF_TRUE_RETURN_MSG_BREAK(!rectTransform.Is_Valid(), , "RectTransform Proxy is invalid.");
 
     const _matrix matWorld = Engine::Math::Load(rectTransform->matWorld);

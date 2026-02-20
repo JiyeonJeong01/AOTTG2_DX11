@@ -89,7 +89,7 @@ COMPONENT_HANDLE CComponent_System::Create_Component_By_Type(COMPONENT_TYPE eCom
     const uint32_t iIndex = SCAST(_uint, eComType);
     IF_TRUE_RETURN_MSG_BREAK((iIndex >= SCAST(_uint, COMPONENT_TYPE::END) || !m_pComProcessors[iIndex]), COMPONENT_HANDLE{}, "Processor not registered for this component type.");
 
-    return m_pComProcessors[iIndex]->Create_Component_Data(hObject);
+    return m_pComProcessors[iIndex]->Create_Component_Data(eComType, hObject);
 }
 
 void CComponent_System::Create_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec)
@@ -109,13 +109,13 @@ void CComponent_System::Remove_Component_By_Type(COMPONENT_TYPE eComType, COMPON
     const uint32_t iIndex = SCAST(_uint, eComType);
     IF_TRUE_RETURN_MSG_BREAK((iIndex >= SCAST(_uint, COMPONENT_TYPE::END) || !m_pComProcessors[iIndex]), , "Processor not registered for this component type.");
 
-    m_pComProcessors[iIndex]->Remove_Component(handle);
+    m_pComProcessors[iIndex]->Remove_Component(eComType, handle);
 }
 
 void CComponent_System::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pBase)
 {
     IF_TRUE_RETURN_MSG_BREAK((SCAST(_uint, eComType) >= SCAST(_uint, COMPONENT_TYPE::END)), , "Invalid component type");
-    IF_FAIL_RETURN_MSG_BREAK(m_pComProcessors[SCAST(_uint, eComType)]->Initialize_From_Spec(handle, pBase), , "Failed initialize with spec");
+    IF_FAIL_RETURN_MSG_BREAK(m_pComProcessors[SCAST(_uint, eComType)]->Initialize_From_Spec(eComType, handle, pBase), , "Failed initialize with spec");
 }
 
 uint32_t CComponent_System::Promote(COMPONENT_HANDLE hOld, COMPONENT_HANDLE hNew)

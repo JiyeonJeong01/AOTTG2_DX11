@@ -3,7 +3,7 @@
 #include "Component_Struct.h"
 #include "Object_Struct.h"
 
-template <typename TProxy> class CComponent_Processor_Impl;
+template <typename TProxy, COMPONENT_TYPE KType> class CComponent_Processor_Impl;
 
 /**
  * Base class for all Component Proxies.
@@ -11,13 +11,14 @@ template <typename TProxy> class CComponent_Processor_Impl;
  * @tparam DATA_T  The raw struct containing component data (e.g., CTransform_Data)
  * @tparam TProxy_T The actual derived proxy class (e.g., CTransform_Proxy)
  */
-template <typename DATA_T, typename TProxy_T>
+template <typename DATA_T, typename TProxy_T, COMPONENT_TYPE KType>
 class CComponent_Proxy_Base
 {
 public:
     /* Expose types for the Component System's type traits and Pool allocation */
     using DataType = DATA_T;
-    using ProcessorType = CComponent_Processor_Impl<TProxy_T>;
+    using ProcessorType = CComponent_Processor_Impl<TProxy_T, KType>;
+    static constexpr COMPONENT_TYPE ComponentType = KType;
 
     CComponent_Proxy_Base() = default;
     explicit CComponent_Proxy_Base(COMPONENT_TYPE eType) : m_eComType(eType) {}
@@ -53,6 +54,6 @@ public:
 protected:
     COMPONENT_HANDLE            m_hHandle{};    /* Unique identifier for version-safe access */
     DataType*                   m_pData{};      /* Direct pointer to the raw data in the pool */
-    COMPONENT_TYPE              m_eComType = COMPONENT_TYPE::END;
+    COMPONENT_TYPE              m_eComType = KType;
 
 };

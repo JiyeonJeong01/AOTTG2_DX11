@@ -27,7 +27,7 @@ typedef struct ENGINE_DLL tagCanvasRendererData final
 } CANVAS_RENDERER_DATA;
 
 class ENGINE_DLL CCanvasRenderer final
-    : public CComponent_Proxy_Base<CANVAS_RENDERER_DATA, CCanvasRenderer>
+    : public CComponent_Proxy_Base<CANVAS_RENDERER_DATA, CCanvasRenderer, COMPONENT_TYPE::CANVAS_RENDERER>
 {
 public:
     CCanvasRenderer();

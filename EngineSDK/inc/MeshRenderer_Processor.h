@@ -8,7 +8,7 @@ NS_BEGIN(Engine)
 class CTransform_Processor;
 class CRenderer_System;
 
-class ENGINE_DLL CMeshRenderer_Processor final : public CComponent_Processor_Impl<CMeshRenderer>
+class ENGINE_DLL CMeshRenderer_Processor final : public CComponent_Processor_Impl<CMeshRenderer, COMPONENT_TYPE::MESH_RENDERER>
 {
 public :
     CMeshRenderer_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CTransform_Processor* pTransformProcessor);
@@ -23,7 +23,7 @@ public:
     void End_Frame();
     void Build_Queue(std::vector<DRAW_CMD>& outCmds);
 
-    HRESULT Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) override;
+    HRESULT Initialize_From_Spec_Impl(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) override;
 
 private :
     void Initialize_Component_Data(COMPONENT_HANDLE hComponent) override;

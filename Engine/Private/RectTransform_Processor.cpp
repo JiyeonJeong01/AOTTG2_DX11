@@ -52,7 +52,7 @@ void CRectTransform_Processor::LateUpdate(_float)
 {
 }
 
-HRESULT CRectTransform_Processor::Initialize_From_Spec(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
+HRESULT CRectTransform_Processor::Initialize_From_Spec_Impl(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
 {
     if (m_fHeight == 0 || m_fWidth == 0)
     {
