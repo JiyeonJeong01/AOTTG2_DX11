@@ -4,74 +4,6 @@
 
 NS_BEGIN(Engine)
 
-typedef struct ENGINE_DLL tagTestASpec : public COMPONENT_SPEC_BASE
-{
-    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::TEST_A)
-
-    _float3 vData[4]{};
-
-    [[nodiscard]]
-    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
-    {
-        return std::make_unique<tagTestASpec>(*this);
-    }
-
-    void ToJson(json& j) const override
-    {
-        j["Type"] = SCAST(_uint, Get_Type());
-        for (int i = 0; i < 4; ++i)
-            j["vData"].push_back({ vData[i].x, vData[i].y, vData[i].z });
-    };
-
-    _bool FromJson(const json& j) override
-    {
-        if (!j.contains("vData") || !j["vData"].is_array())
-            return false;
-        for (int i = 0; i < 4 && i < j["vData"].size(); ++i) {
-            vData[i].x = j["vData"][i][0];
-            vData[i].y = j["vData"][i][1];
-            vData[i].z = j["vData"][i][2];
-        }
-        return true;
-    };
-
-
-} TEST_A_SPEC;
-
-typedef struct ENGINE_DLL tagTestBSpec : public COMPONENT_SPEC_BASE
-{
-    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::TEST_B)
-
-    _float3 vData[4]{};
-
-    [[nodiscard]]
-    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
-    {
-        return std::make_unique<tagTestBSpec>(*this);
-    }
-
-    void ToJson(json& j) const override
-    {
-        j["Type"] = SCAST(_uint, Get_Type());
-        for (int i = 0; i < 4; ++i)
-            j["vData"].push_back({ vData[i].x, vData[i].y, vData[i].z });
-    };
-
-    _bool FromJson(const json& j) override
-    {
-        if (!j.contains("vData") || !j["vData"].is_array())
-            return false;
-        for (int i = 0; i < 4 && i < j["vData"].size(); ++i)
-        {
-            vData[i].x = j["vData"][i][0];
-            vData[i].y = j["vData"][i][1];
-            vData[i].z = j["vData"][i][2];
-        }
-        return true;
-    };
-
-} TEST_B_SPEC;
-
 typedef struct ENGINE_DLL tagTransformSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::TRANSFORM)
@@ -236,43 +168,6 @@ typedef struct ENGINE_DLL tagCanvasRendererSpec final : public COMPONENT_SPEC_BA
         }
     }
 } CANVAS_RENDERER_SPEC;
-
-typedef struct ENGINE_DLL tagTextureSpec final : public COMPONENT_SPEC_BASE
-{
-    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::TEXTURE)
-
-    const _tchar* pFilePathPattern = nullptr;
-    _uint iNumSRVs = 1;
-
-    [[nodiscard]]
-    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
-    {
-        return std::make_unique<tagTextureSpec>(*this);
-    }
-
-    void ToJson(json& j) const override {
-        j["Type"] = SCAST(_uint, Get_Type());
-        if (pFilePathPattern) {
-            std::wstring ws(pFilePathPattern);
-            std::string s;
-            for (auto c : ws) s += static_cast<char>(c);
-            j["FilePath"] = s;
-        }
-        j["NumSRVs"] = iNumSRVs;
-    }
-
-    _bool FromJson(const json& j) override
-    {
-        if (j.contains("FilePath"))
-        {
-            std::string s = j["FilePath"];
-            // pFilePathPattern = AllocateString(s); 
-        }
-        iNumSRVs = j.value("NumSRVs", 1);
-        return true;
-    };
-
-} TEXTURE_SPEC;
 
 typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
 {

@@ -40,7 +40,9 @@ private :
     ID3D11Device*           m_pDevice{};
     ID3D11DeviceContext*    m_pContext{};
     vector<std::unique_ptr<CComponent_Processor>>	m_pComProcessors{ };
+
     std::unique_ptr<CComponentGroup_Manager> 		m_pComGroupMgr{ };
+    static std::array <PROCESSOR_ID, COMPONENT_MAX> m_TypeToProcessorIndex;
 
     using FACTORY_FN = void(*)(CComponent_System*, COMPONENT_TYPE, CGameObject*, const COMPONENT_SPEC_BASE*);
     FACTORY_FN  m_factory[SCAST(_uint, COMPONENT_TYPE::END)]{};

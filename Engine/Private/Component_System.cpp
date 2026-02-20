@@ -6,12 +6,29 @@
 #include "MeshRenderer_Processor.h"
 #include "RectTransform_Processor.h"
 #include "CanvasRenderer_Processor.h"
-//===============TEST===============
-#include "TestComponentASystem.h"
-#include "TestComponentBSystem.h"
-//==================================
 
 IMPLEMENT_SINGLETON(CComponent_System)
+
+std::array<PROCESSOR_ID, COMPONENT_MAX>
+CComponent_System::m_TypeToProcessorIndex =
+{
+    PROCESSOR_ID::TRANSFORM,       // TRANSFORM
+    PROCESSOR_ID::PHYSICS,         // COLLIDER
+    PROCESSOR_ID::PHYSICS,         // RIGIDBODY
+    PROCESSOR_ID::SCRIPT,          // SCRIPT
+    PROCESSOR_ID::RENDER,          // MESH_RENDERER
+    PROCESSOR_ID::ANIMATION,       // ANIMATOR
+    PROCESSOR_ID::CAMERA,          // CAMERA
+    PROCESSOR_ID::AUDIO,           // AUDIO_LISTENER
+    PROCESSOR_ID::AUDIO,           // AUDIO_SOURCE
+
+    PROCESSOR_ID::RECT_TRANSFORM,  // RECT_TRANSFORM
+    PROCESSOR_ID::CANVAS,          // CANVAS_RENDERER
+
+    PROCESSOR_ID::UI,              // UI_IMAGE
+    PROCESSOR_ID::UI,              // UI_BUTTON
+    PROCESSOR_ID::UI               // UI_TEXT
+};
 
 CComponent_System::CComponent_System() = default;
 CComponent_System::~CComponent_System() = default;
@@ -28,10 +45,6 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
 
     m_pComProcessors.resize(SCAST(_uint, COMPONENT_TYPE::END));
 
-    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TEST_A)]
-        = CTestComponentASystem::Create();
-    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TEST_B)]
-        = CTestComponentBSystem::Create();
     m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TRANSFORM)]
         = CTransform_Processor::Create();
     m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::MESH_RENDERER)]
@@ -40,6 +53,7 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
         = CRectTransform_Processor::Create();
     m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::CANVAS_RENDERER)]
         = CCanvasRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CRectTransform_Processor*, m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::RECT_TRANSFORM)].get()), iWidth, iHeight);
+
 
 	return S_OK;
 }

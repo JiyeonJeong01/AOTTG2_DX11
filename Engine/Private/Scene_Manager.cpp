@@ -141,10 +141,7 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CScene_Manager::Create_Spec_By_Type(COMPONE
 {
     switch (eType)
     {
-    case COMPONENT_TYPE::TEST_A:    return std::make_unique<TEST_A_SPEC>();
-    case COMPONENT_TYPE::TEST_B:    return std::make_unique<TEST_B_SPEC>();
     case COMPONENT_TYPE::TRANSFORM: return std::make_unique<TRANSFORM_SPEC>();
-    case COMPONENT_TYPE::TEXTURE:   return std::make_unique<TEXTURE_SPEC>();
     default:
         return nullptr;
     }

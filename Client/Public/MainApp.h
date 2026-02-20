@@ -41,8 +41,6 @@ public :
     Engine::CEvent<_int> m_intEvent;
     Engine::CEvent<_int, _float> m_intFloatEvent;
     class Tester* m_pTester{};
-    std::unique_ptr<Engine::TEST_A_SPEC> m_pTestA{};
-
 
 private :
     _float4		vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };

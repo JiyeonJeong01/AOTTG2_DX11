@@ -8,9 +8,26 @@ namespace Engine
 	enum class LAYER_TYPE		{ NONE, BACKGROUND, PLAYER, FLOOR, PARTICLE, MAX = 16, };
 
     /* ------ Component ------ */
-    enum class COMPONENT_TYPE : uint8_t { TEST_A, TEST_B, TEXTURE, 
-                                        TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, MESH_RENDERER, ANIMATOR, CAMERA, RECT_TRANSFORM, CANVAS_RENDERER, AUDIO_LISTENER, AUDIO_SOURCE, END };
+    enum class COMPONENT_TYPE : uint8_t {   TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, MESH_RENDERER, ANIMATOR, CAMERA, AUDIO_LISTENER, AUDIO_SOURCE,
+                                            RECT_TRANSFORM, CANVAS_RENDERER, UI_IMAGE, UI_BUTTON, UI_TEXT, END };
+    enum class PROCESSOR_ID : uint8_t
+    {
+        CORE = 0,              // 기본/없음/기타
+        TRANSFORM,             // CTransform
+        RECT_TRANSFORM,        // CRectTransform
+        RENDER,                // MeshRenderer
+        CANVAS,                // CanvasRenderer
+        UI,                    // UIImage / UIButton / UIText
+        PHYSICS,               // Collider / Rigidbody
+        SCRIPT,                // Script
+        AUDIO,                 // AudioListener / AudioSource
+        ANIMATION,             // Animator
+        CAMERA,                // Camera
+        END
+    };
+
     enum                                { COMPONENT_MAX = static_cast<uint32_t>(COMPONENT_TYPE::END) };
+    enum                                { COMPONENT_PROCESSOR_MAX = static_cast<uint32_t>(PROCESSOR_ID::END) };
 
     enum class DRAW_TYPE    : uint8_t   { MESH = 0, CANVAS, };
     enum class RENDER_LAYER : uint8_t   { PRIORITY = 0, NONBLEND, BLEND, UI, END };

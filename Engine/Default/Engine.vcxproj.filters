@@ -40,9 +40,6 @@
     <Filter Include="01. Utility\04. Component">
       <UniqueIdentifier>{e1f17606-11db-4431-82ad-fec3d52777ed}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\04. Component\99. Test">
-      <UniqueIdentifier>{1855c0df-bb36-4b3f-a380-6d362af292aa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="00. System\11. Event\Events">
       <UniqueIdentifier>{8d78eb83-0641-4e4c-a7c2-c242d9031977}</UniqueIdentifier>
     </Filter>
@@ -171,23 +168,11 @@
     <ClInclude Include="..\Public\Collider.h">
       <Filter>01. Utility\04. Component\02. Collider</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\TestComponentA.h">
-      <Filter>01. Utility\04. Component\99. Test</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\TestComponentB.h">
-      <Filter>01. Utility\04. Component\99. Test</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Timer.h">
       <Filter>00. System\01. Timer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Timer_System.h">
       <Filter>00. System\01. Timer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\TestComponentASystem.h">
-      <Filter>01. Utility\04. Component\99. Test</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\TestComponentBSystem.h">
-      <Filter>01. Utility\04. Component\99. Test</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\CLI_Sink.h">
       <Filter>00. System\06. Log</Filter>
@@ -365,23 +350,11 @@
     <ClCompile Include="..\Private\Collider.cpp">
       <Filter>01. Utility\04. Component\02. Collider</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\TestComponentA.cpp">
-      <Filter>01. Utility\04. Component\99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\TestComponentB.cpp">
-      <Filter>01. Utility\04. Component\99. Test</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Timer.cpp">
       <Filter>00. System\01. Timer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Timer_System.cpp">
       <Filter>00. System\01. Timer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\TestComponentASystem.cpp">
-      <Filter>01. Utility\04. Component\99. Test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\TestComponentBSystem.cpp">
-      <Filter>01. Utility\04. Component\99. Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\CLI_Sink.cpp">
       <Filter>00. System\06. Log</Filter>
