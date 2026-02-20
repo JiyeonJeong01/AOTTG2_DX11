@@ -48,7 +48,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg;
 
     ENGINE_DESC EngineDesc{};
-    EngineDesc.eWinMode = WINMODE::FULL;
+    EngineDesc.eWinMode = WINMODE::WIN;
     EngineDesc.hWnd = g_hWnd;
     EngineDesc.hInst = g_hInst;
     EngineDesc.iViewportSize = {Client::g_iWinSizeX, Client::g_iWinSizeY };
@@ -80,7 +80,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 TranslateMessage(&msg);
                 DispatchMessage(&msg);
             }
-            continue; // 메시지 처리한 프레임은 여기서 끊는 게 보통 더 안전
+            continue;
         }
 
         const _float sysDT = SYS_CORE.Compute_SystemDT();

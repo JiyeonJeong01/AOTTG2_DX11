@@ -248,6 +248,7 @@ void CInspectorPanel::Draw_ObjectLayer()
 
     Draw_LayerEditorPopup(); // BeginPopup로 열려있으면 그려짐
 }
+
 void CInspectorPanel::Draw_LayerEditorPopup()
 {
     // 배경을 하얗게 만들지 않는 일반 Popup

@@ -27,11 +27,11 @@ void CRender_System::Render()
 {
 
 }
+
 void CRender_System::On_Resize(EVENT_DATA& eData)
 {
     assert(eData.eType == EVENT_TYPE::On_Window_Resize);
 
     auto& eResizeData = SCAST(RESIZE_EVENT_DATA&, eData);
     m_gUI.vViewport = { SCAST(_float, eResizeData.iWidth), SCAST(_float, eResizeData.iHeight) };
-
 }

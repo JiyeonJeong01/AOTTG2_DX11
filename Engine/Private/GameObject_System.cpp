@@ -5,6 +5,8 @@
 #include "RectTransform.h"
 #include "LayerHelper.h"
 
+#include <atomic>
+
 NS_BEGIN(Engine)
 
 IMPLEMENT_SINGLETON(CGameObject_System)

@@ -33,9 +33,9 @@ CCore_System::~CCore_System()
     SYS_ASSET.DestroyInstance();
     SYS_INPUT.DestroyInstance();
     SYS_LOG.DestroyInstance();
-    SYS_ASSET.DestroyInstance();
     SYS_EVENT.DestroyInstance();
     SYS_RENDER.DestroyInstance();
+    SYS_RESOURCE.DestroyInstance();
 }
 
 HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice,

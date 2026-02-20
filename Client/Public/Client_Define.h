@@ -7,8 +7,8 @@ extern HINSTANCE g_hInst;
 
 namespace Client
 {
-    static unsigned int		g_iWinSizeX = 1280;
-    static unsigned int		g_iWinSizeY = 720;
+    static unsigned int		g_iWinSizeX = 1920;
+    static unsigned int		g_iWinSizeY = 1080;
 }
 
 #include "Engine_SDK.h"

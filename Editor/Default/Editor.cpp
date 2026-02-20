@@ -38,7 +38,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_ LPWSTR    lpCmdLine,
     _In_ int       nCmdShow)
 {
-
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 #ifdef _DEBUG
@@ -121,7 +120,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             pMainApp->Render();
 
             SYS_CORE.Bind_DefaultRTV();
-            _float4 k_vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };
+            //_float4 k_vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };
+            _float4 k_vClearColor = { 0.18f, 0.8f, 0.18f, 1.0f };
             SYS_CORE.Clear_Default_Buffers(&k_vClearColor);
             SYS_GUI.Begin_Render();
             upMainPanel->Render();
@@ -137,7 +137,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
     }
 
+    if (upMainPanel)
+        upMainPanel.reset();
+
     SYS_GUI.DestroyInstance();
+    SYS_CORE.DestroyInstance();
 
     return (int)msg.wParam;
 }
@@ -156,7 +160,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_EDITOR));
     wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-    wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_EDITOR);
+    wcex.lpszMenuName = NULL;
     wcex.lpszClassName = szWindowClass;
     wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
@@ -170,11 +174,15 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
-
     Client::g_iWinSizeX = SCAST(_uint, GetSystemMetrics(SM_CXSCREEN));
     Client::g_iWinSizeY = SCAST(_uint, GetSystemMetrics(SM_CYSCREEN));
-    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-        0, 0, Client::g_iWinSizeX, Client::g_iWinSizeY, nullptr, nullptr, hInstance, nullptr);
+
+    RECT rc = { 0, 0, SCAST(LONG, Client::g_iWinSizeX), SCAST(LONG, Client::g_iWinSizeY) };
+    DWORD dwStyle = WS_OVERLAPPEDWINDOW;
+    AdjustWindowRect(&rc, dwStyle, FALSE);
+
+    HWND hWnd = CreateWindowW(szWindowClass, szTitle, dwStyle,
+        CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
 
     if (!hWnd)
     {
