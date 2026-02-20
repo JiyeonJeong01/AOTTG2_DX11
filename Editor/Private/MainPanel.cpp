@@ -27,7 +27,7 @@ HRESULT CMainPanel::Initialize()
     auto pProject = CProjectPanel::Create(PANEL_PROJECT);
     auto pInspector = CInspectorPanel::Create(PANEL_INSPECTOR, pHierarchy.get(), pProject.get());
     auto pProfile = CProfilerPanel::Create(PANEL_PROFILE);
-    auto pScene = CScenePanel::Create(PANEL_SCENE);
+    auto pScene = CScenePanel::Create(PANEL_SCENE, pHierarchy.get());
 
     Add_Panel(std::move(pConsole));
     Add_Panel(std::move(pHierarchy));

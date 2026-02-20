@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\ThirdParty\imgui.cpp" />
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo.cpp" />
     <ClCompile Include="..\..\ThirdParty\imgui_draw.cpp" />
     <ClCompile Include="..\..\ThirdParty\imgui_impl_dx11.cpp" />
     <ClCompile Include="..\..\ThirdParty\imgui_impl_win32.cpp" />
@@ -27,6 +28,7 @@
     <ClCompile Include="..\..\ThirdParty\imgui_tables.cpp" />
     <ClCompile Include="..\..\ThirdParty\imgui_widgets.cpp" />
     <ClCompile Include="..\Private\ConsolePanel.cpp" />
+    <ClCompile Include="..\Private\Gizmo.cpp" />
     <ClCompile Include="..\Private\GUI_System.cpp" />
     <ClCompile Include="..\Private\HierarchyPanel.cpp" />
     <ClCompile Include="..\Private\InspectorPanel.cpp" />
@@ -39,6 +41,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\ThirdParty\imconfig.h" />
     <ClInclude Include="..\..\ThirdParty\imgui.h" />
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo.h" />
     <ClInclude Include="..\..\ThirdParty\imgui_impl_dx11.h" />
     <ClInclude Include="..\..\ThirdParty\imgui_impl_win32.h" />
     <ClInclude Include="..\..\ThirdParty\imgui_internal.h" />
@@ -48,6 +51,7 @@
     <ClInclude Include="..\Public\EditorPanel.h" />
     <ClInclude Include="..\Public\Editor_Define.h" />
     <ClInclude Include="..\Public\Editor_Util.h" />
+    <ClInclude Include="..\Public\Gizmo.h" />
     <ClInclude Include="..\Public\GUI_System.h" />
     <ClInclude Include="..\Public\HierarchyPanel.h" />
     <ClInclude Include="..\Public\InspectorPanel.h" />
@@ -161,7 +165,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;IMGUI_DEFINE_MATH_OPERATORS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>../../Client/Public/;../../EngineSDK/inc/;../Public/;../../ThirdParty/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>

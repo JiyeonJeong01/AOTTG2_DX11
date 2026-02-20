@@ -46,6 +46,9 @@
     <Filter Include="01. Editor Panel\View">
       <UniqueIdentifier>{bfac240f-4f47-488e-8a3e-4efe175eea3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. Gizmo">
+      <UniqueIdentifier>{ee7c99e4-dcf4-4e48-a891-6fc851176ad6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Editor.cpp">
@@ -95,6 +98,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\ScenePanel.cpp">
       <Filter>01. Editor Panel\View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\ImGuizmo.cpp">
+      <Filter>99. ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Gizmo.cpp">
+      <Filter>02. Gizmo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +172,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\ScenePanel.h">
       <Filter>01. Editor Panel\View</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\ImGuizmo.h">
+      <Filter>99. ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Gizmo.h">
+      <Filter>02. Gizmo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

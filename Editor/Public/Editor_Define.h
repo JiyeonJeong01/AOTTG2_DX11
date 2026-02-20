@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "Engine_SDK.h"
-#include <psapi.h>
 
 namespace Editor
 {
@@ -32,6 +31,8 @@ namespace Editor
         }
     }ASSET_SELECTION;
 
+    enum class GIZMO_MODE : uint8_t     { TRANSLATE, ROTATE, SCALE };
+    enum class GIZMO_SPACE :uint8_t    { LOCAL, WORLD };
 
 }
 
@@ -45,7 +46,9 @@ extern HINSTANCE g_hInst;
 #ifdef new
 #undef new  
 #endif
+
 #include "imgui.h"
+#include "ImGuizmo.h"
 #include "imgui_internal.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"

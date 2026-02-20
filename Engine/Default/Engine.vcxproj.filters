@@ -124,6 +124,9 @@
     <Filter Include="01. Utility\02. Layer">
       <UniqueIdentifier>{b3f010fe-2dbd-49de-8799-430ce14c3032}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\03. Object\GameObject_UI">
+      <UniqueIdentifier>{696a0970-8aa4-4d79-8c10-5179651aa674}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
