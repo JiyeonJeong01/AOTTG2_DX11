@@ -124,6 +124,9 @@
     <Filter Include="01. Utility\03. Object\GameObject_UI">
       <UniqueIdentifier>{696a0970-8aa4-4d79-8c10-5179651aa674}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\04. Component\10. UI_Components">
+      <UniqueIdentifier>{7bb52f6a-1259-4297-8828-b2816f1abfd5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -327,6 +330,15 @@
     <ClInclude Include="..\Public\LayerHelper.h">
       <Filter>01. Utility\02. Layer</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UI_Processor.h">
+      <Filter>01. Utility\04. Component\10. UI_Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UIImage.h">
+      <Filter>01. Utility\04. Component\10. UI_Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UIButton.h">
+      <Filter>01. Utility\04. Component\10. UI_Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -439,6 +451,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\LayerHelper.cpp">
       <Filter>01. Utility\02. Layer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Processor.cpp">
+      <Filter>01. Utility\04. Component\10. UI_Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIImage.cpp">
+      <Filter>01. Utility\04. Component\10. UI_Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIButton.cpp">
+      <Filter>01. Utility\04. Component\10. UI_Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

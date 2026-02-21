@@ -25,6 +25,8 @@ public:
         return *(((long*)&m_tMouseState) + SCAST(_uint, eMouseState));
     }
 
+    const POINT& Get_MousePos() const;
+
 private:
     static constexpr int	KEY_CNT = 0xff;
     _bool					m_bPrevPress[KEY_CNT];
@@ -33,6 +35,9 @@ private:
     LPDIRECTINPUT8			m_pInputSDK = nullptr;
     LPDIRECTINPUTDEVICE8	m_pMouse = nullptr;
     DIMOUSESTATE			m_tMouseState;
+
+    HWND                    m_hWnd{};
+    POINT                   m_tMousePos{};
 };
 
 NS_END

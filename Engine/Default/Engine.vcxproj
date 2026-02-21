@@ -161,6 +161,9 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\CanvasRenderer_Processor.h" />
     <ClInclude Include="..\Public\CRender_System.h" />
     <ClInclude Include="..\Public\LayerHelper.h" />
+    <ClInclude Include="..\Public\UIButton.h" />
+    <ClInclude Include="..\Public\UIImage.h" />
+    <ClInclude Include="..\Public\UI_Processor.h" />
     <ClInclude Include="..\Public\WindowResize_Event.h" />
     <ClInclude Include="..\Public\Identity.h" />
     <ClInclude Include="..\Public\Asset_Meta.h" />
@@ -262,6 +265,9 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Timer_System.cpp" />
     <ClCompile Include="..\Private\Transform.cpp" />
     <ClCompile Include="..\Private\Transform_Processor.cpp" />
+    <ClCompile Include="..\Private\UIButton.cpp" />
+    <ClCompile Include="..\Private\UIImage.cpp" />
+    <ClCompile Include="..\Private\UI_Processor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Public\Component_System.inl" />

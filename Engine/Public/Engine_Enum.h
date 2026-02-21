@@ -32,6 +32,8 @@ namespace Engine
     enum class DRAW_TYPE    : uint8_t   { MESH = 0, CANVAS, };
     enum class RENDER_LAYER : uint8_t   { PRIORITY = 0, NONBLEND, BLEND, UI, END };
     enum class VERTEX_DECL : uint8_t    { VTXCOL = 0, VTXTEX, };
+    enum class UI_BTN_STATE : uint8_t   { Normal, Hover, Pressed, Disabled };
+
 
     enum RENDER_FLAGS : uint32_t        { RF_NONE = 0, RF_CAST_SHADOW = 1 << 0, RF_RECEIVE_SHADOW = 1 << 1, RF_DISABLE_CULL = 1 << 2, };
     enum CANVAS_FLAGS : uint32_t        { CF_NONE = 0, CF_CLIP_RECT = 1u << 0, CF_PIXEL_SNAP = 1u << 1, };

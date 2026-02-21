@@ -33,6 +33,8 @@ HRESULT CInput_System::Initialize(HWND hWnd, HINSTANCE hInst)
     m_pMouse->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
     m_pMouse->Acquire();
 
+    m_hWnd = hWnd;
+
     return S_OK;
 
 }
@@ -51,6 +53,10 @@ void CInput_System::Update_System()
         if ((GetAsyncKeyState(i) & 0x8000) != 0)
             m_bCurPress[i] = true;
     }
+
+    POINT pt;
+    GetCursorPos(&pt);
+    ScreenToClient(m_hWnd, &m_tMousePos);
 
     m_pMouse->GetDeviceState(sizeof(m_tMouseState), &m_tMouseState);
 }
@@ -71,4 +77,9 @@ _bool CInput_System::Get_KeyUp(int iKey)
 {
     if (iKey < 0 || iKey >= KEY_CNT) return false;
     return (!m_bCurPress[iKey] && m_bPrevPress[iKey]);
+}
+
+const POINT& CInput_System::Get_MousePos() const
+{
+    return m_tMousePos;
 }
