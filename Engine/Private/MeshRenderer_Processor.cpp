@@ -5,6 +5,7 @@
 #include "Transform_Processor.h"
 #include "Engine_Math.h"
 #include "GameObject.h"
+#include "Texture.h"
 
 CMeshRenderer_Processor::CMeshRenderer_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CTransform_Processor* pTransformProcessor)
     : m_pDevice(pDevice), m_pContext(pContext), m_pTransformProcessor(pTransformProcessor)
@@ -85,7 +86,7 @@ void CMeshRenderer_Processor::Build_Queue(std::vector<DRAW_CMD>& outCmds)
             if (pData->hMesh == 0 || pData->hMaterial == 0)
                 continue;
 
-            DRAW_CMD tCmd = DRAW_CMD::Create_Mesh(pData->hMesh, pData->hMaterial, pData->hTransform, pData->flags, 0, 0);
+            DRAW_CMD tCmd = DRAW_CMD::Create_Mesh(pData->hMesh, pData->hMaterial, pData->hMainTex, pData->hTransform, pData->flags, 0, 0);
             tCmd.sortKey = Make_SortKey(*pData);
             outCmds.push_back(tCmd);
         }
@@ -129,21 +130,10 @@ uint64_t CMeshRenderer_Processor::Make_SortKey(const MESH_RENDERER_DATA& tData) 
 
 void CMeshRenderer_Processor::Execute_Draw(const DRAW_CMD& cmd)
 {
-    ID3D11RenderTargetView* curRTV = nullptr;
-    ID3D11DepthStencilView* curDSV = nullptr;
-    m_pContext->OMGetRenderTargets(1, &curRTV, &curDSV);
-
-    // 디버그로 포인터 비교해봐
-    // curRTV == m_pSceneRTV 여야 "핑크 뜨는 그 RT"에 그리고 있는 거임
-
-    if (curRTV) curRTV->Release();
-    if (curDSV) curDSV->Release();
-
-
     const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(cmd.mesh.hMesh);
-    MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(cmd.mesh.hMaterial);
-
     IF_NULL_RETURN_MSG_BREAK(pMesh, , "Mesh is nullptr.");
+
+    MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(cmd.mesh.hMaterial);
     IF_NULL_RETURN_MSG_BREAK(pMat, , "Material is nullptr.");
 
     const SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(pMat->hShader);
@@ -166,7 +156,16 @@ void CMeshRenderer_Processor::Execute_Draw(const DRAW_CMD& cmd)
     pMat->pView->SetMatrix(reinterpret_cast<const float*>(&matView));
     pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&matProj));
 
-    /* TODO : Set Texture*/
+
+    if (cmd.mesh.hMainTexture != INVALID_HANDLE_UINT)
+    {
+        ID3D11ShaderResourceView* pSRV = nullptr;
+
+        auto* pTex = SYS_RESOURCE.Get_Texture(cmd.mesh.hMainTexture);
+        pSRV = pTex->SRV();
+        if (pTex || pTex->Is_Valid())
+            pMat->pMainTex->SetResource(pSRV);
+    }
 
     /* Apply */
     ID3D11InputLayout* pIL = pShader->pPasses[passIndex].pInputLayout.Get();

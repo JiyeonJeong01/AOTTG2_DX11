@@ -64,76 +64,7 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             d->flags = RF_NONE;
         }
 
-        //{
-        //    {
-        //        Engine::CGameObject* pObj = SYS_GAMEOBJECT.Create_GameObjectUI();
-
-        //        // 1) 필수 컴포넌트들
-        //        auto hCR = pObj->Add_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
-        //        auto hImg = pObj->Add_Component<CUIImage>(COMPONENT_TYPE::UI_IMAGE);
-        //        auto hBtn = pObj->Add_Component<CUIButton>(COMPONENT_TYPE::UI_BUTTON);
-
-        //        // 2) RectTransform 세팅 (Update_Buttons가 vPosPx/vSizePx 씀)
-        //        auto rt = pObj->Get_Component<CRectTransform>(COMPONENT_TYPE::RECT_TRANSFORM);
-        //        if (auto* d = rt._Data())
-        //        {
-        //            d->vPosPx = { 400.f, 300.f };   // 화면 좌표계랑 SYS_INPUT.Get_MousePos()랑 같은 기준이어야 함
-        //            d->vSizePx = { 220.f, 80.f };
-        //            d->dirty = true;                // 너 구조에 dirty 있으면
-        //        }
-
-        //        // 3) CanvasRenderer 세팅 (일단 임시)
-        //        auto cr = pObj->Get_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
-        //        if (auto* d = cr._Data())
-        //        {
-        //            d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXTEX); // 있으면 이걸로
-        //            // 없으면 너가 쓰던 임시도 OK:
-        //            // d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXCOL);
-
-        //            d->layer = RENDER_LAYER::NONBLEND;
-        //            d->flags = RF_NONE;
-
-        //            d->hTexture = YOUR_BUTTON_TEX;  // 필수 (0이면 안 나옴)
-        //            d->rcUV = { 0.f, 0.f, 1.f, 1.f };
-        //            d->vColor = { 1.f, 1.f, 1.f, 1.f };
-        //        }
-
-        //        // 4) UIImage: CanvasRenderer에 “동기화 대상” 걸어주기
-        //        auto img = pObj->Get_Component<CUIImage>(COMPONENT_TYPE::UI_IMAGE);
-        //        if (auto* d = img._Data())
-        //        {
-        //            d->hCanvasRenderer = hCR;   // 네 HANDLE 타입에 맞게 (uint32면 그대로)
-        //            d->hTexture = YOUR_BUTTON_TEX;
-        //            d->rcUV = { 0.f, 0.f, 1.f, 1.f };
-        //            d->color = { 1.f, 1.f, 1.f, 1.f };
-        //            d->dirty = true;               // Sync_Images_To_Canvas가 이거 보고 cr에 반영
-        //        }
-
-        //        // 5) UIButton: 히트박스(RT) + 바꿀 대상(CanvasRenderer) 연결
-        //        auto btn = pObj->Get_Component<CUIButton>(COMPONENT_TYPE::UI_BUTTON);
-        //        if (auto* d = btn._Data())
-        //        {
-        //            d->bInteractable = true;
-        //            d->eState = ::Normal;
-
-        //            d->hRectTransform = hRT;
-        //            d->hTargetCanvas = hCR;
-
-        //            d->normal = { 1,1,1,1 };
-        //            d->hover = { 1,1,1,1 };
-        //            d->pressed = { 0.8f,0.8f,0.8f,1 };
-        //            d->disabled = { 0.3f,0.3f,0.3f,1 };
-
-        //            d->normalTex = YOUR_BUTTON_TEX;
-        //            d->hoverTex = INVALID_HANDLE_UINT;   // 없으면 normal로 fallback
-        //            d->pressedTex = INVALID_HANDLE_UINT;
-
-        //            d->normalUV = { 0,0,1,1 };
-        //            d->hoverUV = d->normalUV;
-        //            d->pressedUV = d->normalUV;
-        //        }
-        //    }
-        //}
+        
 
     }
 

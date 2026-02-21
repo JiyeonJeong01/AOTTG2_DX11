@@ -53,6 +53,7 @@ typedef struct ENGINE_DLL tagDrawCmd final
         {
             uint32_t        hMesh = 0;
             uint32_t        hMaterial = 0;
+            uint32_t        hMainTexture = 0;
             COMPONENT_HANDLE hTransform{};
 
             uint32_t        flags = RF_NONE;
@@ -76,12 +77,13 @@ typedef struct ENGINE_DLL tagDrawCmd final
     };
 
 public:
-    static tagDrawCmd Create_Mesh(uint32_t hMesh, uint32_t hMat, COMPONENT_HANDLE hTr, uint32_t flags, uint32_t first, uint32_t count)
+    static tagDrawCmd Create_Mesh(uint32_t hMesh, uint32_t hMat, uint32_t hTex, COMPONENT_HANDLE hTr, uint32_t flags, uint32_t first, uint32_t count)
     {
         tagDrawCmd c{};
         c.kind = DRAW_TYPE::MESH;
         c.mesh.hMesh = hMesh;
         c.mesh.hMaterial = hMat;
+        c.mesh.hMainTexture = hTex;
         c.mesh.hTransform = hTr;
         c.mesh.flags = flags;
         c.mesh.firstIndex = first;

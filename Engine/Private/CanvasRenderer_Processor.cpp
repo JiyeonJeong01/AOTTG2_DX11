@@ -181,12 +181,14 @@ void CCanvasRenderer_Processor::Execute_Draw(const DRAW_CMD& tCmd)
     if (tCmd.kind != DRAW_TYPE::CANVAS)
         return;
 
+    /* 1. Get MESH_ENTRY & MATERIAL_ENTRY */
     const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(m_hUIRectMesh);
-    MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(tCmd.canvas.hMaterial);
-
     IF_NULL_RETURN_MSG_BREAK(pMesh, , "UI Rect Mesh is nullptr.");
+
+    MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(tCmd.canvas.hMaterial);
     IF_NULL_RETURN_MSG_BREAK(pMat, , "Material is nullptr.");
 
+    /* 2. Get SHADER_ENTRY through MATERIAL_ENTRY */
     const SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(pMat->hShader);
     IF_NULL_RETURN_MSG_BREAK(pShader, , "Shader is nullptr.");
 
@@ -194,6 +196,7 @@ void CCanvasRenderer_Processor::Execute_Draw(const DRAW_CMD& tCmd)
     if (passIndex >= pShader->pPasses.size())
         return;
 
+    /* 3. Setting .fx variables */
     // RectTransform world
     const auto rectTransform = m_pRectTransform_Processor->Get_Proxy(COMPONENT_TYPE::RECT_TRANSFORM, tCmd.canvas.hRectTransform);
     IF_TRUE_RETURN_MSG_BREAK(!rectTransform.Is_Valid(), , "RectTransform Proxy is invalid.");
@@ -208,23 +211,25 @@ void CCanvasRenderer_Processor::Execute_Draw(const DRAW_CMD& tCmd)
     ID3DX11Effect* fx = pShader->pEffect.Get();
     IF_NULL_RETURN_MSG_BREAK(fx, , "Shader effect is nullptr.");
 
-    // color
-    if (auto* vColor = fx->GetVariableByName("g_Color")->AsVector())
-        vColor->SetFloatVector(reinterpret_cast<const float*>(&tCmd.canvas.vColor));
+    // ---- per-instance: Color / UV / Texture ----
+    if (pMat->pColor && pMat->pColor->IsValid())
+        pMat->pColor->SetFloatVector(reinterpret_cast<const float*>(&tCmd.canvas.vColor));
 
-    // uv
+    if (pMat->pUV && pMat->pUV->IsValid())
     {
         _float4 uv4 = { tCmd.canvas.rcUV.fLeft, tCmd.canvas.rcUV.fTop, tCmd.canvas.rcUV.fRight, tCmd.canvas.rcUV.fBottom };
-        if (auto* vUV = fx->GetVariableByName("g_UV")->AsVector())
-            vUV->SetFloatVector(reinterpret_cast<const float*>(&uv4));
+        pMat->pUV->SetFloatVector(reinterpret_cast<const float*>(&uv4));
     }
 
-    // texture SRV
-    if (auto* vTex0 = fx->GetVariableByName("g_Tex0")->AsShaderResource())
+    if (pMat->pMainTex && pMat->pMainTex->IsValid())
     {
-        ID3D11ShaderResourceView* pSRV = SYS_RESOURCE.Get_SRV(tCmd.canvas.hTexture);
-
-        vTex0->SetResource(pSRV);
+        ID3D11ShaderResourceView* srv = nullptr;
+        if (tCmd.canvas.hTexture != INVALID_HANDLE_UINT)
+        {
+            const TEXTURE_ENTRY* tex = SYS_RESOURCE.Get_Texture(tCmd.canvas.hTexture);
+            srv = (tex && tex->Is_Valid()) ? tex->SRV() : nullptr;
+        }
+        pMat->pMainTex->SetResource(srv); 
     }
 
     // ---- Clip (Scissor) ----
@@ -247,7 +252,7 @@ void CCanvasRenderer_Processor::Execute_Draw(const DRAW_CMD& tCmd)
         m_pContext->RSSetState(m_rsNoScissor.Get());
     }
 
-    // Apply
+    /* Apply Pass */
     ID3D11InputLayout* pIL = pShader->pPasses[passIndex].pInputLayout.Get();
     m_pContext->IASetInputLayout(pIL);
 

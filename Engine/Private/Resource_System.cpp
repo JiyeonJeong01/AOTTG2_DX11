@@ -23,7 +23,7 @@ HRESULT CResource_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext*
     m_Meshes.emplace_back();
     m_Materials.emplace_back();
     m_Shaders.emplace_back();
-    m_SRVs.emplace_back();
+    m_Textures.emplace_back();
 
     return S_OK;
 }
@@ -38,17 +38,32 @@ uint32_t CResource_System::Load_Texture(const ASSET_GUID& tGUID)
     if (it != m_TextureGUIDMap.end())
         return it->second;
 
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pSRV;
+    auto* pAsset = SYS_ASSET.Find(tGUID);
+    IF_NULL_RETURN_MSG_BREAK(pAsset, INVALID_HANDLE_UINT, "Texture load failed: asset not found.");
 
-    /* TODO TODO 실제 로딩 로직 필요  */
+    filesystem::path path = pAsset->path;
+    wstring ext = path.extension().wstring();
 
-    uint32_t handle = (uint32_t)m_SRVs.size();
-    m_SRVs.push_back(pSRV);
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+
+    HRESULT hr = {};
+    if (ext == L".dds")
+        hr = CreateDDSTextureFromFile(m_pDevice, path.c_str(), nullptr, srv.GetAddressOf());
+    else if (ext == L".tga")
+        hr = E_FAIL;
+    else
+        hr = CreateWICTextureFromFile(m_pDevice, path.c_str(), nullptr, srv.GetAddressOf());
+    IF_FAIL_RETURN_MSG_BREAK(hr, INVALID_HANDLE_UINT, "Texture create failed");
+
+    TEXTURE_ENTRY entry{};
+    entry.pSRV = std::move(srv);
+
+    const uint32_t handle = (uint32_t)m_Textures.size();
+    m_Textures.push_back(std::move(entry));
     m_TextureGUIDMap[tGUID] = handle;
 
     return handle;
 }
-
 uint32_t CResource_System::Load_Material_Temp(const ASSET_GUID& materialGuidAsShaderGuid, uint16_t passIndex)
 {
     const uint32_t hShader = Load_Shader(materialGuidAsShaderGuid);
@@ -196,36 +211,29 @@ uint32_t CResource_System::Load_Material(const MATERIAL_ENTRY& tDesc)
     IF_TRUE_RETURN_MSG_BREAK(!pShader->Is_Valid(), INVALID_HANDLE_UINT, "Load_Material failed: pshader is invalid.");
     IF_TRUE_RETURN_MSG_BREAK(tDesc.passIndex >= pShader->pPasses.size(), INVALID_HANDLE_UINT, "Load_Material failed: passIndex out of range.");
 
-    MATERIAL_ENTRY entry = tDesc;
     ID3DX11Effect* pFx = pShader->pEffect.Get();
     IF_NULL_RETURN_MSG_BREAK(pFx, INVALID_HANDLE_UINT, "Load_Material failed: pFX is nullptr");
 
-    auto FindMatVar = [&](std::initializer_list<const char*> names) -> ID3DX11EffectMatrixVariable*
-        {
-            for (auto* n : names)
-            {
-                if (!n) continue;
-                auto* v = pFx->GetVariableByName(n);
-                if (!v) continue;
-                auto* m = v->AsMatrix();
-                if (m && m->IsValid())
-                    return m;
-            }
-            return nullptr;
-        };
-
+    MATERIAL_ENTRY entry = tDesc;
     entry.pWorld = pFx->GetVariableByName("g_WorldMatrix")->AsMatrix();
     entry.pView = pFx->GetVariableByName("g_ViewMatrix")->AsMatrix();
     entry.pProj = pFx->GetVariableByName("g_ProjMatrix")->AsMatrix();
 
-#ifdef _DEBUG
-    IF_NULL_RETURN_MSG_BREAK(entry.pWorld, INVALID_HANDLE_UINT, "Material matrix variables missing. Check fx variable names.");
-    IF_NULL_RETURN_MSG_BREAK(entry.pView, INVALID_HANDLE_UINT, "Material matrix variables missing. Check fx variable names.");
-    IF_NULL_RETURN_MSG_BREAK(entry.pProj, INVALID_HANDLE_UINT, "Material matrix variables missing. Check fx variable names.");
+    entry.pMainTex = pFx->GetVariableByName("g_MainTex")->AsShaderResource();
+    entry.pColor = pFx->GetVariableByName("g_Color")->AsVector();
+    entry.pUV = pFx->GetVariableByName("g_UVRect")->AsVector();
+    entry.pClip = pFx->GetVariableByName("g_ClipRect")->AsVector();
 
-    IF_TRUE_RETURN_MSG_BREAK(!entry.pWorld->IsValid(), INVALID_HANDLE_UINT, "Matrix variables not found in shader.");
-    IF_TRUE_RETURN_MSG_BREAK(!entry.pView->IsValid(), INVALID_HANDLE_UINT, "Matrix variables not found in shader.");
-    IF_TRUE_RETURN_MSG_BREAK(!entry.pProj->IsValid(), INVALID_HANDLE_UINT, "Matrix variables not found in shader.");
+
+#ifdef _DEBUG
+    IF_TRUE_RETURN_MSG_BREAK(!entry.pWorld || !entry.pWorld->IsValid(), INVALID_HANDLE_UINT, "Material matrix variable invalid: g_WorldMatrix");
+    IF_TRUE_RETURN_MSG_BREAK(!entry.pView || !entry.pView->IsValid(), INVALID_HANDLE_UINT, "Material matrix variable invalid: g_ViewMatrix");
+    IF_TRUE_RETURN_MSG_BREAK(!entry.pProj || !entry.pProj->IsValid(), INVALID_HANDLE_UINT, "Material matrix variable invalid: g_ProjMatrix");
+
+    //IF_TRUE_RETURN_MSG_BREAK(entry.pMainTex && !entry.pMainTex->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_MainTex");
+    //IF_TRUE_RETURN_MSG_BREAK(entry.pColor && !entry.pColor->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_Color");
+    //IF_TRUE_RETURN_MSG_BREAK(entry.pUV && !entry.pUV->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_UVRect");
+    //IF_TRUE_RETURN_MSG_BREAK(entry.pClip && !entry.pClip->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_ClipRect");
 #endif
 
     const uint32_t handle = (uint32_t)m_Materials.size();
@@ -233,15 +241,6 @@ uint32_t CResource_System::Load_Material(const MATERIAL_ENTRY& tDesc)
     m_MaterialComboMap.emplace(key, handle);
 
     return handle;
-}
-
-
-ID3D11ShaderResourceView* CResource_System::Get_SRV(uint32_t handle) const
-{
-    if (handle == INVALID_HANDLE_UINT || handle >= m_SRVs.size())
-        return nullptr;
-
-    return m_SRVs[handle].Get();
 }
 
 const MESH_ENTRY* CResource_System::Get_Mesh(uint32_t handle) const
@@ -258,6 +257,14 @@ const SHADER_ENTRY* CResource_System::Get_Shader(uint32_t handle) const
         return nullptr;
 
     return &m_Shaders[handle];
+}
+
+const TEXTURE_ENTRY* CResource_System::Get_Texture(uint32_t handle) const
+{
+    if (handle == INVALID_HANDLE_UINT || handle >= m_Textures.size())
+        return nullptr;
+
+    return &m_Textures[handle];
 }
 
 MATERIAL_ENTRY* CResource_System::Get_Material(uint32_t handle)

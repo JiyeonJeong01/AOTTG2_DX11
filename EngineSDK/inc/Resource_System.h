@@ -4,6 +4,7 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "Shader.h"
+#include "Texture.h"
 
 NS_BEGIN(Engine)
     /*
@@ -32,7 +33,7 @@ public:
     const MESH_ENTRY*           Get_Mesh(uint32_t handle) const;
     MATERIAL_ENTRY*             Get_Material(uint32_t handle);
     const SHADER_ENTRY*         Get_Shader(uint32_t handle) const;
-    ID3D11ShaderResourceView*   Get_SRV(uint32_t handle) const;
+    const TEXTURE_ENTRY*        Get_Texture(uint32_t handle) const;
 
 private :
     /* ---- MESH ---- */
@@ -49,7 +50,7 @@ private :
     std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_ShaderGUIDMap;
 
     /* ---- TEXTURE ---- */
-    std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_SRVs;
+    std::vector<TEXTURE_ENTRY> m_Textures;
     std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_TextureGUIDMap;
 
 private :
