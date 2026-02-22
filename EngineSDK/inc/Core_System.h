@@ -6,7 +6,7 @@ NS_BEGIN(Engine)
 
 class CGraphic_Device;
 class CTimer_System;
-class CScene_Manager;
+class CScene_Handler;
 class CPrototype_Manager;
 
 class ENGINE_DLL CCore_System final
@@ -36,8 +36,9 @@ public: /* For.Timer_Manager */
 	_float Compute_SystemDT() const;
 	_float Compute_FrameDT() const;
 
-public: /* For.Scene_Manager */
+public: /* For.Scene_Handler */
     HRESULT Change_Scene(_uint iNewLevelIndex, class CLevel* pNewLevel);
+    HRESULT Save_SceneFile(const std::filesystem::path& path);
 
 //public: /* For.Prototype_Manager */
 //    HRESULT Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, CBase* pPrototype);

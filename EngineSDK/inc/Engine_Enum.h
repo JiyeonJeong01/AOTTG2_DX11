@@ -12,17 +12,16 @@ namespace Engine
                                             RECT_TRANSFORM, CANVAS_RENDERER, UI_IMAGE, UI_BUTTON, UI_TEXT, END };
     enum class PROCESSOR_ID : uint8_t
     {
-        CORE = 0,              // 기본/없음/기타
+        SCRIPT,                // Script
         TRANSFORM,             // CTransform
         RECT_TRANSFORM,        // CRectTransform
-        RENDER,                // MeshRenderer
-        CANVAS,                // CanvasRenderer
-        UI,                    // UIImage / UIButton / UIText
-        PHYSICS,               // Collider / Rigidbody
-        SCRIPT,                // Script
-        AUDIO,                 // AudioListener / AudioSource
         ANIMATION,             // Animator
         CAMERA,                // Camera
+        MESH_RENDERER,         // MeshRenderer
+        CANVAS_RENDERER,       // CanvasRenderer
+        UI,                    // UIImage / UIButton / UIText
+        PHYSICS,               // Collider / Rigidbody
+        AUDIO,                 // AudioListener / AudioSource
         END
     };
 

@@ -1,22 +1,23 @@
-﻿#include "Scene_Manager.h"
+﻿#include "Scene_Handler.h"
 
 #include "Component_Spec.h"
 #include "Core_System.h"
 #include "Component_System.h"
+#include "GameObject_System.h"
 #include "Prototype_System.h"
 #include "Scene.h"
 
 NS_BEGIN(Engine)
 
-CScene_Manager::CScene_Manager()
+CScene_Handler::CScene_Handler()
 {
 }
 
-CScene_Manager::~CScene_Manager()
+CScene_Handler::~CScene_Handler()
 {
 }
 
-HRESULT CScene_Manager::Change_Scene(_uint iNewSceneIndex, std::unique_ptr<CScene> pNewScene)
+HRESULT CScene_Handler::Change_Scene(_uint iNewSceneIndex, std::unique_ptr<CScene> pNewScene)
 {
     if (nullptr != m_pCurrentScene)
         SYS_CORE.Clear_Resources(m_iCurrentSceneIndex);
@@ -27,13 +28,13 @@ HRESULT CScene_Manager::Change_Scene(_uint iNewSceneIndex, std::unique_ptr<CScen
     return S_OK;
 }
 
-void CScene_Manager::Update(_float fTimeDelta)
+void CScene_Handler::Update(_float fTimeDelta)
 {
     if (nullptr != m_pCurrentScene)
         m_pCurrentScene->Update(fTimeDelta);
 }
 
-HRESULT CScene_Manager::Render()
+HRESULT CScene_Handler::Render()
 {
     if (nullptr != m_pCurrentScene)
         m_pCurrentScene->Render();
@@ -41,7 +42,7 @@ HRESULT CScene_Manager::Render()
     return S_OK;
 }
 
-json CScene_Manager::Serialize_SceneObjectSpec(const SCENE_OBJECT_SPEC& tSpec)
+json CScene_Handler::Serialize_SceneObjectSpec(const SCENE_OBJECT_SPEC& tSpec)
 {
     json j;
     j["uuid"] = tSpec.uuid.To_String_Utf8();
@@ -69,7 +70,7 @@ json CScene_Manager::Serialize_SceneObjectSpec(const SCENE_OBJECT_SPEC& tSpec)
     return j;
 }
 
-_bool CScene_Manager::Deserialize_SceneObjectSpec(const json& j, SCENE_OBJECT_SPEC& out, SpecFactoryFn createSpec)
+_bool CScene_Handler::Deserialize_SceneObjectSpec(const json& j, SCENE_OBJECT_SPEC& out, SpecFactoryFn createSpec)
 {
     if (!INSTANCE_UUID::Try_Utf8_To_UUID(j.value("uuid", ""), out.uuid))
         return false;
@@ -78,7 +79,7 @@ _bool CScene_Manager::Deserialize_SceneObjectSpec(const json& j, SCENE_OBJECT_SP
         return false;
 
     out.name = j.value("name", "");
-    out.layer = (Layer::LAYER_ID)j.value("layer", (uint32_t)Layer::INVALID_LAYER);
+    out.layer = (Layer::LAYER_ID)j.value("layer", (uint32_t)Layer::DEFAULT_LAYER);
 
     /* parent uuid can be null */
     const std::string parentStr = j.value("parent", "");
@@ -121,7 +122,7 @@ _bool CScene_Manager::Deserialize_SceneObjectSpec(const json& j, SCENE_OBJECT_SP
     return true;
 }
 
-HRESULT CScene_Manager::Apply_Overrides(CGameObject* pObject, const COMPONENT_SPEC_BUNDLE& tBundle)
+HRESULT CScene_Handler::Apply_Overrides(CGameObject* pObject, const COMPONENT_SPEC_BUNDLE& tBundle)
 {
     for (const auto& upSpec : tBundle.components)
     {
@@ -131,13 +132,13 @@ HRESULT CScene_Manager::Apply_Overrides(CGameObject* pObject, const COMPONENT_SP
             _DEBUG_WARN("COMPONENT_SPEC is nullptr; so skip this.");
             continue;
         }
-        SYS_COMPONENT.Create_From_Spec(pObject, upSpec.get());
+        SYS_COMPONENT.Create_Component_From_Spec(pObject, upSpec.get());
     }
 
     return S_OK;
 }
 
-std::unique_ptr<COMPONENT_SPEC_BASE> CScene_Manager::Create_Spec_By_Type(COMPONENT_TYPE eType)
+std::unique_ptr<COMPONENT_SPEC_BASE> CScene_Handler::Create_Spec_By_Type(COMPONENT_TYPE eType)
 {
     switch (eType)
     {
@@ -147,7 +148,7 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CScene_Manager::Create_Spec_By_Type(COMPONE
     }
 }
 
-HRESULT CScene_Manager::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& tSpecs)
+HRESULT CScene_Handler::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& tSpecs)
 {
     std::unordered_set<ASSET_GUID, ASSET_GUID_HASHER> protoGUIDs;
     protoGUIDs.reserve(tSpecs.size()); /* max size */
@@ -196,7 +197,15 @@ HRESULT CScene_Manager::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& 
     return S_OK;
 }
 
-_bool CScene_Manager::Save_SceneFile(const std::vector<SCENE_OBJECT_SPEC>& objects, const std::filesystem::path& path)
+_bool CScene_Handler::Save_CurrentScene(const std::filesystem::path& path)
+{
+    std::vector<SCENE_OBJECT_SPEC> specs;
+
+
+    return true;
+}
+
+_bool CScene_Handler::Save_SceneFile(const std::vector<SCENE_OBJECT_SPEC>& objects, const std::filesystem::path& path)
 {
     json root;
     root["version"] = 1;
@@ -206,12 +215,13 @@ _bool CScene_Manager::Save_SceneFile(const std::vector<SCENE_OBJECT_SPEC>& objec
         root["objects"].push_back(Serialize_SceneObjectSpec(o));
 
     std::ofstream ofs(path);
-    if (!ofs.is_open()) return false;
+    if (!ofs.is_open())
+        return false;
     ofs << root.dump(2);
     return true;
 }
 
-_bool CScene_Manager::Load_SceneFile(std::vector<SCENE_OBJECT_SPEC>& outObjectSpecs, const std::filesystem::path& path, SpecFactoryFn createSpec)
+_bool CScene_Handler::Load_SceneFile(std::vector<SCENE_OBJECT_SPEC>& outObjectSpecs, const std::filesystem::path& path, SpecFactoryFn createSpec)
 {
     std::ifstream ifs(path);
     if (!ifs.is_open()) return false;
@@ -233,9 +243,9 @@ _bool CScene_Manager::Load_SceneFile(std::vector<SCENE_OBJECT_SPEC>& outObjectSp
     return true;
 }
 
-std::unique_ptr<CScene_Manager> CScene_Manager::Create()
+std::unique_ptr<CScene_Handler> CScene_Handler::Create()
 {
-    return std::make_unique<CScene_Manager>();
+    return std::make_unique<CScene_Handler>();
 }
 
 NS_END

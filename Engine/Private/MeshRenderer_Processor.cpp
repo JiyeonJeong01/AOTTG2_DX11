@@ -25,7 +25,7 @@ HRESULT CMeshRenderer_Processor::Initialize()
 {
     IF_NULL_RETURN_MSG_BREAK(m_pTransformProcessor, E_FAIL, "Transform Processor is nullptr");
 
-    SYS_COMPONENT.Register_Factory<CMeshRenderer, MESH_RENDERER_SPEC>(COMPONENT_TYPE::MESH_RENDERER);
+    SYS_COMPONENT.Register_InitialSpecFactory<CMeshRenderer, MESH_RENDERER_SPEC>(COMPONENT_TYPE::MESH_RENDERER);
 
     return S_OK;
 }
@@ -93,7 +93,7 @@ void CMeshRenderer_Processor::Build_Queue(std::vector<DRAW_CMD>& outCmds)
     }
 }
 
-HRESULT CMeshRenderer_Processor::Initialize_From_Spec_Impl(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
+HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
 {
     MESH_RENDERER_DATA* pData = m_Pool.Get_Data_By_Handle(handle);
     _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid MeshRenderer handle in Initialize_From_Spec");
@@ -105,6 +105,25 @@ HRESULT CMeshRenderer_Processor::Initialize_From_Spec_Impl(COMPONENT_HANDLE hand
     pData->sortZ = SCAST(const MESH_RENDERER_SPEC*, pSpec)->sortZ;
 
     return S_OK;
+}
+
+std::unique_ptr<COMPONENT_SPEC_BASE>
+CMeshRenderer_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
+{
+    IF_TRUE_RETURN_MSG_BREAK(eComType != COMPONENT_TYPE::MESH_RENDERER, nullptr, "Wrong component type.");
+
+    MESH_RENDERER_DATA* pData = m_Pool.Get_Data_By_Handle(hComponent);
+    IF_NULL_RETURN_MSG_BREAK(pData, nullptr, "Invalid MeshRenderer handle in Build_Spec");
+
+    auto spec = std::make_unique<MESH_RENDERER_SPEC>();
+    spec->meshGUID = SYS_RESOURCE.Get_Mesh(pData->hMesh)->tGUID;
+    spec->materialGUID = SYS_RESOURCE.Get_Material(pData->hMaterial)->tGUID;
+    spec->passIndex = 0;
+    spec->flags = pData->flags;
+    spec->layer = pData->layer;
+    spec->sortZ = pData->sortZ;
+
+    return spec;
 }
 
 void CMeshRenderer_Processor::Initialize_Component_Data(COMPONENT_HANDLE hComponent)

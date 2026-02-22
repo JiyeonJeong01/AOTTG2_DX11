@@ -51,5 +51,5 @@ public :
 
 protected :
     virtual void Initialize_Component_Data(COMPONENT_HANDLE hComponent) {};
-    virtual HRESULT Initialize_From_Spec_Impl(COMPONENT_HANDLE, const COMPONENT_SPEC_BASE*) { return S_OK; }
+    virtual HRESULT Initialize_From_Spec_Impl(COMPONENT_HANDLE, const COMPONENT_SPEC_BASE*) { return S_OK; } /* In case multi-com processor */
 };

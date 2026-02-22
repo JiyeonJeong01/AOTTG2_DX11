@@ -38,7 +38,7 @@ HRESULT CCanvasRenderer_Processor::Initialize(_uint iWidth, _uint iHeight)
     rd.ScissorEnable = TRUE;
     IF_FAIL_RETURN_MSG_BREAK(m_pDevice->CreateRasterizerState(&rd, m_rsScissor.GetAddressOf()), E_FAIL, "CCanvasRenderer_Processor initialize failed");
 
-    SYS_COMPONENT.Register_Factory<CCanvasRenderer, CANVAS_RENDERER_SPEC>(COMPONENT_TYPE::CANVAS_RENDERER);
+    SYS_COMPONENT.Register_InitialSpecFactory<CCanvasRenderer, CANVAS_RENDERER_SPEC>(COMPONENT_TYPE::CANVAS_RENDERER);
 
     return S_OK;
 }
@@ -111,7 +111,7 @@ void CCanvasRenderer_Processor::Build_Queue(std::vector<DRAW_CMD>& outCmds)
     }
 }
 
-HRESULT CCanvasRenderer_Processor::Initialize_From_Spec_Impl(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
+HRESULT CCanvasRenderer_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
 {
     auto* pData = m_Pool.Get_Data_By_Handle(handle);
     _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid CanvasRenderer handle in Initialize_From_Spec");
@@ -127,7 +127,7 @@ HRESULT CCanvasRenderer_Processor::Initialize_From_Spec_Impl(COMPONENT_HANDLE ha
     if (spec->textureGUID.Is_Valid())
         pData->hTexture = SYS_RESOURCE.Load_Texture(spec->textureGUID);
     else
-        pData->hTexture = INVALID_HANDLE_UINT;
+        pData->hTexture = SYS_RESOURCE.Load_Texture(DefaultAssetGuid::TEXTURE_UI_DEFAULT);
 
     // Params
     pData->vColor = spec->vColor;
@@ -138,6 +138,39 @@ HRESULT CCanvasRenderer_Processor::Initialize_From_Spec_Impl(COMPONENT_HANDLE ha
     pData->sortZ = spec->sortZ;
 
     return S_OK;
+}
+
+std::unique_ptr<COMPONENT_SPEC_BASE>
+CCanvasRenderer_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
+{
+    IF_TRUE_RETURN_MSG_BREAK(eComType != COMPONENT_TYPE::CANVAS_RENDERER, nullptr, "Wrong component type.");
+
+    CANVAS_RENDERER_DATA* pData = m_Pool.Get_Data_By_Handle(hComponent);
+    IF_NULL_RETURN_MSG_BREAK(pData, nullptr, "Invalid CanvasRenderer handle in Build_Spec");
+
+    auto spec = std::make_unique<CANVAS_RENDERER_SPEC>();
+
+    spec->materialGUID = DEFAULT_ASSET_GUID::MATERIAL_UI_DEFAULT;
+
+    /* --- Texture GUID --- */
+    if (pData->hTexture != INVALID_HANDLE_UINT)
+    {
+        const TEXTURE_ENTRY* pTex = SYS_RESOURCE.Get_Texture(pData->hTexture);
+        if (pTex && pTex->tGUID.Is_Valid())
+            spec->textureGUID = pTex->tGUID;
+        else
+            spec->textureGUID = DefaultAssetGuid::TEXTURE_UI_DEFAULT;
+    }
+
+    spec->vColor = pData->vColor;
+    spec->rcUV = pData->rcUV;
+    spec->rcClip = pData->rcClip;
+
+    spec->flags = pData->flags;
+    spec->layer = pData->layer;
+    spec->sortZ = pData->sortZ;
+
+    return spec;
 }
 
 void CCanvasRenderer_Processor::Initialize_Component_Data(COMPONENT_HANDLE hComponent)

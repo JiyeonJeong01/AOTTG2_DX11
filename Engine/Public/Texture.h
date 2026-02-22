@@ -3,6 +3,8 @@
 
 typedef struct ENGINE_DLL tagTextureEntry final
 {
+    ASSET_GUID  tGUID{};
+
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pSRV;
 
     _bool Is_Valid() const noexcept

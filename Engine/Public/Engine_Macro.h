@@ -111,7 +111,7 @@ private:                                                    \
 
 
 //#define RESOURCES	GET_INSTANCE(CResourceManager)
-//#define SCENE		GET_INSTANCE(CSceneManager)
+//#define SCENE		GET_INSTANCE(CScene_Handler)
 //#define SOUND		GET_INSTANCE(CSoundManager)
 
 }

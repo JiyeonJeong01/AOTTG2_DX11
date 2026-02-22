@@ -427,6 +427,43 @@ bool CGameObject_System::Is_Valid_Handle(OBJECT_HANDLE hObj) const
     return tData.bActive && (tData.iVersion == hObj.Version());
 }
 
+HRESULT CGameObject_System::Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& outSpecs)
+{
+    outSpecs.clear();
+    outSpecs.reserve(m_dataPool.size() - m_freeIndices.size() - 1);
+
+    size_t iTotalObjects = m_dataPool.size();
+    for (size_t i = 0; i < iTotalObjects; ++i)
+    {
+        auto pObj = m_wrapperPool[i].get();
+        if (!pObj || !pObj->Is_Valid())
+            continue;
+
+        SCENE_OBJECT_SPEC spec;
+        spec.uuid = Get_UUID(pObj);
+        spec.name = pObj->Get_Label();
+        spec.parent = pObj->Get_Parent() == nullptr ? INSTANCE_UUID{} : Get_UUID(pObj->Get_Parent());
+        spec.layer = pObj->Get_Layer();
+
+        Component::COMPONENT_MASK mask = pObj->Get_ComponentMask();
+        for (_uint j = 0; j < COMPONENT_MAX; ++j)
+        {
+            if ((mask & Component::Component_Bit(INT_TO_COM(j))) == 0)
+                continue;
+
+            vector<COMPONENT_HANDLE> hComponents;
+            SYS_COMPONENT.Get_Component_Handle_By_Type(INT_TO_COM(j), pObj->Get_Handle(), hComponents);
+            for (auto hCom : hComponents)
+                spec.overrides.components[j] =  SYS_COMPONENT.Build_Spec_By_Type(INT_TO_COM(j), hCom);
+        }
+
+        outSpecs.emplace_back(std::move(spec));
+
+    }
+    return S_OK;
+}
+
+
 CLayerHelper& CGameObject_System::Layers() const
 {
     return *(m_pLayerHelper.get());

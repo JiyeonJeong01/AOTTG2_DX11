@@ -6,7 +6,8 @@
 
 HRESULT CTransform_Processor::Initialize()
 {
-    SYS_COMPONENT.Register_Factory<CTransform, TRANSFORM_SPEC>(COMPONENT_TYPE::TRANSFORM);
+    SYS_COMPONENT.Register_InitialSpecFactory<CTransform, TRANSFORM_SPEC>(COMPONENT_TYPE::TRANSFORM);
+    SYS_COMPONENT.Register_BuildSpecFacotry<CTransform>(COMPONENT_TYPE::TRANSFORM);
 
     return S_OK;
 }
@@ -15,7 +16,7 @@ void CTransform_Processor::LateUpdate(_float fDT)
 {
 }
 
-HRESULT CTransform_Processor::Initialize_From_Spec_Impl(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
+HRESULT CTransform_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
 {
     TRANSFORM_DATA* pData = m_Pool.Get_Data_By_Handle(handle);
     _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Transform handle in Initialize_From_Spec");
@@ -26,6 +27,23 @@ HRESULT CTransform_Processor::Initialize_From_Spec_Impl(COMPONENT_HANDLE handle,
 
     Bake_World(pData);
     return S_OK;
+}
+
+std::unique_ptr<COMPONENT_SPEC_BASE>
+CTransform_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
+{
+    IF_TRUE_RETURN_MSG_BREAK(eComType != COMPONENT_TYPE::TRANSFORM, nullptr, "Wrong component type.");
+
+    TRANSFORM_DATA* pData = m_Pool.Get_Data_By_Handle(hComponent);
+    IF_NULL_RETURN_MSG_BREAK(pData, nullptr, "Invalid handle.");
+
+    auto spec = std::make_unique<TRANSFORM_SPEC>();
+
+    spec->vPosition = pData->vPosition;
+    spec->vRotationQuat = pData->vRotationQuat;
+    spec->vScale = pData->vScale;
+
+    return spec;
 }
 
 void CTransform_Processor::Update(_float fDT)

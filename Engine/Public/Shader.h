@@ -1,10 +1,13 @@
 ﻿#pragma once
 #include "Engine_Define.h"
+#include "Identity.h"
 
 NS_BEGIN(Engine)
 
 typedef struct ENGINE_DLL tagShaderEntry final
 {
+    ASSET_GUID  tGUID{};
+
     Microsoft::WRL::ComPtr<ID3DX11Effect> pEffect{}; /* .fx file  */
     ID3DX11EffectTechnique* pTech = nullptr;
 

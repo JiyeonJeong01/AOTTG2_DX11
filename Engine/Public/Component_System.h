@@ -17,14 +17,19 @@ public :
 	void Render();
 
 public : /* Component Processor */
+    /* Create component with default value */
 	COMPONENT_HANDLE Create_Component_By_Type(COMPONENT_TYPE eComType, OBJECT_HANDLE hGameObject);
-    void Create_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec);
-    void Remove_Component_By_Type(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle);
-	template <typename TProxy>
-	TProxy Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle);
 
-    template <typename TProxy, typename TSpec>
-    void Register_Factory(COMPONENT_TYPE eComType);
+    /* Build spec with exsiting component handle */
+    std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec_By_Type(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent);
+
+    /* Create component with spec value  */
+    void Create_Component_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec);
+
+    void Remove_Component_By_Type(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle);
+
+    void Get_Component_Handle_By_Type(COMPONENT_TYPE eComType, OBJECT_HANDLE hObj, vector<COMPONENT_HANDLE>& outHandles);
+
 
 public : /* CComponentGroup_Manager */
 	uint32_t				Promote(COMPONENT_HANDLE hOld, COMPONENT_HANDLE hNew);
@@ -33,7 +38,7 @@ public : /* CComponentGroup_Manager */
 	void					Free_Group(uint32_t iGroupID);
 
 private :
-    void Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pBase);
+    void Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pBase);
 
 private :
 
@@ -44,9 +49,25 @@ private :
     std::unique_ptr<CComponentGroup_Manager> 		m_pComGroupMgr{ };
     static std::array <PROCESSOR_ID, COMPONENT_MAX> m_TypeToProcessorIndex;
 
-    using FACTORY_FN = void(*)(CComponent_System*, COMPONENT_TYPE, CGameObject*, const COMPONENT_SPEC_BASE*);
-    FACTORY_FN  m_factory[SCAST(_uint, COMPONENT_TYPE::END)]{};
+    using I_FACTORY_FN = void(*)(CComponent_System*, COMPONENT_TYPE, CGameObject*, const COMPONENT_SPEC_BASE*);
+    I_FACTORY_FN  m_InitialSpecFactory[COMPONENT_MAX]{};
+
+    using B_FACTORY_FN = std::unique_ptr<COMPONENT_SPEC_BASE>(*)(CComponent_System*, COMPONENT_TYPE, COMPONENT_HANDLE);
+    B_FACTORY_FN  m_BuildSpecFactory[COMPONENT_MAX]{};
+
+public :
+    template <typename TProxy>
+    TProxy Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle);
+
+    /* Register a callback for Initialize_From_Spec() */
+    template <typename TProxy, typename TSpec>
+    void Register_InitialSpecFactory(COMPONENT_TYPE eComType);
+
+    /* Register a callback for Build_Spec_By_Type */
+    template<typename TProxy>
+    void Register_BuildSpecFacotry(COMPONENT_TYPE eComType);
 };
+
 
 NS_END
 

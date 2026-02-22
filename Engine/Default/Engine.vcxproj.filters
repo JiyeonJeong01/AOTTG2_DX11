@@ -207,7 +207,7 @@
     <ClInclude Include="..\Public\Scene.h">
       <Filter>01. Utility\01. Scene</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Scene_Manager.h">
+    <ClInclude Include="..\Public\Scene_Handler.h">
       <Filter>01. Utility\01. Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Event_System.h">
@@ -380,7 +380,7 @@
     <ClCompile Include="..\Private\Scene.cpp">
       <Filter>01. Utility\01. Scene</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Scene_Manager.cpp">
+    <ClCompile Include="..\Private\Scene_Handler.cpp">
       <Filter>01. Utility\01. Scene</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Event_System.cpp">

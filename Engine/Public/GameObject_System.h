@@ -2,10 +2,10 @@
 
 #include "Engine_Define.h"
 #include "Object_Struct.h"
+#include "Spec_Struct.h"
 
 NS_BEGIN(Engine)
-
-class CGameObject;
+    class CGameObject;
 class CLayerHelper;
 
 class ENGINE_DLL CGameObject_System final
@@ -35,6 +35,8 @@ public:
     GAMEOBJECT_DATA&    Access_Data_Raw(OBJECT_HANDLE hObj);
     CGameObject*        Get_Wrapper(OBJECT_HANDLE hObj);
     _bool               Is_Valid_Handle(OBJECT_HANDLE hObj) const;
+
+    HRESULT             Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& outSpecs);
 
     /* --- Helpers ---*/
 public :

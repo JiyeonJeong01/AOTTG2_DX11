@@ -1,18 +1,19 @@
 ﻿#pragma once
 #include "Engine_Define.h"
-#include <wrl/client.h>
+#include "Identity.h"
 
 NS_BEGIN(Engine)
 
 typedef struct ENGINE_DLL tagMaterialEntry final
 {
+    ASSET_GUID  tGUID{};
+
     uint32_t hShader = 0;
     uint16_t passIndex = 0;
 
     ID3DX11EffectMatrixVariable* pWorld = nullptr;
     ID3DX11EffectMatrixVariable* pView = nullptr;
     ID3DX11EffectMatrixVariable* pProj = nullptr;
-
 
     /* UI / Sprite params (optional but recommended) */
     ID3DX11EffectShaderResourceVariable* pMainTex = nullptr;   // diffuse/albedo/main tex

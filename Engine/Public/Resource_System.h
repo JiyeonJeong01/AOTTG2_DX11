@@ -42,7 +42,7 @@ private :
 
     /* ---- MATERIAL ---- */
     std::vector<MATERIAL_ENTRY> m_Materials;
-    std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_MaterialGUIDMap; // (hShader, passIndex) -> handle
+    std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_MaterialGUIDMap;
     std::unordered_map<uint64_t, uint32_t> m_MaterialComboMap;
 
     /* ---- SHADER ---- */

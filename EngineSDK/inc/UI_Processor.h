@@ -28,6 +28,7 @@ public:
     COMPONENT_HANDLE Create_Component_Data(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject) override;
     void Remove_Component(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) override;
     HRESULT Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pSpec) override;
+    std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) override;
 
     template<typename TProxy>
     TProxy Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)

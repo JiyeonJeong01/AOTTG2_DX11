@@ -59,7 +59,7 @@ HRESULT CPrototype::Apply_Spec_To_Instance(CGameObject* pInstance) const
         if (!pSpec.get())
             return E_FAIL;
 
-        SYS_COMPONENT.Create_From_Spec(pInstance, pSpec.get());
+        SYS_COMPONENT.Create_Component_From_Spec(pInstance, pSpec.get());
     }
 
     pInstance->Set_ComponentMask(m_componentMask);

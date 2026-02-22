@@ -9,26 +9,7 @@
 
 IMPLEMENT_SINGLETON(CComponent_System)
 
-std::array<PROCESSOR_ID, COMPONENT_MAX>
-CComponent_System::m_TypeToProcessorIndex =
-{
-    PROCESSOR_ID::TRANSFORM,       // TRANSFORM
-    PROCESSOR_ID::PHYSICS,         // COLLIDER
-    PROCESSOR_ID::PHYSICS,         // RIGIDBODY
-    PROCESSOR_ID::SCRIPT,          // SCRIPT
-    PROCESSOR_ID::RENDER,          // MESH_RENDERER
-    PROCESSOR_ID::ANIMATION,       // ANIMATOR
-    PROCESSOR_ID::CAMERA,          // CAMERA
-    PROCESSOR_ID::AUDIO,           // AUDIO_LISTENER
-    PROCESSOR_ID::AUDIO,           // AUDIO_SOURCE
 
-    PROCESSOR_ID::RECT_TRANSFORM,  // RECT_TRANSFORM
-    PROCESSOR_ID::CANVAS,          // CANVAS_RENDERER
-
-    PROCESSOR_ID::UI,              // UI_IMAGE
-    PROCESSOR_ID::UI,              // UI_BUTTON
-    PROCESSOR_ID::UI               // UI_TEXT
-};
 
 CComponent_System::CComponent_System() = default;
 CComponent_System::~CComponent_System() = default;
@@ -43,16 +24,16 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
 
     m_pComGroupMgr = CComponentGroup_Manager::Create();
 
-    m_pComProcessors.resize(SCAST(_uint, COMPONENT_TYPE::END));
+    m_pComProcessors.resize(COMPONENT_PROCESSOR_MAX);
 
-    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TRANSFORM)]
+    m_pComProcessors[PID_TO_INT(PROCESSOR_ID::TRANSFORM)]
         = CTransform_Processor::Create();
-    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::MESH_RENDERER)]
-        = CMeshRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CTransform_Processor*, m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::TRANSFORM)].get()));
-    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::RECT_TRANSFORM)]
+    m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)]
+        = CMeshRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CTransform_Processor*, m_pComProcessors[COM_TO_PID(COMPONENT_TYPE::TRANSFORM)].get()));
+    m_pComProcessors[PID_TO_INT(PROCESSOR_ID::RECT_TRANSFORM)]
         = CRectTransform_Processor::Create();
-    m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::CANVAS_RENDERER)]
-        = CCanvasRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CRectTransform_Processor*, m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::RECT_TRANSFORM)].get()), iWidth, iHeight);
+    m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)]
+        = CCanvasRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CRectTransform_Processor*, m_pComProcessors[COM_TO_PID(COMPONENT_TYPE::RECT_TRANSFORM)].get()), iWidth, iHeight);
 
 
 	return S_OK;
@@ -80,25 +61,30 @@ void CComponent_System::FixedUpdate(_float fDT)
 
 void CComponent_System::Render()
 {
-    SCAST(CMeshRenderer_Processor*, m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::MESH_RENDERER)].get())->Render();
-    SCAST(CCanvasRenderer_Processor*, m_pComProcessors[SCAST(_uint, COMPONENT_TYPE::CANVAS_RENDERER)].get())->Render();
+    IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)], , "m_pComProcessor is nullptr");
+    IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)], , "m_pComProcessor is nullptr");
+
+    SCAST(CMeshRenderer_Processor*, m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)].get())->Render();
+    SCAST(CCanvasRenderer_Processor*, m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)].get())->Render();
 }
 
 COMPONENT_HANDLE CComponent_System::Create_Component_By_Type(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject)
 {
-    const uint32_t iIndex = SCAST(_uint, eComType);
-    IF_TRUE_RETURN_MSG_BREAK((iIndex >= SCAST(_uint, COMPONENT_TYPE::END) || !m_pComProcessors[iIndex]), COMPONENT_HANDLE{}, "Processor not registered for this component type.");
+    const uint32_t iComIdx = COM_TO_INT(eComType);
+    const uint32_t iProcIdx = COM_TO_PID(eComType);
+    IF_TRUE_RETURN_MSG_BREAK((iComIdx >= COMPONENT_MAX || iProcIdx >= COMPONENT_PROCESSOR_MAX || !m_pComProcessors[iProcIdx]), COMPONENT_HANDLE{},
+        "Processor not registered for this component type.");
 
-    return m_pComProcessors[iIndex]->Create_Component_Data(eComType, hObject);
+    return m_pComProcessors[iProcIdx]->Create_Component_Data(eComType, hObject);
 }
 
-void CComponent_System::Create_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec)
+void CComponent_System::Create_Component_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec)
 {
     IF_NULL_RETURN_MSG_BREAK(pObj, , "Create from spec failed: pObj is nullptr.");
     IF_NULL_RETURN_MSG_BREAK(pSpec, , "Create from spec failed: pSpec is nullptr.");
 
     const COMPONENT_TYPE eType = pSpec->Get_Type();
-    auto fn = m_factory[SCAST(_uint, eType)];
+    auto fn = m_InitialSpecFactory[COM_TO_INT(eType)];
     IF_NULL_RETURN_MSG_BREAK(fn, , "Factory not registered for this component type.");
 
     fn(this, eType, pObj, pSpec);
@@ -106,16 +92,68 @@ void CComponent_System::Create_From_Spec(CGameObject* pObj, const COMPONENT_SPEC
 
 void CComponent_System::Remove_Component_By_Type(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle)
 {
-    const uint32_t iIndex = SCAST(_uint, eComType);
-    IF_TRUE_RETURN_MSG_BREAK((iIndex >= SCAST(_uint, COMPONENT_TYPE::END) || !m_pComProcessors[iIndex]), , "Processor not registered for this component type.");
+    const uint32_t iComIdx = COM_TO_INT(eComType);
+    const uint32_t iProcIdx = COM_TO_PID(eComType);
+    IF_TRUE_RETURN_MSG_BREAK((iComIdx >= COMPONENT_MAX || iProcIdx >= COMPONENT_PROCESSOR_MAX || !m_pComProcessors[iProcIdx]), ,
+        "Processor not registered for this component type.");
 
-    m_pComProcessors[iIndex]->Remove_Component(eComType, handle);
+    m_pComProcessors[iProcIdx]->Remove_Component(eComType, handle);
 }
 
-void CComponent_System::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pBase)
+void CComponent_System::Get_Component_Handle_By_Type(COMPONENT_TYPE eComType, OBJECT_HANDLE hObj, vector<COMPONENT_HANDLE>& outHandles)
 {
-    IF_TRUE_RETURN_MSG_BREAK((SCAST(_uint, eComType) >= SCAST(_uint, COMPONENT_TYPE::END)), , "Invalid component type");
-    IF_FAIL_RETURN_MSG_BREAK(m_pComProcessors[SCAST(_uint, eComType)]->Initialize_From_Spec(eComType, handle, pBase), , "Failed initialize with spec");
+    outHandles.clear();
+
+    const GAMEOBJECT_DATA& tData = SYS_GAMEOBJECT.Access_Data_Raw(hObj);
+
+    const uint32_t iSlotData = tData.iComponentSlots[COM_TO_INT(eComType)];
+    if (iSlotData == Component::INVALID_COMPONENT_SLOT)
+    {
+        return;
+    }
+    if ((iSlotData & Component::GROUP_FLAG) == 0)
+    {
+        COMPONENT_HANDLE hComponent;
+        hComponent.iHandle = iSlotData;
+        outHandles.push_back(hComponent);
+        return ;
+    }
+    const uint32_t iGroupID = iSlotData & Component::DATA_MASK;
+    const auto& tGroup = Get_Group(iGroupID);
+
+    outHandles.reserve(tGroup.tExtras.size() + 1);
+    outHandles.push_back(tGroup.tPrimary);
+
+    for (auto& hCom : tGroup.tExtras)
+        outHandles.push_back(hCom);
+}
+
+void CComponent_System::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pBase)
+{
+    const uint32_t iComIdx = COM_TO_INT(eComType);
+    const uint32_t iProcIdx = COM_TO_PID(eComType);
+
+    IF_TRUE_RETURN_MSG_BREAK((iComIdx >= COMPONENT_MAX), , "Invalid component type");
+    IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[iProcIdx], , "m_pComProcessor is nullptr");
+    IF_FAIL_RETURN_MSG_BREAK(m_pComProcessors[iProcIdx]->Initialize_From_Spec(eComType, hComponent, pBase), ,
+        "Failed initialize with spec");
+}
+
+std::unique_ptr<COMPONENT_SPEC_BASE> CComponent_System::Build_Spec_By_Type(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
+{
+    /* --------------------------------------------------------------------------------------------------------------
+     * WARNING: Do NOT register this function in Register_BuildSpecFactory.  Doing so will cause infinite recursion.
+     * --------------------------------------------------------------------------------------------------------------*/
+    const uint32_t iComIdx = COM_TO_INT(eComType);
+
+    IF_TRUE_RETURN_MSG_BREAK((iComIdx >= COMPONENT_MAX), nullptr, "Invalid component type");
+
+    auto fn = m_BuildSpecFactory[iComIdx];
+    IF_NULL_RETURN_MSG_BREAK(fn, nullptr, "Factory not registered for this component type.");
+
+    auto upSpec = fn(this, eComType, hComponent);
+    IF_NULL_RETURN_MSG_BREAK(upSpec, nullptr, "Factory not registered for this component type.");
+    return upSpec;
 }
 
 uint32_t CComponent_System::Promote(COMPONENT_HANDLE hOld, COMPONENT_HANDLE hNew)

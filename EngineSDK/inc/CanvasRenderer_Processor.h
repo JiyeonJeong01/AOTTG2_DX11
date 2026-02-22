@@ -25,7 +25,8 @@ public:
 
     void    Build_Queue(std::vector<DRAW_CMD>& outCmds);
 
-    HRESULT Initialize_From_Spec_Impl(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) override;
+    HRESULT Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) override;
+    std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) override;
 
 private:
     void    Initialize_Component_Data(COMPONENT_HANDLE hComponent) override;

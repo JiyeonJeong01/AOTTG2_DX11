@@ -13,7 +13,7 @@ std::unique_ptr<CRectTransform_Processor> CRectTransform_Processor::Create()
 
 HRESULT CRectTransform_Processor::Initialize()
 {
-    SYS_COMPONENT.Register_Factory<CRectTransform, RECTTRANSFORM_SPEC>(COMPONENT_TYPE::RECT_TRANSFORM);
+    SYS_COMPONENT.Register_InitialSpecFactory<CRectTransform, RECTTRANSFORM_SPEC>(COMPONENT_TYPE::RECT_TRANSFORM);
 
     return S_OK;
 }
@@ -52,7 +52,7 @@ void CRectTransform_Processor::LateUpdate(_float)
 {
 }
 
-HRESULT CRectTransform_Processor::Initialize_From_Spec_Impl(COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
+HRESULT CRectTransform_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
 {
     if (m_fHeight == 0 || m_fWidth == 0)
     {
@@ -71,6 +71,21 @@ HRESULT CRectTransform_Processor::Initialize_From_Spec_Impl(COMPONENT_HANDLE han
     Bake_World(pData);
 
     return S_OK;
+}
+
+std::unique_ptr<COMPONENT_SPEC_BASE>
+CRectTransform_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
+{
+    IF_TRUE_RETURN_MSG_BREAK(eComType != COMPONENT_TYPE::RECT_TRANSFORM, nullptr, "Wrong component type.");
+
+    RECTTRANSFORM_DATA* pData = m_Pool.Get_Data_By_Handle(hComponent);
+    IF_NULL_RETURN_MSG_BREAK(pData, nullptr, "Invalid RectTransform handle in Build_Spec.");
+
+    auto spec = std::make_unique<RECTTRANSFORM_SPEC>();
+    spec->vPosPx = pData->vPosPx;
+    spec->vSizePx = pData->vSizePx;
+
+    return spec;
 }
 
 inline void CRectTransform_Processor::Bake_World(RECTTRANSFORM_DATA* pData)

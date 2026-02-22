@@ -115,6 +115,11 @@ HRESULT CUI_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_H
     return S_OK;
 }
 
+std::unique_ptr<COMPONENT_SPEC_BASE> CUI_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
+{
+    return nullptr;
+}
+
 void CUI_Processor::Sync_Images_To_Canvas()
 {
     const auto& ImagePages = m_ImagePool.GetPages();
