@@ -15,6 +15,7 @@
 #include "Timer_System.h"
 
 /* --- event --- */
+#include "Scene_Handler.h"
 #include "WindowResize_Event.h"
 
 NS_BEGIN(Engine)
@@ -44,22 +45,20 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
     _uint iWidth = EngineDesc.iViewportSize.first;
     _uint iHeight = EngineDesc.iViewportSize.second;
 
-    /* --- Device --- */
-    {
-        m_pGraphic_Device = CGraphic_Device::Create(EngineDesc.hWnd, EngineDesc.eWinMode, iWidth, iHeight, ppDevice, ppContext);
-        if (nullptr == m_pGraphic_Device)
-            return E_FAIL;
-    }
+    /* --- Graphic Device ---*/
+    m_pGraphic_Device = CGraphic_Device::Create(EngineDesc.hWnd, EngineDesc.eWinMode, iWidth, iHeight, ppDevice, ppContext);
+    IF_NULL_RETURN_MSG_BREAK(m_pGraphic_Device, E_FAIL, "CGraphic_Device create failed");
 
     m_pDevice = *ppDevice;
     m_pContext = *ppContext;
 
     /* --- Timer ---*/
-    {
-        m_pTimerSystem = CTimer_System::Create();
-        if (nullptr == m_pTimerSystem)
-            return E_FAIL;
-    }
+    m_pTimerSystem = CTimer_System::Create();
+    IF_NULL_RETURN_MSG_BREAK(m_pTimerSystem, E_FAIL, "CTimer_System create failed");
+
+    /* --- Scene ---*/
+    m_pScene_Handler = CScene_Handler::Create();
+    IF_NULL_RETURN_MSG_BREAK(m_pScene_Handler, E_FAIL, "CScene_Handler create failed");
 
     /* --- Log System --- */
     IF_FAIL_RETURN_MSG_BREAK(SYS_LOG.Initialize(), E_FAIL, "Log System failed Initialize");
@@ -184,6 +183,11 @@ _float CCore_System::Compute_FrameDT() const
 HRESULT CCore_System::Change_Scene(_uint iNewLevelIndex, CLevel* pNewLevel)
 {
     return S_OK;
+}
+
+HRESULT CCore_System::Save_CurrentScene(const std::filesystem::path& path)
+{
+    return m_pScene_Handler->Save_CurrentScene(path);
 }
 
 NS_END

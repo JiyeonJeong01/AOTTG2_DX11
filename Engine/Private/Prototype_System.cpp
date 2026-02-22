@@ -61,7 +61,7 @@ CGameObject* CPrototype_System::Clone(const ASSET_GUID& tGUID, Layer::LAYER_ID i
     if (!pProto)
         return nullptr;
 
-    return pProto->Clone(iLayer, strName, tUUID);
+    return pProto->Clone(tGUID, iLayer, strName, tUUID);
 }
 
 NS_END

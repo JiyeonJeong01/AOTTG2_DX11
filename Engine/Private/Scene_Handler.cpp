@@ -42,6 +42,35 @@ HRESULT CScene_Handler::Render()
     return S_OK;
 }
 
+_bool CScene_Handler::Save_CurrentScene(const std::filesystem::path& path)
+{
+    std::vector<SCENE_OBJECT_SPEC> specs;
+
+    IF_FAIL_RETURN_MSG_BREAK(SYS_GAMEOBJECT.Build_SceneSpecs(specs), false, "GameObject_System failed to serialize");
+
+    /* Ensure save path */
+    std::error_code ec;
+    std::filesystem::create_directories(path.parent_path(), ec);
+
+    return Save_SceneFile(std::move(specs), path);;
+}
+
+_bool CScene_Handler::Save_SceneFile(const std::vector<SCENE_OBJECT_SPEC>& objects, const std::filesystem::path& path)
+{
+    json root;
+    root["version"] = 1;
+    root["objects"] = json::array();
+
+    for (const auto& o : objects)
+        root["objects"].push_back(Serialize_SceneObjectSpec(o));
+
+    std::ofstream ofs(path);
+    if (!ofs.is_open())
+        return false;
+    ofs << root.dump(2);
+    return true;
+}
+
 json CScene_Handler::Serialize_SceneObjectSpec(const SCENE_OBJECT_SPEC& tSpec)
 {
     json j;
@@ -197,29 +226,7 @@ HRESULT CScene_Handler::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& 
     return S_OK;
 }
 
-_bool CScene_Handler::Save_CurrentScene(const std::filesystem::path& path)
-{
-    std::vector<SCENE_OBJECT_SPEC> specs;
 
-
-    return true;
-}
-
-_bool CScene_Handler::Save_SceneFile(const std::vector<SCENE_OBJECT_SPEC>& objects, const std::filesystem::path& path)
-{
-    json root;
-    root["version"] = 1;
-    root["objects"] = json::array();
-
-    for (const auto& o : objects)
-        root["objects"].push_back(Serialize_SceneObjectSpec(o));
-
-    std::ofstream ofs(path);
-    if (!ofs.is_open())
-        return false;
-    ofs << root.dump(2);
-    return true;
-}
 
 _bool CScene_Handler::Load_SceneFile(std::vector<SCENE_OBJECT_SPEC>& outObjectSpecs, const std::filesystem::path& path, SpecFactoryFn createSpec)
 {

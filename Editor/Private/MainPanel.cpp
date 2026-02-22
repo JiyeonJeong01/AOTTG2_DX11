@@ -3,6 +3,7 @@
 
 #include "Core_System.h"
 #include "ConsolePanel.h"
+#include "Editor_Util.h"
 #include "HierarchyPanel.h"
 #include "InspectorPanel.h"
 #include "ProjectPanel.h"
@@ -164,6 +165,8 @@ void CMainPanel::Draw_MenuBar()
 
 void CMainPanel::Draw_Menu_File()
 {
+    std::wstring sceneFolder = Editor_Util::Get_SceneRoot().wstring();
+
     if (ImGui::MenuItem("New SCENE", "Ctrl+N"))
     {
         if (m_fnNewScene)
@@ -174,7 +177,12 @@ void CMainPanel::Draw_Menu_File()
 
     if (ImGui::MenuItem("Open SCENE...", "Ctrl+O"))
     {
-        const std::wstring path = OpenFileDialog(L"SCENE Files (*.scene)\0*.scene\0All Files (*.*)\0*.*\0\0");
+        // [반영] 다이얼로그를 열 때 씬 루트 폴더에서 시작하도록 설정
+        const std::wstring path = Editor_Util::SaveFileDialog(
+            L"SCENE Files (*.scene)\0*.scene\0All Files (*.*)\0*.*\0\0",
+            sceneFolder.c_str()
+        );
+
         if (!path.empty())
         {
             if (m_fnOpenScene)
@@ -186,23 +194,24 @@ void CMainPanel::Draw_Menu_File()
 
     ImGui::Separator();
 
-    // Save: if no path is set, behave like Save As.
+    // Save: 현재 경로가 없으면 Save As처럼 동작
     if (ImGui::MenuItem("Save SCENE", "Ctrl+S"))
     {
         if (!m_scenePath.empty())
         {
-            if (m_fnSaveScene)
-                m_fnSaveScene();
-            m_bSceneDirty = false;
+            IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Save_CurrentScene(m_scenePath), , "Save scene failed");
         }
         else
         {
-            const std::wstring path = OpenFileDialog(L"SCENE Files (*.scene)\0*.scene\0\0");
+            const std::wstring path = Editor_Util::SaveFileDialog(
+                L"SCENE Files (*.scene)\0*.scene\0\0",
+                sceneFolder.c_str()
+            );
+
             if (!path.empty())
             {
-                if (m_fnSaveAsScene)
-                    m_fnSaveAsScene(path);
                 m_scenePath = path;
+                IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Save_CurrentScene(m_scenePath), , "Save scene failed");
                 m_bSceneDirty = false;
             }
         }
@@ -210,7 +219,12 @@ void CMainPanel::Draw_Menu_File()
 
     if (ImGui::MenuItem("Save As SCENE...", "Ctrl+Shift+S"))
     {
-        const std::wstring path = OpenFileDialog(L"SCENE Files (*.scene)\0*.scene\0\0");
+        // [반영] 다른 이름으로 저장 시에도 씬 폴더에서 시작
+        const std::wstring path = Editor_Util::SaveFileDialog(
+            L"SCENE Files (*.scene)\0*.scene\0\0",
+            sceneFolder.c_str()
+        );
+
         if (!path.empty())
         {
             if (m_fnSaveAsScene)

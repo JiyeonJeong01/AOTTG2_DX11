@@ -36,7 +36,10 @@ typedef struct tagComponentSpecBundle
         return nullptr;
     }
 
-    tagComponentSpecBundle() = default;
+    tagComponentSpecBundle()
+    {
+        components.resize(COMPONENT_MAX);
+    };
     ~tagComponentSpecBundle() = default;
     tagComponentSpecBundle(const tagComponentSpecBundle&) = delete;
     tagComponentSpecBundle& operator=(const tagComponentSpecBundle&) = delete;

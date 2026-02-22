@@ -26,7 +26,7 @@ HRESULT CMeshRenderer_Processor::Initialize()
     IF_NULL_RETURN_MSG_BREAK(m_pTransformProcessor, E_FAIL, "Transform Processor is nullptr");
 
     SYS_COMPONENT.Register_InitialSpecFactory<CMeshRenderer, MESH_RENDERER_SPEC>(COMPONENT_TYPE::MESH_RENDERER);
-
+    SYS_COMPONENT.Register_BuildSpecFacotry<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
     return S_OK;
 }
 

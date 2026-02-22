@@ -70,6 +70,7 @@ uint32_t CResource_System::Load_Material_Temp(const ASSET_GUID& materialGuidAsSh
     if (hShader == INVALID_HANDLE_UINT) return INVALID_HANDLE_UINT;
 
     MATERIAL_ENTRY e{};
+    e.tGUID = materialGuidAsShaderGuid;
     e.hShader = hShader;
     e.passIndex = passIndex;
 
@@ -84,6 +85,7 @@ uint32_t CResource_System::Load_Mesh(const ASSET_GUID& tGUID)
         return it->second;
 
     MESH_ENTRY entry{};
+    entry.tGUID = tGUID;
     HRESULT hr = S_OK;
 
     auto pRec = SYS_ASSET.Find(tGUID);
@@ -135,6 +137,7 @@ uint32_t CResource_System::Load_Shader(const ASSET_GUID& tGUID)
 
 #endif	
     SHADER_ENTRY entry{};
+    entry.tGUID = tGUID;
     HRESULT hr = D3DX11CompileEffectFromFile(shaderPath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, iHlslFlag, 0, m_pDevice, entry.pEffect.GetAddressOf(), nullptr);
     IF_FAIL_RETURN_MSG_BREAK(hr, INVALID_HANDLE_UINT, "Create Effect file failed");
 
@@ -181,6 +184,8 @@ uint32_t CResource_System::Load_Material(const ASSET_GUID& tGUID)
         return it->second;
 
     MATERIAL_ENTRY desc{};
+    desc.tGUID = tGUID;
+
     /* ---------------------------------------------------------------------------- */
     /* TODO : 셰이더, 패스 추가 시 아래 로직 변경. 현재는 기본 셰이더, 0번 패스만 가져옴 */
     /* ---------------------------------------------------------------------------- */

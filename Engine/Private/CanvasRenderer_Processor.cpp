@@ -39,7 +39,7 @@ HRESULT CCanvasRenderer_Processor::Initialize(_uint iWidth, _uint iHeight)
     IF_FAIL_RETURN_MSG_BREAK(m_pDevice->CreateRasterizerState(&rd, m_rsScissor.GetAddressOf()), E_FAIL, "CCanvasRenderer_Processor initialize failed");
 
     SYS_COMPONENT.Register_InitialSpecFactory<CCanvasRenderer, CANVAS_RENDERER_SPEC>(COMPONENT_TYPE::CANVAS_RENDERER);
-
+    SYS_COMPONENT.Register_BuildSpecFacotry<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
     return S_OK;
 }
 

@@ -438,12 +438,14 @@ HRESULT CGameObject_System::Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& out
         auto pObj = m_wrapperPool[i].get();
         if (!pObj || !pObj->Is_Valid())
             continue;
+        auto tData = m_dataPool[i];
 
         SCENE_OBJECT_SPEC spec;
         spec.uuid = Get_UUID(pObj);
         spec.name = pObj->Get_Label();
         spec.parent = pObj->Get_Parent() == nullptr ? INSTANCE_UUID{} : Get_UUID(pObj->Get_Parent());
         spec.layer = pObj->Get_Layer();
+        spec.protoGuid = tData.tProtoGUID;
 
         Component::COMPONENT_MASK mask = pObj->Get_ComponentMask();
         for (_uint j = 0; j < COMPONENT_MAX; ++j)
@@ -455,6 +457,7 @@ HRESULT CGameObject_System::Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& out
             SYS_COMPONENT.Get_Component_Handle_By_Type(INT_TO_COM(j), pObj->Get_Handle(), hComponents);
             for (auto hCom : hComponents)
                 spec.overrides.components[j] =  SYS_COMPONENT.Build_Spec_By_Type(INT_TO_COM(j), hCom);
+            __noop;
         }
 
         outSpecs.emplace_back(std::move(spec));

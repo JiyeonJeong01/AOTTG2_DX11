@@ -143,9 +143,6 @@ HRESULT CGameObject::Remove_Child(CGameObject* pChild)
 
 void CGameObject::Add_Child_Inner(OBJECT_HANDLE hChild)
 {
-    if (!Is_Valid())
-        return;
-
     GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
 
     auto it = std::find(data.hChildren.begin(), data.hChildren.end(), hChild);
@@ -157,9 +154,6 @@ void CGameObject::Add_Child_Inner(OBJECT_HANDLE hChild)
 
 void CGameObject::Remove_Child_Inner(OBJECT_HANDLE hChild)
 {
-    if (!Is_Valid())
-        return;
-
     GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
 
     auto it = std::find(data.hChildren.begin(), data.hChildren.end(), hChild);
@@ -172,9 +166,6 @@ void CGameObject::Remove_Child_Inner(OBJECT_HANDLE hChild)
 std::vector<CGameObject*> CGameObject::Get_Children() const
 {
     std::vector<CGameObject*> result;
-
-    if (!Is_Valid())
-        return result;
 
     const GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
     result.reserve(data.hChildren.size());
@@ -191,9 +182,6 @@ std::vector<CGameObject*> CGameObject::Get_Children() const
 
 OBJECT_HANDLE CGameObject::Get_Handle() const
 {
-    if (!Is_Valid())
-        return OBJECT_HANDLE{};
-
     return m_hSelf;
 }
 
@@ -208,43 +196,38 @@ _bool CGameObject::Is_Valid() const
 
 void CGameObject::Set_Active(_bool bActive)
 {
-    if (!Is_Valid())
-        return;
-
     SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).bActive = bActive;
 }
 
 _bool CGameObject::Get_Active() const
 {
-    if (!Is_Valid())
-        return false;
-
     return SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).bActive;
 }
 
 void CGameObject::Set_ComponentMask(Component::COMPONENT_MASK mask)
 {
-    if (!Is_Valid())
-        return ;
-
     SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).componentMask = mask;
 }
 
 Component::COMPONENT_MASK CGameObject::Get_ComponentMask() const
 {
-    if (!Is_Valid())
-        return 0;
-
     return SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).componentMask;
 }
 
 Layer::LAYER_ID CGameObject::Get_Layer() const
 {
-    if (!Is_Valid())
-        return Layer::INVALID_LAYER;
-
     const GAMEOBJECT_DATA& tData = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
     return tData.layer;
+}
+
+const ASSET_GUID& CGameObject::Get_ProtoGUID() const
+{
+    return SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).tProtoGUID;
+}
+
+void CGameObject::Set_ProtoGUID(const ASSET_GUID& tGUID)
+{
+    SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).tProtoGUID = tGUID;
 }
 
 CGameObject* CGameObject::Clone()
@@ -254,19 +237,36 @@ CGameObject* CGameObject::Clone()
 
     std::string cloneName = std::string(Get_Label()) + "_Clone";
 
-    const GAMEOBJECT_DATA& tData = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
-    CGameObject* pClone = SYS_GAMEOBJECT.Create_GameObject(tData.layer, cloneName, nullptr);
-    if (!pClone)
-        return nullptr;
+    const GAMEOBJECT_DATA& srcObjData = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
 
-    // 데이터 복사 (컴포넌트 등)
-    // todo ++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // [TODO] 컴포넌트 복사 로직 (Data Copy)
-    // GAMEOBJECT_DATA& srcData  = SYS_GAMEOBJECT->Access_Data_Raw(m_hSelf);
-    // GAMEOBJECT_DATA& destData = SYS_GAMEOBJECT->Access_Data_Raw(pClone->Get_Handle());
-    //
-    // destData.iComponentSlots ... 복사 필요
-    // todo ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    CGameObject* pClone = SYS_GAMEOBJECT.Create_GameObject(srcObjData.layer, cloneName, Get_Parent());
+    IF_NULL_RETURN_MSG_BREAK(pClone, nullptr, "Create GameObject failed");
+
+    GAMEOBJECT_DATA& dstObjData = SYS_GAMEOBJECT.Access_Data_Raw(pClone->Get_Handle());
+
+    dstObjData.tProtoGUID = srcObjData.tProtoGUID;
+    dstObjData.layer = srcObjData.layer;
+
+    const Component::COMPONENT_MASK srcMask = Get_ComponentMask();
+
+    for (_uint j = 0; j < COMPONENT_MAX; ++j)
+    {
+        const COMPONENT_TYPE eComType = INT_TO_COM(j);
+        if ((srcMask & Component::Component_Bit(eComType)) == 0)
+            continue;
+
+        std::vector<COMPONENT_HANDLE> srcComps;
+        SYS_COMPONENT.Get_Component_Handle_By_Type(eComType, m_hSelf, srcComps);
+
+        for (const auto hSrcCom : srcComps)
+        {
+            auto upSpec = SYS_COMPONENT.Build_Spec_By_Type(eComType, hSrcCom);
+            if (!upSpec)
+                continue;
+            SYS_COMPONENT.Create_Component_From_Spec(pClone, upSpec.get());
+            __noop;
+        }
+    }
 
     return pClone;
 }

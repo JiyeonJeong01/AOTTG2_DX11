@@ -38,15 +38,15 @@ public: /* For.Timer_Manager */
 
 public: /* For.Scene_Handler */
     HRESULT Change_Scene(_uint iNewLevelIndex, class CLevel* pNewLevel);
-    HRESULT Save_SceneFile(const std::filesystem::path& path);
+    HRESULT Save_CurrentScene(const std::filesystem::path& path);
 
-//public: /* For.Prototype_Manager */
-//    HRESULT Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, CBase* pPrototype);
-//    CBase* Clone_Prototype(PROTOTYPE ePrototype, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
+
+
 
 private:
 	std::unique_ptr<CGraphic_Device>		m_pGraphic_Device{ };
     std::unique_ptr<CTimer_System>		    m_pTimerSystem{ };
+    std::unique_ptr<CScene_Handler>         m_pScene_Handler{ };
 
     ID3D11Device*               m_pDevice{};
     ID3D11DeviceContext*        m_pContext{};

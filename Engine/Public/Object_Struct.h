@@ -16,6 +16,7 @@ typedef struct tagGameObjectData
     _bool       bActive = false;
     _bool       bPendingDestroy = false;
     INSTANCE_UUID   tUUID{};
+    ASSET_GUID      tProtoGUID{};
 
     /* For layer access in O(1) */
     Layer::LAYER_ID layer = Layer::INVALID_LAYER;

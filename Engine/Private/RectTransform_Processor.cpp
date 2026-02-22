@@ -8,13 +8,15 @@ NS_BEGIN(Engine)
 
 std::unique_ptr<CRectTransform_Processor> CRectTransform_Processor::Create()
 {
-    return std::make_unique<CRectTransform_Processor>();
+    auto pInstance = std::make_unique<CRectTransform_Processor>();
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "Create instance failed");
+    return pInstance;
 }
 
 HRESULT CRectTransform_Processor::Initialize()
 {
     SYS_COMPONENT.Register_InitialSpecFactory<CRectTransform, RECTTRANSFORM_SPEC>(COMPONENT_TYPE::RECT_TRANSFORM);
-
+    SYS_COMPONENT.Register_BuildSpecFacotry<CRectTransform>(COMPONENT_TYPE::RECT_TRANSFORM);
     return S_OK;
 }
 
