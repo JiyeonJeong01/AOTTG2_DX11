@@ -41,6 +41,8 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
     if (FAILED(SYS_CORE.Initialize_Engine(EngineDesc, &m_pDevice, &m_pContext)))
         return E_FAIL;
 
+    ASSET_GUID tmp("DB38B6FB-5648-436F-A1A9-CC3FFD659A0F");
+
     /* TEST : Create GameObject with various components */
     for (int i = 0; i < 1; ++i) {
         {
@@ -48,10 +50,11 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             pObj->Add_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
             auto mr = pObj->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
             auto* d = mr._Data();
-            d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXCOL); // 임시: material=shader
+            d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXTEX);
             d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_CUBE);      // 또는 CreateCubeMesh()
             d->layer = RENDER_LAYER::NONBLEND;
             d->flags = RF_NONE;
+            d->hMainTex = SYS_RESOURCE.Load_Texture(tmp);
         }
 
         {
@@ -59,9 +62,10 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             pObj->Add_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
             auto mr = pObj->Get_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
             auto* d = mr._Data();
-            d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXCOL); // 임시: material=shader
+            d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXTEX);
             d->layer = RENDER_LAYER::NONBLEND;
             d->flags = RF_NONE;
+            d->hTexture = SYS_RESOURCE.Load_Texture(tmp);
         }
 
         

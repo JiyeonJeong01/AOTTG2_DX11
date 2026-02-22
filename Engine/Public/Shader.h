@@ -16,7 +16,7 @@ typedef struct ENGINE_DLL tagShaderEntry final
 
     std::vector<PASS_CACHE> pPasses;
 
-    VERTEX_DECL eDecl = VERTEX_DECL::VTXCOL;
+    VERTEX_DECL eDecl = VERTEX_DECL::VTXTEX;
 
 public:
     _bool Is_Valid() const noexcept

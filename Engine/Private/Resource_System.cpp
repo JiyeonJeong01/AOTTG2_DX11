@@ -160,7 +160,8 @@ uint32_t CResource_System::Load_Shader(const ASSET_GUID& tGUID)
         D3DX11_PASS_DESC PassDesc{};
         cache.pPass->GetDesc(&PassDesc);
 
-        HRESULT hr = m_pDevice->CreateInputLayout(g_IL_TABLE[SCAST(_uint, entry.eDecl)].pDesc, g_IL_TABLE[SCAST(_uint, entry.eDecl)].iCount, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, cache.pInputLayout.GetAddressOf());
+        //HRESULT hr = m_pDevice->CreateInputLayout(g_IL_TABLE[SCAST(_uint, entry.eDecl)].pDesc, g_IL_TABLE[SCAST(_uint, entry.eDecl)].iCount, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, cache.pInputLayout.GetAddressOf());
+        HRESULT hr = m_pDevice->CreateInputLayout(g_IL_TABLE[SCAST(_uint, VERTEX_DECL::VTXTEX)].pDesc, g_IL_TABLE[SCAST(_uint, VERTEX_DECL::VTXTEX)].iCount, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, cache.pInputLayout.GetAddressOf());
         IF_FAIL_RETURN_MSG_BREAK(hr, INVALID_HANDLE_UINT, "Create InputLayout failed! Shader: %ls, Pass Index: %d", shaderPath.c_str(), i);
 
         entry.pPasses.push_back(cache);
@@ -183,7 +184,7 @@ uint32_t CResource_System::Load_Material(const ASSET_GUID& tGUID)
     /* ---------------------------------------------------------------------------- */
     /* TODO : 셰이더, 패스 추가 시 아래 로직 변경. 현재는 기본 셰이더, 0번 패스만 가져옴 */
     /* ---------------------------------------------------------------------------- */
-    desc.hShader = Load_Shader(DEFAULT_ASSET_GUID::SHADER_VTXCOL);
+    desc.hShader = Load_Shader(DEFAULT_ASSET_GUID::SHADER_VTXTEX);
     desc.passIndex = 0;
 
     if (desc.hShader == INVALID_HANDLE_UINT)
@@ -220,9 +221,9 @@ uint32_t CResource_System::Load_Material(const MATERIAL_ENTRY& tDesc)
     entry.pProj = pFx->GetVariableByName("g_ProjMatrix")->AsMatrix();
 
     entry.pMainTex = pFx->GetVariableByName("g_MainTex")->AsShaderResource();
-    entry.pColor = pFx->GetVariableByName("g_Color")->AsVector();
-    entry.pUV = pFx->GetVariableByName("g_UVRect")->AsVector();
-    entry.pClip = pFx->GetVariableByName("g_ClipRect")->AsVector();
+    //entry.pColor = pFx->GetVariableByName("g_Color")->AsVector();
+    //entry.pUV = pFx->GetVariableByName("g_UVRect")->AsVector();
+    //entry.pClip = pFx->GetVariableByName("g_ClipRect")->AsVector();
 
 
 #ifdef _DEBUG
@@ -230,7 +231,7 @@ uint32_t CResource_System::Load_Material(const MATERIAL_ENTRY& tDesc)
     IF_TRUE_RETURN_MSG_BREAK(!entry.pView || !entry.pView->IsValid(), INVALID_HANDLE_UINT, "Material matrix variable invalid: g_ViewMatrix");
     IF_TRUE_RETURN_MSG_BREAK(!entry.pProj || !entry.pProj->IsValid(), INVALID_HANDLE_UINT, "Material matrix variable invalid: g_ProjMatrix");
 
-    //IF_TRUE_RETURN_MSG_BREAK(entry.pMainTex && !entry.pMainTex->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_MainTex");
+    IF_TRUE_RETURN_MSG_BREAK(entry.pMainTex && !entry.pMainTex->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_MainTex");
     //IF_TRUE_RETURN_MSG_BREAK(entry.pColor && !entry.pColor->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_Color");
     //IF_TRUE_RETURN_MSG_BREAK(entry.pUV && !entry.pUV->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_UVRect");
     //IF_TRUE_RETURN_MSG_BREAK(entry.pClip && !entry.pClip->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_ClipRect");
