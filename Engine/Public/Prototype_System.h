@@ -33,6 +33,7 @@ public:
 
 private:
     std::unordered_map<ASSET_GUID, std::unique_ptr<CPrototype>, ASSET_GUID_HASHER> m_Prototypes;
+    std::unordered_map<ASSET_GUID, std::unique_ptr<CPrototype>, ASSET_GUID_HASHER> m_CurScene_Prototypes; // 씬핸들러가 파일 읽어서 얘한테 요청해놓기
 };
 
 NS_END

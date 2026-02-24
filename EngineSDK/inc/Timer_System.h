@@ -5,11 +5,11 @@
 NS_BEGIN(Engine)
 
 class CTimer;
-class CTimer_System final
+class CTimer_Handler final
 {
 public:
-	CTimer_System();
-	~CTimer_System();
+	CTimer_Handler();
+	~CTimer_Handler();
 public :
 	HRESULT			Initialize_System();
 
@@ -24,7 +24,7 @@ private:
 	_float			        m_fFrameDT{ };
 
 public:
-	static unique_ptr<CTimer_System> Create();
+	static unique_ptr<CTimer_Handler> Create();
 };
 
 NS_END

@@ -24,7 +24,7 @@ public : /* Component Processor */
     std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec_By_Type(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent);
 
     /* Create component with spec value  */
-    void Create_Component_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec);
+    HRESULT Create_Component_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec);
 
     void Remove_Component_By_Type(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle);
 
@@ -38,7 +38,7 @@ public : /* CComponentGroup_Manager */
 	void					Free_Group(uint32_t iGroupID);
 
 private :
-    void Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pBase);
+    HRESULT Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pBase);
 
 private :
 
@@ -49,7 +49,7 @@ private :
     std::unique_ptr<CComponentGroup_Manager> 		m_pComGroupMgr{ };
     static std::array <PROCESSOR_ID, COMPONENT_MAX> m_TypeToProcessorIndex;
 
-    using I_FACTORY_FN = void(*)(CComponent_System*, COMPONENT_TYPE, CGameObject*, const COMPONENT_SPEC_BASE*);
+    using I_FACTORY_FN = HRESULT(*)(CComponent_System*, COMPONENT_TYPE, CGameObject*, const COMPONENT_SPEC_BASE*);
     I_FACTORY_FN  m_InitialSpecFactory[COMPONENT_MAX]{};
 
     using B_FACTORY_FN = std::unique_ptr<COMPONENT_SPEC_BASE>(*)(CComponent_System*, COMPONENT_TYPE, COMPONENT_HANDLE);

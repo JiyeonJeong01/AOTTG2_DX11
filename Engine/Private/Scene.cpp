@@ -39,6 +39,26 @@ HRESULT CScene::Render()
     return S_OK;
 }
 
+const ASSET_GUID& CScene::Get_GUID() const
+{
+    return m_tGUID;
+}
+
+void CScene::Set_GUID(const ASSET_GUID& tGUID)
+{
+    m_tGUID = tGUID;
+}
+
+SCENE_STATE CScene::Get_State() const
+{
+    return m_eState;
+}
+
+void CScene::Set_State(SCENE_STATE eState)
+{
+    m_eState = eState;
+}
+
 std::unique_ptr<CScene> CScene::Create()
 {
     return make_unique<CScene>();

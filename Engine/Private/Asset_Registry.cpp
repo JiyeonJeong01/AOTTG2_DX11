@@ -1,5 +1,6 @@
 ﻿#include "Asset_Registry.h"
 
+#include "BuiltIn_GUID.h"
 #include "Engine_Log.h"
 #include "magic_enum.hpp"
 #include "String_Utils.h"
@@ -118,7 +119,7 @@ _bool CAsset_Registry::Try_Get_GUID(const std::filesystem::path& inPath, ASSET_G
     outGUID = ASSET_GUID{};
 
     const auto normPath = Normalize_Path(inPath);
-    const std::string strKeyPath = normPath.string();
+    const std::string strKeyPath = StringUtils::Path_To_UTF8(normPath);;
 
     auto it = m_byPathUtf8.find(strKeyPath);
     if (it == m_byPathUtf8.end())
@@ -225,6 +226,80 @@ void CAsset_Registry::Register_Builtin_Inner(const ASSET_GUID& tGUID, ASSET_TYPE
     rec.bDirectory = false;
 
     m_byGUID.emplace(tGUID, std::move(rec));
+}
+
+_bool CAsset_Registry::Register_File_Asset(const std::filesystem::path& rawPath, ASSET_TYPE forcedType, ASSET_GUID forcedGuid)
+{
+    if (rawPath.empty() || Is_MetaFile(rawPath))
+        return false;
+
+    std::error_code ec;
+    const auto normPath = Normalize_Path(rawPath);
+    const _bool bDir = std::filesystem::is_directory(normPath, ec);
+
+    ASSET_TYPE eType = (forcedType != ASSET_TYPE::UNKNOWN) ? forcedType : Detect_Type(normPath, bDir);
+    const char* szType = AssetType_ToStr(eType);
+
+    // 메타파일 확인 및 기본 GUID 획득
+    ASSET_GUID tGUID = Ensure_Asset_Has_Meta(normPath, szType);
+    if (!tGUID.Is_Valid())
+        return false;
+
+    // GUID 레코드를 가리킬 iterator
+    auto itGUID = m_byGUID.end();
+
+    // SAVE_AS 등을 위한 GUID 강제 (forcedGuid) 처리
+    if (forcedGuid.Is_Valid() && forcedGuid != tGUID)
+    {
+        itGUID = m_byGUID.find(forcedGuid);
+
+        // ID 중복 체크: 강제하려는 ID를 이미 다른 파일(경로)가 쓰고 있다면 실패
+        if (itGUID != m_byGUID.end() && itGUID->second.path != normPath)
+            return false;
+
+
+        // 실제 메타 파일의 내용을 forcedGuid로 교체
+        Write_MetaFile(Make_MetaPath(normPath), forcedGuid, szType);
+        tGUID = forcedGuid;
+    }
+
+    // Path -> GUID 맵핑 업데이트
+    const std::string key = StringUtils::Path_To_UTF8(normPath);
+    m_byPathUtf8[key] = tGUID;
+
+    // GUID -> Record 맵핑 업데이트
+    // 위에서 찾지 못했다면 여기서 찾음
+    if (itGUID == m_byGUID.end())
+    {
+        itGUID = m_byGUID.find(tGUID);
+    }
+
+    if (itGUID != m_byGUID.end())
+    {
+        // 만약 이 GUID가 이전에 다른 경로를 가리키고 있었다면,기존 경로의 맵핑을 제거하여 유령 데이터를 방지
+        if (itGUID->second.path != normPath)
+        {
+            std::string oldKey = StringUtils::Path_To_UTF8(itGUID->second.path);
+            if (oldKey != key) // 자기 자신을 지우는 실수 방지
+            {
+                m_byPathUtf8.erase(oldKey);
+            }
+        }
+
+        // 기존 레코드 정보 갱신
+        itGUID->second.eType = eType;
+        itGUID->second.eSrc = ASSET_SRC::FILE;
+        itGUID->second.path = normPath;
+        itGUID->second.bDirectory = bDir;
+    }
+    else
+    {
+        // 신규 레코드 등록
+        ASSET_RECORD rec{ tGUID, eType, ASSET_SRC::FILE, normPath, bDir };
+        m_byGUID.emplace(tGUID, std::move(rec));
+    }
+
+    return true;
 }
 
 NS_END

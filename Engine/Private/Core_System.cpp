@@ -9,10 +9,14 @@
 #include "Resource_System.h"
 #include "Event_System.h"
 #include "CRender_System.h"
+#include "Editor_System.h"
 
 /* --- sub --- */
 #include "Graphic_Device.h"
 #include "Timer_System.h"
+
+/* --- --- */
+#include "Scene.h"
 
 /* --- event --- */
 #include "Scene_Handler.h"
@@ -53,8 +57,8 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
     m_pContext = *ppContext;
 
     /* --- Timer ---*/
-    m_pTimerSystem = CTimer_System::Create();
-    IF_NULL_RETURN_MSG_BREAK(m_pTimerSystem, E_FAIL, "CTimer_System create failed");
+    m_pTimer_Handler = CTimer_Handler::Create();
+    IF_NULL_RETURN_MSG_BREAK(m_pTimer_Handler, E_FAIL, "CTimer_Handler create failed");
 
     /* --- Scene ---*/
     m_pScene_Handler = CScene_Handler::Create();
@@ -84,6 +88,9 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
     /* --- Event System --- */
     IF_FAIL_RETURN_MSG_BREAK(SYS_RENDER.Initialize(iWidth, iHeight), E_FAIL, "Renderer System failed Initialize");
 
+    /* --- Editor_System --- */
+    IF_FAIL_RETURN_MSG_BREAK(SYS_EDITOR.Initialize(ProjectConfig::PATH + ProjectConfig::ROOT), E_FAIL, "Editor System failed Initialize");
+
 
     /* --- Register event --- */
     SYS_EVENT.Subscribe(EVENT_TYPE::On_Window_Resize, &CCore_System::On_Resize, this);
@@ -91,14 +98,46 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
 	return S_OK;
 }
 
-void CCore_System::Update_Engine(_float fTimeDelta)
+void CCore_System::Update_Engine(_float fDT)
 {
-	SYS_COMPONENT.Update(fTimeDelta);
+    CScene* pScene = m_pScene_Handler->Get_CurrentScene();
+    if (!pScene) return;
+
+    SYS_INPUT.Update_System();
+
+    switch (pScene->Get_State())
+    {
+    case SCENE_STATE::EDIT :
+        /* 로직 실행하지 않는다. */
+        return;
+
+    case SCENE_STATE::PAUSE :
+        /* 스텝만 허용한다. */
+        return;
+
+    case SCENE_STATE::PLAY :
+        Update_RuntimeEngine(fDT, pScene);
+    }
+}
+
+void CCore_System::Request_Step(_float fDT, CScene* pScene)
+{
+    if (pScene->Get_State() == SCENE_STATE::PAUSE)
+        Update_RuntimeEngine(fDT, pScene);
 }
 
 HRESULT CCore_System::Draw()
 {
+    /* 디버깅 정보 등 필요 시 아래 로직 추가 */
+    //CScene* pScene = m_pScene_Handler->Get_CurrentScene();
+    //if (pScene)
+    //    pScene->Render();
+
     SYS_COMPONENT.Render();
+
+    /* TODO --------------------------------------------------*/
+    /* TODO : Renderer에서 빌드된 렌더 큐 처리 로직 필수 추가    */
+    /* TODO --------------------------------------------------*/
 
     return S_OK;
 }
@@ -173,21 +212,48 @@ HRESULT CCore_System::Present() const
 
 _float CCore_System::Compute_SystemDT() const
 {
-	return m_pTimerSystem->Compute_SystemDT();
+	return m_pTimer_Handler->Compute_SystemDT();
 }
 _float CCore_System::Compute_FrameDT() const
 {
-	return m_pTimerSystem->Compute_FrameDT();
+	return m_pTimer_Handler->Compute_FrameDT();
 }
 
-HRESULT CCore_System::Change_Scene(_uint iNewLevelIndex, CLevel* pNewLevel)
+_float CCore_System::Get_FrameDT() const
 {
-    return S_OK;
+    return m_pTimer_Handler->Get_FrameDT();
+}
+
+HRESULT CCore_System::Change_Scene(const ASSET_GUID& tGUID, SCENE_CHANGE_MODE eMode)
+{
+    return m_pScene_Handler->Change_Scene(tGUID, eMode);
 }
 
 HRESULT CCore_System::Save_CurrentScene(const std::filesystem::path& path)
 {
     return m_pScene_Handler->Save_CurrentScene(path);
+}
+
+CScene* CCore_System::Get_CurrentScene()
+{
+    return m_pScene_Handler->Get_CurrentScene();
+}
+
+void CCore_System::Set_CurrentScene(std::unique_ptr<CScene> pScene)
+{
+    m_pScene_Handler->Set_CurrentScene(std::move(pScene));
+}
+
+void CCore_System::Update_RuntimeEngine(_float fDT, CScene* pScene)
+{
+    /* 씬 업데이트 : 씬의 데이터, 씬 상태(PLAY, STOP 등), 씬 이벤트 등 처리 */
+    pScene->Update(fDT);
+
+    /* 컴포넌트 업데이트 */
+    SYS_COMPONENT.Update(fDT);
+
+    /* 게임 오브젝트 Pending 로직 */
+    SYS_GAMEOBJECT.Flush_PendingDestroy();
 }
 
 NS_END

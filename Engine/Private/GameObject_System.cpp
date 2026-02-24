@@ -183,6 +183,7 @@ void CGameObject_System::Destroy_Object(CGameObject* pObj)
         }
     }
 
+    /* NOTE : Pending 시 주의할 로직 */
     data.bActive = false;
 }
 
@@ -197,12 +198,16 @@ void CGameObject_System::Set_Layer(CGameObject* pObj, Layer::LAYER_ID iNewLayer)
         iNewLayer = Layer::DEFAULT_LAYER;
     }
 
-    GAMEOBJECT_DATA& data = Access_Data_Raw(pObj->Get_Handle());
+    OBJECT_HANDLE hObj = pObj->Get_Handle();
+    GAMEOBJECT_DATA& data = Access_Data_Raw(hObj);
     if (data.layer == iNewLayer)
         return;
 
     Remove_From_LayerBucket(pObj);
     Add_To_LayerBucket(pObj, iNewLayer);
+
+    if (iNewLayer == Layer::UI_LAYER)  pObj->m_hSelf.raw |= OBJECT_HANDLE::UI_MASK;
+    else                               pObj->m_hSelf.raw &= ~OBJECT_HANDLE::UI_MASK;
 }
 
 const std::vector<CGameObject*>& CGameObject_System::Get_LayerObjects(Layer::LAYER_ID iLayer) const
@@ -443,6 +448,7 @@ HRESULT CGameObject_System::Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& out
         SCENE_OBJECT_SPEC spec;
         spec.uuid = Get_UUID(pObj);
         spec.name = pObj->Get_Label();
+        spec.isUI = pObj->Get_Handle().Is_UI();
         spec.parent = pObj->Get_Parent() == nullptr ? INSTANCE_UUID{} : Get_UUID(pObj->Get_Parent());
         spec.layer = pObj->Get_Layer();
         spec.protoGuid = tData.tProtoGUID;

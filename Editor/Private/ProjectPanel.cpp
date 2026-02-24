@@ -3,6 +3,7 @@
 #include "Engine_Log.h"
 #include "Editor_Util.h"
 #include "Asset_Registry.h"
+#include "Core_System.h"
 
 NS_BEGIN(Editor)
 
@@ -346,9 +347,11 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
     }
 
     /* Click row */
-    if (ImGui::Selectable(tAsset.name.c_str(), bSelected, ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_SpanAllColumns))
+    if (ImGui::Selectable(tAsset.name.c_str(), bSelected,
+        ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_SpanAllColumns))
     {
-        const _bool bChanged = (m_selectedPath.empty() || !std::filesystem::equivalent(m_selectedPath, tAsset.path));
+        const _bool bChanged =
+            (m_selectedPath.empty() || !std::filesystem::equivalent(m_selectedPath, tAsset.path));
 
         Set_Selection(tAsset.path);
 
@@ -359,6 +362,12 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
         {
             m_currentFolder = tAsset.path;
             m_bListDirty = true;
+        }
+
+        if (!tAsset.isDirectory &&
+            ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+        {
+            Try_Open_Scene_On_DoubleClick(tAsset);
         }
     }
 
@@ -751,6 +760,50 @@ void CProjectPanel::Commit_Rename()
     Cancel_Rename();
 }
 
+// ProjectPanel.cpp
+
+_bool CProjectPanel::Is_Scene_Asset(const LIST_ASSET& tAsset) const
+{
+    if (tAsset.isDirectory)
+        return false;
+
+    return tAsset.type == Engine::ASSET_TYPE::SCENE;
+}
+
+_bool CProjectPanel::Try_Get_Asset_GUID(const std::filesystem::path& path, Engine::ASSET_GUID& outGuid) const
+{
+    outGuid = Engine::ASSET_GUID{};
+    if (path.empty() || !std::filesystem::exists(path))
+        return false;
+
+    return SYS_ASSET.Try_Get_GUID(path, outGuid);
+}
+
+void CProjectPanel::Open_Scene_By_GUID(const Engine::ASSET_GUID& guid, SCENE_CHANGE_MODE eMode)
+{
+    SYS_CORE.Change_Scene(guid, eMode);
+}
+
+void CProjectPanel::Try_Open_Scene_On_DoubleClick(const LIST_ASSET& tAsset)
+{
+    if (!Is_Scene_Asset(tAsset))
+        return;
+
+    if (!ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+        return;
+
+    Engine::ASSET_GUID guid{};
+    if (!Try_Get_Asset_GUID(tAsset.path, guid))
+    {
+        _DEBUG_WARN("Scene double click but GUID not found: %s", tAsset.path.string().c_str());
+        return;
+    }
+
+    /* TODO : 에디터의 게임 모드에서는 ??  */
+    Open_Scene_By_GUID(guid, SCENE_CHANGE_MODE::EDITOR_EDIT);
+}
+
+
 /* =======================================================================*/
 /* ============================== Utility ================================*/
 /* =======================================================================*/
@@ -801,6 +854,8 @@ std::string CProjectPanel::Make_Unique_Folder_Name_Impl(const std::filesystem::p
     // fallback
     return baseName + " (9999)";
 }
+
+
 
 /* =======================================================================*/
 /* ============================ Factory/Free =============================*/

@@ -157,10 +157,13 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ThirdParty\magic_enum.hpp" />
+    <ClInclude Include="..\Public\BuiltIn_GUID.h" />
     <ClInclude Include="..\Public\CanvasRenderer.h" />
     <ClInclude Include="..\Public\CanvasRenderer_Processor.h" />
     <ClInclude Include="..\Public\CRender_System.h" />
+    <ClInclude Include="..\Public\Editor_System.h" />
     <ClInclude Include="..\Public\LayerHelper.h" />
+    <ClInclude Include="..\Public\SceneChange_Event.h" />
     <ClInclude Include="..\Public\UIButton.h" />
     <ClInclude Include="..\Public\UIImage.h" />
     <ClInclude Include="..\Public\UI_Processor.h" />
@@ -237,6 +240,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Component_System.cpp" />
     <ClCompile Include="..\Private\CLI_Sink.cpp" />
     <ClCompile Include="..\Private\CRender_System.cpp" />
+    <ClCompile Include="..\Private\Editor_System.cpp" />
     <ClCompile Include="..\Private\Event_System.cpp" />
     <ClCompile Include="..\Private\Core_System.cpp" />
     <ClCompile Include="..\Private\GameObject.cpp" />

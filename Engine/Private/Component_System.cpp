@@ -78,16 +78,16 @@ COMPONENT_HANDLE CComponent_System::Create_Component_By_Type(COMPONENT_TYPE eCom
     return m_pComProcessors[iProcIdx]->Create_Component_Data(eComType, hObject);
 }
 
-void CComponent_System::Create_Component_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec)
+HRESULT CComponent_System::Create_Component_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec)
 {
-    IF_NULL_RETURN_MSG_BREAK(pObj, , "Create from spec failed: pObj is nullptr.");
-    IF_NULL_RETURN_MSG_BREAK(pSpec, , "Create from spec failed: pSpec is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "Create from spec failed: pObj is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(pSpec, E_FAIL, "Create from spec failed: pSpec is nullptr.");
 
     const COMPONENT_TYPE eType = pSpec->Get_Type();
     auto fn = m_InitialSpecFactory[COM_TO_INT(eType)];
-    IF_NULL_RETURN_MSG_BREAK(fn, , "Factory not registered for this component type.");
+    IF_NULL_RETURN_MSG_BREAK(fn, E_FAIL, "Factory not registered for this component type.");
 
-    fn(this, eType, pObj, pSpec);
+    return fn(this, eType, pObj, pSpec);
 }
 
 void CComponent_System::Remove_Component_By_Type(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle)
@@ -128,15 +128,17 @@ void CComponent_System::Get_Component_Handle_By_Type(COMPONENT_TYPE eComType, OB
         outHandles.push_back(hCom);
 }
 
-void CComponent_System::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pBase)
+HRESULT CComponent_System::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pBase)
 {
     const uint32_t iComIdx = COM_TO_INT(eComType);
     const uint32_t iProcIdx = COM_TO_PID(eComType);
 
-    IF_TRUE_RETURN_MSG_BREAK((iComIdx >= COMPONENT_MAX), , "Invalid component type");
-    IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[iProcIdx], , "m_pComProcessor is nullptr");
-    IF_FAIL_RETURN_MSG_BREAK(m_pComProcessors[iProcIdx]->Initialize_From_Spec(eComType, hComponent, pBase), ,
+    IF_TRUE_RETURN_MSG_BREAK((iComIdx >= COMPONENT_MAX), E_FAIL, "Invalid component type");
+    IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[iProcIdx], E_FAIL, "m_pComProcessor is nullptr");
+    IF_FAIL_RETURN_MSG_BREAK(m_pComProcessors[iProcIdx]->Initialize_From_Spec(eComType, hComponent, pBase), E_FAIL,
         "Failed initialize with spec");
+
+    return S_OK;
 }
 
 std::unique_ptr<COMPONENT_SPEC_BASE> CComponent_System::Build_Spec_By_Type(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)

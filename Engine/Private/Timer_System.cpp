@@ -5,16 +5,16 @@
 
 NS_BEGIN(Engine)
 
-CTimer_System::CTimer_System()
+CTimer_Handler::CTimer_Handler()
 {
 
 }
 
-CTimer_System::~CTimer_System()
+CTimer_Handler::~CTimer_Handler()
 {
 }
 
-HRESULT CTimer_System::Initialize_System()
+HRESULT CTimer_Handler::Initialize_System()
 {
 	m_pSystemTimer = CTimer::Create();
 	m_pFrameTimer = CTimer::Create();
@@ -22,7 +22,7 @@ HRESULT CTimer_System::Initialize_System()
 	return S_OK;
 }
 
-_float CTimer_System::Compute_SystemDT()
+_float CTimer_Handler::Compute_SystemDT()
 {
 	if (nullptr == m_pSystemTimer)
 		return 0.f;
@@ -30,7 +30,7 @@ _float CTimer_System::Compute_SystemDT()
 	return m_pSystemTimer->Update_Timer();
 }
 
-_float CTimer_System::Compute_FrameDT()
+_float CTimer_Handler::Compute_FrameDT()
 {
 	if (nullptr == m_pFrameTimer)
 		return 0.f;
@@ -39,17 +39,17 @@ _float CTimer_System::Compute_FrameDT()
 	return m_fFrameDT;
 }
 
-_float CTimer_System::Get_FrameDT() const
+_float CTimer_Handler::Get_FrameDT() const
 {
     return m_fFrameDT;
 }
 
 
-std::unique_ptr<CTimer_System> CTimer_System::Create()
+std::unique_ptr<CTimer_Handler> CTimer_Handler::Create()
 {
-    auto pInstance = make_unique<CTimer_System>();
+    auto pInstance = make_unique<CTimer_Handler>();
 
-    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize_System(), nullptr, "CTimer_System Create failed");
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize_System(), nullptr, "CTimer_Handler Create failed");
 	return pInstance;
 }
 

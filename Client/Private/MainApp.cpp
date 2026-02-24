@@ -11,6 +11,8 @@
 #include "Resource_System.h"
 #include "CanvasRenderer.h"
 
+#include "BuiltIn_GUID.h"
+
 
 namespace Engine
 {

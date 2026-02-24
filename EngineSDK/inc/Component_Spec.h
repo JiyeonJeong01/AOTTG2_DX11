@@ -4,6 +4,7 @@
 
 NS_BEGIN(Engine)
 
+class CTransform;
 typedef struct ENGINE_DLL tagTransformSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::TRANSFORM)
@@ -28,32 +29,73 @@ typedef struct ENGINE_DLL tagTransformSpec final : public COMPONENT_SPEC_BASE
 
     _bool FromJson(const json& j) override
     {
-        try
+        if (j.contains("Type"))
         {
-            vPosition = { j["Position"][0], j["Position"][1], j["Position"][2] };
-            vRotationQuat = { j["Rotation"][0], j["Rotation"][1], j["Rotation"][2], j["Rotation"][3] };
-            vScale = { j["Scale"][0], j["Scale"][1], j["Scale"][2] };
-            return true;
+            const auto t = j["Type"];
+            if (!t.is_number_unsigned())
+                return false;
 
-            // Position이 있을 때만 덮어쓰기 (없으면 원본/기본값 유지)!!!!!!!!!!!!!!!!!!!!! 이게 더 싼듯?
-            if (j.contains("Position") && j["Position"].is_array()) {
-                vPosition = { j["Position"][0], j["Position"][1], j["Position"][2] };
-            }
-            if (j.contains("Rotation") && j["Rotation"].is_array()) {
-                vRotationQuat = { j["Rotation"][0], j["Rotation"][1], j["Rotation"][2], j["Rotation"][3] };
-            }
-            if (j.contains("Scale") && j["Scale"].is_array()) {
-                vScale = { j["Scale"][0], j["Scale"][1], j["Scale"][2] };
-            }
+            const _uint type = t.get<_uint>();
+            if (type != SCAST(_uint, Get_Type()))
+                return false;
         }
-        catch (...)
+
+        auto read_vec3 = [&](const char* key, _float3& out) -> bool
+            {
+                if (!j.contains(key))
+                    return true;
+                const auto& a = j.at(key);
+                if (!a.is_array() || a.size() != 3) return false;
+                if (!a[0].is_number() || !a[1].is_number() || !a[2].is_number()) return false;
+
+                out = { a[0].get<_float>(), a[1].get<_float>(), a[2].get<_float>() };
+                return true;
+            };
+
+        auto read_quat = [&](const char* key, _float4& out) -> bool
+            {
+                if (!j.contains(key)) return true;
+                const auto& a = j.at(key);
+                if (!a.is_array() || a.size() != 4) return false;
+                for (int i = 0; i < 4; ++i) if (!a[i].is_number()) return false;
+
+                out = { a[0].get<_float>(), a[1].get<_float>(), a[2].get<_float>(), a[3].get<_float>() };
+                return true;
+            };
+
+        if (!read_vec3("Position", vPosition)) return false;
+        if (!read_quat("Rotation", vRotationQuat)) return false;
+        if (!read_vec3("Scale", vScale)) return false;
+
+        // scale 0 방지
+        const _float eps = 1e-6f;
+        if (fabs(vScale.x) < eps) vScale.x = 1.f;
+        if (fabs(vScale.y) < eps) vScale.y = 1.f;
+        if (fabs(vScale.z) < eps) vScale.z = 1.f;
+
+        const _float len2 =
+            vRotationQuat.x * vRotationQuat.x +
+            vRotationQuat.y * vRotationQuat.y +
+            vRotationQuat.z * vRotationQuat.z +
+            vRotationQuat.w * vRotationQuat.w;
+
+        if (len2 < eps)
+            vRotationQuat = { 0,0,0,1 };
+        else
         {
-            return false;
+            const _float invLen = 1.f / sqrt(len2);
+            vRotationQuat.x *= invLen;
+            vRotationQuat.y *= invLen;
+            vRotationQuat.z *= invLen;
+            vRotationQuat.w *= invLen;
         }
-    };
+
+        return true;
+    }
 
 } TRANSFORM_SPEC;
 
+class CRectTransform;
 typedef struct ENGINE_DLL tagRectTransformSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::RECT_TRANSFORM)
@@ -76,29 +118,40 @@ typedef struct ENGINE_DLL tagRectTransformSpec final : public COMPONENT_SPEC_BAS
 
     _bool FromJson(const json& j) override
     {
-        try
-        {
-            if (j.contains("PosPx") && j["PosPx"].is_array() && j["PosPx"].size() >= 2)
-                vPosPx = { j["PosPx"][0], j["PosPx"][1] };
-
-            if (j.contains("SizePx") && j["SizePx"].is_array() && j["SizePx"].size() >= 2)
-                vSizePx = { j["SizePx"][0], j["SizePx"][1] };
-
-            return true;
+        if (j.contains("Type")) {
+            const auto& t = j.at("Type");
+            if (!t.is_number_unsigned()) return false;
+            if (t.get<_uint>() != SCAST(_uint, Get_Type())) return false;
         }
-        catch (...)
-        {
-            return false;
-        }
+
+        auto read_vec2 = [&](const char* key, _float2& out) -> bool
+            {
+                if (!j.contains(key)) return true;
+                const auto& a = j.at(key);
+                if (!a.is_array() || a.size() != 2) return false;
+                if (!a[0].is_number() || !a[1].is_number()) return false;
+                out = { a[0].get<_float>(), a[1].get<_float>() };
+                return true;
+            };
+
+        if (!read_vec2("PosPx", vPosPx)) return false;
+        if (!read_vec2("SizePx", vSizePx)) return false;
+
+        // 사이즈 0/음수 방지
+        const _float eps = 1e-3f;
+        if (!(vSizePx.x > eps)) vSizePx.x = 100.f;
+        if (!(vSizePx.y > eps)) vSizePx.y = 100.f;
+
+        return true;
     }
-
 } RECTTRANSFORM_SPEC;
 
+class CCanvasRenderer;
 typedef struct ENGINE_DLL tagCanvasRendererSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::CANVAS_RENDERER)
 
-        ASSET_GUID materialGUID{};
+    ASSET_GUID materialGUID{};
     ASSET_GUID textureGUID{};
 
     _float4 vColor = { 1.f, 1.f, 1.f, 1.f };
@@ -108,6 +161,8 @@ typedef struct ENGINE_DLL tagCanvasRendererSpec final : public COMPONENT_SPEC_BA
     uint32_t flags = CF_NONE;
     RENDER_LAYER layer = RENDER_LAYER::UI;
     _float sortZ = 0.f;
+
+    _bool bEnabled = true;
 
     [[nodiscard]]
     std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
@@ -123,52 +178,129 @@ typedef struct ENGINE_DLL tagCanvasRendererSpec final : public COMPONENT_SPEC_BA
         if (textureGUID.Is_Valid())
             j["TextureGUID"] = textureGUID.To_String_Utf8();
 
+        // Color (Default: White)
         if (vColor.x != 1.f || vColor.y != 1.f || vColor.z != 1.f || vColor.w != 1.f)
             j["vColor"] = { vColor.x, vColor.y, vColor.z, vColor.w };
 
+        // UV (Default: 0,0,1,1)
         if (rcUV.fLeft != 0.f || rcUV.fTop != 0.f || rcUV.fRight != 1.f || rcUV.fBottom != 1.f)
             j["rcUV"] = { rcUV.fLeft, rcUV.fTop, rcUV.fRight, rcUV.fBottom };
 
+        // Clip (Default: 0,0,0,0)
         if (rcClip.fLeft != 0.f || rcClip.fTop != 0.f || rcClip.fRight != 0.f || rcClip.fBottom != 0.f)
             j["rcClip"] = { rcClip.fLeft, rcClip.fTop, rcClip.fRight, rcClip.fBottom };
 
         if (flags != CF_NONE)
             j["flags"] = flags;
+
         if (layer != RENDER_LAYER::UI)
             j["layer"] = SCAST(_uint, layer);
+
         if (sortZ != 0.f)
             j["sortZ"] = sortZ;
+
+        if (!bEnabled)
+            j["bEnabled"] = bEnabled;
     }
 
     _bool FromJson(const json& j) override
     {
-        try {
-            if (j.contains("MaterialGUID"))
-                ASSET_GUID::Try_Utf8_To_GUID(j["MaterialGUID"], materialGUID);
-            if (j.contains("TextureGUID"))
-                ASSET_GUID::Try_Utf8_To_GUID(j["TextureGUID"], textureGUID);
-
-            if (j.contains("vColor") && j["vColor"].is_array() && j["vColor"].size() >= 4)
-                vColor = { j["vColor"][0], j["vColor"][1], j["vColor"][2], j["vColor"][3] };
-
-            if (j.contains("rcUV") && j["rcUV"].is_array() && j["rcUV"].size() >= 4)
-                rcUV = { j["rcUV"][0], j["rcUV"][1], j["rcUV"][2], j["rcUV"][3] };
-
-            if (j.contains("rcClip") && j["rcClip"].is_array() && j["rcClip"].size() >= 4)
-                rcClip = { j["rcClip"][0], j["rcClip"][1], j["rcClip"][2], j["rcClip"][3] };
-
-            flags = j.value("flags", flags);
-            layer = (RENDER_LAYER)j.value("layer", (uint32_t)layer);
-            sortZ = j.value("sortZ", sortZ);
-
-            return true;
+        if (j.contains("Type"))
+        {
+            const auto& t = j.at("Type");
+            if (!t.is_number_unsigned())
+                return false;
+            if (t.get<_uint>() != SCAST(_uint, Get_Type()))
+                return false;
         }
-        catch (...) {
-            return false;
+
+        auto read_guid = [&](const char* key, ASSET_GUID& out) -> bool
+            {
+                if (!j.contains(key)) return true;
+                const auto& v = j.at(key);
+                if (!v.is_string()) return false;
+                return ASSET_GUID::Try_Utf8_To_GUID(v, out);
+            };
+
+        auto read_vec4 = [&](const char* key, _float4& out) -> bool
+            {
+                if (!j.contains(key)) return true;
+                const auto& a = j.at(key);
+                if (!a.is_array() || a.size() != 4) return false;
+                for (int i = 0; i < 4; ++i) if (!a[i].is_number()) return false;
+                out = { a[0].get<_float>(), a[1].get<_float>(), a[2].get<_float>(), a[3].get<_float>() };
+                return true;
+            };
+
+        auto read_rect4 = [&](const char* key, RECT_F& out) -> bool
+            {
+                _float4 v{};
+                if (!read_vec4(key, v)) return false;
+                if (!j.contains(key)) return true;
+                out = { v.x, v.y, v.z, v.w };
+                return true;
+            };
+
+        if (!read_guid("MaterialGUID", materialGUID)) return false;
+        if (!read_guid("TextureGUID", textureGUID)) return false;
+
+        if (!read_vec4("vColor", vColor)) return false;
+        if (!read_rect4("rcUV", rcUV)) return false;
+        if (!read_rect4("rcClip", rcClip)) return false;
+
+        if (j.contains("flags"))
+        {
+            const auto& v = j.at("flags");
+            if (!v.is_number_unsigned()) return false;
+            flags = v.get<uint32_t>();
         }
+
+        if (j.contains("layer"))
+        {
+            const auto& v = j.at("layer");
+            if (!v.is_number_unsigned()) return false;
+            layer = (RENDER_LAYER)v.get<uint32_t>();
+        }
+
+        if (j.contains("sortZ"))
+        {
+            const auto& v = j.at("sortZ");
+            if (!v.is_number()) return false;
+            sortZ = v.get<_float>();
+        }
+
+        if (j.contains("bEnabled"))
+        {
+            const auto& v = j.at("bEnabled");
+            if (!v.is_boolean()) return false;
+            bEnabled = v.get<_bool>();
+        }
+        else
+        {
+            bEnabled = true;
+        }
+
+        auto clamp01 = [](_float x) -> _float { return x < 0.f ? 0.f : (x > 1.f ? 1.f : x); };
+
+        vColor.x = clamp01(vColor.x);
+        vColor.y = clamp01(vColor.y);
+        vColor.z = clamp01(vColor.z);
+        vColor.w = clamp01(vColor.w);
+
+        rcUV.fLeft = clamp01(rcUV.fLeft);
+        rcUV.fTop = clamp01(rcUV.fTop);
+        rcUV.fRight = clamp01(rcUV.fRight);
+        rcUV.fBottom = clamp01(rcUV.fBottom);
+        if (rcUV.fLeft > rcUV.fRight)  std::swap(rcUV.fLeft, rcUV.fRight);
+        if (rcUV.fTop > rcUV.fBottom) std::swap(rcUV.fTop, rcUV.fBottom);
+
+        sortZ = clamp01(sortZ);
+
+        return true;
     }
 } CANVAS_RENDERER_SPEC;
 
+class CMeshRenderer;
 typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::MESH_RENDERER)
@@ -176,12 +308,11 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
     ASSET_GUID  meshGUID{};
     ASSET_GUID  materialGUID{};
 
-    uint16_t passIndex = 0;
-
-    uint32_t     flags = RF_NONE;
+    uint32_t    flags = RF_NONE;
     RENDER_LAYER layer = RENDER_LAYER::NONBLEND;
 
-    float sortZ = 0.f;
+    _float      sortZ = 0.f;
+    _bool       bEnabled = true;
 
     std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
     {
@@ -190,24 +321,99 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
 
     void ToJson(json& j) const override
     {
-        j["MeshGUID"] = meshGUID.To_String_Utf8();
-        j["MaterialGUID"] = materialGUID.To_String_Utf8();
-        j["PassIndex"] = passIndex;
+        j["Type"] = SCAST(_uint, Get_Type());
+
+        if (meshGUID.Is_Valid())
+            j["MeshGUID"] = meshGUID.To_String_Utf8();
+        if (materialGUID.Is_Valid())
+            j["MaterialGUID"] = materialGUID.To_String_Utf8();
+
         j["Flags"] = flags;
-        j["Layer"] = (uint8_t)layer;
+        j["Layer"] = SCAST(uint32_t, layer);
         j["SortZ"] = sortZ;
+
+        if (!bEnabled)
+            j["bEnabled"] = bEnabled;
     }
+
     _bool FromJson(const json& j) override
     {
-        ASSET_GUID::Try_Utf8_To_GUID(j.value("MeshGUID", ""), meshGUID);
-        ASSET_GUID::Try_Utf8_To_GUID(j.value("MaterialGUID", ""), materialGUID);
-        passIndex = (uint16_t)j.value("PassIndex", 0);
-        flags = (uint32_t)j.value("Flags", 0);
-        layer = (RENDER_LAYER)j.value("Layer", (uint8_t)RENDER_LAYER::NONBLEND);
-        sortZ = (float)j.value("SortZ", 0.0f);
+        if (j.contains("Type"))
+        {
+            const auto& t = j.at("Type");
+            if (!t.is_number_unsigned())
+                return false;
+            if (t.get<_uint>() != SCAST(_uint, Get_Type()))
+                return false;
+        }
 
-        return meshGUID.Is_Valid() && materialGUID.Is_Valid();
+        auto read_guid = [&](const char* key, ASSET_GUID& out) -> bool
+            {
+                if (!j.contains(key)) return true;
+                const auto& v = j.at(key);
+                if (!v.is_string()) return false;
+                return ASSET_GUID::Try_Utf8_To_GUID(v, out);
+            };
+
+        auto read_vec4 = [&](const char* key, _float4& out) -> bool
+            {
+                if (!j.contains(key)) return true;
+                const auto& a = j.at(key);
+                if (!a.is_array() || a.size() != 4) return false;
+                for (int i = 0; i < 4; ++i) if (!a[i].is_number()) return false;
+                out = { a[0].get<_float>(), a[1].get<_float>(), a[2].get<_float>(), a[3].get<_float>() };
+                return true;
+            };
+
+        auto read_rect4 = [&](const char* key, RECT_F& out) -> bool
+            {
+                _float4 v{};
+                if (!read_vec4(key, v)) return false;
+                if (!j.contains(key)) return true; 
+                out = { v.x, v.y, v.z, v.w };
+                return true;
+            };
+
+        if (!read_guid("MaterialGUID", materialGUID)) return false;
+
+        if (j.contains("flags"))
+        {
+            const auto& v = j.at("flags");
+            if (!v.is_number_unsigned()) return false;
+            flags = v.get<uint32_t>();
+        }
+
+        if (j.contains("layer"))
+        {
+            const auto& v = j.at("layer");
+            if (!v.is_number_unsigned()) return false;
+            layer = (RENDER_LAYER)v.get<uint32_t>();
+        }
+
+        if (j.contains("sortZ"))
+        {
+            const auto& v = j.at("sortZ");
+            if (!v.is_number()) return false;
+            sortZ = v.get<_float>();
+        }
+
+        if (j.contains("bEnabled"))
+        {
+            const auto& v = j.at("bEnabled");
+            if (!v.is_boolean()) return false;
+            bEnabled = v.get<_bool>();
+        }
+        else
+        {
+            bEnabled = true;
+        }
+
+        auto clamp01 = [](_float x) -> _float { return x < 0.f ? 0.f : (x > 1.f ? 1.f : x); };
+
+        sortZ = clamp01(sortZ);
+
+        return true;
     }
-}MESH_RENDERER_SPEC;
+} MESH_RENDERER_SPEC;
 
 NS_END

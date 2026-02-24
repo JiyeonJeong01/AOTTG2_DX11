@@ -107,7 +107,9 @@ private:                                                    \
 #define SYS_RESOURCE            GET_INSTANCE(Engine::CResource_System)
 #define SYS_INPUT		        GET_INSTANCE(Engine::CInput_System)
 #define SYS_RENDER		        GET_INSTANCE(Engine::CRender_System)
-#define SYS_EVENT		        GET_INSTANCE(CEvent_System)
+#define SYS_EVENT		        GET_INSTANCE(Engine::CEvent_System)
+
+#define SYS_EDITOR		        GET_INSTANCE(Engine::CEditor_System)
 
 
 //#define RESOURCES	GET_INSTANCE(CResourceManager)

@@ -66,10 +66,13 @@ typedef struct tagSceneObjecSpec
     INSTANCE_UUID uuid;
     ASSET_GUID protoGuid;
 
+    _bool       isUI;
+
     std::string name;
     Layer::LAYER_ID layer;
     INSTANCE_UUID parent;
 
+    Component::COMPONENT_MASK hasMask;
     COMPONENT_SPEC_BUNDLE overrides;
 
     tagSceneObjecSpec() = default;
@@ -90,8 +93,10 @@ typedef struct tagSceneObjecSpec
         : uuid(_uuid)
         , protoGuid(_protoGuid)
         , name(_name)
+        , isUI(false)
         , layer(_layer)
         , parent(_parent)
+        , hasMask(0)
         , overrides(std::move(_overrides))
     {
     }

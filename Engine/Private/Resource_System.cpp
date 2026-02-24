@@ -1,5 +1,6 @@
 ﻿#include "Resource_System.h"
 #include "Asset_Registry.h"
+#include "BuiltIn_GUID.h"
 #include "MeshBuilder.h"
 #include "Render_Struct.h"
 

@@ -70,6 +70,11 @@ private:
     void    Draw_Rename_Field(const LIST_ASSET& item);
     void    Commit_Rename();
 
+    void  Try_Open_Scene_On_DoubleClick(const LIST_ASSET& tAsset);
+    _bool Is_Scene_Asset(const LIST_ASSET& tAsset) const;
+    _bool Try_Get_Asset_GUID(const std::filesystem::path& path, Engine::ASSET_GUID& outGuid) const;
+    void  Open_Scene_By_GUID(const Engine::ASSET_GUID& guid, SCENE_CHANGE_MODE eMode);
+
 public :
     /* Helpers */
     static _bool        Is_Visible_By_Filter(const std::string& name, const std::string& filter);

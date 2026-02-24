@@ -19,6 +19,7 @@ public :
     HRESULT Initialize(const std::filesystem::path& assetRoot);
     void    Clear();
 
+
     /* Scan all assets, ensure meta and rebuild maps */
     void    Rebuild();
 
@@ -33,6 +34,8 @@ public :
     void Register_Builtin_Asset();
     void Register_Builtin_Inner(const ASSET_GUID& tGUID, ASSET_TYPE eType);
 
+    /* Register individual file asset GUID (and create .meta file) */
+    _bool Register_File_Asset(const std::filesystem::path& rawPath, ASSET_TYPE forcedType, ASSET_GUID forcedGuid = ASSET_GUID{});
 
     /* GUID -> ASSET_RECORD */
     const ASSET_RECORD* Find(const ASSET_GUID& tGUID) const;
@@ -41,7 +44,6 @@ public :
     static const ASSET_TYPE Detect_Type(const std::filesystem::path& path, _bool bDir);
     static const _char* AssetType_ToStr(ASSET_TYPE eType);
 
-private :
     static std::filesystem::path Normalize_Path(const std::filesystem::path& p);
 
 private :

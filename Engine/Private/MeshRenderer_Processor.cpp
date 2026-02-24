@@ -118,7 +118,6 @@ CMeshRenderer_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hC
     auto spec = std::make_unique<MESH_RENDERER_SPEC>();
     spec->meshGUID = SYS_RESOURCE.Get_Mesh(pData->hMesh)->tGUID;
     spec->materialGUID = SYS_RESOURCE.Get_Material(pData->hMaterial)->tGUID;
-    spec->passIndex = 0;
     spec->flags = pData->flags;
     spec->layer = pData->layer;
     spec->sortZ = pData->sortZ;

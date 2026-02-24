@@ -37,8 +37,9 @@ void CComponent_System::Register_InitialSpecFactory(COMPONENT_TYPE eComType)
             if (pBase)
             {
                 /* To Keep the lambda capture-free */
-                pSys->Initialize_From_Spec(eInType, proxy.Get_Handle(), pBase);
+                return pSys->Initialize_From_Spec(eInType, proxy.Get_Handle(), pBase);
             }
+            return E_FAIL;
         };
 }
 

@@ -4,8 +4,10 @@
 #include "Core_System.h"
 #include "Component_System.h"
 #include "GameObject_System.h"
-#include "Prototype_System.h"
+#include "Event_System.h"
 #include "Scene.h"
+#include "Asset_Registry.h"
+#include "SceneChange_Event.h"
 
 NS_BEGIN(Engine)
 
@@ -17,16 +19,50 @@ CScene_Handler::~CScene_Handler()
 {
 }
 
-HRESULT CScene_Handler::Change_Scene(_uint iNewSceneIndex, std::unique_ptr<CScene> pNewScene)
+HRESULT CScene_Handler::Change_Scene(const ASSET_GUID& tGUID, SCENE_CHANGE_MODE eMode)
 {
-    if (nullptr != m_pCurrentScene)
-        SYS_CORE.Clear_Resources(m_iCurrentSceneIndex);
+    IF_TRUE_RETURN_MSG_BREAK(!tGUID.Is_Valid(), E_FAIL, "Invalid scene GUID");
+
+    /* Resolve GUID */
+    /* 에디터 모드에서 새 씬 생성 시 새 GUID를 생성하므로 아래 에러를 통과한다. */
+    const ASSET_RECORD* pRec = SYS_ASSET.Find(tGUID);
+    IF_NULL_RETURN_MSG_BREAK(pRec, E_FAIL, "Scene guid not found in asset registry.");
+    IF_TRUE_RETURN_MSG_BREAK(pRec->eType != ASSET_TYPE::SCENE, E_FAIL, "Not a scene asset.");
+
+    const std::filesystem::path& path = pRec->path;
+    IF_TRUE_RETURN_MSG_BREAK(path.empty(), E_FAIL, "Scene record path is empty.");
+
+    // 기존 씬 정리 (mode에 따라 다르게)
+    // SYS_GAMEOBJECT.Destory_All_GameObjects();
+
+    auto pNewScene = CScene::Create();
+    auto pOldScene = std::move(m_pCurrentScene);
 
     m_pCurrentScene = std::move(pNewScene);
-    m_iCurrentSceneIndex = iNewSceneIndex;
+
+    if (FAILED(Load_NextScene(path, tGUID)))
+    {
+        m_pCurrentScene = std::move(pOldScene);
+        return E_FAIL;
+    }
+
+    // Load_SceneFile(...) -> LoadScene_Runtime(...)
+    // current guid 갱신
+    m_pCurrentScene->Set_GUID(tGUID);
+    m_pCurrentScene->Set_Label(path.stem().string());
+
+    /* --- TODO (Optional) Handle Editor/Game scene change logic */
+
+    /* Publish event */
+    SCENECHANGE_EVENT_DATA onSceneChange(EVENT_TYPE::On_Scene_Changed, pNewScene.get(), pOldScene.get());
+    SYS_EVENT.Trigger(onSceneChange);
+
+    if (eMode == SCENE_CHANGE_MODE::EDITOR_EDIT)
+        m_pCurrentScene->Set_State(SCENE_STATE::EDIT);
 
     return S_OK;
 }
+
 
 void CScene_Handler::Update(_float fTimeDelta)
 {
@@ -42,8 +78,25 @@ HRESULT CScene_Handler::Render()
     return S_OK;
 }
 
+void CScene_Handler::Set_CurrentScene(std::unique_ptr<CScene> pScene)
+{
+    m_pCurrentScene = std::move(pScene);
+}
+
+CScene* CScene_Handler::Get_CurrentScene()
+{
+    return m_pCurrentScene.get();
+}
+
+/* Save_CurrentScene -> Save_SceneFile -> Serialize_SceneObjectSpec() */
 _bool CScene_Handler::Save_CurrentScene(const std::filesystem::path& path)
 {
+    CScene& scene = *m_pCurrentScene;
+    IF_NULL_RETURN_MSG_BREAK(m_pCurrentScene, false, "m_pCurrentScene is nullptr");
+
+    if (!scene.Get_GUID().Is_Valid())
+        scene.Set_GUID(ASSET_GUID::New_GUID());
+
     std::vector<SCENE_OBJECT_SPEC> specs;
 
     IF_FAIL_RETURN_MSG_BREAK(SYS_GAMEOBJECT.Build_SceneSpecs(specs), false, "GameObject_System failed to serialize");
@@ -52,7 +105,36 @@ _bool CScene_Handler::Save_CurrentScene(const std::filesystem::path& path)
     std::error_code ec;
     std::filesystem::create_directories(path.parent_path(), ec);
 
-    return Save_SceneFile(std::move(specs), path);;
+    if (!Save_SceneFile(specs, path))
+        return false;
+
+    IF_TRUE_RETURN_MSG_BREAK(!SYS_ASSET.Register_File_Asset(path, ASSET_TYPE::SCENE, scene.Get_GUID()), false, "Register scene to Asset_Registry failed");
+
+    return true;
+}
+
+/* Called by CScene_Handler::Change_Scene() */
+/* Load_NextScene -> Load_SceneFile -> Deserialize_SceneObjectSpec() */
+_bool CScene_Handler::Load_NextScene(const std::filesystem::path& path, const ASSET_GUID& tGUID)
+{
+    IF_TRUE_RETURN_MSG_BREAK(path.empty() || !std::filesystem::exists(path), false, "Load_NextScene failed: path invalid.");
+
+    /* .scene 파일의 직렬화된 SCENE_OBJECT_SPEC을 런타임 객체로 생성한다. */
+    std::vector<SCENE_OBJECT_SPEC> specs;
+    if (!Load_SceneFile(specs, path, [](COMPONENT_TYPE t) { return Create_Spec_By_Type(t); }))
+    {
+        _DEBUG_ERROR_BREAK("Load_SceneFile failed.");
+        return false;
+    }
+
+    SYS_GAMEOBJECT.Destroy_All_SceneObjects();
+    /* ------------------------------------------*/
+    /* TODO 기타 씬 정리 구현 : 아직 리소스가 없다. */
+    /* ------------------------------------------*/
+
+    IF_FAIL_RETURN_MSG_BREAK(LoadScene_Runtime(specs), false, "LoadScene_Runtime failed");
+
+    return true;
 }
 
 _bool CScene_Handler::Save_SceneFile(const std::vector<SCENE_OBJECT_SPEC>& objects, const std::filesystem::path& path)
@@ -76,6 +158,7 @@ json CScene_Handler::Serialize_SceneObjectSpec(const SCENE_OBJECT_SPEC& tSpec)
     json j;
     j["uuid"] = tSpec.uuid.To_String_Utf8();
     j["protoGuid"] = tSpec.protoGuid.To_String_Utf8();
+    j["isUI"] = tSpec.isUI;
     j["name"] = tSpec.name;
     j["layer"] = (uint32_t)tSpec.layer;
     j["parent"] = tSpec.parent.Is_Valid() ? tSpec.parent.To_String_Utf8() : "";
@@ -99,14 +182,16 @@ json CScene_Handler::Serialize_SceneObjectSpec(const SCENE_OBJECT_SPEC& tSpec)
     return j;
 }
 
+/* Json의 직렬화된 내용을 SCENE_OBJECT_SPEC 구조체로 빌드한다. */
 _bool CScene_Handler::Deserialize_SceneObjectSpec(const json& j, SCENE_OBJECT_SPEC& out, SpecFactoryFn createSpec)
 {
     if (!INSTANCE_UUID::Try_Utf8_To_UUID(j.value("uuid", ""), out.uuid))
         return false;
     
     if (!ASSET_GUID::Try_Utf8_To_GUID(j.value("protoGuid", ""), out.protoGuid))
-        return false;
+        out.protoGuid = ASSET_GUID{};
 
+    out.isUI = j.value("isUI", false);
     out.name = j.value("name", "");
     out.layer = (Layer::LAYER_ID)j.value("layer", (uint32_t)Layer::DEFAULT_LAYER);
 
@@ -132,7 +217,7 @@ _bool CScene_Handler::Deserialize_SceneObjectSpec(const json& j, SCENE_OBJECT_SP
                 continue;
             }
 
-            auto spec = createSpec(eType);
+            auto spec = createSpec(eType); /* 컴포넌트에 맞는 COMPONENT_SPEC_BASE의 구현체 생성 */
             if (!spec)
             {
                 _DEBUG_WARN("Unknown spec type=%u", (uint32_t)eType);
@@ -145,6 +230,7 @@ _bool CScene_Handler::Deserialize_SceneObjectSpec(const json& j, SCENE_OBJECT_SP
                 continue;
             }
 
+            /* 덮어쓰기 위한 COMPONENT_SPEC 구조체 그릇을 준비한다. */
             out.overrides.components.push_back(std::move(spec));
         }
     }
@@ -155,13 +241,13 @@ HRESULT CScene_Handler::Apply_Overrides(CGameObject* pObject, const COMPONENT_SP
 {
     for (const auto& upSpec : tBundle.components)
     {
-        /* TODO : 성공 여부 반환해야 함 그러려면 시스템 쪽에서 팩토리 자체 수정 필요  */
         if (!upSpec)
         {
-            _DEBUG_WARN("COMPONENT_SPEC is nullptr; so skip this.");
+            _DEBUG_ERROR_BREAK("COMPONENT_SPEC is nullptr; so skip this.");
             continue;
         }
-        SYS_COMPONENT.Create_Component_From_Spec(pObject, upSpec.get());
+        IF_FAIL_RETURN_MSG_BREAK(SYS_COMPONENT.Create_Component_From_Spec(pObject, upSpec.get()), E_FAIL,
+            "Apply overrides failed");
     }
 
     return S_OK;
@@ -172,6 +258,9 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CScene_Handler::Create_Spec_By_Type(COMPONE
     switch (eType)
     {
     case COMPONENT_TYPE::TRANSFORM: return std::make_unique<TRANSFORM_SPEC>();
+    case COMPONENT_TYPE::RECT_TRANSFORM: return std::make_unique<RECTTRANSFORM_SPEC>();
+    case COMPONENT_TYPE::CANVAS_RENDERER: return std::make_unique<CANVAS_RENDERER_SPEC>();
+    case COMPONENT_TYPE::MESH_RENDERER: return std::make_unique<MESH_RENDERER_SPEC>();
     default:
         return nullptr;
     }
@@ -179,29 +268,27 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CScene_Handler::Create_Spec_By_Type(COMPONE
 
 HRESULT CScene_Handler::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& tSpecs)
 {
-    std::unordered_set<ASSET_GUID, ASSET_GUID_HASHER> protoGUIDs;
-    protoGUIDs.reserve(tSpecs.size()); /* max size */
-
-    for (const auto& spec : tSpecs)
-        protoGUIDs.insert(spec.protoGuid);
-
-    for (const auto& tGUID : protoGUIDs)
-        if (FAILED(CPrototype_System::GetInstance().Load_Prototype_From_File(tGUID)))
-            return E_FAIL;
-
     std::unordered_map<INSTANCE_UUID, CGameObject*, INSTANCE_UUID_HASHER> objectMap;
     objectMap.reserve(tSpecs.size());
+
+    /* Create objects */
     for (const auto& spec : tSpecs)
     {
-        CGameObject* pSceneObj = CPrototype_System::GetInstance().Clone(spec.protoGuid, spec.layer, spec.name, spec.uuid);
+        CGameObject* pObj = nullptr;
+        if (!spec.isUI)
+            pObj = SYS_GAMEOBJECT.Create_GameObject(spec.layer, spec.name, nullptr, spec.uuid);
+        else
+            pObj = SYS_GAMEOBJECT.Create_GameObjectUI(Layer::UI_LAYER, spec.name, nullptr, spec.uuid);
 
-        IF_NULL_RETURN_MSG_BREAK(pSceneObj, E_FAIL, "Prototype clone failed : GameObject is nullptr.");
+        IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "Create_Object failed.");
 
-        if (FAILED(Apply_Overrides(pSceneObj, spec.overrides)))
-            continue;
+        /* build components by overrides */
+        IF_FAIL_RETURN_MSG_BREAK(Apply_Overrides(pObj, spec.overrides), E_FAIL, "Apply_Overrides failed.");
 
-        auto [it, bInserted] = objectMap.emplace(spec.uuid, pSceneObj);
-        IF_TRUE_RETURN_MSG_BREAK(!bInserted, E_FAIL, "Duplicated UUID");
+        pObj->Set_ProtoGUID(spec.protoGuid);
+
+        auto [it, inserted] = objectMap.emplace(spec.uuid, pObj);
+        IF_TRUE_RETURN_MSG_BREAK(!inserted, E_FAIL, "Duplicated UUID");
     }
 
     for (const auto& spec : tSpecs)
@@ -212,21 +299,14 @@ HRESULT CScene_Handler::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& 
         auto itChild = objectMap.find(spec.uuid);
         auto itParent = objectMap.find(spec.parent);
 
-        if (itChild == objectMap.end())
-            _DEBUG_ERROR_BREAK("Child UUID not found.");
-        if (itParent == objectMap.end())
-            _DEBUG_ERROR_BREAK("Parent UUID not found.");
+        IF_TRUE_RETURN_MSG_BREAK(itChild == objectMap.end(), E_FAIL, "Child UUID not found.");
+        IF_TRUE_RETURN_MSG_BREAK(itParent == objectMap.end(), E_FAIL, "Parent UUID not found.");
 
-        if (itChild != objectMap.end() && itParent != objectMap.end())
-            itChild->second->Set_Parent(itParent->second);
-        else
-            return E_FAIL;
+        itChild->second->Set_Parent(itParent->second);
     }
 
     return S_OK;
 }
-
-
 
 _bool CScene_Handler::Load_SceneFile(std::vector<SCENE_OBJECT_SPEC>& outObjectSpecs, const std::filesystem::path& path, SpecFactoryFn createSpec)
 {
@@ -234,7 +314,9 @@ _bool CScene_Handler::Load_SceneFile(std::vector<SCENE_OBJECT_SPEC>& outObjectSp
     if (!ifs.is_open()) return false;
 
     json root;
-    ifs >> root;
+
+    try { ifs >> root; }
+    catch (...) { return false; }
 
     outObjectSpecs.clear();
     if (!root.contains("objects") || !root["objects"].is_array())
@@ -242,6 +324,7 @@ _bool CScene_Handler::Load_SceneFile(std::vector<SCENE_OBJECT_SPEC>& outObjectSp
 
     for (const auto& jo : root["objects"])
     {
+        /* SCENE_OBJECT_SPEC의 멤버변수를 채우고, COMPONENT_SPEC_BASE*를 생성하여 값을 채우기 위한 그릇을 준비한다. */
         SCENE_OBJECT_SPEC s{};
         if (!Deserialize_SceneObjectSpec(jo, s, createSpec))
             return false;

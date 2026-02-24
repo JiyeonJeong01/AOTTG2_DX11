@@ -23,7 +23,10 @@ public:
                                     CGameObject* pParent = nullptr,
                                     const INSTANCE_UUID& tUUID = INSTANCE_UUID{});
     void            Destroy_Object(CGameObject* pObj);
+    void            Destroy_All_SceneObjects() {  /* TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */ };
+    void            Flush_PendingDestroy();
 
+public :
     void            Set_Layer(CGameObject* pObj, Layer::LAYER_ID iNewLayer);
     const std::vector<CGameObject*>& Get_LayerObjects(Layer::LAYER_ID iLayer) const;
     void            Gather_By_Mask(Layer::LAYER_MASK mask, std::vector<CGameObject*>& outObjects) const;
@@ -59,7 +62,6 @@ private :
 private:
     void Remove_From_LayerBucket(CGameObject* pObj);
     void Add_To_LayerBucket(CGameObject* pObj, Layer::LAYER_ID layer = Layer::DEFAULT_LAYER);
-    void Flush_PendingDestroy();
 };
 
 

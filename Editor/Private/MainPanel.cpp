@@ -3,12 +3,16 @@
 
 #include "Core_System.h"
 #include "ConsolePanel.h"
+#include "Asset_Registry.h"
+#include "Editor_System.h"
 #include "Editor_Util.h"
 #include "HierarchyPanel.h"
 #include "InspectorPanel.h"
 #include "ProjectPanel.h"
 #include "ProfilerPanel.h"
 #include "ScenePanel.h"
+#include "Scene.h"
+#include "Event_System.h"
 
 NS_BEGIN(Editor)
 
@@ -38,6 +42,22 @@ HRESULT CMainPanel::Initialize()
     Add_Panel(std::move(pScene));
 
     const std::filesystem::path assetRootPath = ProjectConfig::PATH + ProjectConfig::ROOT;
+
+    /* 씬 변경 시 이벤트 등록 */
+    SYS_EVENT.Subscribe(EVENT_TYPE::On_Scene_Changed, &CMainPanel::On_SceneChanged, this);
+
+    /* 기본 씬 파일 보장하며, GUID를 가져온다. */
+    const Engine::ASSET_GUID ensureGUID = SYS_EDITOR.Ensure_DefaultScene();
+    IF_TRUE_RETURN_MSG_BREAK(!ensureGUID.Is_Valid(), E_FAIL, "Default scene guid invalid");
+
+    /* 기본 씬을 로드한다. */
+    IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(ensureGUID, SCENE_CHANGE_MODE::EDITOR_EDIT), E_FAIL,
+        "Change_Scene(Default) failed");
+
+    /* UI 캐시용 */
+    const Engine::ASSET_RECORD* pRec = SYS_ASSET.Find(ensureGUID);
+    if (pRec) m_scenePath = pRec->path.wstring();
+    m_bSceneDirty = false;
 
     return S_OK;
 }
@@ -147,6 +167,8 @@ void CMainPanel::Draw_MenuBar()
         ImGui::SameLine(ImGui::GetWindowWidth() - 360.f);
 
         std::string sceneLabel = "SCENE: ";
+            if (m_pCurScene)
+                sceneLabel += m_pCurScene->Get_Label();
         if (m_scenePath.empty())
             sceneLabel += "(Untitled)";
         else
@@ -160,6 +182,68 @@ void CMainPanel::Draw_MenuBar()
         ImGui::TextDisabled("%s", sceneLabel.c_str());
     }
 
+    if (m_bShowExitPopup)
+    {
+        if (ImGui::BeginPopupModal("ExitConfirmPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Do you want to save before exiting?");
+            ImGui::Separator();
+
+            /* YES : Save and Exit */
+            if (ImGui::Button("Yes", ImVec2(120, 0)))
+            {
+                CScene* pScene = SYS_CORE.Get_CurrentScene();
+                IF_NULL_RETURN_MSG_BREAK(pScene, , "Exit failed: current scene is null.");
+
+                const ASSET_GUID& tGUID = pScene->Get_GUID();
+                const ASSET_RECORD* pRec = tGUID.Is_Valid() ? SYS_ASSET.Find(tGUID) : nullptr;
+
+                if (pRec && !pRec->path.empty())
+                {
+                    IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Save_CurrentScene(pRec->path), , "Save before exit failed.");
+                }
+                else
+                {
+                    /* Save As fallback */
+                    const std::wstring pathW = Editor_Util::SaveFileDialog(
+                        L"SCENE Files (*.scene)\0*.scene\0\0",
+                        Editor_Util::Get_SceneRoot().wstring().c_str()
+                    );
+
+                    IF_TRUE_RETURN_MSG_BREAK(pathW.empty(), , "Exit cancelled: Save As aborted.");
+                    IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Save_CurrentScene(pathW), , "Save As before exit failed.");
+                }
+
+                m_bShowExitPopup = false;
+                m_bSceneDirty = false;
+                ImGui::CloseCurrentPopup();
+
+                Request_Exit();
+            }
+
+            ImGui::SameLine();
+
+            /* NO : Exit without saving */
+            if (ImGui::Button("No", ImVec2(120, 0)))
+            {
+                m_bSceneDirty = false;
+                m_bShowExitPopup = false;
+                ImGui::CloseCurrentPopup();
+                Request_Exit();
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                m_bShowExitPopup = false;
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+
     ImGui::EndMenuBar();
 }
 
@@ -167,42 +251,82 @@ void CMainPanel::Draw_Menu_File()
 {
     std::wstring sceneFolder = Editor_Util::Get_SceneRoot().wstring();
 
+    CScene* pScene = SYS_CORE.Get_CurrentScene();
+    const ASSET_GUID& curGuid = pScene ? pScene->Get_GUID(): ASSET_GUID{};
+    const ASSET_RECORD* pRec = (curGuid.Is_Valid()) ? SYS_ASSET.Find(curGuid) : nullptr;
+
+    /* cur save path; */
+    std::wstring curScenePathW{};
+    if (pRec)
+        curScenePathW = pRec->path.wstring();
+
     if (ImGui::MenuItem("New SCENE", "Ctrl+N"))
     {
-        if (m_fnNewScene)
-            m_fnNewScene();
-        m_scenePath.clear();
+        std::filesystem::path newPath;
+        const ASSET_GUID newGuid = SYS_EDITOR.Create_NewScene_Asset(&newPath);
+        IF_TRUE_RETURN_MSG_BREAK(!newGuid.Is_Valid(), , "Create_NewScene_Asset failed");
+
+        IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(newGuid, SCENE_CHANGE_MODE::EDITOR_EDIT), ,
+            "Change_Scene(New) failed");
+
+        m_scenePath = newPath.wstring();
         m_bSceneDirty = false;
     }
 
     if (ImGui::MenuItem("Open SCENE...", "Ctrl+O"))
     {
-        // [반영] 다이얼로그를 열 때 씬 루트 폴더에서 시작하도록 설정
-        const std::wstring path = Editor_Util::SaveFileDialog(
+        const std::wstring pathW = Editor_Util::SaveFileDialog(
             L"SCENE Files (*.scene)\0*.scene\0All Files (*.*)\0*.*\0\0",
             sceneFolder.c_str()
         );
 
-        if (!path.empty())
+        if (!pathW.empty())
         {
-            if (m_fnOpenScene)
-                m_fnOpenScene(path);
-            m_scenePath = path;
+            std::filesystem::path path(pathW);
+
+            /* GUID 찾기 */
+            ASSET_GUID tGUID{};
+            SYS_ASSET.Try_Get_GUID(path, tGUID);
+            const ASSET_RECORD* pRec = tGUID.Is_Valid() ? SYS_ASSET.Find(tGUID) : nullptr;
+
+            if (pRec)
+            {
+                tGUID = pRec->tGUID;
+            }
+            else
+            {
+                /* Registry에 없으면 등록 시도 */
+                tGUID = ASSET_GUID::New_GUID();
+                IF_TRUE_RETURN_MSG_BREAK(!SYS_ASSET.Register_File_Asset(path, ASSET_TYPE::SCENE, tGUID), ,
+                    "Open Scene failed: Register_File_Asset failed.");
+            }
+
+            IF_TRUE_RETURN_MSG_BREAK(!tGUID.Is_Valid(), , "Open Scene failed: GUID invalid.");
+
+            IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(tGUID, SCENE_CHANGE_MODE::EDITOR_EDIT), ,
+                "Open Scene failed: Change_Scene failed.");
+
+            m_scenePath = pathW;
             m_bSceneDirty = false;
         }
     }
 
     ImGui::Separator();
 
-    // Save: 현재 경로가 없으면 Save As처럼 동작
+    /* Save the asset at the path if GUID is valid and CAsset_Registry has the path. */
     if (ImGui::MenuItem("Save SCENE", "Ctrl+S"))
     {
-        if (!m_scenePath.empty())
+        if (pRec && !pRec->path.empty())
         {
-            IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Save_CurrentScene(m_scenePath), , "Save scene failed");
+            IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Save_CurrentScene(pRec->path), , "Save scene failed");
+            m_bSceneDirty = false;
+
+            /* UI cache (optional) */
+            m_scenePath = pRec->path.wstring();
         }
         else
         {
+            /* Fallback to SAVE AS */
             const std::wstring path = Editor_Util::SaveFileDialog(
                 L"SCENE Files (*.scene)\0*.scene\0\0",
                 sceneFolder.c_str()
@@ -210,26 +334,53 @@ void CMainPanel::Draw_Menu_File()
 
             if (!path.empty())
             {
-                m_scenePath = path;
-                IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Save_CurrentScene(m_scenePath), , "Save scene failed");
+                /* SaveAs saves the asset to the specified path and :
+                 * - Generates a New() GUID if none exits
+                 * - Registers/Update the GUID->path mapping in CAsset_Registry
+                 */
+                IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Save_CurrentScene(path), , "Save scene failed");
                 m_bSceneDirty = false;
+
+                /* UI cache (optional) */
+                m_scenePath = path;
             }
         }
     }
 
     if (ImGui::MenuItem("Save As SCENE...", "Ctrl+Shift+S"))
     {
-        // [반영] 다른 이름으로 저장 시에도 씬 폴더에서 시작
-        const std::wstring path = Editor_Util::SaveFileDialog(
+        const std::wstring pathW = Editor_Util::SaveFileDialog(
             L"SCENE Files (*.scene)\0*.scene\0\0",
             sceneFolder.c_str()
         );
 
-        if (!path.empty())
+        if (!pathW.empty())
         {
-            if (m_fnSaveAsScene)
-                m_fnSaveAsScene(path);
-            m_scenePath = path;
+            std::filesystem::path path(pathW);
+
+            CScene* pScene = SYS_CORE.Get_CurrentScene();
+
+            IF_NULL_RETURN_MSG_BREAK(pScene, , "Save As failed: current scene is null.");
+
+            /* 새 파일의 GUID 발급 */
+            ASSET_GUID oldGuid = pScene->Get_GUID();
+            ASSET_GUID newGuid = ASSET_GUID::New_GUID();
+
+            IF_TRUE_RETURN_MSG_BREAK(!newGuid.Is_Valid(), , "Save As failed: new GUID invalid.");
+
+            /* 임시로 GUID 교체 */
+            pScene->Set_GUID(newGuid);
+
+            if (FAILED(SYS_CORE.Save_CurrentScene(path)))
+            {
+                /* 실패 시 원복 */
+                pScene->Set_GUID(oldGuid);
+                _DEBUG_ERROR_BREAK("Save As failed: Save_CurrentScene failed.");
+                return;
+            }
+
+            /* UI 캐시 갱신 */
+            m_scenePath = pathW;
             m_bSceneDirty = false;
         }
     }
@@ -238,7 +389,15 @@ void CMainPanel::Draw_Menu_File()
 
     if (ImGui::MenuItem("Exit", "Alt+F4"))
     {
-        if (m_fnExit) m_fnExit();
+        if (m_bSceneDirty)
+        {
+            m_bShowExitPopup = true;
+            ImGui::OpenPopup("ExitConfirmPopup");
+        }
+        else
+        {
+            Request_Exit();
+        }
     }
 }
 
@@ -261,6 +420,14 @@ void CMainPanel::Draw_Menu_Tools()
 
 }
 
+void CMainPanel::Request_Exit()
+{
+    HWND hWnd = (HWND)ImGui::GetMainViewport()->PlatformHandleRaw;
+    IF_NULL_RETURN_MSG_BREAK(hWnd, , "Request_Exit failed: hwnd null");
+
+    PostMessage(hWnd, WM_CLOSE, 0, 0);
+}
+
 void CMainPanel::Draw_Toolbar()
 {
     ImGui::BeginChild("##MainToolbar", ImVec2(0, 34.f), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
@@ -273,13 +440,15 @@ void CMainPanel::Draw_Toolbar()
     if (start_x > 0.0f)
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + start_x);
 
-    /* Play / Stop / Step */
+    /* Play / Pause / Step */
     {
         ImGui::BeginDisabled(m_bPlaying);
         if (ImGui::Button("Play", ImVec2(button_size, 26)))
         {
-            if (m_fnPlay)
-                m_fnPlay();
+            if (!m_bSceneStarted)
+            {
+                SYS_EDITOR.Play();
+            }
             m_bPlaying = true;
         }
         ImGui::EndDisabled();
@@ -287,11 +456,13 @@ void CMainPanel::Draw_Toolbar()
         ImGui::SameLine();
 
         ImGui::BeginDisabled(!m_bPlaying);
-        if (ImGui::Button("Stop", ImVec2(button_size, 26)))
+        if (ImGui::Button("Pause", ImVec2(button_size, 26)))
         {
-            if (m_fnStop)
-                m_fnStop();
-            m_bPlaying = false;
+            if (m_pCurScene)
+            {
+                m_bPlaying = false;
+                SYS_EDITOR.Pause();
+            }
         }
         ImGui::EndDisabled();
 
@@ -300,13 +471,18 @@ void CMainPanel::Draw_Toolbar()
         ImGui::BeginDisabled(!m_bPlaying);
         if (ImGui::Button("Step", ImVec2(button_size, 26)))
         {
-            if (m_fnStep)
-                m_fnStep();
+            SYS_EDITOR.Step(SYS_CORE.Compute_FrameDT());
         }
         ImGui::EndDisabled();
     }
 
     ImGui::EndChild();
+}
+
+void CMainPanel::On_SceneChanged(Engine::EVENT_DATA& event)
+{
+    SCENECHANGE_EVENT_DATA& onSceneChanged = SCAST(SCENECHANGE_EVENT_DATA&, event);
+    m_pCurScene = onSceneChanged.m_pNewScene;
 }
 
 void CMainPanel::Build_Default_Layout()

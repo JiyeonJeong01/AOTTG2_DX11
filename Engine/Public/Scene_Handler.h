@@ -2,6 +2,7 @@
 
 #include "Engine_Define.h"
 #include "Spec_Struct.h"
+#include "Event.h"
 
 NS_BEGIN(Engine)
 
@@ -18,20 +19,17 @@ public:
     ~CScene_Handler();
 
 public:
-    HRESULT Change_Scene(_uint iNewSceneIndex, std::unique_ptr<CScene> pNewScene);
+    HRESULT Change_Scene(const ASSET_GUID& tGUID, SCENE_CHANGE_MODE eMode);
     void    Update(_float fTimeDelta);
     HRESULT Render();
 
-private:
-    std::unique_ptr<CScene> m_pCurrentScene{};
-
-    _uint			m_iCurrentSceneIndex = 0;
-
-    std::vector<SCENE_OBJECT_SPEC>  m_SceneObjectSpecs;
-
 public:
-    _bool   Save_CurrentScene(const std::filesystem::path& path);
+    void    Set_CurrentScene(std::unique_ptr<CScene> pScene);
+    CScene* Get_CurrentScene();
 
+    _bool   Save_CurrentScene(const std::filesystem::path& path);
+    _bool   Load_NextScene(const std::filesystem::path& path, const ASSET_GUID& tGUID);
+private:
     /* SCENE_OBJECT_SPEC -> JSON */
     _bool    Save_SceneFile(const std::vector<SCENE_OBJECT_SPEC>& objects, const std::filesystem::path& path);
     json     Serialize_SceneObjectSpec(const SCENE_OBJECT_SPEC& tSpec);
@@ -45,6 +43,13 @@ public:
     HRESULT  Apply_Overrides(CGameObject* pObject, const COMPONENT_SPEC_BUNDLE& tBundle);
 
     static std::unique_ptr<COMPONENT_SPEC_BASE> Create_Spec_By_Type(COMPONENT_TYPE eType);
+
+private:
+    std::unique_ptr<CScene>         m_pCurrentScene{};
+    _uint			                m_iCurrentSceneIndex = 0;
+    std::vector<SCENE_OBJECT_SPEC>  m_SceneObjectSpecs;
+
+public :
     static std::unique_ptr<CScene_Handler> Create();
 };
 

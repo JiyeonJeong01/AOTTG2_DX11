@@ -9,6 +9,8 @@
 #include "CRender_System.h"
 #include "Shader.h"
 
+#include "BuiltIn_GUID.h"
+
 NS_BEGIN(Engine)
 
 CCanvasRenderer_Processor::CCanvasRenderer_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CRectTransform_Processor* pRTProcessor)
