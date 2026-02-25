@@ -10,6 +10,7 @@
 #include "Shader.h"
 
 #include "BuiltIn_GUID.h"
+#include "CRender_System.h"
 
 NS_BEGIN(Engine)
 
@@ -47,41 +48,16 @@ HRESULT CCanvasRenderer_Processor::Initialize(_uint iWidth, _uint iHeight)
 
 void CCanvasRenderer_Processor::Update(_float fDT)
 {
-
+    //auto ui = SYS_RENDER.Get_UI_Global();
+    //m_matProj = ui.matProj;
+    //m_matView = ui.matView;
 }
 
 void CCanvasRenderer_Processor::LateUpdate(_float fDT)
 {
 }
 
-void CCanvasRenderer_Processor::Render()
-{
-    if (!m_pRectTransform_Processor)
-        return;
-
-    std::vector<DRAW_CMD> cmds;
-    cmds.reserve(128);
-
-    Build_Queue(cmds);
-
-    std::sort(cmds.begin(), cmds.end(), [](const DRAW_CMD& a, const DRAW_CMD& b)
-        {
-            return a.sortKey < b.sortKey;
-        });
-
-    for (auto& cmd : cmds)
-        Execute_Draw(cmd);
-}
-
-void CCanvasRenderer_Processor::Begin_Frame()
-{
-}
-
-void CCanvasRenderer_Processor::End_Frame()
-{
-}
-
-void CCanvasRenderer_Processor::Build_Queue(std::vector<DRAW_CMD>& outCmds)
+void CCanvasRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
 {
     if (!m_pRectTransform_Processor)
         return;
@@ -209,96 +185,6 @@ uint64_t CCanvasRenderer_Processor::Make_SortKey(const CANVAS_RENDERER_DATA& tDa
     key |= (texture << 4);
 
     return key;
-}
-
-void CCanvasRenderer_Processor::Execute_Draw(const DRAW_CMD& tCmd)
-{
-    if (tCmd.kind != DRAW_TYPE::CANVAS)
-        return;
-
-    /* 1. Get MESH_ENTRY & MATERIAL_ENTRY */
-    const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(m_hUIRectMesh);
-    IF_NULL_RETURN_MSG_BREAK(pMesh, , "UI Rect Mesh is nullptr.");
-
-    MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(tCmd.canvas.hMaterial);
-    IF_NULL_RETURN_MSG_BREAK(pMat, , "Material is nullptr.");
-
-    /* 2. Get SHADER_ENTRY through MATERIAL_ENTRY */
-    const SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(pMat->hShader);
-    IF_NULL_RETURN_MSG_BREAK(pShader, , "Shader is nullptr.");
-
-    const uint16_t passIndex = pMat->passIndex;
-    if (passIndex >= pShader->pPasses.size())
-        return;
-
-    /* 3. Setting .fx variables */
-    // RectTransform world
-    const auto rectTransform = m_pRectTransform_Processor->Get_Proxy(COMPONENT_TYPE::RECT_TRANSFORM, tCmd.canvas.hRectTransform);
-    IF_TRUE_RETURN_MSG_BREAK(!rectTransform.Is_Valid(), , "RectTransform Proxy is invalid.");
-
-    const _matrix matWorld = Engine::Math::Load(rectTransform->matWorld);
-
-    pMat->pWorld->SetMatrix(reinterpret_cast<const float*>(&matWorld));
-    pMat->pView->SetMatrix(reinterpret_cast<const float*>(&m_matView));
-    pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&m_matProj));
-
-    // ---- per-instance: Color / UV / Texture ----
-    ID3DX11Effect* fx = pShader->pEffect.Get();
-    IF_NULL_RETURN_MSG_BREAK(fx, , "Shader effect is nullptr.");
-
-    // ---- per-instance: Color / UV / Texture ----
-    if (pMat->pColor && pMat->pColor->IsValid())
-        pMat->pColor->SetFloatVector(reinterpret_cast<const float*>(&tCmd.canvas.vColor));
-
-    if (pMat->pUV && pMat->pUV->IsValid())
-    {
-        _float4 uv4 = { tCmd.canvas.rcUV.fLeft, tCmd.canvas.rcUV.fTop, tCmd.canvas.rcUV.fRight, tCmd.canvas.rcUV.fBottom };
-        pMat->pUV->SetFloatVector(reinterpret_cast<const float*>(&uv4));
-    }
-
-    if (pMat->pMainTex && pMat->pMainTex->IsValid())
-    {
-        ID3D11ShaderResourceView* srv = nullptr;
-        if (tCmd.canvas.hTexture != INVALID_HANDLE_UINT)
-        {
-            const TEXTURE_ENTRY* tex = SYS_RESOURCE.Get_Texture(tCmd.canvas.hTexture);
-            srv = (tex && tex->Is_Valid()) ? tex->SRV() : nullptr;
-        }
-        pMat->pMainTex->SetResource(srv); 
-    }
-
-    // ---- Clip (Scissor) ----
-    const _bool bClip = (tCmd.canvas.flags & CF_CLIP_RECT) != 0;
-    if (bClip)
-    {
-        const RECT_F& c = tCmd.canvas.rcClip;
-
-        D3D11_RECT r{};
-        r.left = (LONG)c.fLeft;
-        r.top = (LONG)c.fTop;
-        r.right = (LONG)(c.fLeft + c.fRight);
-        r.bottom = (LONG)(c.fTop + c.fBottom);
-
-        m_pContext->RSSetState(m_rsScissor.Get());
-        m_pContext->RSSetScissorRects(1, &r);
-    }
-    else
-    {
-        m_pContext->RSSetState(m_rsNoScissor.Get());
-    }
-
-    /* Apply Pass */
-    ID3D11InputLayout* pIL = pShader->pPasses[passIndex].pInputLayout.Get();
-    m_pContext->IASetInputLayout(pIL);
-
-    ID3DX11EffectPass* pPass = pShader->pPasses[passIndex].pPass;
-    if (!pPass) return;
-
-    pPass->Apply(0, m_pContext);
-
-    // Draw: UI는 보통 전체 draw (0,0)
-    pMesh->Bind_IA(m_pContext);
-    pMesh->Draw(m_pContext, 0, 0);
 }
 
 std::unique_ptr<CCanvasRenderer_Processor> CCanvasRenderer_Processor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CRectTransform_Processor* pProcessor, _uint iWidth, _uint iHeight)

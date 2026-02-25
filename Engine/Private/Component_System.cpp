@@ -7,6 +7,8 @@
 #include "RectTransform_Processor.h"
 #include "CanvasRenderer_Processor.h"
 
+#include "Render_Struct.h"
+
 IMPLEMENT_SINGLETON(CComponent_System)
 
 
@@ -59,13 +61,17 @@ void CComponent_System::FixedUpdate(_float fDT)
 {
 }
 
-void CComponent_System::Render()
+void CComponent_System::Build_RenderQueue(vector<DRAW_CMD>& cmds)
 {
     IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)], , "m_pComProcessor is nullptr");
     IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)], , "m_pComProcessor is nullptr");
 
-    SCAST(CMeshRenderer_Processor*, m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)].get())->Render();
-    SCAST(CCanvasRenderer_Processor*, m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)].get())->Render();
+    SCAST(CMeshRenderer_Processor*, m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)].get())->Build_RenderQueue(cmds);
+    SCAST(CCanvasRenderer_Processor*, m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)].get())->Build_RenderQueue(cmds);
+}
+
+void CComponent_System::Render()
+{
 }
 
 COMPONENT_HANDLE CComponent_System::Create_Component_By_Type(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject)
@@ -126,6 +132,15 @@ void CComponent_System::Get_Component_Handle_By_Type(COMPONENT_TYPE eComType, OB
 
     for (auto& hCom : tGroup.tExtras)
         outHandles.push_back(hCom);
+}
+
+void CComponent_System::Bind_ComponentProcessor(COMPONENT_TYPE eComType, CComponent_Processor** ppOut)
+{
+    const uint32_t iProcIdx = COM_TO_PID(eComType);
+    IF_TRUE_RETURN_MSG_BREAK((iProcIdx >= COMPONENT_PROCESSOR_MAX || !m_pComProcessors[iProcIdx]), ,
+        "Processor not registered for this component type.");
+
+    *ppOut = m_pComProcessors[iProcIdx].get();
 }
 
 HRESULT CComponent_System::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pBase)

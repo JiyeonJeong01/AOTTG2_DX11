@@ -39,38 +39,10 @@ void CMeshRenderer_Processor::LateUpdate(_float fDT)
 {
 }
 
-void CMeshRenderer_Processor::Render()
+void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
 {
     if (!m_pTransformProcessor /* || !m_pCam */)
         return;
-    std::vector<DRAW_CMD> cmds;
-    cmds.reserve(64);
-    Build_Queue(cmds);
-
-    std::sort(cmds.begin(), cmds.end(), [](const DRAW_CMD& a, const DRAW_CMD& b)
-        {
-            return a.sortKey < b.sortKey;
-        });
-
-    for (auto& cmd : cmds)
-        Execute_Draw(cmd);
-}
-
-void CMeshRenderer_Processor::Begin_Frame()
-{
-    /* 카메라 */
-}
-
-void CMeshRenderer_Processor::End_Frame()
-{
-    /* 카메라 해제 */
-}
-
-void CMeshRenderer_Processor::Build_Queue(std::vector<DRAW_CMD>& outCmds)
-{
-    if (!m_pTransformProcessor /* || !m_pCam */)
-        return;
-
     const auto& Pages = m_Pool.GetPages();
     for (const auto& upPage : Pages)
     {
@@ -144,59 +116,6 @@ uint64_t CMeshRenderer_Processor::Make_SortKey(const MESH_RENDERER_DATA& tData) 
     key |= (uint64_t)(tData.hMaterial) << 28;
     key |= (uint64_t)(tData.hMesh & 0x0FFFFFFF);
     return key;
-}
-
-void CMeshRenderer_Processor::Execute_Draw(const DRAW_CMD& cmd)
-{
-    const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(cmd.mesh.hMesh);
-    IF_NULL_RETURN_MSG_BREAK(pMesh, , "Mesh is nullptr.");
-
-    MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(cmd.mesh.hMaterial);
-    IF_NULL_RETURN_MSG_BREAK(pMat, , "Material is nullptr.");
-
-    const SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(pMat->hShader);
-    IF_NULL_RETURN_MSG_BREAK(pShader, , "Shader is nullptr.");
-
-    const uint16_t passIndex = pMat->passIndex;
-    if (passIndex >= pShader->pPasses.size())
-        return;
-
-    const _matrix matWorld = Engine::Math::Load(m_pTransformProcessor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, cmd.mesh.hTransform)->matWorld);
-
-    const _vector vEye = XMVectorSet(0.f, 5.f, -5.f, 0.f);
-    const _vector vAt = XMVectorSet(0.f, 0.f, 0.f, 0.f);
-    const _vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-    const _matrix matView = XMMatrixLookAtLH(vEye, vAt, vUp);
-
-    const _matrix matProj = XMMatrixPerspectiveFovLH(XM_PIDIV2, 16.0f / 9.0f, 0.01f, 1000.0f);
-
-    pMat->pWorld->SetMatrix(reinterpret_cast<const float*>(&matWorld));
-    pMat->pView->SetMatrix(reinterpret_cast<const float*>(&matView));
-    pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&matProj));
-
-
-    if (cmd.mesh.hMainTexture != INVALID_HANDLE_UINT)
-    {
-        ID3D11ShaderResourceView* pSRV = nullptr;
-
-        auto* pTex = SYS_RESOURCE.Get_Texture(cmd.mesh.hMainTexture);
-        pSRV = pTex->SRV();
-        if (pTex || pTex->Is_Valid())
-            pMat->pMainTex->SetResource(pSRV);
-    }
-
-    /* Apply */
-    ID3D11InputLayout* pIL = pShader->pPasses[passIndex].pInputLayout.Get();
-    m_pContext->IASetInputLayout(pIL);
-
-    ID3DX11EffectPass* pPass = pShader->pPasses[passIndex].pPass;
-    if (!pPass)
-        return;
-    pPass->Apply(0, m_pContext);
-
-    /* Mesh binding and draw call */
-    pMesh->Bind_IA(m_pContext);
-    pMesh->Draw(m_pContext, cmd.mesh.firstIndex, cmd.mesh.indexCount);
 }
 
 std::unique_ptr<CMeshRenderer_Processor> CMeshRenderer_Processor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CTransform_Processor* pTransform)

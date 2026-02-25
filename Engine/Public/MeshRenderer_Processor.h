@@ -17,21 +17,15 @@ public:
     HRESULT Initialize() override;
     void Update(_float fDT) override;
     void LateUpdate(_float fDT) override;
-    void Render();
-
-    void Begin_Frame();
-    void End_Frame();
-    void Build_Queue(std::vector<DRAW_CMD>& outCmds);
+    void Build_RenderQueue(vector<DRAW_CMD>& outCmds);
 
     HRESULT Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) override;
     std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) override;
 
 private :
     void Initialize_Component_Data(COMPONENT_HANDLE hComponent) override;
-
-private:
     uint64_t Make_SortKey(const MESH_RENDERER_DATA& d) const;
-    void Execute_Draw(const DRAW_CMD& cmd);
+
 
 private :
     ID3D11Device*               m_pDevice{};

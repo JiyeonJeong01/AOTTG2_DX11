@@ -86,7 +86,7 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
     IF_FAIL_RETURN_MSG_BREAK(SYS_EVENT.Initialize(), E_FAIL, "Event System failed Initialize");
 
     /* --- Event System --- */
-    IF_FAIL_RETURN_MSG_BREAK(SYS_RENDER.Initialize(iWidth, iHeight), E_FAIL, "Renderer System failed Initialize");
+    IF_FAIL_RETURN_MSG_BREAK(SYS_RENDER.Initialize(m_pDevice, m_pContext, iWidth, iHeight), E_FAIL, "Renderer System failed Initialize");
 
     /* --- Editor_System --- */
     IF_FAIL_RETURN_MSG_BREAK(SYS_EDITOR.Initialize(ProjectConfig::PATH + ProjectConfig::ROOT), E_FAIL, "Editor System failed Initialize");
@@ -104,20 +104,22 @@ void CCore_System::Update_Engine(_float fDT)
     if (!pScene) return;
 
     SYS_INPUT.Update_System();
+    SYS_RENDER.Priority_Update();
+    Update_RuntimeEngine(fDT, pScene);
 
-    switch (pScene->Get_State())
-    {
-    case SCENE_STATE::EDIT :
-        /* 로직 실행하지 않는다. */
-        return;
+    //switch (pScene->Get_State())
+    //{
+    //case SCENE_STATE::EDIT :
+    //    /* 로직 실행하지 않는다. */
+    //    return;
 
-    case SCENE_STATE::PAUSE :
-        /* 스텝만 허용한다. */
-        return;
+    //case SCENE_STATE::PAUSE :
+    //    /* 스텝만 허용한다. */
+    //    return;
 
-    case SCENE_STATE::PLAY :
-        Update_RuntimeEngine(fDT, pScene);
-    }
+    //case SCENE_STATE::PLAY :
+    //    Update_RuntimeEngine(fDT, pScene);
+    //}
 }
 
 void CCore_System::Request_Step(_float fDT, CScene* pScene)
@@ -133,7 +135,8 @@ HRESULT CCore_System::Draw()
     //if (pScene)
     //    pScene->Render();
 
-    SYS_COMPONENT.Render();
+    //SYS_COMPONENT.Render();
+    SYS_RENDER.Render();
 
     /* TODO --------------------------------------------------*/
     /* TODO : Renderer에서 빌드된 렌더 큐 처리 로직 필수 추가    */

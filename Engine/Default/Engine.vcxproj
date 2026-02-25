@@ -163,6 +163,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\CRender_System.h" />
     <ClInclude Include="..\Public\Editor_System.h" />
     <ClInclude Include="..\Public\LayerHelper.h" />
+    <ClInclude Include="..\Public\Render_Context.h" />
     <ClInclude Include="..\Public\SceneChange_Event.h" />
     <ClInclude Include="..\Public\UIButton.h" />
     <ClInclude Include="..\Public\UIImage.h" />
@@ -258,6 +259,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Prototype_System.cpp" />
     <ClCompile Include="..\Private\RectTransform.cpp" />
     <ClCompile Include="..\Private\RectTransform_Processor.cpp" />
+    <ClCompile Include="..\Private\Render_Context.cpp" />
     <ClCompile Include="..\Private\Resource_System.cpp" />
     <ClCompile Include="..\Private\Scene_Handler.cpp" />
     <ClCompile Include="..\Private\Logger.cpp" />

@@ -351,6 +351,9 @@
     <ClInclude Include="..\Public\SceneChange_Event.h">
       <Filter>00. System\11. Event\Events</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Render_Context.h">
+      <Filter>00. System\03. Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -475,6 +478,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Editor_System.cpp">
       <Filter>00. System\07. Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Render_Context.cpp">
+      <Filter>00. System\03. Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

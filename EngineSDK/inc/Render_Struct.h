@@ -44,6 +44,7 @@ typedef struct ENGINE_DLL tagDrawCmd final
 {
     uint64_t sortKey = 0;
 
+    RENDER_LAYER eLayer = RENDER_LAYER::NONBLEND;
     DRAW_TYPE kind = DRAW_TYPE::MESH;
     uint8_t   pad0[7] = {}; // 8바이트 정렬(선택)
 
