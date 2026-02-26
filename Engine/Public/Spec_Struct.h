@@ -43,21 +43,24 @@ typedef struct tagComponentSpecBundle
     ~tagComponentSpecBundle() = default;
     tagComponentSpecBundle(const tagComponentSpecBundle&) = delete;
     tagComponentSpecBundle& operator=(const tagComponentSpecBundle&) = delete;
-    tagComponentSpecBundle(tagComponentSpecBundle&& other) = default;
-    tagComponentSpecBundle& operator=(tagComponentSpecBundle&& other) = default;
+    tagComponentSpecBundle(tagComponentSpecBundle&& other) noexcept  = default;
+    tagComponentSpecBundle& operator=(tagComponentSpecBundle&& other) noexcept = default;
 } COMPONENT_SPEC_BUNDLE;
 
 
 typedef struct ENGINE_DLL tagPrototypeSpec
 {
     std::string  strName;
+    _bool           isUI = false;
     COMPONENT_SPEC_BUNDLE tComponentBundle;
+
+    std::vector<struct tagPrototypeSpec> vecChildren;
 
     tagPrototypeSpec() = default;
     ~tagPrototypeSpec() = default;
     tagPrototypeSpec(const tagPrototypeSpec&) = delete;
-    tagPrototypeSpec& operator=(const tagPrototypeSpec&) = delete;
-    tagPrototypeSpec(tagPrototypeSpec&&) = default;
+    tagPrototypeSpec& operator=(const tagPrototypeSpec&)noexcept = delete;
+    tagPrototypeSpec(tagPrototypeSpec&&) noexcept = default;
     tagPrototypeSpec& operator=(tagPrototypeSpec&&) = default;
 }PROTOTYPE_SPEC;
 

@@ -124,7 +124,7 @@ void CMainApp::Update(_float fDT)
         //Engine::CGameObject* pObj = CPrototype_System::GetInstance().Clone(testGUID);
     }
 
-    SYS_CORE.Update_Engine(fDT);
+    SYS_CORE.Update_Editor_Engine(fDT);
 
 }
 

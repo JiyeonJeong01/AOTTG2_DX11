@@ -4,6 +4,8 @@
 #include "Transform.h"
 #include "RectTransform.h"
 #include "LayerHelper.h"
+#include "Prototype_Handler.h"
+#include "Asset_Registry.h"
 
 #include <atomic>
 
@@ -62,7 +64,7 @@ HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
     return S_OK;
 }
 
-CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const string& strName,
+CGameObject* CGameObject_System::Create_Object_Inner(Layer::LAYER_ID iLayer, const string& strName,
     CGameObject* pParent, const INSTANCE_UUID& tUUID)
 {
     IF_TRUE_RETURN_MSG_BREAK((m_freeIndices.empty()), nullptr, "GameObject Pool is Full!");
@@ -104,10 +106,9 @@ CGameObject* CGameObject_System::Create_Object(Layer::LAYER_ID iLayer, const str
     return pWrapper;
 }
 
-
 CGameObject* CGameObject_System::Create_GameObject(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent, const INSTANCE_UUID& tUUID)
 {
-    CGameObject* pWrapper = Create_Object(iLayer, strName, pParent, tUUID);
+    CGameObject* pWrapper = Create_Object_Inner(iLayer, strName, pParent, tUUID);
 
     CTransform tr = pWrapper->Add_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
     if (!tr.Is_Valid())
@@ -124,7 +125,7 @@ CGameObject* CGameObject_System::Create_GameObject(Layer::LAYER_ID iLayer, const
 CGameObject* CGameObject_System::Create_GameObjectUI(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent,
     const INSTANCE_UUID& tUUID)
 {
-    CGameObject* pWrapper = Create_Object(iLayer, strName, pParent, tUUID);
+    CGameObject* pWrapper = Create_Object_Inner(iLayer, strName, pParent, tUUID);
     CRectTransform tr = pWrapper->Add_Component<CRectTransform>(COMPONENT_TYPE::RECT_TRANSFORM);
     if (!tr.Is_Valid())
     {
@@ -136,6 +137,30 @@ CGameObject* CGameObject_System::Create_GameObjectUI(Layer::LAYER_ID iLayer, con
     IF_TRUE_RETURN_MSG_BREAK((!pWrapper->Get_Handle().Is_UI()), pWrapper, "Create UIObject, but it has GameObject handle");
 
     return pWrapper;
+}
+
+CGameObject* CGameObject_System::Instantiate(const string& strProto, Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent)
+{
+    const CPrototype* pProto = SYS_ASSET.Prototypes().Find(strProto);
+    IF_NULL_RETURN_MSG_BREAK(pProto, nullptr, "Can't find such prototype");
+
+    CGameObject* pObj = pProto->Clone(iLayer, strName, INSTANCE_UUID::New());
+    IF_NULL_RETURN_MSG_BREAK(pObj, nullptr, "pObj is nullptr");
+
+    pObj->Set_Parent(pParent);
+    return     pObj;
+}
+
+CGameObject* CGameObject_System::Instantiate(const ASSET_GUID& tGUID, Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent)
+{
+    const CPrototype* pProto = SYS_ASSET.Prototypes().Find(tGUID);
+    IF_NULL_RETURN_MSG_BREAK(pProto, nullptr, "Can't find such prototype");
+
+    CGameObject* pObj = pProto->Clone(iLayer, strName, INSTANCE_UUID::New());
+    IF_NULL_RETURN_MSG_BREAK(pObj, nullptr, "pObj is nullptr");
+
+    pObj->Set_Parent(pParent);
+    return     pObj;
 }
 
 void CGameObject_System::Destroy_Object(CGameObject* pObj)

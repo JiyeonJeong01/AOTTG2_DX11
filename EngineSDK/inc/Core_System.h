@@ -8,7 +8,6 @@ NS_BEGIN(Engine)
 class CGraphic_Device;
 class CTimer_Handler;
 class CScene_Handler;
-class CPrototype_Manager;
 class CScene;
 
 class ENGINE_DLL CCore_System final

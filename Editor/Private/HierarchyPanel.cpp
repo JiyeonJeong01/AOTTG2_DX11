@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "GameObject_System.h"
 #include "Asset_Registry.h"
+#include "Prototype_Handler.h"
 
 NS_BEGIN(Editor)
 
@@ -276,6 +277,24 @@ void CHierarchyPanel::Draw_Object_Tree()
     }
 
     Draw_Root_List();
+    ImGui::Dummy(ImGui::GetContentRegionAvail());
+
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* p = ImGui::AcceptDragDropPayload("ASSET_GUID"))
+        {
+            const Engine::ASSET_GUID* pGUID = (const Engine::ASSET_GUID*)p->Data;
+            auto pRecord = SYS_ASSET.Find(*pGUID);
+
+            if (pRecord && pRecord->eType == Engine::ASSET_TYPE::PROTOTYPE)
+            {
+                SYS_GAMEOBJECT.Instantiate(*pGUID,
+                    Engine::Layer::DEFAULT_LAYER,
+                    pRecord->path.stem().string() + "_Clone");
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
 
     ImGui::EndChild();
 }
@@ -439,6 +458,7 @@ void CHierarchyPanel::Draw_Node_Recursive(Engine::CGameObject* pObj, int /*iDept
                     Begin_Rename(pNew);
                 }
             }
+            ImGui::Separator();
 
             if (ImGui::MenuItem("Duplicate"))
             {
@@ -449,6 +469,15 @@ void CHierarchyPanel::Draw_Node_Recursive(Engine::CGameObject* pObj, int /*iDept
                     Begin_Rename(pDup);
                 }
             }
+
+            ImGui::Separator(); // 메뉴 간 구분을 위한 선
+
+            if (ImGui::MenuItem("Make Prototype"))
+            {
+                // 실제 저장 로직 함수 호출
+                SYS_ASSET.Prototypes().Create_Prototype_Spec(pObj);
+            }
+            ImGui::Separator();
 
             if (ImGui::MenuItem("Rename", "F2"))
                 Begin_Rename(pObj);
@@ -481,7 +510,7 @@ void CHierarchyPanel::Draw_Node_Recursive(Engine::CGameObject* pObj, int /*iDept
 
     /* Reparent by drag-and-drop */
     Handle_DragDrop(pObj);
-        
+
 
     /* Rename the target */
     if (m_pRenameTarget == pObj)
@@ -627,8 +656,26 @@ void CHierarchyPanel::Handle_DragDrop(Engine::CGameObject* pObj)
                 }
             }
         }
+
+        if (const ImGuiPayload* p = ImGui::AcceptDragDropPayload("ASSET_GUID"))
+        {
+            const Engine::ASSET_GUID* pGUID = (const Engine::ASSET_GUID*)p->Data;
+
+            auto pRecord = SYS_ASSET.Find(*pGUID);
+            if (pRecord && pRecord->eType == Engine::ASSET_TYPE::PROTOTYPE)
+            {
+
+                SYS_GAMEOBJECT.Instantiate(*pGUID,
+                    Engine::Layer::DEFAULT_LAYER,
+                    pRecord->path.stem().string() + "_Clone", pObj);
+            }
+        }
+        // ====================================================================
+
         ImGui::EndDragDropTarget();
     }
+
+
 }
 
 /* =======================================================================*/

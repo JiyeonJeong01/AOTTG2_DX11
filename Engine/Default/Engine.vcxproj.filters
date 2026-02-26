@@ -225,7 +225,7 @@
     <ClInclude Include="..\Public\Component_Spec.h">
       <Filter>01. Utility\04. Component\98. Spec</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Prototype_System.h">
+    <ClInclude Include="..\Public\Prototype_Handler.h">
       <Filter>00. System\09. Prototype</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\String_Utils.h">
@@ -407,7 +407,7 @@
     <ClCompile Include="..\Private\Prototype.cpp">
       <Filter>00. System\09. Prototype\Prototype</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Prototype_System.cpp">
+    <ClCompile Include="..\Private\Prototype_Handler.cpp">
       <Filter>00. System\09. Prototype</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Transform_Processor.cpp">

@@ -8,7 +8,7 @@ NS_END
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CPrototype final
+class ENGINE_DLL CPrototype final : public LABEL
 {
 public:
     CPrototype();
@@ -29,8 +29,8 @@ public:
         return (m_componentMask & Component::Component_Bit(t)) != 0;
     }
 
-    HRESULT Assemble(PROTOTYPE_SPEC&& tSpec);
-    CGameObject* Clone(const ASSET_GUID& tGUID, Layer::LAYER_ID iLayer, const string& strName, const INSTANCE_UUID& tUUID) const;
+    HRESULT Assemble(const ASSET_GUID& tGUID, PROTOTYPE_SPEC&& tSpec);
+    CGameObject* Clone(Layer::LAYER_ID iLayer, const string& strName, const INSTANCE_UUID& tUUID) const;
 
 private:
     HRESULT Apply_Spec_To_Instance(CGameObject* pInstance) const;
@@ -40,6 +40,7 @@ private:
     PROTOTYPE_SPEC  m_tSpec{};
     _bool           m_bAssembled = false;
     Component::COMPONENT_MASK  m_componentMask = 0;
+    ASSET_GUID      m_tGUID{};
 
 public :
     static std::unique_ptr<CPrototype> Create();

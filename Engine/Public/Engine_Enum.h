@@ -44,7 +44,7 @@ namespace Engine
     enum class UI_BTN_STATE : uint8_t       { Normal, Hover, Pressed, Disabled };
 
     /* --- Asset --- */
-    enum class ASSET_TYPE : uint8_t         { UNKNOWN = 0, FOLDER, TEXTURE, MESH, SHADER, MODEL, MATERIAL, SCENE, PREFAB, PROTOTYPE, SCRIPT, };
+    enum class ASSET_TYPE : uint8_t         { UNKNOWN = 0, FOLDER, TEXTURE, MESH, SHADER, MODEL, MATERIAL, SCENE, PROTOTYPE, SCRIPT, };
     enum class ASSET_SRC : uint8_t          { FILE, BUILTIN };
 
     /* --- Scene --- */

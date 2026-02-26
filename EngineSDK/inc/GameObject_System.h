@@ -22,6 +22,15 @@ public:
                                     const string& strName = "UIObject",
                                     CGameObject* pParent = nullptr,
                                     const INSTANCE_UUID& tUUID = INSTANCE_UUID{});
+    CGameObject*    Instantiate(const string& strProto,
+                                    Layer::LAYER_ID iLayer = Layer::DEFAULT_LAYER,
+                                    const string& strName = "GameObject_Clone",
+                                    CGameObject* pParent = nullptr);
+    CGameObject*    Instantiate(const ASSET_GUID& tGUID,
+                                    Layer::LAYER_ID iLayer = Layer::DEFAULT_LAYER,
+                                    const string& strName = "GameObject_Clone",
+                                    CGameObject* pParent = nullptr);
+
     void            Destroy_Object(CGameObject* pObj);
     void            Destroy_All_SceneObjects() {  /* TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */ };
     void            Flush_PendingDestroy();
@@ -47,7 +56,7 @@ public :
     std::unique_ptr<CLayerHelper>               m_pLayerHelper{};
 
 private:
-    CGameObject* Create_Object(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent, const INSTANCE_UUID& tUUID);
+    CGameObject* Create_Object_Inner(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent, const INSTANCE_UUID& tUUID);
 private :
     using Objects = std::vector<CGameObject*>;
 

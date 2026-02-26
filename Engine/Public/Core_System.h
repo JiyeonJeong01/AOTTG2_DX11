@@ -8,7 +8,6 @@ NS_BEGIN(Engine)
 class CGraphic_Device;
 class CTimer_Handler;
 class CScene_Handler;
-class CPrototype_Manager;
 class CScene;
 
 class ENGINE_DLL CCore_System final
@@ -17,7 +16,8 @@ class ENGINE_DLL CCore_System final
 
 public :
 	HRESULT		Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ ID3D11Device** ppDevice, _Out_ ID3D11DeviceContext** ppContext);
-	void		Update_Engine(_float fDT);
+	void		Update_Editor_Engine(_float fDT);
+    void        Update_Game_Engine(_float fDT);
     void        Request_Step(_float fDT, CScene* pScene);
     HRESULT     Draw();
     void        Clear_Resources(_uint iLevelIndex);

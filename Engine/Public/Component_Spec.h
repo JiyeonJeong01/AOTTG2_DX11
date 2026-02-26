@@ -374,6 +374,7 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
                 return true;
             };
 
+        if (!read_guid("MeshGUID", meshGUID)) return false; 
         if (!read_guid("MaterialGUID", materialGUID)) return false;
 
         if (j.contains("flags"))

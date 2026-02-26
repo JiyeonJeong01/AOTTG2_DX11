@@ -211,7 +211,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\MeshRenderer_Processor.h" />
     <ClInclude Include="..\Public\Physics_Struct.h" />
     <ClInclude Include="..\Public\Prototype.h" />
-    <ClInclude Include="..\Public\Prototype_System.h" />
+    <ClInclude Include="..\Public\Prototype_Handler.h" />
     <ClInclude Include="..\Public\Mesh.h" />
     <ClInclude Include="..\Public\RectTransform.h" />
     <ClInclude Include="..\Public\RectTransform_Processor.h" />
@@ -256,7 +256,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\MeshRenderer.cpp" />
     <ClCompile Include="..\Private\MeshRenderer_Processor.cpp" />
     <ClCompile Include="..\Private\Prototype.cpp" />
-    <ClCompile Include="..\Private\Prototype_System.cpp" />
+    <ClCompile Include="..\Private\Prototype_Handler.cpp" />
     <ClCompile Include="..\Private\RectTransform.cpp" />
     <ClCompile Include="..\Private\RectTransform_Processor.cpp" />
     <ClCompile Include="..\Private\Render_Context.cpp" />

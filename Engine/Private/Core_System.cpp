@@ -98,7 +98,28 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
 	return S_OK;
 }
 
-void CCore_System::Update_Engine(_float fDT)
+void CCore_System::Update_Editor_Engine(_float fDT)
+{
+    CScene* pScene = m_pScene_Handler->Get_CurrentScene();
+    if (!pScene) return;
+
+    SYS_INPUT.Update_System();
+    SYS_RENDER.Priority_Update();
+
+    switch (pScene->Get_State())
+    {
+    case SCENE_STATE::EDIT :
+        /* 로직 실행하지 않는다. */
+        return;
+    case SCENE_STATE::PAUSE :
+        /* 스텝만 허용한다. */
+        return;
+    case SCENE_STATE::PLAY :
+        Update_RuntimeEngine(fDT, pScene);
+    }
+}
+
+void CCore_System::Update_Game_Engine(_float fDT)
 {
     CScene* pScene = m_pScene_Handler->Get_CurrentScene();
     if (!pScene) return;
@@ -106,20 +127,6 @@ void CCore_System::Update_Engine(_float fDT)
     SYS_INPUT.Update_System();
     SYS_RENDER.Priority_Update();
     Update_RuntimeEngine(fDT, pScene);
-
-    //switch (pScene->Get_State())
-    //{
-    //case SCENE_STATE::EDIT :
-    //    /* 로직 실행하지 않는다. */
-    //    return;
-
-    //case SCENE_STATE::PAUSE :
-    //    /* 스텝만 허용한다. */
-    //    return;
-
-    //case SCENE_STATE::PLAY :
-    //    Update_RuntimeEngine(fDT, pScene);
-    //}
 }
 
 void CCore_System::Request_Step(_float fDT, CScene* pScene)

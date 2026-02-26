@@ -5,6 +5,8 @@
 
 NS_BEGIN(Engine)
 
+class CPrototype_Handler;
+
 /**
  * @class CAsset_Registry
  * @brief Manages a comprehensive database of all raw files (Textures, Meshes, JSON, etc.) within the project.
@@ -19,9 +21,11 @@ public :
     HRESULT Initialize(const std::filesystem::path& assetRoot);
     void    Clear();
 
-
     /* Scan all assets, ensure meta and rebuild maps */
     void    Rebuild();
+    void    Distribute_Assets_To_Handlers();
+
+    CPrototype_Handler& Prototypes() { return *m_upPrototype_Handler; }
 
 public :
     const std::filesystem::path& Get_Root() const;
@@ -47,6 +51,8 @@ public :
     static std::filesystem::path Normalize_Path(const std::filesystem::path& p);
 
 private :
+    std::unique_ptr<CPrototype_Handler> m_upPrototype_Handler{};
+
     std::filesystem::path   m_assetRoot{};
     std::unordered_map<ASSET_GUID, ASSET_RECORD, ASSET_GUID_HASHER> m_byGUID;
     std::unordered_map<std::string, ASSET_GUID>                     m_byPathUtf8; /* canonical path string -> GUID */

@@ -17,7 +17,7 @@ CPrototype::~CPrototype()
 {
 }
 
-HRESULT CPrototype::Assemble(PROTOTYPE_SPEC && tSpec)
+HRESULT CPrototype::Assemble(const ASSET_GUID& tGUID, PROTOTYPE_SPEC && tSpec)
 {
     m_tSpec = std::move(tSpec);
 
@@ -33,16 +33,21 @@ HRESULT CPrototype::Assemble(PROTOTYPE_SPEC && tSpec)
         if (iIdx < SCAST(uint32_t, COMPONENT_MAX))
             m_componentMask |= Component::Component_Bit(eComType);
     }
-
+    m_tGUID = tGUID;
     m_bAssembled = true;
     return S_OK;
 }
 
-CGameObject* CPrototype::Clone(const ASSET_GUID& tGUID, Layer::LAYER_ID iLayer, const string& strName, const INSTANCE_UUID& tUUID) const
+CGameObject* CPrototype::Clone(Layer::LAYER_ID iLayer, const string& strName, const INSTANCE_UUID& tUUID) const
 {
     /* Create instance */
-    CGameObject* pInstance = SYS_GAMEOBJECT.Create_GameObject(iLayer, strName, nullptr, tUUID);
-    SYS_GAMEOBJECT.Access_Data_Raw(pInstance->Get_Handle()).tProtoGUID = tGUID;
+    CGameObject* pInstance = nullptr;
+    if (!m_tSpec.isUI)
+        pInstance = SYS_GAMEOBJECT.Create_GameObject(iLayer, strName, nullptr, tUUID);
+    else
+        pInstance = SYS_GAMEOBJECT.Create_GameObjectUI(iLayer, strName, nullptr, tUUID);
+
+    SYS_GAMEOBJECT.Access_Data_Raw(pInstance->Get_Handle()).tProtoGUID = m_tGUID;
 
     CHECK_PROTO_CLONE_FAIL(FAILED(Apply_Spec_To_Instance(pInstance)), "CPrototype clone failed : can't apply spec to instance.");
     CHECK_PROTO_CLONE_FAIL(FAILED(Clone_Children(pInstance)), "CPrototype clone failed : child instantiation failed.");

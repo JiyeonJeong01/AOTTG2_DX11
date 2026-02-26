@@ -1,5 +1,6 @@
 ﻿#include "Asset_Registry.h"
 
+#include "Prototype_Handler.h"
 #include "BuiltIn_GUID.h"
 #include "Engine_Log.h"
 #include "magic_enum.hpp"
@@ -25,6 +26,9 @@ HRESULT CAsset_Registry::Initialize(const std::filesystem::path& assetRoot)
     m_assetRoot = Normalize_Path(assetRoot);
     IF_TRUE_RETURN_MSG_BREAK((m_assetRoot.empty() || !std::filesystem::exists(m_assetRoot)), E_FAIL, "AssetRegistry init failed: assetsRoot not found.");
 
+    m_upPrototype_Handler = CPrototype_Handler::Create();
+    IF_NULL_RETURN_MSG_BREAK(m_upPrototype_Handler, E_FAIL, "Prototype_Handler is nullptr");
+
     Clear();
 
     /* Built-in */
@@ -32,6 +36,8 @@ HRESULT CAsset_Registry::Initialize(const std::filesystem::path& assetRoot)
 
     /* File */
     Rebuild();
+
+    Distribute_Assets_To_Handlers();
     return S_OK;
 }
 
@@ -109,6 +115,28 @@ void CAsset_Registry::Rebuild()
     _DEBUG_INFO("AssetRegistry rebuilt. count=%llu", (unsigned long long)m_byGUID.size());
 }
 
+void CAsset_Registry::Distribute_Assets_To_Handlers()
+{
+    for (const auto& tGUID : m_byGUID)
+    {
+        const auto pRecord = tGUID.second;
+
+        switch (pRecord.eType)
+        {
+        case ASSET_TYPE::PROTOTYPE :
+            m_upPrototype_Handler->Load_Prototype_From_GUID(tGUID.first);
+            break;
+        case ASSET_TYPE::SCENE :
+            break;
+        }
+        
+    }
+
+
+
+
+}
+
 const std::filesystem::path& CAsset_Registry::Get_Root() const
 {
     return m_assetRoot;
@@ -160,9 +188,6 @@ const ASSET_TYPE CAsset_Registry::Detect_Type(const std::filesystem::path& path,
 
     if (szExt == ".scene")
         return ASSET_TYPE::SCENE;
-
-    if (szExt == ".prefab")
-        return ASSET_TYPE::PREFAB;
 
     if (szExt == ".proto")
         return ASSET_TYPE::PROTOTYPE;
