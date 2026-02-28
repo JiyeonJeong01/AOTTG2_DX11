@@ -46,7 +46,7 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 {
     if (FAILED(SYS_CORE.Initialize_Engine(EngineDesc, &m_pDevice, &m_pContext)))
         return E_FAIL;
-
+    
     ASSET_GUID tmp("8976CDE9-2AE4-4DFC-A580-17E41FFB00D3");
 
     /* TEST : Create GameObject with various components */
@@ -115,7 +115,7 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
     return S_OK;
 }
 
-void CMainApp::Update(_float fDT)
+void CMainApp::Update(_float fDT, Engine::APP_MODE eMode)
 {
     /* Priority_Update */
 
@@ -144,7 +144,15 @@ void CMainApp::Update(_float fDT)
         //Engine::CGameObject* pObj = CPrototype_System::GetInstance().Clone(testGUID);
     }
 
-    SYS_CORE.Update_Editor_Engine(fDT);
+    switch (eMode)
+    {
+    case Engine::APP_MODE::EDITOR_EDIT :
+        SYS_CORE.Update_Editor_Engine(fDT);
+        break;
+    case APP_MODE::GAME_PLAY :
+        SYS_CORE.Update_Game_Engine(fDT);
+        break;
+    }
 
 }
 

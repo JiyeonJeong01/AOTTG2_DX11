@@ -42,13 +42,15 @@ private:
     ID3D11DepthStencilView* m_pDefaultDSV{ };
 
     /* SceneView */
-    ID3D11Texture2D*        m_pSceneTexture{ nullptr };
-    ID3D11RenderTargetView* m_pSceneRTV{ nullptr };
-    ID3D11ShaderResourceView* m_pSceneSRV{ nullptr };
-    ID3D11DepthStencilView* m_pSceneDSV{ nullptr };
+    ID3D11Texture2D*            m_pSceneTexture{ nullptr };
+    ID3D11RenderTargetView*     m_pSceneRTV{ nullptr };
+    ID3D11ShaderResourceView*   m_pSceneSRV{ nullptr };
+    ID3D11DepthStencilView*     m_pSceneDSV{ nullptr };
 
     _uint m_iSceneW = 0;
     _uint m_iSceneH = 0;
+    _uint m_iFixedSceneW = 0;
+    _uint m_iFixedSceneH = 0;
     _uint m_iWinW = 0;
     _uint m_iWinH = 0;
 

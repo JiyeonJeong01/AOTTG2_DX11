@@ -23,7 +23,7 @@ public:
 
 public:
     HRESULT Initialize(const ENGINE_DESC& EngineDesc);
-    void Update(_float fDT);
+    void Update(_float fDT, Engine::APP_MODE eMode);
     void Late_Update(_float fDT);
     void Fixed_Update(_float fDT);
 

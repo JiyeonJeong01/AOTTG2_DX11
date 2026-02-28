@@ -108,7 +108,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             _float fDT = SYS_CORE.Compute_FrameDT();
 
             Editor::CProfilerPanel::CScope _update("Engine::Begin_Render");
-            pMainApp->Update(fDT);
+            pMainApp->Update(fDT, APP_MODE::EDITOR_EDIT);
             upMainPanel->Update();
 
             /* --- Render --- */

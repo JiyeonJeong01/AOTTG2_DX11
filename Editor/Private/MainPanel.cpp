@@ -51,7 +51,7 @@ HRESULT CMainPanel::Initialize()
     IF_TRUE_RETURN_MSG_BREAK(!ensureGUID.Is_Valid(), E_FAIL, "Default scene guid invalid");
 
     /* 기본 씬을 로드한다. */
-    IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(ensureGUID, SCENE_CHANGE_MODE::EDITOR_EDIT), E_FAIL,
+    IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(ensureGUID, APP_MODE::EDITOR_EDIT), E_FAIL,
         "Change_Scene(Default) failed");
 
     /* UI 캐시용 */
@@ -266,7 +266,7 @@ void CMainPanel::Draw_Menu_File()
         const ASSET_GUID newGuid = SYS_EDITOR.Create_NewScene_Asset(&newPath);
         IF_TRUE_RETURN_MSG_BREAK(!newGuid.Is_Valid(), , "Create_NewScene_Asset failed");
 
-        IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(newGuid, SCENE_CHANGE_MODE::EDITOR_EDIT), ,
+        IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(newGuid, APP_MODE::EDITOR_EDIT), ,
             "Change_Scene(New) failed");
 
         m_scenePath = newPath.wstring();
@@ -303,7 +303,7 @@ void CMainPanel::Draw_Menu_File()
 
             IF_TRUE_RETURN_MSG_BREAK(!tGUID.Is_Valid(), , "Open Scene failed: GUID invalid.");
 
-            IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(tGUID, SCENE_CHANGE_MODE::EDITOR_EDIT), ,
+            IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(tGUID, APP_MODE::EDITOR_EDIT), ,
                 "Open Scene failed: Change_Scene failed.");
 
             m_scenePath = pathW;

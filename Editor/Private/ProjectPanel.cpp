@@ -886,7 +886,7 @@ _bool CProjectPanel::Try_Get_Asset_GUID(const std::filesystem::path& path, Engin
     return SYS_ASSET.Try_Get_GUID(path, outGuid);
 }
 
-void CProjectPanel::Open_Scene_By_GUID(const Engine::ASSET_GUID& guid, SCENE_CHANGE_MODE eMode)
+void CProjectPanel::Open_Scene_By_GUID(const Engine::ASSET_GUID& guid, APP_MODE eMode)
 {
     SYS_CORE.Change_Scene(guid, eMode);
 }
@@ -907,7 +907,7 @@ void CProjectPanel::Try_Open_Scene_On_DoubleClick(const LIST_ASSET& tAsset)
     }
 
     /* TODO : 에디터의 게임 모드에서는 ??  */
-    Open_Scene_By_GUID(guid, SCENE_CHANGE_MODE::EDITOR_EDIT);
+    Open_Scene_By_GUID(guid, APP_MODE::EDITOR_EDIT);
 }
 
 

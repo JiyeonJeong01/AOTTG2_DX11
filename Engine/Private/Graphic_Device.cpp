@@ -1,4 +1,5 @@
-﻿#include "..\public\Graphic_Device.h"
+﻿#include "Graphic_Device.h"
+#include "Engine_Log.h"
 
 NS_BEGIN(Engine)
 
@@ -89,22 +90,52 @@ HRESULT CGraphic_Device::Initialize(HWND hWnd, WINMODE isWindowed, _uint iWinSiz
 
 void CGraphic_Device::On_Resize(_uint iWidth, _uint iHeight)
 {
-    /* TODO -------------------------------------------------------------*/
-    /* TODO -------------------------------------------------------------*/
-    /* TODO -------------------------------------------------------------*/
-    /* TODO -------------------------------------------------------------*/
-    /* TODO                             RESIZE 처리                      */
-    /* TODO -------------------------------------------------------------*/
-    /* TODO -------------------------------------------------------------*/
-    /* TODO -------------------------------------------------------------*/
-    /* TODO -------------------------------------------------------------*/
+    if (iWidth == 0 || iHeight == 0)
+        return;
+
+    if (nullptr == m_pSwapChain || nullptr == m_pDeviceContext)
+        return;
+
+    /* 바인딩 해제 */
+    m_pDeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+
+    /* 기존 뷰 릴리즈 */
+    Safe_Release(m_pDefaultRTV);
+    Safe_Release(m_pDefaultDSV);
+
+    /* 스왑체인 버퍼 리사이즈 */
+    IF_FAIL_RETURN_MSG_BREAK(m_pSwapChain->ResizeBuffers(0, iWidth, iHeight, DXGI_FORMAT_UNKNOWN, 0), ,
+        "ResizeBuffer failed.");
+
+    /* 새 백버퍼로 RTV 재생성 + 새 DSV 생성 */
+    IF_FAIL_RETURN_MSG_BREAK(Ready_Default_RTV(), ,
+        "Ready DeafaultRTV failed.");
+
+    if (FAILED(Ready_Default_DSV(iWidth, iHeight)))
+        return;
+
+    /* 상태 갱신 + 바인드 + 뷰포트 */
+    m_iWinW = iWidth;
+    m_iWinH = iHeight;
+
+    Bind_DefaultRTV();
 }
 
 HRESULT CGraphic_Device::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
 {
-    if (nullptr == m_pDevice) return E_FAIL;
+    if (nullptr == m_pDevice)
+        return E_FAIL;
 
-    // --- Create Scene Texture & RTV & SRV ---
+    HRESULT hr = S_OK;
+
+    ID3D11Texture2D* pSceneTexture = nullptr;
+    ID3D11RenderTargetView* pSceneRTV = nullptr;
+    ID3D11ShaderResourceView* pSceneSRV = nullptr;
+
+    ID3D11Texture2D* pDepthStencilTexture = nullptr;
+    ID3D11DepthStencilView* pSceneDSV = nullptr;
+
+    /* --- Create Scene Texture --- */
     D3D11_TEXTURE2D_DESC textureDesc{};
     textureDesc.Width = iWidth;
     textureDesc.Height = iHeight;
@@ -114,23 +145,35 @@ HRESULT CGraphic_Device::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
     textureDesc.SampleDesc.Count = 1;
     textureDesc.SampleDesc.Quality = 0;
     textureDesc.Usage = D3D11_USAGE_DEFAULT;
-
     textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
     textureDesc.CPUAccessFlags = 0;
     textureDesc.MiscFlags = 0;
 
-    if (FAILED(m_pDevice->CreateTexture2D(&textureDesc, nullptr, &m_pSceneTexture)))
+    hr = m_pDevice->CreateTexture2D(&textureDesc, nullptr, &pSceneTexture);
+    if (FAILED(hr))
+    {
+        Safe_Release(pSceneTexture);
         return E_FAIL;
+    }
 
-    if (FAILED(m_pDevice->CreateRenderTargetView(m_pSceneTexture, nullptr, &m_pSceneRTV)))
+    hr = m_pDevice->CreateRenderTargetView(pSceneTexture, nullptr, &pSceneRTV);
+    if (FAILED(hr))
+    {
+        Safe_Release(pSceneRTV);
+        Safe_Release(pSceneTexture);
         return E_FAIL;
+    }
 
-    if (FAILED(m_pDevice->CreateShaderResourceView(m_pSceneTexture, nullptr, &m_pSceneSRV)))
+    hr = m_pDevice->CreateShaderResourceView(pSceneTexture, nullptr, &pSceneSRV);
+    if (FAILED(hr))
+    {
+        Safe_Release(pSceneSRV);
+        Safe_Release(pSceneRTV);
+        Safe_Release(pSceneTexture);
         return E_FAIL;
+    }
 
-
-    // --- Create Scene Depth Stencil View ---
-    ID3D11Texture2D* pDepthStencilTexture = nullptr;
+    /* --- Create Scene Depth Stencil --- */
     D3D11_TEXTURE2D_DESC dsDesc{};
     dsDesc.Width = iWidth;
     dsDesc.Height = iHeight;
@@ -141,18 +184,49 @@ HRESULT CGraphic_Device::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
     dsDesc.SampleDesc.Quality = 0;
     dsDesc.Usage = D3D11_USAGE_DEFAULT;
     dsDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    dsDesc.CPUAccessFlags = 0;
+    dsDesc.MiscFlags = 0;
 
-    if (FAILED(m_pDevice->CreateTexture2D(&dsDesc, nullptr, &pDepthStencilTexture)))
-        return E_FAIL;
+    hr = m_pDevice->CreateTexture2D(&dsDesc, nullptr, &pDepthStencilTexture);
+    if (FAILED(hr))
+    {
+        Safe_Release(pDepthStencilTexture);
 
-    if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr, &m_pSceneDSV)))
+        Safe_Release(pSceneSRV);
+        Safe_Release(pSceneRTV);
+        Safe_Release(pSceneTexture);
+
         return E_FAIL;
+    }
+
+    hr = m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr, &pSceneDSV);
+    if (FAILED(hr))
+    {
+        Safe_Release(pSceneDSV);
+        Safe_Release(pDepthStencilTexture);
+
+        Safe_Release(pSceneSRV);
+        Safe_Release(pSceneRTV);
+        Safe_Release(pSceneTexture);
+
+        return E_FAIL;
+    }
+
+    /* --- Commit : 성공 시에만 멤버에 붙인다. --- */
+    Safe_Release(m_pSceneDSV);
+    Safe_Release(m_pSceneSRV);
+    Safe_Release(m_pSceneRTV);
+    Safe_Release(m_pSceneTexture);
+
+    m_pSceneTexture = pSceneTexture; pSceneTexture = nullptr;
+    m_pSceneRTV = pSceneRTV; pSceneRTV = nullptr;
+    m_pSceneSRV = pSceneSRV; pSceneSRV = nullptr;
+    m_pSceneDSV = pSceneDSV; pSceneDSV = nullptr;
 
     Safe_Release(pDepthStencilTexture);
 
     return S_OK;
 }
-
 
 HRESULT CGraphic_Device::Clear_Default_RTV(const _float4* pClearColor)
 {
@@ -210,18 +284,35 @@ void CGraphic_Device::Bind_SceneRTV()
 
 HRESULT CGraphic_Device::Ensure_SceneRenderTarget(_uint w, _uint h)
 {
-    if (w == 0 || h == 0) return E_FAIL;
-    if (m_iSceneW == w && m_iSceneH == h && m_pSceneSRV) return S_OK;
+    if (w == 0 || h == 0)
+        return E_FAIL;
+
+    /* 고정 해상도가 이미 정해져 있으면, 그 값 외에는 절대 재생성하지 않는다. */
+    if (m_iFixedSceneW != 0 && m_iFixedSceneH != 0)
+    {
+        if (w != m_iFixedSceneW || h != m_iFixedSceneH)
+            return S_OK; /* 외부 실수 호출 무시 */
+    }
+    else
+    {
+        /* 아직 고정값이 없다면 최초 1회만 고정값을 세팅한다. */
+        m_iFixedSceneW = w;
+        m_iFixedSceneH = h;
+    }
+
+    /* 이미 같은 고정 SceneRT가 있으면 종료 */
+    if (m_iSceneW == m_iFixedSceneW && m_iSceneH == m_iFixedSceneH && m_pSceneSRV)
+        return S_OK;
 
     Safe_Release(m_pSceneDSV);
     Safe_Release(m_pSceneSRV);
     Safe_Release(m_pSceneRTV);
     Safe_Release(m_pSceneTexture);
 
-    m_iSceneW = w;
-    m_iSceneH = h;
+    m_iSceneW = m_iFixedSceneW;
+    m_iSceneH = m_iFixedSceneH;
 
-    return Ready_SceneRenderTarget(w, h);
+    return Ready_SceneRenderTarget(m_iSceneW, m_iSceneH);
 }
 
 void CGraphic_Device::Set_Viewport(_uint w, _uint h)
@@ -289,20 +380,21 @@ HRESULT CGraphic_Device::Ready_SwapChain(HWND hWnd, WINMODE isWindowed, _uint iW
 
 HRESULT CGraphic_Device::Ready_Default_RTV()
 {
-	if (nullptr == m_pDevice)
-		return E_FAIL;
+    if (nullptr == m_pDevice)
+        return E_FAIL;
 
-	ID3D11Texture2D* pBackBufferTexture = nullptr;
+    ID3D11Texture2D* pBackBufferTexture = nullptr;
 
-	if (FAILED(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferTexture)))
-		return E_FAIL;
+    if (FAILED(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferTexture)))
+        return E_FAIL;
 
-	if (FAILED(m_pDevice->CreateRenderTargetView(pBackBufferTexture, nullptr, &m_pDefaultRTV)))
-		return E_FAIL;
+    HRESULT hr = m_pDevice->CreateRenderTargetView(pBackBufferTexture, nullptr, &m_pDefaultRTV);
+    Safe_Release(pBackBufferTexture); /* 실패 시에도 해제하도록 한다. */
 
-	Safe_Release(pBackBufferTexture);
+    if (FAILED(hr))
+        return E_FAIL;
 
-	return S_OK;
+    return S_OK;
 }
 
 HRESULT CGraphic_Device::Ready_Default_DSV(_uint iWinCX, _uint iWinCY)

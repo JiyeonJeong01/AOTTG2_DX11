@@ -125,8 +125,9 @@ void CCore_System::Update_Editor_Engine(_float fDT)
 
 void CCore_System::Update_Game_Engine(_float fDT)
 {
-    CScene* pScene = m_pScene_Handler->Get_CurrentScene();
-    if (!pScene) return;
+    CScene* pScene = nullptr;
+    //CScene* pScene = m_pScene_Handler->Get_CurrentScene();
+    //if (!pScene) return;
 
     SYS_INPUT.Update_System();
     SYS_RENDER.Priority_Update();
@@ -238,7 +239,7 @@ _float CCore_System::Get_FrameDT() const
     return m_pTimer_Handler->Get_FrameDT();
 }
 
-HRESULT CCore_System::Change_Scene(const ASSET_GUID& tGUID, SCENE_CHANGE_MODE eMode)
+HRESULT CCore_System::Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode)
 {
     return m_pScene_Handler->Change_Scene(tGUID, eMode);
 }
@@ -261,7 +262,7 @@ void CCore_System::Set_CurrentScene(std::unique_ptr<CScene> pScene)
 void CCore_System::Update_RuntimeEngine(_float fDT, CScene* pScene)
 {
     /* 씬 업데이트 : 씬의 데이터, 씬 상태(PLAY, STOP 등), 씬 이벤트 등 처리 */
-    pScene->Update(fDT);
+    // pScene->Update(fDT);
 
     /* 컴포넌트 업데이트 */
     SYS_COMPONENT.Update(fDT);

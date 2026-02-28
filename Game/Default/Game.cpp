@@ -89,7 +89,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         if (fTimeAcc >= FRAME_DT)
         {
             const _float fDT = SYS_CORE.Compute_FrameDT();
-            pMainApp->Update(fDT);
+            pMainApp->Update(fDT, APP_MODE::GAME_PLAY);
 
             /* --- Render --- */
             SYS_CORE.Bind_DefaultRTV();

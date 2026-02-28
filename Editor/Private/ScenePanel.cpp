@@ -39,27 +39,49 @@ void CScenePanel::Render()
         ImGui::End();
     }
 
-    Draw_Toolbar();
     Draw_Viewport();
+    Draw_Toolbar();
 
     ImGui::End();
 }
 
 void CScenePanel::Draw_Toolbar()
 {
-    if (m_pTarget)
-    {
-        if (ImGui::RadioButton("Translate", m_pGizmo->Get_Mode() == GIZMO_MODE::TRANSLATE))
-            m_pGizmo->Set_Mode(GIZMO_MODE::TRANSLATE);
-        ImGui::SameLine();
-        if (ImGui::RadioButton("Rotate", m_pGizmo->Get_Mode() == GIZMO_MODE::ROTATE))
-            m_pGizmo->Set_Mode(GIZMO_MODE::ROTATE);
-        ImGui::SameLine();
-        if (ImGui::RadioButton("Scale", m_pGizmo->Get_Mode() == GIZMO_MODE::SCALE))
-            m_pGizmo->Set_Mode(GIZMO_MODE::SCALE);
-    }
+    // Scene 패널(현재 윈도우) 위에 고정 오버레이 위치 잡기
+    ImVec2 winPos = ImGui::GetWindowPos();       // Scene 패널 좌상단 (screen space)
+    ImVec2 winPad = ImGui::GetWindowContentRegionMin(); // content 시작 오프셋
+    ImVec2 pos = ImVec2(winPos.x + winPad.x + 10.0f, winPos.y + winPad.y + 10.0f);
 
-    ImGui::Separator();
+    ImGuiWindowFlags window_flags =
+        ImGuiWindowFlags_NoDecoration |
+        ImGuiWindowFlags_NoDocking |
+        ImGuiWindowFlags_AlwaysAutoResize |
+        ImGuiWindowFlags_NoSavedSettings |
+        ImGuiWindowFlags_NoFocusOnAppearing |
+        ImGuiWindowFlags_NoNav;
+
+    // 오버레이는 별도 윈도우로 띄워야 "겹침"이 됩니다.
+    ImGui::SetNextWindowPos(pos, ImGuiCond_Always);
+
+    // 배경을 원하면 0.35f 정도, 완전 투명은 0.0f
+    ImGui::SetNextWindowBgAlpha(0.35f);
+
+    // 중요한 점: 이름을 유니크하게(같은 이름이면 합쳐질 수 있음)
+    if (ImGui::Begin("##SceneToolbarOverlay", nullptr, window_flags))
+    {
+        if (m_pTarget)
+        {
+            if (ImGui::RadioButton("Translate", m_pGizmo->Get_Mode() == GIZMO_MODE::TRANSLATE))
+                m_pGizmo->Set_Mode(GIZMO_MODE::TRANSLATE);
+            ImGui::SameLine();
+            if (ImGui::RadioButton("Rotate", m_pGizmo->Get_Mode() == GIZMO_MODE::ROTATE))
+                m_pGizmo->Set_Mode(GIZMO_MODE::ROTATE);
+            ImGui::SameLine();
+            if (ImGui::RadioButton("Scale", m_pGizmo->Get_Mode() == GIZMO_MODE::SCALE))
+                m_pGizmo->Set_Mode(GIZMO_MODE::SCALE);
+        }
+    }
+    ImGui::End();
 }
 
 void CScenePanel::Draw_Viewport()
@@ -77,12 +99,52 @@ void CScenePanel::Draw_Viewport()
         return;
     }
 
-    Ensure_RenderTarget(w, h);
+    Ensure_RenderTarget();
 
-    // 이미지 출력
-    ImGui::Image((ImTextureID)m_pSceneSRV, avail);
+    // -----------------------------------------------------------------
+    // 16:9(=m_FIXEDW:m_FIXEDH) 유지해서 패널 안에 들어갈 최대 사각형 계산
+    // -----------------------------------------------------------------
+    const float rtW = (float)m_FIXEDW;
+    const float rtH = (float)m_FIXEDH;
+    const float rtAspect = rtW / rtH;
 
-    // 뷰포트 rect 계산
+    const float panelW = avail.x;
+    const float panelH = avail.y;
+    const float panelAspect = (panelH > 0.f) ? (panelW / panelH) : rtAspect;
+
+    ImVec2 drawSize{};
+    ImVec2 offset{};
+
+    if (panelAspect > rtAspect)
+    {
+        // 패널이 더 넓음 -> 높이에 맞추고 좌우 공백
+        drawSize.y = panelH;
+        drawSize.x = panelH * rtAspect;
+        offset.x = (panelW - drawSize.x) * 0.5f;
+        offset.y = 0.f;
+    }
+    else
+    {
+        // 패널이 더 높음 -> 너비에 맞추고 상하 공백
+        drawSize.x = panelW;
+        drawSize.y = panelW / rtAspect;
+        offset.x = 0.f;
+        offset.y = (panelH - drawSize.y) * 0.5f;
+    }
+
+    // 이미지 출력(레터박스)
+    ImVec2 cursor = ImGui::GetCursorPos();
+    ImGui::SetCursorPos(ImVec2(cursor.x + offset.x, cursor.y + offset.y));
+
+    // UV 뒤집혀 보이면 아래 두 줄을 바꿔서 사용하세요.
+    ImVec2 uv0 = ImVec2(0.f, 0.f);
+    ImVec2 uv1 = ImVec2(1.f, 1.f);
+    // ImVec2 uv0 = ImVec2(0.f, 1.f);
+    // ImVec2 uv1 = ImVec2(1.f, 0.f);
+
+    ImGui::Image((ImTextureID)m_pSceneSRV, drawSize, uv0, uv1);
+
+    // 뷰포트 rect 계산 (※ 이제 avail이 아니라 "실제 이미지" 사각형이 기준)
     ImVec2 vpPos = ImGui::GetItemRectMin();
     ImVec2 vpSize = ImGui::GetItemRectSize();
 
@@ -144,16 +206,14 @@ void CScenePanel::Set_Target(Engine::CGameObject* pObj)
     m_pData = tr._Data();
 }
 
-void CScenePanel::Ensure_RenderTarget(_uint w, _uint h)
+void CScenePanel::Ensure_RenderTarget()
 {
-    if (m_iViewW == w && m_iViewH == h && m_pSceneSRV)
+    /* 이미 공유되어 있으면 재호출 불필요 */
+    if (m_pSceneSRV)
         return;
 
-    m_iViewW = w;
-    m_iViewH = h;
-
-    SYS_CORE.Ready_SceneRenderTarget(w, h);
-    SYS_CORE.Share_SceneSRV(&m_pSceneSRV); // 이제 nullptr 안 뜨게 됨
+    SYS_CORE.Ready_SceneRenderTarget(m_FIXEDW, m_FIXEDH);
+    SYS_CORE.Share_SceneSRV(&m_pSceneSRV);
 }
 
 void CScenePanel::Render_Scene(_uint w, _uint h)

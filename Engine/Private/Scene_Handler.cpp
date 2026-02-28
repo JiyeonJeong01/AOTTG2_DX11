@@ -19,7 +19,7 @@ CScene_Handler::~CScene_Handler()
 {
 }
 
-HRESULT CScene_Handler::Change_Scene(const ASSET_GUID& tGUID, SCENE_CHANGE_MODE eMode)
+HRESULT CScene_Handler::Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode)
 {
     IF_TRUE_RETURN_MSG_BREAK(!tGUID.Is_Valid(), E_FAIL, "Invalid scene GUID");
 
@@ -57,7 +57,7 @@ HRESULT CScene_Handler::Change_Scene(const ASSET_GUID& tGUID, SCENE_CHANGE_MODE 
     SCENECHANGE_EVENT_DATA onSceneChange(EVENT_TYPE::On_Scene_Changed, pNewScene.get(), pOldScene.get());
     SYS_EVENT.Trigger(onSceneChange);
 
-    if (eMode == SCENE_CHANGE_MODE::EDITOR_EDIT)
+    if (eMode == APP_MODE::EDITOR_EDIT)
         m_pCurrentScene->Set_State(SCENE_STATE::EDIT);
 
     return S_OK;

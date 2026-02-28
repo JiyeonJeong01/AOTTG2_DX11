@@ -19,7 +19,7 @@ public:
     ~CScene_Handler();
 
 public:
-    HRESULT Change_Scene(const ASSET_GUID& tGUID, SCENE_CHANGE_MODE eMode);
+    HRESULT Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode);
     void    Update(_float fTimeDelta);
     HRESULT Render();
 

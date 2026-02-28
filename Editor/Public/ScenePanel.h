@@ -30,19 +30,19 @@ private:
 
     void Set_Target(Engine::CGameObject* pObject);
 
-    void Ensure_RenderTarget(_uint w, _uint h);
+    void Ensure_RenderTarget();
     void Render_Scene(_uint w, _uint h);
 
 private:
-    // ImGui viewport state
-    _uint   m_iViewW = 0;
-    _uint   m_iViewH = 0;
-    bool    m_bHovered = false;
-    bool    m_bFocused = false;
+    /* NOTE : 현재 엔진에서는 해상도 무조건 1920 * 1080 고정 */
+    const _uint   m_FIXEDW = 1920;
+    const _uint   m_FIXEDH = 1080;
+    _bool    m_bHovered = false;
+    _bool    m_bFocused = false;
 
     // show options
-    bool    m_bShowGrid = true;
-    bool    m_bShowAxis = true;
+    _bool    m_bShowGrid = true;
+    _bool    m_bShowAxis = true;
 
     Engine::CGameObject*        m_pTarget{};
     Engine::tagTransformData*   m_pData{};

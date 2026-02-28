@@ -48,7 +48,7 @@ namespace Engine
     enum class ASSET_SRC : uint8_t          { FILE, BUILTIN };
 
     /* --- Scene --- */
-    enum class SCENE_CHANGE_MODE : uint8_t  { GAME_PLAY = 0, EDITOR_EDIT };
+    enum class APP_MODE : uint8_t  { GAME_PLAY = 0, EDITOR_EDIT };
     enum class SCENE_STATE : uint8_t        { PLAY = 0, PAUSE, EDIT };
 
     /* ------ LOG ------ */
