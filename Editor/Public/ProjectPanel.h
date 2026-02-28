@@ -50,7 +50,9 @@ private:
 
     /* Context menu */
     void    Draw_Context_Menu();
+    void    Draw_Context_Popup();
     _bool   Create_Folder(const std::filesystem::path& parentFolder, std::filesystem::path& outCreatedPath);
+    void    Draw_Project_Context_Unified();
 
     /* Data refresh */
     void    Refresh_Folder_Tree();    /* Rebuild if dirty */
@@ -65,6 +67,9 @@ private:
     _bool   Rename_Path(const std::filesystem::path& src, const std::string& newName);
     _bool   Delete_Path(const std::filesystem::path& target);
     void    Show_In_Explorer(const std::filesystem::path& target);
+    std::filesystem::path    Resolve_Create_Base_Folder_() const;
+    std::filesystem::path    Resolve_Create_Folder_By_Type_(const char* szType) const;
+
 
     /* Rename UI */
     void    Draw_Rename_Field(const LIST_ASSET& item);
@@ -74,6 +79,13 @@ private:
     _bool Is_Scene_Asset(const LIST_ASSET& tAsset) const;
     _bool Try_Get_Asset_GUID(const std::filesystem::path& path, Engine::ASSET_GUID& outGuid) const;
     void  Open_Scene_By_GUID(const Engine::ASSET_GUID& guid, SCENE_CHANGE_MODE eMode);
+
+    /* Scripts */
+    void Draw_Create_Script_Popup();
+    _bool Create_Script_By_Name(const std::string& baseStem, std::filesystem::path& outCreatedPath);
+    std::string Make_Unique_File_Stem_Impl(const std::filesystem::path& parent, const std::string& baseStem);
+    _bool Write_Text_File(const std::filesystem::path& p, const std::string& utf8);
+    std::string Make_Script_File_From_Stem(const std::string& stem);
 
 public :
     /* Helpers */
@@ -102,6 +114,17 @@ private:
     /* Context menu */
     std::filesystem::path   m_contextTargetPath;
 
+    /* Create */
+    std::filesystem::path   m_ScenePath;
+    std::filesystem::path   m_PrototypePath;
+    std::filesystem::path   m_MaterialPath;
+    std::filesystem::path   m_ShaderPath;
+    std::filesystem::path    m_ScriptPath;
+    std::filesystem::path    m_HeaderPath;
+    std::filesystem::path    m_ImplPath;
+    _bool m_bOpenCreateScriptPopup = false;
+    std::string m_createScriptNameBuffer = "New_Script";
+
     /* Rename */
     std::filesystem::path   m_renameTargetPath;
     std::string             m_renameBuffer;
@@ -112,6 +135,10 @@ private:
     _bool m_bTreeDirty = true;
     _bool m_bListDirty = true;
 
+    /* R-Button Popup */
+    std::filesystem::path m_popupTargetPath;
+    _bool m_popupTargetIsItem = false;
+
 private:
     static uint64_t Get_Stable_Id_From_Path(const std::filesystem::path& p);
     static _bool    String_IContains(const std::string& haystack, const std::string& needle);
@@ -121,5 +148,6 @@ private:
 public:
     static std::unique_ptr<CProjectPanel> Create(const std::string& strPanelName);
 };
+
 
 NS_END

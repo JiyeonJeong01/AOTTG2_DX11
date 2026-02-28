@@ -47,7 +47,7 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
     if (FAILED(SYS_CORE.Initialize_Engine(EngineDesc, &m_pDevice, &m_pContext)))
         return E_FAIL;
 
-    ASSET_GUID tmp("DB38B6FB-5648-436F-A1A9-CC3FFD659A0F");
+    ASSET_GUID tmp("8976CDE9-2AE4-4DFC-A580-17E41FFB00D3");
 
     /* TEST : Create GameObject with various components */
     Engine::CGameObject* pGO = nullptr;

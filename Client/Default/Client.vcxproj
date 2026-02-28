@@ -21,13 +21,17 @@
   <ItemGroup>
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\CScript_Test.h" />
+    <ClInclude Include="..\Public\FirstScene.h" />
     <ClInclude Include="..\Public\MainApp.h" />
+    <ClInclude Include="..\Public\PrototypeTest.h" />
     <ClInclude Include="..\Public\Script_Registry.h" />
     <ClInclude Include="..\Public\Tester.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\CScript_Test.cpp" />
+    <ClCompile Include="..\Private\FirstScene.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
+    <ClCompile Include="..\Private\PrototypeTest.cpp" />
     <ClCompile Include="..\Private\Script_Registry.gen.cpp" />
     <ClCompile Include="..\Private\Tester.cpp" />
   </ItemGroup>

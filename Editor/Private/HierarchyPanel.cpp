@@ -21,6 +21,9 @@ HRESULT CHierarchyPanel::Initialize()
 {
     Refresh_Roots();
 
+    std::filesystem::path assetsRoot = Engine::ProjectConfig::PATH + Engine::ProjectConfig::ROOT;
+    m_PrototypePath = assetsRoot / "Prototypes";
+
     return S_OK;
 }
 
@@ -358,6 +361,9 @@ void CHierarchyPanel::Draw_DropTarget()
 /* =======================================================================*/
 void CHierarchyPanel::Refresh_Roots()
 {
+    /* TODO ----------------------------------------------------*/
+    /* TODO 최적화 필요                                          */
+    /* TODO ----------------------------------------------------*/
     SYS_GAMEOBJECT.Get_Roots(m_roots);
 }
 

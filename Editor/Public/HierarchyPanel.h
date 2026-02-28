@@ -109,6 +109,9 @@ private:
     /* Window */
     static constexpr const char* PAYLOAD_GO_PTR = "HIERARCHY_GO_PTR";
 
+    /* Create Prefab*/
+    std::filesystem::path m_PrototypePath;
+
 public:
         static std::unique_ptr<CHierarchyPanel>Create(const std::string& strPanelName);
 };

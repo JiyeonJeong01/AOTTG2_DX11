@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Engine_SDK.h"
+#include <shellapi.h>
 
 namespace Editor
 {

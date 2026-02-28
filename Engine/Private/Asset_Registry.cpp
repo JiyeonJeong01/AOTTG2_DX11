@@ -338,6 +338,7 @@ _bool CAsset_Registry::Register_File_Asset(const std::filesystem::path& rawPath,
     return true;
 }
 
+/* Client::Register_AllScripts()에서 각 클래스마다 호출한다. */
 ASSET_GUID CAsset_Registry::Ensure_GUID_For_Path(const std::filesystem::path& path)
 {
     std::filesystem::path abs = path;

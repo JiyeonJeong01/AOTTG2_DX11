@@ -765,7 +765,7 @@ void CInspectorPanel::Draw_Script()
     bool bChanged = false;
 
     // Enabled
-    bool enabled = ((pData->iFlags & SCRIPT_FLAG_ENABLED) != 0);
+    _bool enabled = ((pData->iFlags & SCRIPT_FLAG_ENABLED) != 0);
     if (ImGui::Checkbox("Enabled", &enabled))
     {
         if (enabled) pData->iFlags |= SCRIPT_FLAG_ENABLED;
@@ -775,46 +775,135 @@ void CInspectorPanel::Draw_Script()
         m_pScript_Processor->Set_Enabled(sc.Get_Handle(), enabled);
     }
 
-    // TypeId, 런타임 인덱스
-    ImGui::Text("TypeID: %u", (unsigned)pData->iTypeID);
+    /* TypeId, 런타임 인덱스 */
+    ImGui::Text("TypeID: %u", (uint32_t)pData->iTypeID);
 
-    // GUID 역탐색 (현재는 Processor가 들고 있는 m_GuidToTypeID를 직접 접근 못하니, 빌드스펙을 호출)
-    ASSET_GUID guid{};
+    // ------------------------------------------------------------
+    // 캐시
+    // ------------------------------------------------------------
+    Engine::ASSET_GUID guid{};
+    m_pScript_Processor->Try_Get_Guid_By_TypeID(pData->iTypeID, guid);
+
+    const bool bHasBind = guid.Is_Valid();
+
+    std::filesystem::path assetPath;
+    const Engine::ASSET_RECORD* pRecord = nullptr;
+
+    if (bHasBind)
     {
-        ASSET_GUID guid{};
-        m_pScript_Processor->Try_Get_Guid_By_TypeID(pData->iTypeID, guid);
+        assetPath = SYS_ASSET.Get_Asset_Path(guid);
+        if (!assetPath.empty())
+            pRecord = SYS_ASSET.Find(guid);
     }
 
-    // GUID 표시
-    ImGui::TextUnformatted("Script GUID");
+    std::string boundClassName;
+    std::string boundHeaderFileName;
+
+    auto read_text_file_utf8 = [&](const std::filesystem::path& p, std::string& outText) -> bool
+        {
+            outText.clear();
+            std::ifstream ifs(p, std::ios_base::binary);
+            if (!ifs.is_open())
+                return false;
+
+            ifs.seekg(0, std::ios_base::end);
+            const std::streamsize sz = ifs.tellg();
+            if (sz <= 0)
+                return false;
+            ifs.seekg(0, std::ios_base::beg);
+
+            outText.resize((size_t)sz);
+            ifs.read(outText.data(), sz);
+            return true;
+        };
+
+    auto try_parse_script_json = [&]()
+        {
+            if (!bHasBind) return;
+            if (assetPath.empty()) return;
+            if (!std::filesystem::exists(assetPath)) return;
+
+            std::string txt;
+            if (!read_text_file_utf8(assetPath, txt))
+                return;
+
+            try
+            {
+                json j = json::parse(txt);
+                if (j.contains("ClassName") && j["ClassName"].is_string())
+                    boundClassName = j["ClassName"].get<std::string>();
+                if (j.contains("Header") && j["Header"].is_string())
+                    boundHeaderFileName = j["Header"].get<std::string>();
+            }
+            catch (...)
+            {
+            }
+        };
+
+    /* 한 번만 파싱 */
+    try_parse_script_json();
+
+    /* 스크립트 바인딩 상태 */
+    ImGui::TextUnformatted("Class");
     ImGui::SameLine();
-    // ToString 같은 게 있으면 그걸로, 없으면 디버그 출력 방식에 맞추세요.
-    ImGui::Text("%s", guid.Is_Valid() ? guid.To_String_Utf8().c_str() : "INVALID");
+    if (!bHasBind)
+        ImGui::TextUnformatted("EMPTY");
+    else
+        ImGui::TextUnformatted(!boundClassName.empty() ? boundClassName.c_str() : "<unknown class>");
 
     // 파일 경로 표시 + "..." 버튼(열기/탐색기)
-    if (guid.Is_Valid())
+    if (bHasBind)
     {
-        const auto path = SYS_ASSET.Get_Asset_Path(guid);
-        if (!path.empty())
+        if (!assetPath.empty())
         {
-            ImGui::TextUnformatted("Asset Path");
             ImGui::SameLine();
-
-            const std::string pStr = path.string();
-            ImGui::Text("%s", pStr.c_str());
-
-            ImGui::SameLine();
-            if (ImGui::SmallButton("..."))
+            if (ImGui::SmallButton(".script"))
             {
-                // 기본: 탐색기에서 위치 열기
-                Editor_Util::RevealFile_In_Explorer(path);
+                Editor_Util::RevealFile_In_Explorer(assetPath);
             }
 
+            /* 바인딩 상태 표시 */
             ImGui::SameLine();
             if (ImGui::SmallButton("Open"))
             {
-                // 파일 열기(기본 앱)
-                Editor_Util::OpenFile_In_OS(path);
+                /* 우선순위: Header(JSON의 Header) -> stem 기반 header/cpp -> 부모 폴더 */
+                std::filesystem::path headerPath;
+                std::filesystem::path cppPath;
+
+                /* .script의 파일명(stem) */
+                const std::string stem = assetPath.stem().string();
+
+                const std::filesystem::path headerRoot = std::filesystem::path(Engine::ProjectConfig::CLIENT) / Engine::ProjectConfig::HEADER;
+                const std::filesystem::path implRoot = std::filesystem::path(Engine::ProjectConfig::CLIENT) / Engine::ProjectConfig::IMPL;
+
+                if (!boundHeaderFileName.empty())
+                    headerPath = headerRoot / boundHeaderFileName;
+                else
+                    headerPath = headerRoot / (stem + ".h");
+
+                cppPath = implRoot / (stem + ".cpp");
+
+                auto try_open_or_reveal = [&](const std::filesystem::path& p) -> bool
+                    {
+                        if (p.empty() || !std::filesystem::exists(p))
+                            return false;
+
+                        Editor_Util::OpenFile_In_OS(p);
+                        return true;
+                    };
+
+                bool bOpened = false;
+                 if (try_open_or_reveal(cppPath)) bOpened = true;
+                 else if (try_open_or_reveal(headerPath)) bOpened = true;
+
+                if (!bOpened)
+                {
+                    /* 둘 다 없으면 .script 부모 폴더라도 열기 */
+                    if (!assetPath.empty())
+                        Editor_Util::RevealFile_In_Explorer(assetPath);
+                    else
+                        Editor_Util::RevealFile_In_Explorer(assetPath.parent_path());
+                }
             }
         }
         else
@@ -823,31 +912,50 @@ void CInspectorPanel::Draw_Script()
         }
     }
 
-    // 드래그드롭으로 Script 에셋(GUID) 바인딩
+    // ------------------------------------------------------------
+    // 드래그드롭 바인딩
+    // ------------------------------------------------------------
     ImGui::Separator();
     ImGui::TextUnformatted("Bind Script");
     ImGui::SameLine();
-    ImGui::TextDisabled("(Drag script asset here)");
+    ImGui::TextDisabled(bHasBind ? "(Already bound)" : "(Drag script asset here)");
 
     ImVec2 dropSize(ImGui::GetContentRegionAvail().x, 28.f);
-    ImGui::Button("##ScriptDropTarget", dropSize); // 표시용 박스
-    if (ImGui::BeginDragDropTarget())
+
+    /* 이미 바인딩됐으면 드롭 타겟 자체를 비활성화 */
+    if (bHasBind)
+        ImGui::BeginDisabled();
+
+    const char* dropLabel = bHasBind
+        ? (!boundClassName.empty() ? boundClassName.c_str() : "BOUND")
+        : "EMPTY";
+
+    ImGui::Button(dropLabel, dropSize);
+
+    if (!bHasBind)
     {
-        if (const ImGuiPayload* p = ImGui::AcceptDragDropPayload("ASSET_GUID"))
+        if (ImGui::BeginDragDropTarget())
         {
-            const Engine::ASSET_GUID* pGUID = (const Engine::ASSET_GUID*)p->Data;
-            if (pGUID && pGUID->Is_Valid())
+            if (const ImGuiPayload* p = ImGui::AcceptDragDropPayload("ASSET_GUID"))
             {
-                auto pRecord = SYS_ASSET.Find(*pGUID);
-                if (pRecord && pRecord->eType == Engine::ASSET_TYPE::SCRIPT)
+                const Engine::ASSET_GUID* pGUID = (const Engine::ASSET_GUID*)p->Data;
+                if (pGUID && pGUID->Is_Valid())
                 {
-                    /* NOTE  여기서 리바인드 한다.*/
-                    m_pScript_Processor->Rebind_ScriptGuid(sc.Get_Handle(), *pGUID);
+                    auto pRec = SYS_ASSET.Find(*pGUID);
+                    if (pRec && pRec->eType == Engine::ASSET_TYPE::SCRIPT)
+                    {
+                        // 여기서만 바인딩
+                        m_pScript_Processor->Rebind_ScriptGuid(sc.Get_Handle(), *pGUID);
+
+                    }
                 }
             }
+            ImGui::EndDragDropTarget();
         }
-        ImGui::EndDragDropTarget();
     }
+
+    if (bHasBind)
+        ImGui::EndDisabled();
 
     ImGui::TreePop();
 }

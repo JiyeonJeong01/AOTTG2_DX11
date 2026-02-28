@@ -145,69 +145,13 @@ static void RevealFile_In_Explorer(const std::filesystem::path& p)
 #endif
 }
 
-static _bool Write_TextFile(const std::filesystem::path& p, const std::string& s)
+static void OpenFile_In_VisualStudio(const std::filesystem::path& p)
 {
-    std::filesystem::create_directories(p.parent_path());
-    std::ofstream ofs(p, std::ios_base::binary);
-    if (!ofs.is_open()) return false;
-    ofs.write(s.data(), (std::streamsize)s.size());
-    return true;
-}
+    if (p.empty() || !std::filesystem::exists(p))
+        return;
 
-static std::string Make_HeaderText(const std::string& className)
-{
-    // 최소 템플릿: ctx/dt 시그니처는 당신 Binder에 맞춘 형태
-    std::string s;
-    s += "#pragma once\n";
-    s += "#include \"Script.h\"\n\n";
-    s += "NS_BEGIN(Engine)\n\n";
-    s += "class " + className + "\n";
-    s += "{\n";
-    s += "public:\n";
-    s += "    void Awake(SCRIPT_CTX& ctx) {}\n";
-    s += "    void Start(SCRIPT_CTX& ctx) {}\n";   
-    s += "    void Update(SCRIPT_CTX& ctx, _float dt) {(void)ctx; (void)dt;}\n";
-    s += "};\n\n";
-    s += "NS_END\n";
-    return s;
-}
-
-static std::string MakeCppText(const std::string& className)
-{
-    std::string s;
-    s += "#include \"" + className + ".h\"\n";
-    s += "#include \"Script_Type_Register.h\"\n\n";
-    s += "REGISTER_SCRIPT_TYPE(" + className + ", \"Scripts/" + className + ".script\");\n";
-    return s;
-}
-
-// className: "PlayerMove" 같은 C++ 식별자
-// outGuid: 생성된 .script 에셋 GUID
-static bool CreateScriptFilesAndAsset(const std::string& className,
-    const std::filesystem::path& sourceScriptsDir,
-    ASSET_GUID& outGuid)
-{
-    outGuid = ASSET_GUID{};
-
-    // 1) .script 에셋(슬롯) 생성: AssetsRoot 기준 상대경로
-    // "Scripts/Name.script"
-    const std::filesystem::path scriptAssetRel = std::filesystem::path("Scripts") / (className + ".script");
-    outGuid = SYS_ASSET.Ensure_GUID_For_Path(scriptAssetRel); // 당신이 만든 Ensure_GUID_For_Path 사용
-
-    if (!outGuid.Is_Valid())
-        return false;
-
-    // 2) C++ 파일 생성
-    const std::filesystem::path hPath = sourceScriptsDir / (className + ".h");
-    const std::filesystem::path cppPath = sourceScriptsDir / (className + ".cpp");
-
-    //if (!WriteTextFile(hPath, MakeHeaderText(className))) return false;
-    //if (!WriteTextFile(cppPath, MakeCppText(className)))   return false;
-
-    _DEBUG_INFO("Created script: %s / %s (guid=%s)",
-        hPath.string().c_str(), cppPath.string().c_str(), outGuid.To_String_Utf8().c_str());
-
-    return true;
+    std::string vsPath = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\devenv.exe";
+    ShellExecuteA(NULL, "edit", p.string().c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 
 NS_END

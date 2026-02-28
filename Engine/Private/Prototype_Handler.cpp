@@ -21,7 +21,7 @@ CPrototype_Handler::~CPrototype_Handler()
 
 HRESULT CPrototype_Handler::Initialize()
 {
-    m_pathProto = ProjectConfig::PATH + ProjectConfig::ROOT + "/Prototype";
+    m_pathProto = ProjectConfig::PATH + ProjectConfig::ROOT + "/Prototypes";
 
     return S_OK;
 }

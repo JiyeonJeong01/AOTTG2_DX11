@@ -31,6 +31,12 @@
     <ClInclude Include="..\Public\CScript_Test.h">
       <Filter>Test</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\PrototypeTest.h">
+      <Filter>MainApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FirstScene.h">
+      <Filter>MainApp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -44,6 +50,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\CScript_Test.cpp">
       <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PrototypeTest.cpp">
+      <Filter>MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FirstScene.cpp">
+      <Filter>MainApp</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

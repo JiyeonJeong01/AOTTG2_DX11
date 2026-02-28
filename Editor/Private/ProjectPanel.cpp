@@ -49,6 +49,25 @@ HRESULT CProjectPanel::Initialize()
     m_bTreeDirty = true;
     m_bListDirty = true;
 
+    Ensure_Path_Exists(m_assetsRoot);
+
+    m_ScriptPath = m_assetsRoot / "Scripts";
+    m_ScenePath = m_assetsRoot / "Scenes";
+    m_PrototypePath = m_assetsRoot / "Prototypes";
+    m_MaterialPath = m_assetsRoot / "Materials";
+    m_ShaderPath = m_assetsRoot / "Shaders";
+
+    m_HeaderPath = std::filesystem::path(Engine::ProjectConfig::CLIENT) / Engine::ProjectConfig::HEADER;
+    m_ImplPath = std::filesystem::path(Engine::ProjectConfig::CLIENT) / Engine::ProjectConfig::IMPL;
+
+    Ensure_Path_Exists(m_ScriptPath);
+    Ensure_Path_Exists(m_ScenePath);
+    Ensure_Path_Exists(m_PrototypePath);
+    Ensure_Path_Exists(m_MaterialPath);
+    Ensure_Path_Exists(m_ScriptPath);
+    Ensure_Path_Exists(m_HeaderPath);
+    Ensure_Path_Exists(m_ImplPath);
+
     return S_OK;
 }
 
@@ -73,6 +92,8 @@ void CProjectPanel::Render()
     Draw_Search_Bar();
     Draw_Main_Split();
     Draw_Context_Menu();
+    Draw_Create_Script_Popup();
+    Draw_Context_Popup();
 
     ImGui::End();
 }
@@ -196,6 +217,12 @@ void CProjectPanel::Draw_Folder_Tree()
 
 void CProjectPanel::Draw_Folder_Node_Recursive(const FOLDER_NODE& tNode, _int iDepth)
 {
+    if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+    {
+        m_popupTargetPath = tNode.path;
+        m_popupTargetIsItem = true;
+    }
+
     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth;
 
     const _bool bRoot = (tNode.path == m_assetsRoot);
@@ -233,9 +260,6 @@ void CProjectPanel::Draw_Folder_Node_Recursive(const FOLDER_NODE& tNode, _int iD
         /* If the click didn't toggle the open state, treat it as a folder selection. */
         m_currentFolder = tNode.path;
         m_bListDirty = true;
-
-        Set_Selection(tNode.path);
-        Notify_Selection_Changed();
     }
 
     if (!bRoot && ImGui::IsItemToggledOpen())
@@ -264,37 +288,6 @@ void CProjectPanel::Draw_File_List()
         return;
     }
 
-    /* Blank-space context (file list only) */
-    if (ImGui::BeginPopupContextWindow("##FileListBlankContext",
-        ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
-    {
-        if (ImGui::MenuItem("Create Folder"))
-        {
-            std::filesystem::path created;
-            if (Create_Folder(m_currentFolder, created))
-            {
-                m_bListDirty = true;
-                m_bTreeDirty = true;
-
-                m_pendingRenamePath = created;
-
-                Set_Selection(created);
-                Notify_Selection_Changed();
-            }
-        }
-
-        if (ImGui::MenuItem("Refresh"))
-        {
-            m_bTreeDirty = true;
-            m_bListDirty = true;
-        }
-
-        if (ImGui::MenuItem("Show Current in Explorer"))
-            Show_In_Explorer(m_currentFolder);
-
-        ImGui::EndPopup();
-    }
-
     /* Display file(asset) list */
     for (const auto& item : m_Assets)
     {
@@ -320,10 +313,11 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
 
     ImGui::PushID(Editor_Util::To_UTF8(tAsset.path).c_str());
 
-    const _bool bSelected = (!m_selectedPath.empty() &&
-        std::filesystem::exists(m_selectedPath) && 
-        std::filesystem::exists(tAsset.path) &&    
-        std::filesystem::equivalent(m_selectedPath, tAsset.path));
+    const _bool bSelected =
+        (!m_selectedPath.empty() &&
+            std::filesystem::exists(m_selectedPath) &&
+            std::filesystem::exists(tAsset.path) &&
+            (m_selectedPath == tAsset.path));
 
     /* row label */
     const _char* szAssetType = Engine::CAsset_Registry::AssetType_ToStr(tAsset.type);
@@ -351,26 +345,38 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
     if (ImGui::Selectable(tAsset.name.c_str(), bSelected,
         ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_SpanAllColumns))
     {
-        const _bool bChanged =
-            (m_selectedPath.empty() || !std::filesystem::equivalent(m_selectedPath, tAsset.path));
-
-        Set_Selection(tAsset.path);
-
-        if (bChanged)
-            Notify_Selection_Changed();
-
-        if (tAsset.isDirectory && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+        if (tAsset.isDirectory)
         {
-            m_currentFolder = tAsset.path;
-            m_bListDirty = true;
+            /* 폴더: 인스펙터 selection 변경 금지 */
+            if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+            {
+                m_currentFolder = tAsset.path;
+                m_bListDirty = true;
+            }
         }
-
-        if (!tAsset.isDirectory &&
-            ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+        else
         {
-            Try_Open_Scene_On_DoubleClick(tAsset);
+            /* 파일: selection/notify 허용 */
+            const _bool bChanged = (m_selectedPath.empty() || !(m_selectedPath == tAsset.path));
+            Set_Selection(tAsset.path);
+
+            if (bChanged)
+                Notify_Selection_Changed();
+
+            /* 더블클릭: 씬이면 열기*/ 
+            if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+            {
+                Try_Open_Scene_On_DoubleClick(tAsset);
+            }
         }
     }
+
+    if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+    {
+        m_popupTargetPath = tAsset.path;
+        m_popupTargetIsItem = true;
+    }
+
 
     if (!tAsset.isDirectory)
     {
@@ -393,29 +399,7 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
 
     ImGui::EndGroup();
 
-    /* context */
-    std::string popupId = "##Context" + Editor_Util::To_UTF8(tAsset.path);
-    if (ImGui::BeginPopupContextItem(popupId.c_str(), ImGuiPopupFlags_MouseButtonRight))
-    {
-        m_contextTargetPath = tAsset.path;
-
-        if (ImGui::MenuItem("Rename", "F2"))
-            Begin_Rename(m_contextTargetPath);
-
-        if (ImGui::MenuItem("Delete", "Del"))
-        {
-            Delete_Path(m_contextTargetPath);
-            m_bTreeDirty = true;
-            m_bListDirty = true;
-            if (!m_selectedPath.empty() && (m_selectedPath == m_contextTargetPath))
-                Clear_Selection();
-        }
-
-        if (ImGui::MenuItem("Show in Explorer"))
-            Show_In_Explorer(m_contextTargetPath);
-
-        ImGui::EndPopup();
-    }
+  
     ImGui::PopID();
 }
 
@@ -424,25 +408,6 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
 /* =======================================================================*/
 void CProjectPanel::Draw_Context_Menu()
 {
-    /* blank space context */
-    if (ImGui::BeginPopupContextWindow("##ProjectBlankContext", ImGuiPopupFlags_MouseButtonRight))
-    {
-        m_contextTargetPath.clear();
-
-        if (ImGui::MenuItem("Refresh"))
-        {
-            m_bTreeDirty = true;
-            m_bListDirty = true;
-        }
-
-        if (ImGui::MenuItem("Show Current in Explorer"))
-        {
-            Show_In_Explorer(m_currentFolder);
-        }
-
-        ImGui::EndPopup();
-    }
-
     /* shortcuts */
     if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
     {
@@ -471,6 +436,29 @@ void CProjectPanel::Draw_Context_Menu()
     }
 }
 
+void CProjectPanel::Draw_Context_Popup()
+{
+    // 패널 영역에서 우클릭이 일어났는데, 아이템 우클릭으로 타겟이 설정되지 않았다면
+    // 빈 공간 우클릭로 취급
+    const _bool bPanelHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
+
+    if (bPanelHovered && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+    {
+        // 방금 아이템에서 m_popupTargetIsItem을 true로 세팅했을 수도 있으니
+        // 한 프레임에서 우클릭 타겟이 없으면 빈 공간으로 처리
+        if (!m_popupTargetIsItem)
+            m_popupTargetPath.clear();
+
+        ImGui::OpenPopup("##ProjectContextUnified");
+    }
+
+    // 팝업 그리기
+    Draw_Project_Context_Unified();
+
+    // 프레임 끝에서 reset(다음 프레임에 남지 않게)
+    m_popupTargetIsItem = false;
+}
+
 _bool CProjectPanel::Create_Folder(const std::filesystem::path& parentFolder, std::filesystem::path& outCreatedPath)
 {
     outCreatedPath.clear();
@@ -492,6 +480,93 @@ _bool CProjectPanel::Create_Folder(const std::filesystem::path& parentFolder, st
 
     outCreatedPath = newPath;
     return true;
+}
+
+void CProjectPanel::Draw_Project_Context_Unified()
+{
+    if (ImGui::BeginPopup("##ProjectContextUnified"))
+    {
+        // 대상이 아이템인지 아닌지에 따라 동작만 달라지고,
+        // “보이는 메뉴”는 최대한 동일하게 유지할 수 있습니다.
+        const _bool bHasTarget = !m_popupTargetPath.empty();
+
+        /* TODO /* -------------------------------------------------------------- */
+        /* TODO /*  Create 로직에 맞춰서 에셋 생성하는 부분 넣기                     */
+        /* TODO /* -------------------------------------------------------------- */
+        if (ImGui::BeginMenu("Create"))
+        {
+            if (ImGui::MenuItem("Folder"))
+            {
+                const std::filesystem::path createFolder = Resolve_Create_Folder_By_Type_("Folder");
+                m_currentFolder = createFolder;
+
+                std::filesystem::path created;
+                if (Create_Folder(m_currentFolder, created))
+                {
+                    m_bTreeDirty = true;
+                    m_bListDirty = true;
+                    Set_Selection(created);
+                    Notify_Selection_Changed();
+                }
+            }
+
+            if (ImGui::MenuItem("Script"))
+            {
+                const std::filesystem::path createFolder = Resolve_Create_Folder_By_Type_("Script");
+                m_currentFolder = createFolder;
+
+                m_bOpenCreateScriptPopup = true;
+                m_createScriptNameBuffer = "New_Script";
+                m_bListDirty = true;
+            }
+
+            if (ImGui::MenuItem("Scene"))
+            {
+                const std::filesystem::path createFolder = Resolve_Create_Folder_By_Type_("Scene");
+                m_currentFolder = createFolder;
+
+                m_bListDirty = true;
+            }
+
+            ImGui::EndMenu();
+        }
+
+        ImGui::Separator();
+
+        // Rename/Delete/Show in Explorer는 대상이 있을 때만 의미 있음
+        if (ImGui::MenuItem("Rename", "F2", false, bHasTarget))
+        {
+            m_contextTargetPath = m_popupTargetPath;
+            Begin_Rename(m_contextTargetPath);
+        }
+
+        if (ImGui::MenuItem("Delete", "Del", false, bHasTarget))
+        {
+            m_contextTargetPath = m_popupTargetPath;
+            Delete_Path(m_contextTargetPath);
+
+            m_bTreeDirty = true;
+            m_bListDirty = true;
+
+            if (!m_selectedPath.empty() && (m_selectedPath == m_contextTargetPath))
+                Clear_Selection();
+        }
+
+        if (ImGui::MenuItem("Show in Explorer", nullptr, false, bHasTarget))
+        {
+            Show_In_Explorer(m_popupTargetPath);
+        }
+
+        ImGui::Separator();
+
+        if (ImGui::MenuItem("Refresh"))
+        {
+            m_bTreeDirty = true;
+            m_bListDirty = true;
+        }
+
+        ImGui::EndPopup();
+    }
 }
 
 /* =======================================================================*/
@@ -711,6 +786,37 @@ void CProjectPanel::Show_In_Explorer(const std::filesystem::path& target)
     ShellExecuteW(nullptr, L"open", L"explorer.exe", args.c_str(), nullptr, SW_SHOWNORMAL);
 }
 
+std::filesystem::path CProjectPanel::Resolve_Create_Base_Folder_() const
+{
+    /* 우클릭 타겟이 폴더면 그 폴더, 파일이면 부모 폴더, 빈 공간이면 현재 폴더 */
+    std::filesystem::path base = m_currentFolder;
+
+    if (!m_popupTargetPath.empty() && std::filesystem::exists(m_popupTargetPath))
+    {
+        if (std::filesystem::is_directory(m_popupTargetPath))
+            base = m_popupTargetPath;
+        else
+            base = m_popupTargetPath.parent_path();
+    }
+
+    return base;
+}
+
+std::filesystem::path CProjectPanel::Resolve_Create_Folder_By_Type_(const char* szType) const
+{
+    // 기본은 우클릭 기준 폴더
+    std::filesystem::path base = Resolve_Create_Base_Folder_();
+
+    if (0 == std::strcmp(szType, "Scene"))
+        return m_ScenePath;
+    if (0 == std::strcmp(szType, "Script"))
+        return m_ScriptPath;
+    if (0 == std::strcmp(szType, "Material"))
+        return m_MaterialPath;
+
+    return base;
+}
+
 /* =======================================================================*/
 /* ============================= Rename UI ===============================*/
 /* =======================================================================*/
@@ -856,7 +962,206 @@ std::string CProjectPanel::Make_Unique_Folder_Name_Impl(const std::filesystem::p
     return baseName + " (9999)";
 }
 
+_bool CProjectPanel::Write_Text_File(const std::filesystem::path& p, const std::string& utf8)
+{
+    std::error_code ec;
+    std::filesystem::create_directories(p.parent_path(), ec);
 
+    std::ofstream ofs(p, std::ios_base::binary);
+    if (!ofs.is_open())
+        return false;
+
+    ofs.write(utf8.data(), (std::streamsize)utf8.size());
+    return true;
+}
+
+std::string CProjectPanel::Make_Unique_File_Stem_Impl(const std::filesystem::path& parent, const std::string& baseStem)
+{
+    std::string stem = baseStem;
+
+    auto exists_pair = [&](const std::string& s)
+        {
+            std::filesystem::path scriptPath = parent / (s + ".script");
+            std::filesystem::path headerPath = m_HeaderPath / (s + ".h");
+            std::filesystem::path cppPath = m_ImplPath / (s + ".cpp");
+
+            return std::filesystem::exists(scriptPath) ||
+                std::filesystem::exists(headerPath) ||
+                std::filesystem::exists(cppPath);
+        };
+
+    if (!exists_pair(stem))
+        return stem;
+
+    for (int i = 1; i < 9999; ++i)
+    {
+        stem = baseStem + " (" + std::to_string(i) + ")";
+        if (!exists_pair(stem))
+            return stem;
+    }
+
+    return baseStem + " (9999)";
+}
+
+/* 클래스 명에는 + C 붙여주기 */
+std::string CProjectPanel::Make_Script_File_From_Stem(const std::string& stem)
+{
+    std::string out;
+    out.reserve(stem.size() + 16);
+
+    _bool bPrevUnderscore = false;
+
+    for (char c : stem)
+    {
+        if (std::isalnum((unsigned char)c))
+        {
+            out.push_back(c);
+            bPrevUnderscore = false;
+        }
+        else
+        {
+            // 구분자는 '_' 하나로만
+            if (!bPrevUnderscore && !out.empty())
+            {
+                out.push_back('_');
+                bPrevUnderscore = true;
+            }
+        }
+    }
+
+    // 끝에 '_' 붙었으면 제거
+    while (!out.empty() && out.back() == '_')
+        out.pop_back();
+
+    // 비어 있으면 fallback
+    if (out.empty())
+        out = "New_Script";
+
+    return out;
+}
+
+
+void CProjectPanel::Draw_Create_Script_Popup()
+{
+    if (!m_bOpenCreateScriptPopup)
+        return;
+    else
+        ImGui::OpenPopup("##CreateScriptPopup");
+
+
+    if (ImGui::BeginPopup("##CreateScriptPopup", ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::TextUnformatted("Create Script");
+        ImGui::Separator();
+
+        ImGui::SetNextItemWidth(360.f);
+
+        /* Enter 누르면 생성 */
+        ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
+        _bool bSubmit = ImGui::InputText("##ScriptName", &m_createScriptNameBuffer, flags);
+
+        /* 버튼 눌러도 생성 */
+        if (ImGui::Button("Create") || bSubmit)
+        {
+            std::filesystem::path createdPath;
+
+            /* 이름이 비었으면 막기 */
+            if (!m_createScriptNameBuffer.empty())
+            {
+                if (Create_Script_By_Name(m_createScriptNameBuffer, createdPath))
+                {
+                    m_bListDirty = true;
+                    m_bTreeDirty = true;
+
+                    Set_Selection(createdPath);
+                    Notify_Selection_Changed();
+
+                    m_bOpenCreateScriptPopup = false;
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel") || ImGui::IsKeyPressed(ImGuiKey_Escape))
+        {
+            m_bOpenCreateScriptPopup = false;
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+}
+
+_bool CProjectPanel::Create_Script_By_Name(const std::string& baseStem, std::filesystem::path& outCreatedPath)
+{
+    outCreatedPath.clear();
+
+    /* unique stem 보장 */
+    const std::string stem = Make_Unique_File_Stem_Impl(m_ScriptPath, baseStem);
+    const std::string className = "C" + Make_Script_File_From_Stem(stem);
+
+    const std::filesystem::path headerPath = m_HeaderPath / (stem + ".h");
+    const std::filesystem::path cppPath = m_ImplPath / (stem + ".cpp");
+
+    if (std::filesystem::exists(headerPath) || std::filesystem::exists(cppPath))
+        return false;
+
+    /* 헤더/CPP 생성 */
+    std::string header;
+    header += "#pragma once\n";
+    header += "#include \"Client_Define.h\"\n";
+    header += "#include \"Script.h\"\n\n\n";
+    header += "NS_BEGIN(Client)\n\n";
+    header += "class " + className + " : public IScript\n";
+    header += "{\n";
+    header += "public:\n";
+    header += "    void Awake(void* pCtx) override;\n";
+    header += "    void Start(void* pCtx) override;\n\n";
+    header += "    void Priority_Update(void* pCtx, _float fDT) override;\n";
+    header += "    void Update(void* pCtx, _float fDT) override;\n";
+    header += "    void Late_Update(void* pCtx, _float fDT) override;\n";
+    header += "};\n\n";
+    header += "NS_END;\n";
+
+    std::string cpp;
+    cpp += "#include \"" + Editor_Util::To_UTF8(headerPath.filename()) + "\"\n\n";
+    cpp += "NS_BEGIN(Client)\n\n";
+    cpp += "void " + className + "::Awake(void* pCtx)\n{\n}\n\n";
+    cpp += "void " + className + "::Start(void* pCtx)\n{\n}\n\n";
+    cpp += "void " + className + "::Priority_Update(void* pCtx, _float fDT)\n{\n}\n\n";
+    cpp += "void " + className + "::Update(void* pCtx, _float fDT)\n{\n}\n\n";
+    cpp += "void " + className + "::Late_Update(void* pCtx, _float fDT)\n{\n}\n\n";
+    cpp += "NS_END;\n";
+
+    if (!Write_Text_File(headerPath, header))
+        return false;
+
+    if (!Write_Text_File(cppPath, cpp))
+    {
+        std::error_code ec;
+        std::filesystem::remove(headerPath, ec);
+        return false;
+    }
+
+    /* .script 생성 + GUID 보장 */
+    std::filesystem::path savePath = m_ScriptPath / (stem + ".script");
+
+    json j;
+    j["ClassName"] = className;
+    j["Header"] = Editor_Util::To_UTF8(headerPath.filename());
+
+    const std::string scriptJson = j.dump(2) + "\n";
+
+    if (!Write_Text_File(savePath, scriptJson))
+        return false;
+
+    SYS_ASSET.Ensure_GUID_For_Path(savePath);
+
+    outCreatedPath = savePath;
+    return true;
+}
 
 /* =======================================================================*/
 /* ============================ Factory/Free =============================*/
