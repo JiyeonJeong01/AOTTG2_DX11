@@ -10,8 +10,12 @@
 #include "MeshRenderer.h"
 #include "Resource_System.h"
 #include "CanvasRenderer.h"
+#include "RectTransform.h"
+#include "Asset_Registry.h"
+#include "Script_Handler.h"
 
 #include "BuiltIn_GUID.h"
+#include "Script_Registry.h"
 
 
 namespace Engine
@@ -46,23 +50,28 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
     ASSET_GUID tmp("DB38B6FB-5648-436F-A1A9-CC3FFD659A0F");
 
     /* TEST : Create GameObject with various components */
+    Engine::CGameObject* pGO = nullptr;
+    Engine::CGameObject* pUO = nullptr;
     for (int i = 0; i < 1; ++i) {
         {
-            Engine::CGameObject* pObj = SYS_GAMEOBJECT.Create_GameObject();
-            pObj->Add_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
-            auto mr = pObj->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+            pGO = SYS_GAMEOBJECT.Create_GameObject();
+            pGO->Add_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+            auto mr = pGO->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
             auto* d = mr._Data();
             d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXTEX);
             d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_CUBE);      // 또는 CreateCubeMesh()
             d->layer = RENDER_LAYER::NONBLEND;
             d->flags = RF_NONE;
             d->hMainTex = SYS_RESOURCE.Load_Texture(tmp);
+
+            auto tr1 = pGO->Get_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
+            auto mr1 = pGO->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
         }
 
         {
-            Engine::CGameObject* pObj = SYS_GAMEOBJECT.Create_GameObjectUI();
-            pObj->Add_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
-            auto mr = pObj->Get_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
+            pUO = SYS_GAMEOBJECT.Create_GameObjectUI();
+            pUO->Add_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
+            auto mr = pUO->Get_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
             auto* d = mr._Data();
             d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXTEX);
             d->layer = RENDER_LAYER::NONBLEND;
@@ -70,7 +79,11 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             d->hTexture = SYS_RESOURCE.Load_Texture(tmp);
         }
 
-        
+        auto tr1 = pGO->Get_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
+        auto mr1 = pGO->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+
+        auto rt1 = pGO->Get_Component<CRectTransform>(COMPONENT_TYPE::RECT_TRANSFORM);
+        auto cr1 = pGO->Get_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
 
     }
 
@@ -92,6 +105,13 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 
     m_pTester = Tester::Create();
     m_pTester->Initialize_Tester(this);
+
+    HRESULT hr = SYS_ASSET.Scripts().Generate("../../Client/Private/Script_Registry.gen.cpp");
+    IF_FAIL_RETURN_MSG_BREAK(hr, hr, "Create registry filed failed");
+
+    Register_AllScripts();
+
+
     return S_OK;
 }
 

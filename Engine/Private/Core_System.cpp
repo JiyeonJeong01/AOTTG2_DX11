@@ -106,6 +106,9 @@ void CCore_System::Update_Editor_Engine(_float fDT)
     SYS_INPUT.Update_System();
     SYS_RENDER.Priority_Update();
 
+    /* TODO 이거 빼라~*/
+    Update_RuntimeEngine(fDT, pScene);
+
     switch (pScene->Get_State())
     {
     case SCENE_STATE::EDIT :
@@ -115,7 +118,8 @@ void CCore_System::Update_Editor_Engine(_float fDT)
         /* 스텝만 허용한다. */
         return;
     case SCENE_STATE::PLAY :
-        Update_RuntimeEngine(fDT, pScene);
+        //Update_RuntimeEngine(fDT, pScene);
+        return;
     }
 }
 

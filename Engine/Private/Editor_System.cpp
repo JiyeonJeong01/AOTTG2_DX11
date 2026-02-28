@@ -1,9 +1,12 @@
 ﻿#include "Editor_System.h"
+
+#include "Asset_Meta.h"
 #include "Asset_Registry.h"
 #include "Event_System.h"
 #include "SceneChange_Event.h"
 #include "Scene.h"
 #include "Core_System.h"
+#include "Engine_Log.h"
 
 IMPLEMENT_SINGLETON(CEditor_System)
 

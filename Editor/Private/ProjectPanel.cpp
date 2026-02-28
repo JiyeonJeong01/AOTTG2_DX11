@@ -4,6 +4,7 @@
 #include "Editor_Util.h"
 #include "Asset_Registry.h"
 #include "Core_System.h"
+#include "Asset_Meta.h"
 
 NS_BEGIN(Editor)
 

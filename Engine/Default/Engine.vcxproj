@@ -165,6 +165,10 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\LayerHelper.h" />
     <ClInclude Include="..\Public\Render_Context.h" />
     <ClInclude Include="..\Public\SceneChange_Event.h" />
+    <ClInclude Include="..\Public\Script.h" />
+    <ClInclude Include="..\Public\Script_Handler.h" />
+    <ClInclude Include="..\Public\Script_Processor.h" />
+    <ClInclude Include="..\Public\Script_Register.h" />
     <ClInclude Include="..\Public\UIButton.h" />
     <ClInclude Include="..\Public\UIImage.h" />
     <ClInclude Include="..\Public\UI_Processor.h" />
@@ -232,6 +236,10 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Transform_Processor.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="..\Docs\Script_Doc.md">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </Text>
     <ClCompile Include="..\Private\Asset_Registry.cpp" />
     <ClCompile Include="..\Private\Base.cpp" />
     <ClCompile Include="..\Private\CanvasRenderer.cpp" />
@@ -241,6 +249,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Component_System.cpp" />
     <ClCompile Include="..\Private\CLI_Sink.cpp" />
     <ClCompile Include="..\Private\CRender_System.cpp" />
+    <ClCompile Include="..\Private\CScript_Processor.cpp" />
     <ClCompile Include="..\Private\Editor_System.cpp" />
     <ClCompile Include="..\Private\Event_System.cpp" />
     <ClCompile Include="..\Private\Core_System.cpp" />
@@ -264,6 +273,8 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Scene_Handler.cpp" />
     <ClCompile Include="..\Private\Logger.cpp" />
     <ClCompile Include="..\Private\Scene.cpp" />
+    <ClCompile Include="..\Private\Script.cpp" />
+    <ClCompile Include="..\Private\Script_Handler.cpp" />
     <ClCompile Include="..\Private\ShaderBuilder.cpp" />
     <ClCompile Include="..\Private\Texture.cpp" />
     <ClCompile Include="..\Private\Texture_Storage.cpp" />

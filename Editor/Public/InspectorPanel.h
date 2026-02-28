@@ -3,7 +3,8 @@
 #include "ProjectPanel.h"
 
 NS_BEGIN(Engine)
-    class CGameObject;
+class CGameObject;
+class CScript_Processor;
 NS_END
 
 NS_BEGIN(Editor)
@@ -47,6 +48,7 @@ private:
     void Draw_Components();
     void Draw_CurrentComponents();
     void Draw_AddComponentPopup();
+    void Draw_CreateScriptPopup();
     void Draw_Asset();
     void Draw_None();
 
@@ -57,12 +59,13 @@ private:
     void Draw_RectTransform();
     void Draw_MeshRenderer();
     void Draw_CanvasRenderer();
-
+    void Draw_Script();
 
 
     void Validate_Target();
 
 private:
+    Engine::CScript_Processor* m_pScript_Processor = nullptr;
     Engine::CGameObject* m_pTarget = nullptr;
 
     /* UI */
@@ -72,6 +75,10 @@ private:
 
     // 신규 타겟
     ASSET_SELECTION m_selectedAsset;
+
+    Engine::COMPONENT_HANDLE m_hPendingScript{};
+    _bool m_bOpenCreateScriptPopup = false;
+    std::string m_newScriptName;
 
 public:
     static std::unique_ptr<CInspectorPanel> Create(const std::string& strPanelName, CHierarchyPanel* pHierarchy, CProjectPanel* pProject);

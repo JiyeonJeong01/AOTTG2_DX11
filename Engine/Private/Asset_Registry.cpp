@@ -1,10 +1,13 @@
 ﻿#include "Asset_Registry.h"
 
 #include "Prototype_Handler.h"
+#include "Script_Handler.h"
+#include "Asset_Meta.h"
 #include "BuiltIn_GUID.h"
 #include "Engine_Log.h"
 #include "magic_enum.hpp"
 #include "String_Utils.h"
+
 
 NS_BEGIN(Engine)
 
@@ -29,6 +32,9 @@ HRESULT CAsset_Registry::Initialize(const std::filesystem::path& assetRoot)
     m_upPrototype_Handler = CPrototype_Handler::Create();
     IF_NULL_RETURN_MSG_BREAK(m_upPrototype_Handler, E_FAIL, "Prototype_Handler is nullptr");
 
+    m_upScript_Handler = CScript_Handler::Create();
+    IF_NULL_RETURN_MSG_BREAK(m_upScript_Handler, E_FAIL, "ScriptType_Handler is nullptr");
+
     Clear();
 
     /* Built-in */
@@ -38,6 +44,7 @@ HRESULT CAsset_Registry::Initialize(const std::filesystem::path& assetRoot)
     Rebuild();
 
     Distribute_Assets_To_Handlers();
+
     return S_OK;
 }
 
@@ -45,6 +52,9 @@ void CAsset_Registry::Clear()
 {
     m_byGUID.clear();
     m_byPathUtf8.clear();
+
+    if (m_upScript_Handler)
+        m_upScript_Handler->Clear();
 }
 
 void CAsset_Registry::Rebuild()
@@ -128,13 +138,11 @@ void CAsset_Registry::Distribute_Assets_To_Handlers()
             break;
         case ASSET_TYPE::SCENE :
             break;
+        case ASSET_TYPE::SCRIPT :
+            m_upScript_Handler->Cache_GUID(tGUID.first);
+            break;
         }
-        
     }
-
-
-
-
 }
 
 const std::filesystem::path& CAsset_Registry::Get_Root() const
@@ -192,8 +200,11 @@ const ASSET_TYPE CAsset_Registry::Detect_Type(const std::filesystem::path& path,
     if (szExt == ".proto")
         return ASSET_TYPE::PROTOTYPE;
 
-    if (szExt == ".cpp" || szExt == ".h" || szExt == ".hlsl")
+    if (szExt == ".script")
         return ASSET_TYPE::SCRIPT;
+
+    if (szExt == ".hlsl")
+        return ASSET_TYPE::SHADER;
 
     return ASSET_TYPE::UNKNOWN;
 
@@ -325,6 +336,40 @@ _bool CAsset_Registry::Register_File_Asset(const std::filesystem::path& rawPath,
     }
 
     return true;
+}
+
+ASSET_GUID CAsset_Registry::Ensure_GUID_For_Path(const std::filesystem::path& path)
+{
+    std::filesystem::path abs = path;
+    if (!abs.is_absolute())
+        abs = m_assetRoot / path;
+
+    abs = Normalize_Path(abs);
+
+    /* 없으면 빈 파일 생성 (.script 용) */ 
+    if (!std::filesystem::exists(abs))
+    {
+        std::filesystem::create_directories(abs.parent_path());
+
+        FILE* fp = nullptr;
+#if defined(_WIN32)
+        fopen_s(&fp, abs.string().c_str(), "wb");
+#else
+        fp = fopen(abs.string().c_str(), "wb");
+#endif
+        if (fp) fclose(fp);
+    }
+
+    /* 실제 디렉토리 여부로 타입 판정 */
+    std::error_code ec;
+    const _bool bDir = std::filesystem::is_directory(abs, ec) ? true : false;
+    const ASSET_TYPE type = Detect_Type(abs, bDir);
+
+    Register_File_Asset(abs, type, ASSET_GUID{});
+
+    ASSET_GUID out{};
+    (void)Try_Get_GUID(abs, out);
+    return out;
 }
 
 NS_END

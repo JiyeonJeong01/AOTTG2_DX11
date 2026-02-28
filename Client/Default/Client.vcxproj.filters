@@ -11,6 +11,9 @@
     <Filter Include="Test">
       <UniqueIdentifier>{b4d703de-d321-49be-b037-240778cf8662}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{f79c4af5-90da-4703-a700-55ee7ad04026}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -22,12 +25,24 @@
     <ClInclude Include="..\Public\Tester.h">
       <Filter>Test</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Script_Registry.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CScript_Test.h">
+      <Filter>Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
       <Filter>MainApp</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Tester.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Script_Registry.gen.cpp">
+      <Filter>MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CScript_Test.cpp">
       <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>

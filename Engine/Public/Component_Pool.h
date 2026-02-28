@@ -144,8 +144,8 @@ public:
 
         DATA_T* pData = pPage->Get_Ptr(iOffset);
 
-        /* For a notification event to external system; not for cleanup */
-        m_OnDeallocate.Invoke(pData);
+        /* 컴포넌트 해제를 알리거나 페이지의 슬롯 정리 용도로 호출한다. */
+        m_OnDeallocate.Invoke(handle);
 
         /* Destroy data */
         Destroy_At(pData);
@@ -190,12 +190,19 @@ public:
         return m_pages;
     }
 
+public :
+    template <typename TProc>
+    ListenerID Subscribe_OnDeallocate(void(TProc::*func)(COMPONENT_HANDLE), TProc* pProc)
+    {
+        return m_OnDeallocate.Add_Listener(func, pProc);
+    }
+
 private:
     std::vector<std::unique_ptr<PAGE>> m_pages{};
     std::vector<uint32_t>    m_freeIndices{};
     uint32_t            m_iNextIndex = 1; /* 0 is invalid handle */
 
-    CEvent<DATA_T*>     m_OnDeallocate{};
+    CEvent<COMPONENT_HANDLE>     m_OnDeallocate{};
 
     /* Construction/Destruction helpers */
     static void Construct_At(DATA_T* p)
@@ -210,7 +217,7 @@ private:
 
     static void Destroy_At(DATA_T* p) noexcept
     {
-        /* If DATA_T is trivial destructible, this compiles away */
+        /* DATA_T가 trivially destructible 타입이면 컴파일 타임에 아래 블록을 무시한다. */
         if constexpr (!std::is_trivially_destructible_v<DATA_T>)
         {
             std::destroy_at(p);

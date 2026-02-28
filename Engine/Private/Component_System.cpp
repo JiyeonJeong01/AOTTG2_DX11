@@ -6,6 +6,7 @@
 #include "MeshRenderer_Processor.h"
 #include "RectTransform_Processor.h"
 #include "CanvasRenderer_Processor.h"
+#include "Script_Processor.h"
 
 #include "Render_Struct.h"
 
@@ -36,7 +37,8 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
         = CRectTransform_Processor::Create();
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)]
         = CCanvasRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CRectTransform_Processor*, m_pComProcessors[COM_TO_PID(COMPONENT_TYPE::RECT_TRANSFORM)].get()), iWidth, iHeight);
-
+    m_pComProcessors[PID_TO_INT(PROCESSOR_ID::SCRIPT)]
+        = CScript_Processor::Create();
 
 	return S_OK;
 }
@@ -84,6 +86,7 @@ COMPONENT_HANDLE CComponent_System::Create_Component_By_Type(COMPONENT_TYPE eCom
     return m_pComProcessors[iProcIdx]->Create_Component_Data(eComType, hObject);
 }
 
+/* SceneObject나 Prototype에서 역직렬화한 Spec으로 컴포넌트를 생성하기 위해 호출된다. */
 HRESULT CComponent_System::Create_Component_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec)
 {
     IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "Create from spec failed: pObj is nullptr.");
@@ -156,6 +159,10 @@ HRESULT CComponent_System::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONE
     return S_OK;
 }
 
+/* 1. 게임 오브젝트 클론을 위한 스펙 생성 및 적용
+ * 2. Prototype, SceneObject 직렬화를 위한 스펙 빌드
+ *
+ */
 std::unique_ptr<COMPONENT_SPEC_BASE> CComponent_System::Build_Spec_By_Type(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
 {
     /* --------------------------------------------------------------------------------------------------------------

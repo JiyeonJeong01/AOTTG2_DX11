@@ -290,7 +290,7 @@ void CHierarchyPanel::Draw_Object_Tree()
             {
                 SYS_GAMEOBJECT.Instantiate(*pGUID,
                     Engine::Layer::DEFAULT_LAYER,
-                    pRecord->path.stem().string() + "_Clone");
+                    pRecord->path.stem().string() + "_Proto");
             }
         }
         ImGui::EndDragDropTarget();

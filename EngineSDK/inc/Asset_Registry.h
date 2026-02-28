@@ -1,11 +1,11 @@
 ﻿#pragma once
 #include "Base.h"
-
-#include "Asset_Meta.h"
+#include "Script.h"
 
 NS_BEGIN(Engine)
 
 class CPrototype_Handler;
+class CScript_Handler;
 
 /**
  * @class CAsset_Registry
@@ -25,8 +25,8 @@ public :
     void    Rebuild();
     void    Distribute_Assets_To_Handlers();
 
-    CPrototype_Handler& Prototypes() { return *m_upPrototype_Handler; }
-
+    CPrototype_Handler& Prototypes()    { return *m_upPrototype_Handler; }
+    CScript_Handler&    Scripts()       { return *m_upScript_Handler; }
 public :
     const std::filesystem::path& Get_Root() const;
 
@@ -41,6 +41,8 @@ public :
     /* Register individual file asset GUID (and create .meta file) */
     _bool Register_File_Asset(const std::filesystem::path& rawPath, ASSET_TYPE forcedType, ASSET_GUID forcedGuid = ASSET_GUID{});
 
+    ASSET_GUID Ensure_GUID_For_Path(const std::filesystem::path& path);
+
     /* GUID -> ASSET_RECORD */
     const ASSET_RECORD* Find(const ASSET_GUID& tGUID) const;
 
@@ -52,6 +54,7 @@ public :
 
 private :
     std::unique_ptr<CPrototype_Handler> m_upPrototype_Handler{};
+    std::unique_ptr<CScript_Handler>    m_upScript_Handler{};
 
     std::filesystem::path   m_assetRoot{};
     std::unordered_map<ASSET_GUID, ASSET_RECORD, ASSET_GUID_HASHER> m_byGUID;

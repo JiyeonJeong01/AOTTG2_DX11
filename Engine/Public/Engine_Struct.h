@@ -18,6 +18,9 @@ namespace  Engine
     {
         const std::string PATH = "../../Client/Bin/";
         const std::string ROOT = "Assets";
+        const std::string CLIENT = "../../Client/";
+        const std::string HEADER = "Public";
+        const std::string IMPL = "Private";
     }
 
 

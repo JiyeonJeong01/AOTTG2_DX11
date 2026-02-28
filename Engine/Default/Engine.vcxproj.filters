@@ -130,6 +130,15 @@
     <Filter Include="00. System\07. Editor">
       <UniqueIdentifier>{1bf54c24-e22d-4740-80c0-137c701e4113}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\04. Component\03. Rigidbody">
+      <UniqueIdentifier>{09582e83-9660-4564-86b0-71730c51d4fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\06. Script">
+      <UniqueIdentifier>{79198069-47c7-4da9-bc79-ecee68d48db3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="100. Docementation">
+      <UniqueIdentifier>{9c3b8c12-4213-48fe-bef0-e889a63c9ae2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -354,6 +363,18 @@
     <ClInclude Include="..\Public\Render_Context.h">
       <Filter>00. System\03. Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Script.h">
+      <Filter>01. Utility\04. Component\06. Script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Script_Processor.h">
+      <Filter>01. Utility\04. Component\06. Script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Script_Handler.h">
+      <Filter>01. Utility\04. Component\06. Script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Script_Register.h">
+      <Filter>01. Utility\04. Component\06. Script</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -482,6 +503,15 @@
     <ClCompile Include="..\Private\Render_Context.cpp">
       <Filter>00. System\03. Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Script.cpp">
+      <Filter>01. Utility\04. Component\06. Script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CScript_Processor.cpp">
+      <Filter>01. Utility\04. Component\06. Script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Script_Handler.cpp">
+      <Filter>01. Utility\04. Component\06. Script</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Public\Component_System.inl">
@@ -490,5 +520,10 @@
     <None Include="..\Public\GameObject.inl">
       <Filter>01. Utility\03. Object\GameObject</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Docs\Script_Doc.md">
+      <Filter>100. Docementation</Filter>
+    </Text>
   </ItemGroup>
 </Project>

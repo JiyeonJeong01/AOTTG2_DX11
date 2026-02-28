@@ -10,6 +10,10 @@
 #include "Material.h"
 #include "RectTransform.h"
 #include "CanvasRenderer.h"
+#include "Script.h"
+#include "Component_System.h"
+#include "Editor_Util.h"
+#include "Script_Processor.h"
 
 
 NS_BEGIN(Editor)
@@ -28,6 +32,10 @@ HRESULT CInspectorPanel::Initialize(CHierarchyPanel* pPanel, CProjectPanel* pPro
     pPanel->m_OnPrimarySelectionChanged.Add_Listener(&CInspectorPanel::Set_Target, this);
     pProject->m_OnSelectionChanged.Add_Listener(&CInspectorPanel::Set_Selected_Asset, this);
 
+    CComponent_Processor* pBase = nullptr;
+    SYS_COMPONENT.Bind_ComponentProcessor(COMPONENT_TYPE::SCRIPT, &pBase);
+    IF_NULL_RETURN_MSG_BREAK(pBase, E_FAIL, "Transform processor bind failed");
+    m_pScript_Processor = SCAST(CScript_Processor*, pBase);
     return S_OK;
 }
 
@@ -406,6 +414,7 @@ void CInspectorPanel::Draw_Components()
     }
 
     Draw_AddComponentPopup();
+    Draw_CreateScriptPopup();
 }
 
 void CInspectorPanel::Draw_CurrentComponents()
@@ -449,8 +458,18 @@ void CInspectorPanel::Draw_AddComponentPopup()
         m_pTarget->Add_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
         ImGui::CloseCurrentPopup();
     }
+    if (ImGui::MenuItem("Script"))
+    {
+        m_pTarget->Add_Component<CScript>(COMPONENT_TYPE::SCRIPT);
+        ImGui::CloseCurrentPopup();
+    }
 
     ImGui::EndPopup();
+}
+
+void CInspectorPanel::Draw_CreateScriptPopup()
+{
+
 }
 
 void CInspectorPanel::Draw_Asset()
@@ -483,6 +502,9 @@ void CInspectorPanel::Draw_ComponentByType(COMPONENT_TYPE eComType)
         break;
     case COMPONENT_TYPE::CANVAS_RENDERER:
         Draw_CanvasRenderer();
+        break;
+    case COMPONENT_TYPE::SCRIPT:
+        Draw_Script();
         break;
     }
 }
@@ -581,17 +603,17 @@ void CInspectorPanel::Draw_MeshRenderer()
     if (!pData)
         return;
 
-    if (ImGui::TreeNodeEx("CanvasRenderer", ImGuiTreeNodeFlags_DefaultOpen))
+    if (ImGui::TreeNodeEx("MeshRenderer", ImGuiTreeNodeFlags_DefaultOpen))
     {
         bool bChanged = false;
 
         // --- Mesh ---
-        ImGui::TextUnformatted("Mesh");
+        ImGui::TextUnformatted("Mesh handle");
         ImGui::SameLine();
         ImGui::Text("%u", pData->hMesh);
 
         // --- Material ---
-        ImGui::TextUnformatted("Material");
+        ImGui::TextUnformatted("Material handle");
         ImGui::SameLine();
         ImGui::Text("%u", pData->hMaterial);
 
@@ -725,6 +747,109 @@ void CInspectorPanel::Draw_CanvasRenderer()
 
         ImGui::TreePop();
     }
+}
+
+void CInspectorPanel::Draw_Script()
+{
+    CScript sc = m_pTarget->Get_Component<CScript>(COMPONENT_TYPE::SCRIPT);
+    if (!sc.Is_Valid())
+        return;
+
+    SCRIPT_DATA* pData = sc._Data();
+    if (!pData)
+        return;
+
+    if (!ImGui::TreeNodeEx("Script", ImGuiTreeNodeFlags_DefaultOpen))
+        return;
+
+    bool bChanged = false;
+
+    // Enabled
+    bool enabled = ((pData->iFlags & SCRIPT_FLAG_ENABLED) != 0);
+    if (ImGui::Checkbox("Enabled", &enabled))
+    {
+        if (enabled) pData->iFlags |= SCRIPT_FLAG_ENABLED;
+        else         pData->iFlags &= ~SCRIPT_FLAG_ENABLED;
+
+        bChanged = true;
+        m_pScript_Processor->Set_Enabled(sc.Get_Handle(), enabled);
+    }
+
+    // TypeId, 런타임 인덱스
+    ImGui::Text("TypeID: %u", (unsigned)pData->iTypeID);
+
+    // GUID 역탐색 (현재는 Processor가 들고 있는 m_GuidToTypeID를 직접 접근 못하니, 빌드스펙을 호출)
+    ASSET_GUID guid{};
+    {
+        ASSET_GUID guid{};
+        m_pScript_Processor->Try_Get_Guid_By_TypeID(pData->iTypeID, guid);
+    }
+
+    // GUID 표시
+    ImGui::TextUnformatted("Script GUID");
+    ImGui::SameLine();
+    // ToString 같은 게 있으면 그걸로, 없으면 디버그 출력 방식에 맞추세요.
+    ImGui::Text("%s", guid.Is_Valid() ? guid.To_String_Utf8().c_str() : "INVALID");
+
+    // 파일 경로 표시 + "..." 버튼(열기/탐색기)
+    if (guid.Is_Valid())
+    {
+        const auto path = SYS_ASSET.Get_Asset_Path(guid);
+        if (!path.empty())
+        {
+            ImGui::TextUnformatted("Asset Path");
+            ImGui::SameLine();
+
+            const std::string pStr = path.string();
+            ImGui::Text("%s", pStr.c_str());
+
+            ImGui::SameLine();
+            if (ImGui::SmallButton("..."))
+            {
+                // 기본: 탐색기에서 위치 열기
+                Editor_Util::RevealFile_In_Explorer(path);
+            }
+
+            ImGui::SameLine();
+            if (ImGui::SmallButton("Open"))
+            {
+                // 파일 열기(기본 앱)
+                Editor_Util::OpenFile_In_OS(path);
+            }
+        }
+        else
+        {
+            ImGui::TextUnformatted("Asset Path: <not found>");
+        }
+    }
+
+    // 드래그드롭으로 Script 에셋(GUID) 바인딩
+    ImGui::Separator();
+    ImGui::TextUnformatted("Bind Script");
+    ImGui::SameLine();
+    ImGui::TextDisabled("(Drag script asset here)");
+
+    ImVec2 dropSize(ImGui::GetContentRegionAvail().x, 28.f);
+    ImGui::Button("##ScriptDropTarget", dropSize); // 표시용 박스
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* p = ImGui::AcceptDragDropPayload("ASSET_GUID"))
+        {
+            const Engine::ASSET_GUID* pGUID = (const Engine::ASSET_GUID*)p->Data;
+            if (pGUID && pGUID->Is_Valid())
+            {
+                auto pRecord = SYS_ASSET.Find(*pGUID);
+                if (pRecord && pRecord->eType == Engine::ASSET_TYPE::SCRIPT)
+                {
+                    /* NOTE  여기서 리바인드 한다.*/
+                    m_pScript_Processor->Rebind_ScriptGuid(sc.Get_Handle(), *pGUID);
+                }
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
+
+    ImGui::TreePop();
 }
 
 std::unique_ptr<CInspectorPanel> CInspectorPanel::Create(const std::string& strPanelName, CHierarchyPanel* pHierarcy, CProjectPanel* pProject)
