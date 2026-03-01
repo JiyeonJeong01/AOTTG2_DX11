@@ -106,6 +106,7 @@ void CCore_System::Update_Editor_Engine(_float fDT)
     SYS_INPUT.Update_System();
     SYS_RENDER.Priority_Update();
 
+    SYS_EDITOR.Update(fDT);
     /* TODO 이거 빼라~*/
     Update_RuntimeEngine(fDT, pScene);
 

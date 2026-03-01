@@ -147,7 +147,7 @@ void CRender_Context::Update_CamPos_From_ViewInv()
 std::unique_ptr<CRender_Context> CRender_Context::Create(_uint iWidth, _uint iHeight)
 {
     auto pInstance = std::make_unique<CRender_Context>();
-    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(iWidth, iHeight), nullptr, "Instance create failed");
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize((_float)iWidth, (_float)iHeight), nullptr, "Instance create failed");
     return pInstance;
 }
 

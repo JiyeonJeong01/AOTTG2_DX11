@@ -8,7 +8,7 @@ NS_BEGIN(Engine)
 
 class CRender_Context;
 
-class CRender_System final
+class ENGINE_DLL CRender_System final
 {
     DECLARE_SINGLETON(CRender_System)
 
@@ -16,6 +16,9 @@ public:
     HRESULT Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iWidth, _uint iHeight);
     void    Priority_Update();
     void    Render();
+
+    CRender_Context* Contexts();
+    _bool   Submit_Camera(_fmatrix matView, _fmatrix matProj);
 
     const UI_GLOBAL&    Get_UI_Global();
     void                Set_UI_Global(const UI_GLOBAL& tUI);
@@ -37,6 +40,8 @@ private:
 
     class CTransform_Processor* m_pTransform_Processor{};
     class CRectTransform_Processor* m_pRectTransform_Processor{};
+
+    _bool   bSubmittedThisFrame{};
 
 private:
     void     Build_RenderQueue();

@@ -421,7 +421,7 @@ typedef struct tagScriptSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::SCRIPT)
 
-        ASSET_GUID      scriptGuid{};     // 스크립트 타입(또는 스크립트 에셋) GUID
+    ASSET_GUID      scriptGuid{};     // 스크립트 타입(또는 스크립트 에셋) GUID
     uint8_t         bEnabled = 1;
     uint8_t         pad[3] = {};
 
@@ -450,5 +450,141 @@ typedef struct tagScriptSpec final : public COMPONENT_SPEC_BASE
         catch (...) { return false; }
     }
 } SCRIPT_SPEC;
+
+typedef struct ENGINE_DLL tagCameraSpec final : public COMPONENT_SPEC_BASE
+{
+    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::CAMERA)
+
+    _bool   bOrthographic = false;
+    _float  fovy = 60.f;          /* degrees */
+    _float  orthoSize = 5.f;
+    _float  aspect = 16.f / 9.f;
+    _float  zNear = 0.1f;
+    _float  zFar = 1000.f;
+
+    uint32_t layerMask = 0xFFFFFFFFu;
+    uint8_t  bEnabled = 1;
+
+    [[nodiscard]]
+    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
+    {
+        return std::make_unique<tagCameraSpec>(*this);
+    }
+
+    void ToJson(json& j) const override
+    {
+        j["Type"] = SCAST(_uint, Get_Type());
+        j["Ortho"] = bOrthographic;
+        j["Fovy"] = fovy;
+        j["OrthoSize"] = orthoSize;
+        j["Aspect"] = aspect;
+        j["Near"] = zNear;
+        j["Far"] = zFar;
+        j["LayerMask"] = layerMask;
+        j["Enabled"] = bEnabled;
+    }
+
+    _bool FromJson(const json& j) override
+    {
+        try
+        {
+            if (j.contains("Ortho")) bOrthographic = j["Ortho"];
+            if (j.contains("Fovy")) fovy = j["Fovy"];
+            if (j.contains("OrthoSize")) orthoSize = j["OrthoSize"];
+            if (j.contains("Aspect")) aspect = j["Aspect"];
+            if (j.contains("Near")) zNear = j["Near"];
+            if (j.contains("Far")) zFar = j["Far"];
+            if (j.contains("LayerMask")) layerMask = j["LayerMask"];
+            if (j.contains("Enabled")) bEnabled = j["Enabled"];
+            return true;
+        }
+        catch (...)
+        {
+            return false;
+        }
+    }
+} CAMERA_SPEC;
+
+typedef struct ENGINE_DLL tagLightSpec final : public COMPONENT_SPEC_BASE
+{
+    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::LIGHT)
+
+        OBJECT_HANDLE hObject{};
+
+    LIGHT_TYPE type = LIGHT_TYPE::DIRECTIONAL;
+
+    _float4     vColor = { 1.f, 1.f, 1.f, 0.f };
+    _float4     vDirection = { 0.f, -1.f, 0.f, 0.f };
+    _float4     vPosition{}; 
+    _float      fRange = 10.f;
+    _float      spotAngle = 30.f;
+
+    _float4     vDiffuse{ 1.f, 1.f, 1.f , 1.f };
+    _float4     vAmbient{ 1.f, 1.f, 1.f , 1.f };
+    _float4     vSpecular{ 1.f, 1.f, 1.f , 1.f };
+
+    uint8_t     bEnabled = 1;
+    _bool       dirty = true;
+
+    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
+    {
+        return std::make_unique<tagLightSpec>(*this);
+    }
+
+    void ToJson(json& j) const override
+    {
+        j["Type"] = SCAST(_uint, Get_Type());
+
+        j["LightType"] = SCAST(_uint, type);
+        j["Enabled"] = bEnabled;
+        j["Range"] = fRange;
+        j["SpotAngle"] = spotAngle;
+
+        j["Color"] = { vColor.x, vColor.y, vColor.z, vColor.w };
+        j["Direction"] = { vDirection.x, vDirection.y, vDirection.z, 0.f };
+        j["Position"] = { vPosition.x, vPosition.y, vPosition.z, 1.f };
+
+        j["Diffuse"] = { vDiffuse.x, vDiffuse.y, vDiffuse.z, vDiffuse.w };
+        j["Ambient"] = { vAmbient.x, vAmbient.y, vAmbient.z, vAmbient.w };
+        j["Specular"] = { vSpecular.x, vSpecular.y, vSpecular.z, vSpecular.w };
+    }
+
+    _bool FromJson(const json& j) override
+    {
+        try
+        {
+            if (j.contains("LightType")) type = SCAST(LIGHT_TYPE, (_uint)j["LightType"]);
+            if (j.contains("Enabled"))   bEnabled = j["Enabled"];
+            if (j.contains("Range"))     fRange = j["Range"];
+            if (j.contains("SpotAngle")) spotAngle = j["SpotAngle"];
+
+            auto read_vec4 = [&](const char* key, _float4& out)->_bool
+                {
+                    if (!j.contains(key) || !j[key].is_array() || j[key].size() < 4) return false;
+                    out = { j[key][0], j[key][1], j[key][2], j[key][3] };
+                    return true;
+                };
+
+            if (j.contains("Color") && j["Color"].is_array() && j["Color"].size() >= 4)
+                vColor = { j["Color"][0], j["Color"][1], j["Color"][2], j["Color"][3] };
+
+            if (j.contains("Direction") && j["Direction"].is_array() && j["Direction"].size() >= 3)
+                vDirection = { j["Direction"][0], j["Direction"][1], j["Direction"][2], 0.f };
+
+            if (j.contains("Position") && j["Position"].is_array() && j["Position"].size() >= 3)
+                vPosition = { j["Position"][0], j["Position"][1], j["Position"][2], 1.f };
+
+            if (!read_vec4("Diffuse", vDiffuse))  return false;
+            if (!read_vec4("Ambient", vAmbient))  return false;
+            if (!read_vec4("Specular", vSpecular)) return false;
+
+            return true;
+        }
+        catch (...)
+        {
+            return false;
+        }
+    }
+} LIGHT_SPEC;
 
 NS_END

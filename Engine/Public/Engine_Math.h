@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Engine_Define.h"
 
 NS_BEGIN(Engine)
@@ -34,7 +34,7 @@ namespace Math
         XMStoreFloat4x4(&out, XMMatrixIdentity());
     }
 
-    // ¿¬»ê¿ë Matrix Builders
+    // ì—°ì‚°ìš© Matrix Builders
     inline _matrix TranslationM(float x, float y, float z)
     {
         return XMMatrixTranslation(x, y, z);
@@ -55,7 +55,7 @@ namespace Math
         return XMMatrixScaling(s.x, s.y, s.z);
     }
 
-    // ¶óµğ¾È ±âÁØ È¸Àü
+    // ë¼ë””ì•ˆ ê¸°ì¤€ íšŒì „
     inline _matrix RotationXM(float fRadX) { return XMMatrixRotationX(fRadX); }
     inline _matrix RotationYM(float fRadY) { return XMMatrixRotationY(fRadY); }
     inline _matrix RotationZM(float fRadZ) { return XMMatrixRotationZ(fRadZ); }
@@ -70,7 +70,7 @@ namespace Math
         return XMMatrixRotationRollPitchYaw(r.x, r.y, r.z);
     }
 
-    // ÀúÀå¿ë Matrix Builders
+    // ì €ì¥ìš© Matrix Builders
     inline _float4x4 Translation(float x, float y, float z)
     {
         _float4x4 m;
@@ -155,7 +155,7 @@ namespace Math
         XMStoreFloat4x4(&out, SRTM(s, r, t));
     }
 
-    // Transpose (»ó¼ö¹öÆÛ ¾÷·Îµå ±ÔÄ¢¿¡ ¸ÂÃç »ç¿ë)
+    // Transpose (ìƒìˆ˜ë²„í¼ ì—…ë¡œë“œ ê·œì¹™ì— ë§ì¶° ì‚¬ìš©)
     inline _matrix TransposeM(_matrix m)
     {
         return XMMatrixTranspose(m);
@@ -189,6 +189,31 @@ namespace Math
     {
         return XMMatrixRotationQuaternion(
             XMVectorSet(q.x, q.y, q.z, q.w));
+    }
+
+    inline _float3 TransformNormal(const _float3& v, _fmatrix m)
+    {
+        const XMVECTOR vv = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&v));
+        const XMVECTOR r = XMVector3TransformNormal(vv, m);
+
+        _float3 out{};
+        XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&out), r);
+        return out;
+    }
+
+    inline _matrix Matrix_LookAtLH(const _float3& vEye, const _float3& vAt, const _float3& vUp)
+    {
+        using namespace DirectX;
+
+        const XMVECTOR eye = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&vEye));
+        const XMVECTOR at = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&vAt));
+        const XMVECTOR up = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&vUp));
+        return XMMatrixLookAtLH(eye, at, up);
+    }
+
+    inline _matrix Matrix_PerspectiveFovLH(_float fFovyRad, _float fAspect, _float fNear, _float fFar)
+    {
+        return XMMatrixPerspectiveFovLH(fFovyRad, fAspect, fNear, fFar);
     }
 
     // Vector
@@ -237,7 +262,7 @@ namespace Math
         };
     }
 
-    // ÀúÀå¿ë overload
+    // ì €ì¥ìš© overload
     inline _float3 QuaternionToEulerDeg(const _float4& q)
     {
         return QuaternionToEulerDeg(XMVectorSet(q.x, q.y, q.z, q.w));

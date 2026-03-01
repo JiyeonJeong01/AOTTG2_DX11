@@ -85,9 +85,6 @@
     <Filter Include="01. Utility\05. Resource\04. Texture">
       <UniqueIdentifier>{794fe99f-e9b8-431d-82ce-cf12d9080ede}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\04. Component\04. MeshRenderer">
-      <UniqueIdentifier>{e949251b-00ae-4c7b-8686-90ce6dfe4a92}</UniqueIdentifier>
-    </Filter>
     <Filter Include="00. System\05. Resource">
       <UniqueIdentifier>{226011d0-3cda-4be5-bb2a-7b81bf2f1602}</UniqueIdentifier>
     </Filter>
@@ -106,38 +103,50 @@
     <Filter Include="01. Utility\04. Component\01. Transform">
       <UniqueIdentifier>{e8bfaf4b-8d9b-4fa2-8595-49b769c2ff03}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\04. Component\02. Collider">
-      <UniqueIdentifier>{3ba23c7e-532f-4cab-a9b2-aeb56b750e27}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\04. Component\00. ComponentSystem">
-      <UniqueIdentifier>{d5e3e4b3-c60b-49f6-ac28-14ed45faef63}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\04. Component\08. RectTransform">
-      <UniqueIdentifier>{b4dc3252-22a3-44d4-807c-83e83a9230d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\04. Component\09. CanvasRenderer">
-      <UniqueIdentifier>{99aaebfd-80f5-4b48-8a03-79b336e154e3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Utility\02. Layer">
       <UniqueIdentifier>{b3f010fe-2dbd-49de-8799-430ce14c3032}</UniqueIdentifier>
     </Filter>
     <Filter Include="01. Utility\03. Object\GameObject_UI">
       <UniqueIdentifier>{696a0970-8aa4-4d79-8c10-5179651aa674}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\04. Component\10. UI_Components">
-      <UniqueIdentifier>{7bb52f6a-1259-4297-8828-b2816f1abfd5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="00. System\07. Editor">
       <UniqueIdentifier>{1bf54c24-e22d-4740-80c0-137c701e4113}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\04. Component\03. Rigidbody">
-      <UniqueIdentifier>{09582e83-9660-4564-86b0-71730c51d4fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01. Utility\04. Component\06. Script">
-      <UniqueIdentifier>{79198069-47c7-4da9-bc79-ecee68d48db3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="100. Docementation">
       <UniqueIdentifier>{9c3b8c12-4213-48fe-bef0-e889a63c9ae2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\00. ComponentSystem">
+      <UniqueIdentifier>{d5e3e4b3-c60b-49f6-ac28-14ed45faef63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\07. RectTransform">
+      <UniqueIdentifier>{b4dc3252-22a3-44d4-807c-83e83a9230d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\08. CanvasRenderer">
+      <UniqueIdentifier>{99aaebfd-80f5-4b48-8a03-79b336e154e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\9. UI_Components">
+      <UniqueIdentifier>{7bb52f6a-1259-4297-8828-b2816f1abfd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\02. Physics">
+      <UniqueIdentifier>{3ba23c7e-532f-4cab-a9b2-aeb56b750e27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\03. Script">
+      <UniqueIdentifier>{79198069-47c7-4da9-bc79-ecee68d48db3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\04. MeshRenderer">
+      <UniqueIdentifier>{e949251b-00ae-4c7b-8686-90ce6dfe4a92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\06. Environment">
+      <UniqueIdentifier>{d3e777f4-f8c2-4bd8-8c22-7e0ef2410d33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\06. Environment\01. Camera">
+      <UniqueIdentifier>{72fb26ab-06bb-436e-a53c-e948e806a021}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\06. Environment\02. Light">
+      <UniqueIdentifier>{c954117d-e1a8-4a5d-aadd-c67e9377dbc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\06. Environment\00. Environment_Processor">
+      <UniqueIdentifier>{d0acda3e-d0c5-4252-bf78-c98f8c0d3827}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -181,7 +190,7 @@
       <Filter>99. Defines</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Collider.h">
-      <Filter>01. Utility\04. Component\02. Collider</Filter>
+      <Filter>01. Utility\04. Component\02. Physics</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Timer.h">
       <Filter>00. System\01. Timer</Filter>
@@ -322,16 +331,16 @@
       <Filter>01. Utility\03. Object\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\RectTransform.h">
-      <Filter>01. Utility\04. Component\08. RectTransform</Filter>
+      <Filter>01. Utility\04. Component\07. RectTransform</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\RectTransform_Processor.h">
-      <Filter>01. Utility\04. Component\08. RectTransform</Filter>
+      <Filter>01. Utility\04. Component\07. RectTransform</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\CanvasRenderer.h">
-      <Filter>01. Utility\04. Component\09. CanvasRenderer</Filter>
+      <Filter>01. Utility\04. Component\08. CanvasRenderer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\CanvasRenderer_Processor.h">
-      <Filter>01. Utility\04. Component\09. CanvasRenderer</Filter>
+      <Filter>01. Utility\04. Component\08. CanvasRenderer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\GameObject_Event.h">
       <Filter>00. System\11. Event\Events</Filter>
@@ -343,13 +352,13 @@
       <Filter>01. Utility\02. Layer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI_Processor.h">
-      <Filter>01. Utility\04. Component\10. UI_Components</Filter>
+      <Filter>01. Utility\04. Component\9. UI_Components</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UIImage.h">
-      <Filter>01. Utility\04. Component\10. UI_Components</Filter>
+      <Filter>01. Utility\04. Component\9. UI_Components</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UIButton.h">
-      <Filter>01. Utility\04. Component\10. UI_Components</Filter>
+      <Filter>01. Utility\04. Component\9. UI_Components</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BuiltIn_GUID.h">
       <Filter>00. System\05. Resource\Asset</Filter>
@@ -364,16 +373,25 @@
       <Filter>00. System\03. Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Script.h">
-      <Filter>01. Utility\04. Component\06. Script</Filter>
+      <Filter>01. Utility\04. Component\03. Script</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Script_Processor.h">
-      <Filter>01. Utility\04. Component\06. Script</Filter>
+      <Filter>01. Utility\04. Component\03. Script</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Script_Handler.h">
-      <Filter>01. Utility\04. Component\06. Script</Filter>
+      <Filter>01. Utility\04. Component\03. Script</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Script_Register.h">
-      <Filter>01. Utility\04. Component\06. Script</Filter>
+      <Filter>01. Utility\04. Component\03. Script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera.h">
+      <Filter>01. Utility\04. Component\06. Environment\01. Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Light.h">
+      <Filter>01. Utility\04. Component\06. Environment\02. Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Environment_Processor.h">
+      <Filter>01. Utility\04. Component\06. Environment\00. Environment_Processor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -396,7 +414,7 @@
       <Filter>00. System\06. Log</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Collider.cpp">
-      <Filter>01. Utility\04. Component\02. Collider</Filter>
+      <Filter>01. Utility\04. Component\02. Physics</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Timer.cpp">
       <Filter>00. System\01. Timer</Filter>
@@ -474,28 +492,28 @@
       <Filter>01. Utility\03. Object\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\RectTransform.cpp">
-      <Filter>01. Utility\04. Component\08. RectTransform</Filter>
+      <Filter>01. Utility\04. Component\07. RectTransform</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\RectTransform_Processor.cpp">
-      <Filter>01. Utility\04. Component\08. RectTransform</Filter>
+      <Filter>01. Utility\04. Component\07. RectTransform</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\CanvasRenderer.cpp">
-      <Filter>01. Utility\04. Component\09. CanvasRenderer</Filter>
+      <Filter>01. Utility\04. Component\08. CanvasRenderer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\CanvasRenderer_Processor.cpp">
-      <Filter>01. Utility\04. Component\09. CanvasRenderer</Filter>
+      <Filter>01. Utility\04. Component\08. CanvasRenderer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\LayerHelper.cpp">
       <Filter>01. Utility\02. Layer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_Processor.cpp">
-      <Filter>01. Utility\04. Component\10. UI_Components</Filter>
+      <Filter>01. Utility\04. Component\9. UI_Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UIImage.cpp">
-      <Filter>01. Utility\04. Component\10. UI_Components</Filter>
+      <Filter>01. Utility\04. Component\9. UI_Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UIButton.cpp">
-      <Filter>01. Utility\04. Component\10. UI_Components</Filter>
+      <Filter>01. Utility\04. Component\9. UI_Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Editor_System.cpp">
       <Filter>00. System\07. Editor</Filter>
@@ -504,13 +522,22 @@
       <Filter>00. System\03. Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Script.cpp">
-      <Filter>01. Utility\04. Component\06. Script</Filter>
+      <Filter>01. Utility\04. Component\03. Script</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\CScript_Processor.cpp">
-      <Filter>01. Utility\04. Component\06. Script</Filter>
+      <Filter>01. Utility\04. Component\03. Script</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Script_Handler.cpp">
-      <Filter>01. Utility\04. Component\06. Script</Filter>
+      <Filter>01. Utility\04. Component\03. Script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera.cpp">
+      <Filter>01. Utility\04. Component\06. Environment\01. Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Light.cpp">
+      <Filter>01. Utility\04. Component\06. Environment\02. Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Environment_Processor.cpp">
+      <Filter>01. Utility\04. Component\06. Environment\00. Environment_Processor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -53,6 +53,8 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
     Engine::CGameObject* pGO = nullptr;
     Engine::CGameObject* pUO = nullptr;
     for (int i = 0; i < 1; ++i) {
+
+        for (int j = 0; j < 5; ++j)
         {
             pGO = SYS_GAMEOBJECT.Create_GameObject();
             pGO->Add_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
@@ -66,6 +68,8 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 
             auto tr1 = pGO->Get_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
             auto mr1 = pGO->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+
+            tr1->vPosition = { j * 2.f, j * 2.f, j * 2.f};
         }
 
         {

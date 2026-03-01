@@ -5,7 +5,7 @@
 
 NS_BEGIN(Engine)
 
-class CRender_Context final
+class ENGINE_DLL CRender_Context final
 {
 public:
     CRender_Context();

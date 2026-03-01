@@ -8,20 +8,20 @@ namespace Engine
 	enum class LAYER_TYPE		{ NONE, BACKGROUND, PLAYER, FLOOR, PARTICLE, MAX = 16, };
 
     /* ------ Component ------ */
-    enum class COMPONENT_TYPE : uint8_t {   TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, MESH_RENDERER, ANIMATOR, CAMERA, AUDIO_LISTENER, AUDIO_SOURCE,
+    enum class COMPONENT_TYPE : uint8_t {   TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, MESH_RENDERER, ANIMATOR, CAMERA, LIGHT, AUDIO_LISTENER, AUDIO_SOURCE,
                                             RECT_TRANSFORM, CANVAS_RENDERER, UI_IMAGE, UI_BUTTON, UI_TEXT, END };
     enum class PROCESSOR_ID : uint8_t
     {
-        SCRIPT,                // Script
         TRANSFORM,             // CTransform
-        RECT_TRANSFORM,        // CRectTransform
-        ANIMATION,             // Animator
-        CAMERA,                // Camera
+        PHYSICS,               // Collider / Rigidbody
+        SCRIPT,                // Script
         MESH_RENDERER,         // MeshRenderer
+        ANIMATION,             // Animator
+        ENVIRONMENT,           // Camera / Light
+        AUDIO,                 // AudioListener / AudioSource
+        RECT_TRANSFORM,        // CRectTransform
         CANVAS_RENDERER,       // CanvasRenderer
         UI,                    // UIImage / UIButton / UIText
-        PHYSICS,               // Collider / Rigidbody
-        AUDIO,                 // AudioListener / AudioSource
         END
     };
 
@@ -48,8 +48,11 @@ namespace Engine
     enum class ASSET_SRC : uint8_t          { FILE, BUILTIN };
 
     /* --- Scene --- */
-    enum class APP_MODE : uint8_t  { GAME_PLAY = 0, EDITOR_EDIT };
+    enum class APP_MODE : uint8_t           { GAME_PLAY = 0, EDITOR_EDIT };
     enum class SCENE_STATE : uint8_t        { PLAY = 0, PAUSE, EDIT };
+
+    /* --- Environment --- */
+    enum class LIGHT_TYPE : uint8_t         { DIRECTIONAL = 0, POINT, SPOT };
 
     /* ------ LOG ------ */
 	enum class SEVERITY_TYPE : uint8_t      { INFO, WARN, ERR, ASSERTION, END };

@@ -7,10 +7,12 @@
 #include "CRender_System.h"
 
 #include "GameObject.h"
+#include "CRender_System.h"
+#include "Render_Context.h"
+#include "Editor_System.h"
 
 NS_BEGIN(Editor)
-
-CScenePanel::CScenePanel(const std::string& strPanelName)
+    CScenePanel::CScenePanel(const std::string& strPanelName)
     : CEditorPanel(strPanelName)
 {
 }
@@ -21,13 +23,14 @@ HRESULT CScenePanel::Initialize(CHierarchyPanel* pHierarchy)
 {
     pHierarchy->m_OnPrimarySelectionChanged.Add_Listener(&CScenePanel::Set_Target, this);
 
+    SYS_EDITOR.Update_SceneView_State((_float)m_FIXEDW, (_float)m_FIXEDH);
+
     m_pGizmo = CGizmo::Create();
     return S_OK;
 }
 
 void CScenePanel::Update()
 {
-
 
 }
 
@@ -152,19 +155,10 @@ void CScenePanel::Draw_Viewport()
     if (!m_pTarget || !m_pData)
         return;
 
-    // TODO =====================================================
-    // TODO : 여기 카메라 진도 나가고 바꾸기
-    // TODO =====================================================
-    // UI_GLOBAL gUI = SYS_RENDER.Get_UI_Global();
-
-    // 일단 임시로
     const _matrix matWorld = Math::Load(m_pData->matWorld);
 
-    const _vector vEye = XMVectorSet(0.f, 5.f, -5.f, 0.f);
-    const _vector vAt = XMVectorSet(0.f, 0.f, 0.f, 0.f);
-    const _vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-    const _matrix matView = XMMatrixLookAtLH(vEye, vAt, vUp);
-    const _matrix matProj = XMMatrixPerspectiveFovLH(XM_PIDIV2, 16.0f / 9.0f, 0.01f, 1000.0f);
+    const _matrix matView =  Engine::Math::Load(SYS_RENDER.Contexts()->Get_View());
+    const _matrix matProj = Engine::Math::Load(SYS_RENDER.Contexts()->Get_Proj());
 
     _float view[16];
     _float proj[16];

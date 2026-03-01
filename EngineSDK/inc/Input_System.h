@@ -20,9 +20,15 @@ public:
         return m_tMouseState.rgbButtons[SCAST(_uint, eMouse)];
     }
 
-    long	Get_DIMouseMove(MOUSE_MOVE_AXIS eMouseState)
+    long Get_DIMouseMove(MOUSE_MOVE_AXIS eMouseState)
     {
-        return *(((long*)&m_tMouseState) + SCAST(_uint, eMouseState));
+        switch (eMouseState)
+        {
+        case MOUSE_MOVE_AXIS::HORIZONTAL: return m_tMouseState.lX;
+        case MOUSE_MOVE_AXIS::VERTICAL:   return m_tMouseState.lY;
+        case MOUSE_MOVE_AXIS::DEPTH:      return m_tMouseState.lZ;
+        default:                          return 0;
+        }
     }
 
     const POINT& Get_MousePos() const;

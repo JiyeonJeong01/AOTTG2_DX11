@@ -76,6 +76,8 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 
 void CRender_System::Priority_Update()
 {
+    bSubmittedThisFrame = false;
+
     m_matView = m_upRenderContext->Get_View();
     m_matProj = m_upRenderContext->Get_Proj();
     m_gUI = m_upRenderContext->Get_UI_Global();
@@ -309,6 +311,22 @@ void CRender_System::Render()
     m_pContext->RSSetState(m_rsNoScissor.Get());
     Build_RenderQueue();
     Execute_RenderQueue();
+}
+
+CRender_Context* CRender_System::Contexts()
+{
+    return m_upRenderContext.get();
+}
+
+_bool CRender_System::Submit_Camera(_fmatrix matView, _fmatrix matProj)
+{
+    if (bSubmittedThisFrame)
+        return false;
+
+    m_upRenderContext->Set_View(matView);
+    m_upRenderContext->Set_Proj(matProj);
+
+    return bSubmittedThisFrame = true;
 }
 
 const UI_GLOBAL& CRender_System::Get_UI_Global()

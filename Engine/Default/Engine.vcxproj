@@ -160,9 +160,12 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\BuiltIn_GUID.h" />
     <ClInclude Include="..\Public\CanvasRenderer.h" />
     <ClInclude Include="..\Public\CanvasRenderer_Processor.h" />
+    <ClInclude Include="..\Public\Camera.h" />
     <ClInclude Include="..\Public\CRender_System.h" />
     <ClInclude Include="..\Public\Editor_System.h" />
+    <ClInclude Include="..\Public\Environment_Processor.h" />
     <ClInclude Include="..\Public\LayerHelper.h" />
+    <ClInclude Include="..\Public\Light.h" />
     <ClInclude Include="..\Public\Render_Context.h" />
     <ClInclude Include="..\Public\SceneChange_Event.h" />
     <ClInclude Include="..\Public\Script.h" />
@@ -242,6 +245,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     </Text>
     <ClCompile Include="..\Private\Asset_Registry.cpp" />
     <ClCompile Include="..\Private\Base.cpp" />
+    <ClCompile Include="..\Private\Camera.cpp" />
     <ClCompile Include="..\Private\CanvasRenderer.cpp" />
     <ClCompile Include="..\Private\CanvasRenderer_Processor.cpp" />
     <ClCompile Include="..\Private\Collider.cpp" />
@@ -251,6 +255,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\CRender_System.cpp" />
     <ClCompile Include="..\Private\CScript_Processor.cpp" />
     <ClCompile Include="..\Private\Editor_System.cpp" />
+    <ClCompile Include="..\Private\Environment_Processor.cpp" />
     <ClCompile Include="..\Private\Event_System.cpp" />
     <ClCompile Include="..\Private\Core_System.cpp" />
     <ClCompile Include="..\Private\GameObject.cpp" />
@@ -260,6 +265,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\ISink.cpp" />
     <ClCompile Include="..\Private\GameObject_System.cpp" />
     <ClCompile Include="..\Private\LayerHelper.cpp" />
+    <ClCompile Include="..\Private\Light.cpp" />
     <ClCompile Include="..\Private\MaterialBuilder.cpp" />
     <ClCompile Include="..\Private\MeshBuilder.cpp" />
     <ClCompile Include="..\Private\MeshRenderer.cpp" />
