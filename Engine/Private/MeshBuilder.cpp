@@ -48,6 +48,46 @@ HRESULT CMeshBuilder::Create_Mesh(ID3D11Device* pDevice, const MESH_DESC& tDesc,
     outEntry.iIndexCount = tDesc.iIndexCnt;
     outEntry.eTopology = tDesc.eTopology;
     outEntry.iVBOffset = 0;
+
+    /* AABB 구하기 */
+    {
+        const uint8_t* base = reinterpret_cast<const uint8_t*>(tDesc.pVertices);
+
+        float fMinX = std::numeric_limits<float>::infinity();
+        float fMinY = std::numeric_limits<float>::infinity();
+        float fMinZ = std::numeric_limits<float>::infinity();
+        float fMaxX = -std::numeric_limits<float>::infinity();
+        float fMaxY = -std::numeric_limits<float>::infinity();
+        float fMaxZ = -std::numeric_limits<float>::infinity();
+
+        for (UINT i = 0; i < (UINT)tDesc.iVertexCnt; ++i)
+        {
+            const uint8_t* vptr = base + (size_t)i * (size_t)tDesc.iVertexStride;
+            const float* pos = reinterpret_cast<const float*>(vptr);
+
+            // pos[0]=x, pos[1]=y, pos[2]=z 라고 가정
+            const float x = pos[0];
+            const float y = pos[1];
+            const float z = pos[2];
+
+            fMinX = (x < fMinX) ? x : fMinX;
+            fMaxX = (x > fMaxX) ? x : fMaxX;
+
+            fMinY = (y < fMinY) ? y : fMinY;
+            fMaxY = (y > fMaxY) ? y : fMaxY;
+
+            fMinZ = (z < fMinZ) ? z : fMinZ;
+            fMaxZ = (z > fMaxZ) ? z : fMaxZ;
+        }
+
+        outEntry.minAABB = { fMinX, fMinY, fMinZ };
+        outEntry.maxAABB = { fMaxX, fMaxY, fMaxZ };
+    }
+
+
+
+
+
     return S_OK;
 }
 

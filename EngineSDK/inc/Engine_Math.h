@@ -201,6 +201,34 @@ namespace Math
         return out;
     }
 
+    inline _float3 Normalize(const _float3& v)
+    {
+        using namespace DirectX;
+        XMVECTOR vv = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&v));
+        vv = XMVector3Normalize(vv);
+
+        _float3 out{};
+        XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&out), vv);
+        return out;
+    }
+
+    inline _float3 TransformCoord(const _float3& p, _matrix m)
+    {
+        using namespace DirectX;
+        XMVECTOR vp = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&p));
+        XMVECTOR r = XMVector3TransformCoord(vp, m);
+
+        _float3 out{};
+        XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&out), r);
+        return out;
+    }
+
+    inline _matrix Matrix_Inverse(_matrix m)
+    {
+        using namespace DirectX;
+        return XMMatrixInverse(nullptr, m);
+    }
+
     inline _matrix Matrix_LookAtLH(const _float3& vEye, const _float3& vAt, const _float3& vUp)
     {
         using namespace DirectX;

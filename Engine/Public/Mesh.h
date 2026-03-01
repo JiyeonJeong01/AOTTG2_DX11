@@ -36,6 +36,8 @@ typedef struct ENGINE_DLL tagMeshEntry
 
     _uint                       iVBOffset = 0; /* usually 0 */
 
+    _float3                      minAABB{}, maxAABB{};
+
 public:
     _bool Is_Valid() const noexcept
     {
@@ -76,6 +78,12 @@ public:
         if (!pCtx || instanceCount == 0) return;
         const UINT cnt = (indexCount == 0) ? (UINT)iIndexCount : (UINT)indexCount;
         pCtx->DrawIndexedInstanced(cnt, instanceCount, (UINT)firstIndex, 0, 0);
+    }
+
+    void Get_Mesh_LocalAABB(_float3& outMin, _float3& outMax) const
+    {
+        outMin = minAABB;
+        outMax = maxAABB;
     }
 
 }MESH_ENTRY;

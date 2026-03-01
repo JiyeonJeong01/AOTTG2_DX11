@@ -148,6 +148,9 @@
     <Filter Include="01. Utility\04. Component\06. Environment\00. Environment_Processor">
       <UniqueIdentifier>{d0acda3e-d0c5-4252-bf78-c98f8c0d3827}</UniqueIdentifier>
     </Filter>
+    <Filter Include="00. System\02. Ray">
+      <UniqueIdentifier>{12b1fdc8-afe2-443f-82fe-3a583b45df56}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -393,6 +396,9 @@
     <ClInclude Include="..\Public\Environment_Processor.h">
       <Filter>01. Utility\04. Component\06. Environment\00. Environment_Processor</Filter>
     </ClInclude>
+    <ClInclude Include="Raycast.h">
+      <Filter>00. System\02. Ray</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -538,6 +544,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Environment_Processor.cpp">
       <Filter>01. Utility\04. Component\06. Environment\00. Environment_Processor</Filter>
+    </ClCompile>
+    <ClCompile Include="Raycast.cpp">
+      <Filter>00. System\02. Ray</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

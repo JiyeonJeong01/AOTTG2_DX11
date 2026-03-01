@@ -151,14 +151,39 @@ void CScenePanel::Draw_Viewport()
     ImVec2 vpPos = ImGui::GetItemRectMin();
     ImVec2 vpSize = ImGui::GetItemRectSize();
 
+
+
+
+    const _matrix matView =  Engine::Math::Load(SYS_RENDER.Contexts()->Get_View());
+    const _matrix matProj = Engine::Math::Load(SYS_RENDER.Contexts()->Get_Proj());
+
+    ImVec2 mouse = ImGui::GetMousePos();
+    const bool inside =
+        (mouse.x >= vpPos.x) && (mouse.y >= vpPos.y) &&
+        (mouse.x < vpPos.x + vpSize.x) && (mouse.y < vpPos.y + vpSize.y);
+
+    if (inside && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+    {
+        float u = (mouse.x - vpPos.x) / vpSize.x;
+        float v = (mouse.y - vpPos.y) / vpSize.y;
+
+        if (u < 0.f) u = 0.f; if (u > 0.999999f) u = 0.999999f;
+        if (v < 0.f) v = 0.f; if (v > 0.999999f) v = 0.999999f;
+
+        const _uint px = (_uint)(u * (float)m_FIXEDW);
+        const _uint py = (_uint)(v * (float)m_FIXEDH);
+
+        // 여기서 Editor에게 픽킹 요청
+        LOG_INFO("ScenePanel click inside viewport");
+        LOG_INFO("Pick request px=%u, py=%u, vpW=%u, vpH=%u", px, py, m_FIXEDW, m_FIXEDH);
+        SYS_EDITOR.Pick_SceneView(px, py, m_FIXEDW, m_FIXEDH);
+    }
+
     // 선택 없으면 끝
     if (!m_pTarget || !m_pData)
         return;
 
     const _matrix matWorld = Math::Load(m_pData->matWorld);
-
-    const _matrix matView =  Engine::Math::Load(SYS_RENDER.Contexts()->Get_View());
-    const _matrix matProj = Engine::Math::Load(SYS_RENDER.Contexts()->Get_Proj());
 
     _float view[16];
     _float proj[16];
@@ -184,6 +209,10 @@ void CScenePanel::Draw_Viewport()
     {
         CGizmo::Apply_World_To_TransformData(world, *m_pData);
     }
+
+
+
+
 }
 
 void CScenePanel::Set_Target(Engine::CGameObject* pObj)

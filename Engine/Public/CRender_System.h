@@ -23,6 +23,9 @@ public:
     const UI_GLOBAL&    Get_UI_Global();
     void                Set_UI_Global(const UI_GLOBAL& tUI);
 
+public:
+    const std::vector<DRAW_CMD>& Get_AllDrawCmds() const { return m_AllDrawCmds; }
+
 private:
     ID3D11Device* m_pDevice{};
     ID3D11DeviceContext* m_pContext{};

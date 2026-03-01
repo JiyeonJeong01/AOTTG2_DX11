@@ -237,8 +237,10 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Timer_System.h" />
     <ClInclude Include="..\Public\Transform.h" />
     <ClInclude Include="..\Public\Transform_Processor.h" />
+    <ClInclude Include="Raycast.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Raycast.cpp" />
     <Text Include="..\Docs\Script_Doc.md">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <FileType>Document</FileType>

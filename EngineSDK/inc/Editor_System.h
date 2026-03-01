@@ -6,6 +6,7 @@
 #include "Engine_Math.h" // 추가
 
 NS_BEGIN(Engine)
+class CTransform_Processor;
 
 class ENGINE_DLL CEditor_System final
 {
@@ -28,10 +29,14 @@ public:
 public:
     void Submit_SceneViewCamera();
     void Update_SceneView_State(_float fWidth, _float fHeight);
+    void Pick_SceneView(_uint px, _uint py, _uint vpW, _uint vpH);
 
 private: /* SceneView Camera */
     void Build_SceneView_Matrices();
     void Update_Input(_float fDT);
+
+    void Set_Selection_Object(OBJECT_HANDLE hObj) { m_hSelectedObject = hObj; }
+    OBJECT_HANDLE Get_Selection_Object() const { return m_hSelectedObject; }
 
 private:
     std::filesystem::path   m_pathAsset{};
@@ -61,6 +66,10 @@ private:
 
     _float m_fMouseSens = 3.f;
 
+
+    /* 에디터에서 마우스 피킹 */
+    CTransform_Processor* m_pTransform_Processor{};
+    OBJECT_HANDLE m_hSelectedObject{};
 };
 
 NS_END
