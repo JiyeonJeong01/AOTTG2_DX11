@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "EditorPanel.h"
 #include "Event.h"
+#include "GameObject_Event.h"
 
 NS_BEGIN(Engine)
 class CGameObject;
@@ -35,7 +36,8 @@ public :
     void Set_Selection_Range(Engine::CGameObject* pFrom, Engine::CGameObject* pTo); /* Shift */
     void Clear_Selection();
 
-    bool Is_Selected(Engine::CGameObject* pObj) const;
+    _bool Is_Selected(Engine::CGameObject* pObj) const;
+    void On_PickedObject(Engine::GAMEOBJECT_EVENT_DATA& tEvent);
 
     /* Rename object */
     void Begin_Rename(Engine::CGameObject* pObj);

@@ -66,6 +66,6 @@ namespace Engine
     enum class STATE : uint8_t { RIGHT, UP, LOOK, POSITION, END };
     enum class SPACE : uint8_t { WORLD, LOCAL, END };
     enum class Geometry : uint8_t { Rect, Circle, Cube, Sphere };
-    enum class EVENT_TYPE : uint8_t { None, On_GameObject_Created, On_GameObject_Destroyed, On_Scene_Changed, On_Window_Resize };
+    enum class EVENT_TYPE : uint8_t { None, GameObject, On_GameObject_Created, On_GameObject_Destroyed, On_Scene_Changed, On_Window_Resize };
 }
 #endif // Engine_Enum_h__

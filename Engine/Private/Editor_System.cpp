@@ -13,6 +13,8 @@
 #include "Transform_Processor.h"
 #include "Resource_System.h"
 #include "Mesh.h"
+#include "GameObject_System.h"
+#include "Engine_Math.h"
 
 IMPLEMENT_SINGLETON(CEditor_System)
 
@@ -36,7 +38,6 @@ HRESULT CEditor_System::Initialize(const std::filesystem::path& assetRoot)
     m_bCalculAcc = true;
 	m_fMouseSens = 0.0025f;
 
-	// Transform processor 접근 (지연님 코드 스타일대로)
 	CComponent_Processor* pBase = nullptr;
 	SYS_COMPONENT.Bind_ComponentProcessor(COMPONENT_TYPE::TRANSFORM, &pBase);
 	IF_NULL_RETURN_MSG_BREAK(pBase, E_FAIL, "Transform processor bind failed");
@@ -157,50 +158,51 @@ void CEditor_System::Update_SceneView_State(_float fWidth, _float fHeight)
     Engine::Math::Store(m_matCamProj, matProj);
 }
 
-
-// CEditor_System.cpp
-
-static inline bool Ray_AABB(const _float3& o, const _float3& d, const _float3& bmin, const _float3& bmax, float* outT)
+/* Editor 마우스 피킹은 Ray <-> AABB */
+static inline bool Ray_AABB(const _float3& vOrigin, const _float3& vDir, const _float3& vMin, const _float3& vMax, _float* fOutT)
 {
-	float tmin = 0.f;
-	float tmax = FLT_MAX;
+	_float tMin = 0.f;
+	_float tMax = FLT_MAX;
 
-	auto slab = [&](float o1, float d1, float mn, float mx) -> bool
+    /* ----------------------------------------- SLAB 알고리즘 ----------------------------------------- */
+    /* 상자를 X, Y, Z 축과 평행한 공간으로 보고, 광선이 각 축의 평면 쌍을 구하는 구간 tMin, tMax르 구한다. */
+    /* 세 축 모두 공통적으로 겹치는 구간이 있으면, 광선은 상자를 통과한다. */
+	auto slab = [&](float o1, float d1, float mn, float mx) -> _bool
 		{
 			if (fabsf(d1) < 1e-8f)
 				return (o1 >= mn && o1 <= mx);
 
-			float invD = 1.f / d1;
-			float t1 = (mn - o1) * invD;
-			float t2 = (mx - o1) * invD;
+			_float invD = 1.f / d1;
+			_float t1 = (mn - o1) * invD;
+			_float t2 = (mx - o1) * invD;
 			if (t1 > t2) { float tmp = t1; t1 = t2; t2 = tmp; }
 
-			if (t1 > tmin) tmin = t1;
-			if (t2 < tmax) tmax = t2;
-			return tmin <= tmax;
+			if (t1 > tMin) tMin = t1;
+			if (t2 < tMax) tMax = t2;
+			return tMin <= tMax;
 		};
 
-	if (!slab(o.x, d.x, bmin.x, bmax.x)) return false;
-	if (!slab(o.y, d.y, bmin.y, bmax.y)) return false;
-	if (!slab(o.z, d.z, bmin.z, bmax.z)) return false;
+	if (!slab(vOrigin.x, vDir.x, vMin.x, vMax.x)) return false;
+	if (!slab(vOrigin.y, vDir.y, vMin.y, vMax.y)) return false;
+	if (!slab(vOrigin.z, vDir.z, vMin.z, vMax.z)) return false;
 
-	if (outT) *outT = tmin;
+	if (fOutT) *fOutT = tMin;
 	return true;
 }
 
-static inline void Transform_AABB_World(const _float3& localMin, const _float3& localMax, const _matrix& matWorld, _float3& outMin, _float3& outMax)
+static inline void Transform_AABB_World(const _float3& vLocalMin, const _float3& vLocalMax, const _matrix& matWorld, _float3& outMin, _float3& outMax)
 {
-	// 8 코너를 월드로 변환해서 다시 AABB로 감쌉니다. (간단/안전)
+	/* 로컬의 AABB -> 월드의 AABB */
 	_float3 corners[8] =
 	{
-		{ localMin.x, localMin.y, localMin.z },
-		{ localMax.x, localMin.y, localMin.z },
-		{ localMin.x, localMax.y, localMin.z },
-		{ localMax.x, localMax.y, localMin.z },
-		{ localMin.x, localMin.y, localMax.z },
-		{ localMax.x, localMin.y, localMax.z },
-		{ localMin.x, localMax.y, localMax.z },
-		{ localMax.x, localMax.y, localMax.z },
+		{ vLocalMin.x, vLocalMin.y, vLocalMin.z },
+		{ vLocalMax.x, vLocalMin.y, vLocalMin.z },
+		{ vLocalMin.x, vLocalMax.y, vLocalMin.z },
+		{ vLocalMax.x, vLocalMax.y, vLocalMin.z },
+		{ vLocalMin.x, vLocalMin.y, vLocalMax.z },
+		{ vLocalMax.x, vLocalMin.y, vLocalMax.z },
+		{ vLocalMin.x, vLocalMax.y, vLocalMax.z },
+		{ vLocalMax.x, vLocalMax.y, vLocalMax.z },
 	};
 
 	outMin = { FLT_MAX,  FLT_MAX,  FLT_MAX };
@@ -221,20 +223,15 @@ static inline void Transform_AABB_World(const _float3& localMin, const _float3& 
 
 void CEditor_System::Pick_SceneView(_uint px, _uint py, _uint vpW, _uint vpH)
 {
-	// 0) 레이 만들기: SceneView 카메라(m_matCamView/m_matCamProj) 기준
+	/* Ray 생성 */
 	const float ndcX = (2.0f * (((float)px + 0.5f) / (float)vpW)) - 1.0f;
 	const float ndcY = 1.0f - (2.0f * (((float)py + 0.5f) / (float)vpH));
 
-	// 지연님 Math 유틸에 "inv(view*proj) + TransformCoord" 조합이 없으면,
-	// 기존에 쓰시는 XM 기반 inverse/transform 함수로 치환하시면 됩니다.
 	const _matrix V = Engine::Math::Load(m_matCamView);
 	const _matrix P = Engine::Math::Load(m_matCamProj);
 
-	// 여기 inverse 함수 이름은 지연님 엔진에 맞춰 바꿔주세요.
+	/* Inverse */
 	const _matrix invVP = Engine::Math::Matrix_Inverse(V * P);
-
-	const _float4 nearNdc = { ndcX, ndcY, 0.f, 1.f };
-	const _float4 farNdc = { ndcX, ndcY, 1.f, 1.f };
 
 	const _float3 pNear = Engine::Math::TransformCoord(_float3{ ndcX, ndcY, 0.f }, invVP);
 	const _float3 pFar = Engine::Math::TransformCoord(_float3{ ndcX, ndcY, 1.f }, invVP);
@@ -243,40 +240,29 @@ void CEditor_System::Pick_SceneView(_uint px, _uint py, _uint vpW, _uint vpH)
 	_float3 rayDir = { pFar.x - pNear.x, pFar.y - pNear.y, pFar.z - pNear.z };
 	rayDir = Engine::Math::Normalize(rayDir);
 
-	LOG_INFO("Ray o=(%.2f, %.2f, %.2f), d=(%.2f, %.2f, %.2f)",
-		rayOrigin.x, rayOrigin.y, rayOrigin.z,
-		rayDir.x, rayDir.y, rayDir.z);
-
-	// 1) 후보는 "그려진 것들"만: m_AllDrawCmds
+	/* 충돌 대상은 그려진 것들로 한정한다 : Render_System의 m_AllDrawCmds  */
 	const auto& cmds = SYS_RENDER.Get_AllDrawCmds();
 
-	float bestT = FLT_MAX;
+	_float bestT = FLT_MAX;
 	COMPONENT_HANDLE bestTransform = INVALID_HANDLE;
 	uint32_t bestMesh = 0;
-
-	LOG_INFO("DrawCmd count = %u", (_uint)cmds.size());
-	_uint hitCount = 0;
 
 	for (const auto& cmd : cmds)
 	{
 		if (cmd.kind != DRAW_TYPE::MESH)
 			continue;
 
-		// UI/기타 레이어 제외하고 싶으면 여기서 거르세요.
-		// if (cmd.eLayer == RENDER_LAYER::UI) continue;
-
 		const COMPONENT_HANDLE hTr = cmd.mesh.hTransform;
 		if (hTr == INVALID_HANDLE)
 			continue;
 
-		// (A) 월드 행렬 얻기: 기존에 쓰시던 proxy 방식 그대로
+		/* 월드 행렬 */
 		const auto tr = m_pTransform_Processor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, hTr);
 		if (!tr.Is_Valid())
 			continue;
-
 		const _matrix matWorld = Engine::Math::Load(tr->matWorld);
 
-		// (B) 로컬 AABB 얻기 (메시에 min/max가 있어야 합니다)
+		/* 로컬 AABB 얻기 : MESH_ENTRY의 min, max 이용 */
 		_float3 localMin{}, localMax{};
 		const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(cmd.mesh.hMesh);
 		if (!pMesh)
@@ -284,11 +270,11 @@ void CEditor_System::Pick_SceneView(_uint px, _uint py, _uint vpW, _uint vpH)
 
 		pMesh->Get_Mesh_LocalAABB(localMin, localMax);
 
-		// (C) 월드 AABB로 변환
+		/* 월드 AABB로 변환 */
 		_float3 worldMin{}, worldMax{};
 		Transform_AABB_World(localMin, localMax, matWorld, worldMin, worldMax);
 
-		// (D) 레이-AABB
+		/* 레이-AABB */
 		float tHit = 0.f;
 		if (!Ray_AABB(rayOrigin, rayDir, worldMin, worldMax, &tHit))
 			continue;
@@ -296,30 +282,32 @@ void CEditor_System::Pick_SceneView(_uint px, _uint py, _uint vpW, _uint vpH)
 
 		if (tHit < bestT)
 		{
-			++hitCount;
-
 			bestT = tHit;
 			bestTransform = hTr;
 			bestMesh = cmd.mesh.hMesh;
 		}
 	}
-	LOG_INFO("HitCount = %u", hitCount);
-	if (bestTransform != INVALID_HANDLE)
+
+    if (bestTransform != INVALID_HANDLE)
 	{
 		const auto tr = m_pTransform_Processor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, bestTransform);
 		IF_TRUE_RETURN_MSG_BREAK(!tr.Is_Valid(), , "Picked transform proxy invalid.");
 
 		OBJECT_HANDLE hObj = tr->hObject;
-		Set_Selection_Object(hObj);
-
-		LOG_INFO("Picked: hTransform=%u, hMesh=%u, t=%.2f",
-			bestTransform.Get_Index(),
-			bestMesh,
-			bestT);
+        if (m_hSelectedObject != hObj) /* 새 오브젝트 피킹 */
+        {
+            CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(hObj);
+            IF_NULL_RETURN_MSG_BREAK(pObj, , "ERROR : Picked obj is nullptr.");
+            GAMEOBJECT_EVENT_DATA go{ EVENT_TYPE::GameObject, pObj };
+            m_OnPicking.Invoke(go);
+        }
 	}
-	else
+	else if (m_hSelectedObject.Is_Valid())
 	{
-		Set_Selection_Object(OBJECT_HANDLE{});
+        m_hSelectedObject = OBJECT_HANDLE{};
+
+        GAMEOBJECT_EVENT_DATA go{ EVENT_TYPE::GameObject, nullptr };
+        m_OnPicking.Invoke(go);
 	}
 }
 
@@ -350,22 +338,26 @@ void CEditor_System::Update_Input(_float fDT)
 	const long dx = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::HORIZONTAL);
 	const long dy = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::VERTICAL);
 
-	m_fYaw += SCAST(_float, dx) * m_fMouseSens;
-	m_fPitch += SCAST(_float, dy) * m_fMouseSens;
+    if (SYS_INPUT.Get_Key(VK_RBUTTON))
+    {
+        m_fYaw += SCAST(_float, dx) * m_fMouseSens;
+        m_fPitch += SCAST(_float, dy) * m_fMouseSens;
 
-	/* Pitch 제한 */
-	const _float limit = 1.55334306f; // 약 89도(라디안)
-	if (m_fPitch > limit) m_fPitch = limit;
-	if (m_fPitch < -limit) m_fPitch = -limit;
+        /* Pitch 제한 */
+        const _float limit = 1.55334306f;
+        if (m_fPitch > limit) m_fPitch = limit;
+        if (m_fPitch < -limit) m_fPitch = -limit;
+    }
 
 	/* ----------------------------- 이동 입력 ----------------------------- */
 
-	/* 현재 카메라 회전으로 로컬 축 만들기 : 반드시 Build_SceneView_Matrices와 동일해야 한다. */ 
+	/* 현재 카메라 회전으로 로컬 축 만들기
+	 * NOTE ! 반드시 Build_SceneView_Matrices와 동기화해줘야 한다. */ 
 	const _matrix matRot = Math::Load(Math::RotationRollPitchYaw(m_fPitch, m_fYaw, 0.f));
 
-	const _float3 vForward = Engine::Math::TransformNormal(_float3{ 0.f, 0.f, 1.f }, matRot); /* Look(Z+) */ 
-	const _float3 vRight = Engine::Math::TransformNormal(_float3{ 1.f, 0.f, 0.f }, matRot); /* Right(X+) */ 
-	const _float3 vUp = Engine::Math::TransformNormal(_float3{ 0.f, 1.f, 0.f }, matRot); /* Up(Y+) */ 
+	const _float3 vForward = Engine::Math::TransformNormal(_float3{ 0.f, 0.f, 1.f }, matRot);   /* Look(Z+) */ 
+	const _float3 vRight = Engine::Math::TransformNormal(_float3{ 1.f, 0.f, 0.f }, matRot);     /* Right(X+) */ 
+	const _float3 vUp = Engine::Math::TransformNormal(_float3{ 0.f, 1.f, 0.f }, matRot);        /* Up(Y+) */ 
 
 	_float3 vMove = { 0.f, 0.f, 0.f };
 

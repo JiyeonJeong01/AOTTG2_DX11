@@ -5,6 +5,7 @@
 #include "GameObject_System.h"
 #include "Asset_Registry.h"
 #include "Prototype_Handler.h"
+#include "Editor_System.h"
 
 NS_BEGIN(Editor)
 
@@ -23,6 +24,8 @@ HRESULT CHierarchyPanel::Initialize()
 
     std::filesystem::path assetsRoot = Engine::ProjectConfig::PATH + Engine::ProjectConfig::ROOT;
     m_PrototypePath = assetsRoot / "Prototypes";
+
+    SYS_EDITOR.Subscribe(&CHierarchyPanel::On_PickedObject, this);
 
     return S_OK;
 }
@@ -82,6 +85,11 @@ const std::vector<Engine::CGameObject*>& CHierarchyPanel::Get_Selection() const
 bool CHierarchyPanel::Is_Selected(Engine::CGameObject* pObj) const
 {
     return std::find(m_selection.begin(), m_selection.end(), pObj) != m_selection.end();
+}
+
+void CHierarchyPanel::On_PickedObject(Engine::GAMEOBJECT_EVENT_DATA & tEvent)
+{
+    Set_Selection_Single(tEvent.m_pGameObject);
 }
 
 void CHierarchyPanel::Set_Selection_Single(Engine::CGameObject* pObj)

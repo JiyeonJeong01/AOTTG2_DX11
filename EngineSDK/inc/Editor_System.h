@@ -3,19 +3,22 @@
 #include "Base.h"
 
 #include "BuiltIn_GUID.h"
-#include "Engine_Math.h" // 추가
+#include "Event.h"
+#include "GameObject_Event.h"
 
 NS_BEGIN(Engine)
 class CTransform_Processor;
+class CGameObject;
 
 class ENGINE_DLL CEditor_System final
 {
     DECLARE_SINGLETON(CEditor_System)
 
 public:
-    HRESULT Initialize(const std::filesystem::path& assetRoot); \
+    HRESULT Initialize(const std::filesystem::path& assetRoot);
         void    Update(_float fDT);
 
+/* -------------------- Scene -------------------- */
 public:
     ASSET_GUID Ensure_DefaultScene();
     ASSET_GUID Create_NewScene_Asset(std::filesystem::path* outPath = nullptr);
@@ -26,24 +29,31 @@ public:
     void        Pause();
     void        Step(_float fDT);
 
-public:
+/* ---------------- SceneView Camera ---------------- */
+public:  
     void Submit_SceneViewCamera();
     void Update_SceneView_State(_float fWidth, _float fHeight);
-    void Pick_SceneView(_uint px, _uint py, _uint vpW, _uint vpH);
 
 private: /* SceneView Camera */
     void Build_SceneView_Matrices();
     void Update_Input(_float fDT);
 
-    void Set_Selection_Object(OBJECT_HANDLE hObj) { m_hSelectedObject = hObj; }
-    OBJECT_HANDLE Get_Selection_Object() const { return m_hSelectedObject; }
+/* -------------------- 마우스 피킹 ------------------- */
+public :
+    void Pick_SceneView(_uint px, _uint py, _uint vpW, _uint vpH);
+    template<typename T>
+    ListenerID Subscribe(void(T::* func)(GAMEOBJECT_EVENT_DATA&), T* obj)
+    {
+        return m_OnPicking.Add_Listener(func, obj);
+    }
 
+/* -------------------- Scene -------------------- */
 private:
     std::filesystem::path   m_pathAsset{};
     class CScene* m_pCurScene{};
 
+/* -------------------- SceneView camera -------------------- */
 private:
-    // ----- Editor free camera state (minimal) -----
     _float4x4   m_matCamView{};
     _float4x4   m_matCamProj{};
 
@@ -56,20 +66,21 @@ private:
     _float      m_fNear = 0.1f;
     _float      m_fFar = 1000.f;
 
-    // 이동 입력/가속 관련
-    _float   m_fCamAcc = 1.f, m_fCamSpeed = 3.f;     // 가속도(초당 속도 변화량)
-    _float   m_fCamDamping = 10.f; // 감속(클수록 빨리 멈춤)
-    _float3  m_vCamVel = { 0.f, 0.f, 0.f }; // 현재 카메라 속도
+    /* 이동 입력/가속 관련 */ 
+    _float   m_fCamAcc = 1.f, m_fCamSpeed = 3.f;
+    _float   m_fCamDamping = 10.f;
+    _float3  m_vCamVel = { 0.f, 0.f, 0.f };
 
-    // 회전 입력 관련
-    _bool    m_bRMBDown = false, m_bCalculAcc = true;   // 우클릭 드래그 회전용 (원하시면 조건 변경 가능)
+    /* 회전 입력 관련 */
+    _bool    m_bCalculAcc = true; 
 
     _float m_fMouseSens = 3.f;
 
-
-    /* 에디터에서 마우스 피킹 */
-    CTransform_Processor* m_pTransform_Processor{};
-    OBJECT_HANDLE m_hSelectedObject{};
+/* -------------------- SceneView camera -------------------- */
+private :
+    CTransform_Processor*           m_pTransform_Processor{};
+    OBJECT_HANDLE                   m_hSelectedObject{};
+    CEvent<GAMEOBJECT_EVENT_DATA&>   m_OnPicking{};
 };
 
 NS_END
