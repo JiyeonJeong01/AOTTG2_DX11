@@ -503,6 +503,7 @@ HRESULT CGameObject_System::Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& out
             continue;
         auto tData = m_dataPool[i];
 
+        /* 값 채워 넣기 */
         SCENE_OBJECT_SPEC spec;
         spec.uuid = Get_UUID(pObj);
         spec.name = pObj->Get_Label();
@@ -510,8 +511,10 @@ HRESULT CGameObject_System::Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& out
         spec.parent = pObj->Get_Parent() == nullptr ? INSTANCE_UUID{} : Get_UUID(pObj->Get_Parent());
         spec.layer = pObj->Get_Layer();
         spec.protoGuid = tData.tProtoGUID;
-
         Component::COMPONENT_MASK mask = pObj->Get_ComponentMask();
+
+        spec.hasMask = 0;
+
         for (_uint j = 0; j < COMPONENT_MAX; ++j)
         {
             if ((mask & Component::Component_Bit(INT_TO_COM(j))) == 0)
@@ -519,13 +522,23 @@ HRESULT CGameObject_System::Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& out
 
             vector<COMPONENT_HANDLE> hComponents;
             SYS_COMPONENT.Get_Component_Handle_By_Type(INT_TO_COM(j), pObj->Get_Handle(), hComponents);
+
+            /* 같은 타입 슬롯에 Primary + Extras 모두 담는다 */ 
+            auto& vSlot = spec.overrides.components[j];
+            vSlot.clear();
+            vSlot.reserve(hComponents.size());
+
             for (auto hCom : hComponents)
-                spec.overrides.components[j] =  SYS_COMPONENT.Build_Spec_By_Type(INT_TO_COM(j), hCom);
-            __noop;
+            {
+                vSlot.emplace_back(SYS_COMPONENT.Build_Spec_By_Type(INT_TO_COM(j), hCom));
+            }
+
+            /* 마스킹 */
+            if (!vSlot.empty())
+                spec.hasMask |= Component::Component_Bit(INT_TO_COM(j));
         }
 
         outSpecs.emplace_back(std::move(spec));
-
     }
     return S_OK;
 }

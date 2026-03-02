@@ -32,7 +32,7 @@ void CPrototype_Handler::Clear()
     m_Prototypes.clear();
 }
 
-/* Create and Register a master prototype using the new asset GUID and register it to the system for future cloning */
+/* Asset_Regigstry::Distribute_Assets_To_Handlers 에서 프로토타입 캐싱을 위해 호출된다. */
 HRESULT CPrototype_Handler::Register_Prototype(const ASSET_GUID& tGUID, PROTOTYPE_SPEC&& spec)
 {
     if (!tGUID.Is_Valid()) return E_FAIL;
@@ -91,7 +91,8 @@ CGameObject* CPrototype_Handler::Clone(const ASSET_GUID& tGUID, Layer::LAYER_ID 
     return pProto->Clone(iLayer, strName, tUUID);
 }
 
-
+/* Editor에서 프로토타입 생성 시 호출된다 */
+/* 원본 오브젝트를 반영하여 PROTOTYPE_SPEC을 작성한 뒤, 새로운 GUID를 만들어 시스템에 등록한다. */
 _bool CPrototype_Handler::Create_Prototype_Spec(CGameObject* pObj)
 {
     IF_TRUE_RETURN_MSG_BREAK(!pObj || !pObj->Is_Valid(), false, "Invalid pObj");
@@ -104,31 +105,49 @@ _bool CPrototype_Handler::Create_Prototype_Spec(CGameObject* pObj)
     if (!Save_PrototypeFile(tSpec, savePath))
         return false;
 
-    return SYS_ASSET.Register_File_Asset(savePath, ASSET_TYPE::PROTOTYPE, ASSET_GUID::New_GUID());
+    ASSET_GUID newGUID = ASSET_GUID::New_GUID();
+
+    _bool bSuccess = SYS_ASSET.Register_File_Asset(savePath, ASSET_TYPE::PROTOTYPE, newGUID);
+    IF_TRUE_RETURN_MSG_BREAK(!bSuccess, false, "Register_File_Asset failed");
+
+    IF_TRUE_RETURN_MSG_BREAK(Load_Prototype_From_GUID(newGUID), false, "Load_Prototype_From_GUID failed");
+
+    return true;
 }
 
+/* Editor에서 프로토타입 생성 시 호출된다 : CPrototype_Handler::Create_Prototype_Spec() -> */
 void CPrototype_Handler::Build_PrototypeSpec_From_Object(CGameObject* pObj, PROTOTYPE_SPEC& outSpec)
 {
     outSpec.strName = pObj->Get_Label();
     outSpec.isUI = pObj->Get_Handle().Is_UI();
+    outSpec.tComponentBundle.Clear_All();
+    outSpec.vecChildren.clear();
 
     Component::COMPONENT_MASK mask = pObj->Get_ComponentMask();
     for (_uint i = 0; i < COMPONENT_MAX; ++i)
     {
-        if ((mask & Component::Component_Bit(INT_TO_COM(i))) != 0)
+        if ((mask & Component::Component_Bit(INT_TO_COM(i))) == 0)
+            continue;
+
+        vector<COMPONENT_HANDLE> hComponents;
+        SYS_COMPONENT.Get_Component_Handle_By_Type(INT_TO_COM(i), pObj->Get_Handle(), hComponents);
+
+        auto& vOut = outSpec.tComponentBundle.components[i];
+        vOut.clear();
+        vOut.reserve(hComponents.size());
+
+        for (auto hCom : hComponents)
         {
-            vector<COMPONENT_HANDLE> hComponents;
-            SYS_COMPONENT.Get_Component_Handle_By_Type(INT_TO_COM(i), pObj->Get_Handle(), hComponents);
-
-            for (auto hCom : hComponents)
-                outSpec.tComponentBundle.components[i] = SYS_COMPONENT.Build_Spec_By_Type(INT_TO_COM(i), hCom);
-
-            __noop;
+            vOut.emplace_back(SYS_COMPONENT.Build_Spec_By_Type(INT_TO_COM(i), hCom));
         }
+
+        __noop;
     }
 
     /* 자식 재귀로 채우기 */
     const auto& pChildren = pObj->Get_Children();
+    outSpec.vecChildren.reserve(pChildren.size());
+
     for (auto* pChild : pChildren)
     {
         PROTOTYPE_SPEC childSpec;
@@ -165,22 +184,28 @@ json CPrototype_Handler::Serialize_PrototypeSpec(const PROTOTYPE_SPEC& tSpec)
     j["name"] = tSpec.strName;
     j["isUI"] = tSpec.isUI;
 
-    /* 컴포넌트 직렬화 */
+    /* 컴포넌트 직렬화 (2차원: [COMPONENT_MAX][N]) */
     json jComponents = json::array();
-    for (const auto& pSpec : tSpec.tComponentBundle.components) // COMPONENT_SPEC_BUNDLE 순회
+
+    for (uint32_t i = 0; i < SCAST(uint32_t, COMPONENT_MAX); ++i)
     {
-        if (!pSpec)
-            continue;
+        json jSlot = json::array();
 
-        json jc;
-        jc["type"] = (uint32_t)pSpec->Get_Type();
+        const auto& vSpecs = tSpec.tComponentBundle.components[i];
+        for (const auto& pSpec : vSpecs)
+        {
+            if (!pSpec) continue;
 
-        json payload;
-        pSpec->ToJson(payload);
-        jc["data"] = payload;
+            json jEntry;
+            json payload;
+            pSpec->ToJson(payload);
+            jEntry["data"] = std::move(payload);
+            jSlot.push_back(std::move(jEntry));
+        }
 
-        jComponents.push_back(std::move(jc));
+        jComponents.push_back(std::move(jSlot)); // 이게 핵심
     }
+
     j["components"] = std::move(jComponents);
 
     if (!tSpec.vecChildren.empty())
@@ -195,6 +220,7 @@ json CPrototype_Handler::Serialize_PrototypeSpec(const PROTOTYPE_SPEC& tSpec)
 
     return j;
 }
+
 
 /* =========================================================
  * Load & Deserialize
@@ -243,34 +269,48 @@ _bool CPrototype_Handler::Deserialize_PrototypeSpec(const json& j, PROTOTYPE_SPE
     outSpec.isUI = j.value("isUI", false);
 
     /* 컴포넌트 번들 초기화 */
-    outSpec.tComponentBundle.components.clear();
+    outSpec.tComponentBundle.Clear_All();
 
     if (j.contains("components") && j["components"].is_array())
     {
-        for (const auto& jc : j["components"])
+        const auto& jComponents = j["components"];
+
+        const uint32_t iCount = SCAST(uint32_t, jComponents.size());
+        const uint32_t iMax = SCAST(uint32_t, COMPONENT_MAX);
+        const uint32_t iLoop = (iCount < iMax) ? iCount : iMax;
+
+        for (uint32_t i = 0; i < iLoop; ++i)
         {
-            const auto iComIdx = jc.value("type", (uint32_t)COMPONENT_TYPE::END);
-            const auto eComType = (COMPONENT_TYPE)iComIdx;
+            const COMPONENT_TYPE eComType = INT_TO_COM(i);
 
-            if (eComType >= COMPONENT_TYPE::END) continue;
-            if (!jc.contains("data")) continue;
-
-            auto spec = Create_Spec_By_Type(eComType);
-
-            if (!spec)
-            {
-                _DEBUG_ERROR_BREAK("Unknown prototype spec type=%u", iComIdx);
+            const auto& jSlot = jComponents[i];
+            if (!jSlot.is_array())
                 continue;
-            }
 
-            if (!spec->FromJson(jc["data"]))
+            auto& vOut = outSpec.tComponentBundle.components[i];
+            vOut.clear();
+            vOut.reserve(jSlot.size());
+
+            for (const auto& jEntry : jSlot)
             {
-                _DEBUG_ERROR_BREAK("Prototype Spec FromJson failed; type=%u", iComIdx);
-                continue;
-            }
+                if (!jEntry.contains("data"))
+                    continue;
 
-            // 배열의 정해진 위치(Type 인덱스)에 스펙 저장
-            outSpec.tComponentBundle.components.push_back(std::move(spec));
+                auto spec = Create_Spec_By_Type(eComType);
+                if (!spec)
+                {
+                    _DEBUG_ERROR_BREAK("Unknown prototype spec type=%u", i);
+                    continue;
+                }
+
+                if (!spec->FromJson(jEntry["data"]))
+                {
+                    _DEBUG_ERROR_BREAK("Prototype Spec FromJson failed; type=%u", i);
+                    continue;
+                }
+
+                vOut.emplace_back(std::move(spec));
+            }
         }
     }
 
@@ -300,6 +340,7 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CPrototype_Handler::Create_Spec_By_Type(COM
     case COMPONENT_TYPE::RECT_TRANSFORM: return std::make_unique<RECTTRANSFORM_SPEC>();
     case COMPONENT_TYPE::CANVAS_RENDERER: return std::make_unique<CANVAS_RENDERER_SPEC>();
     case COMPONENT_TYPE::MESH_RENDERER: return std::make_unique<MESH_RENDERER_SPEC>();
+    case COMPONENT_TYPE::SCRIPT: return std::make_unique<SCRIPT_SPEC>();
     /* TODO : 컴포넌트 추가 시  */
     default:
         return nullptr;

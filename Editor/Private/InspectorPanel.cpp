@@ -416,9 +416,7 @@ void CInspectorPanel::Draw_CurrentComponents()
         COMPONENT_TYPE eType = (COMPONENT_TYPE)i;
         Draw_ComponentByType(eType);
     }
-
 }
-
 
 void CInspectorPanel::Draw_AddComponentPopup()
 {
@@ -652,6 +650,7 @@ void CInspectorPanel::Draw_MeshRenderer()
 
     ImGui::TreePop();
 }
+
 void CInspectorPanel::Draw_CanvasRenderer()
 {
     CCanvasRenderer cr = m_pTarget->Get_Component<CCanvasRenderer>();
@@ -697,7 +696,7 @@ void CInspectorPanel::Draw_CanvasRenderer()
 
     bool bChanged = false;
 
-    // (선택) 비활성화면 아래 UI 회색 + 입력 막기
+    // 비활성화면 아래 UI 회색 + 입력 막기
     if (pData->bEnable == 0)
         ImGui::BeginDisabled();
 
@@ -786,11 +785,45 @@ void CInspectorPanel::Draw_CanvasRenderer()
 
 void CInspectorPanel::Draw_Script()
 {
-    CScript sc = m_pTarget->Get_Component<CScript>();
-    if (!sc.Is_Valid())
+    if (!m_pTarget)
         return;
 
-    SCRIPT_DATA* pData = sc._Data();
+    auto vecScripts = m_pTarget->Get_Components<CScript>();
+    if (vecScripts.empty())
+        return;
+
+    for (size_t i = 0; i < vecScripts.size(); ++i)
+    {
+        if (i != 0)
+            ImGui::Separator();
+
+        Draw_AllScripts(vecScripts[i].Get_Handle());
+    }
+}
+
+void CInspectorPanel::Draw_AllScripts(COMPONENT_HANDLE hComponent)
+{
+    if (!m_pTarget)
+        return;
+
+    // 1) 이 오브젝트가 가진 모든 Script 프록시 중에서, 요청된 핸들을 찾는다.
+    auto vecScripts = m_pTarget->Get_Components<CScript>();
+
+    CScript sc;
+    SCRIPT_DATA* pData = nullptr;
+
+    for (auto& it : vecScripts)
+    {
+        if (it.Get_Handle().iHandle == hComponent.iHandle)
+        {
+            sc = it;
+            pData = sc._Data();
+            break;
+        }
+    }
+
+    if (!sc.Is_Valid())
+        return;
     if (!pData)
         return;
 
@@ -800,6 +833,9 @@ void CInspectorPanel::Draw_Script()
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return;
+
+    // 각 스크립트 인스턴스별로 ImGui ID 충돌 방지
+    ImGui::PushID(SCAST(int, hComponent.iHandle));
 
     const ImGuiID idHeader = window->GetID("Script_Header");
     const ImGuiID idCheck = window->GetID("Script_Enable");
@@ -829,7 +865,10 @@ void CInspectorPanel::Draw_Script()
     ImGui::PopID();
 
     if (!open)
+    {
+        ImGui::PopID();
         return;
+    }
 
     bool bChanged = false;
 
@@ -951,8 +990,8 @@ void CInspectorPanel::Draw_Script()
                     };
 
                 bool bOpened = false;
-                 if (try_open_or_reveal(cppPath)) bOpened = true;
-                 else if (try_open_or_reveal(headerPath)) bOpened = true;
+                if (try_open_or_reveal(cppPath)) bOpened = true;
+                else if (try_open_or_reveal(headerPath)) bOpened = true;
 
                 if (!bOpened)
                 {
@@ -1004,7 +1043,6 @@ void CInspectorPanel::Draw_Script()
                     {
                         // 여기서만 바인딩
                         m_pScript_Processor->Rebind_ScriptGuid(sc.Get_Handle(), *pGUID);
-
                     }
                 }
             }
@@ -1016,6 +1054,7 @@ void CInspectorPanel::Draw_Script()
         ImGui::EndDisabled();
 
     ImGui::TreePop();
+    ImGui::PopID(); // PushID(hComponent)
 }
 
 std::unique_ptr<CInspectorPanel> CInspectorPanel::Create(const std::string& strPanelName, CHierarchyPanel* pHierarcy, CProjectPanel* pProject)

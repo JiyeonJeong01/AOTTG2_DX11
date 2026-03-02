@@ -107,9 +107,9 @@ HRESULT CScript_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONE
     m_Types[iTypeID].vt = *pVt; /* 슬롯에 넣기 */
 
     pData->iTypeID = iTypeID;
-    pData->bEnable = (spec->bEnabled != 0);
+    pData->bEnable = spec->bEnable;
     pData->iFlags = 0;
-    if (spec->bEnabled)
+    if (spec->bEnable)
         pData->iFlags = true;
 
     Create_State_If_Needed(hComponent, pData);
@@ -135,7 +135,7 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CScript_Processor::Build_Spec(COMPONENT_TYP
     auto out = std::make_unique<SCRIPT_SPEC>();
 
     out->scriptGuid = tGUID;
-    out->bEnabled = pData->bEnable ? 1 : 0;
+    out->bEnable = pData->bEnable;
 
     return out;
 }

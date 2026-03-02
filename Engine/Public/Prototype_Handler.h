@@ -56,9 +56,9 @@ private :
 
 private:
     std::unordered_map<ASSET_GUID, std::unique_ptr<CPrototype>, ASSET_GUID_HASHER> m_Prototypes;
-    std::unordered_map<std::string, CPrototype*>     m_NameToProto;
-    uint32_t    m_iDuplicatedProtos{};
-    std::filesystem::path           m_pathProto{};
+    std::unordered_map<std::string, CPrototype*>        m_NameToProto;
+    uint32_t                                            m_iDuplicatedProtos{};
+    std::filesystem::path                               m_pathProto{};
 
 public :
     static std::unique_ptr<CPrototype_Handler> Create();

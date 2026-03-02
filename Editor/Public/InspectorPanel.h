@@ -60,6 +60,7 @@ private:
     void Draw_MeshRenderer();
     void Draw_CanvasRenderer();
     void Draw_Script();
+    void Draw_AllScripts(COMPONENT_HANDLE hComponent);
 
 
     void Validate_Target();

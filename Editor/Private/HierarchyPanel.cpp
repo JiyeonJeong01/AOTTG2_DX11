@@ -56,9 +56,7 @@ void CHierarchyPanel::Render()
     ImGui::End();
 }
 
-/* =======================================================================*/
-/* ============================= Callbacks ===============================*/
-/* =======================================================================*/
+/* ------------------------------------- Callbacks ------------------------------------- */
 void CHierarchyPanel::Set_On_Primary_Selection_Changed(std::function<void(Engine::CGameObject*)> fn)
 {
     m_fnPrimarySelectionChanged = std::move(fn);
@@ -69,9 +67,7 @@ void CHierarchyPanel::Set_On_Selection_Changed(std::function<void(const std::vec
     m_fnSelectionChanged = std::move(fn);
 }
 
-/* =======================================================================*/
-/* =========================== Selection API =============================*/
-/* =======================================================================*/
+/* ------------------------------------- Selection API ------------------------------------- */
 Engine::CGameObject* CHierarchyPanel::Get_Primary_Selection() const
 {
     return m_selection.empty() ? nullptr : m_selection.front();
@@ -180,9 +176,8 @@ void CHierarchyPanel::Clear_Selection()
     Notify_Selection_Changed();
 }
 
-/* =======================================================================*/
-/* =============================== Rename ================================*/
-/* =======================================================================*/
+/* ------------------------------------- Rename  ------------------------------------- */
+
 void CHierarchyPanel::Begin_Rename(Engine::CGameObject* pObj)
 {
     if (!pObj)
@@ -206,9 +201,8 @@ bool CHierarchyPanel::Is_Renaming() const
     return m_pRenameTarget != nullptr;
 }
 
-/* =======================================================================*/
-/* ============================ Draw Section =============================*/
-/* =======================================================================*/
+/* ------------------------------------- Draw Section ------------------------------------- */
+
 void CHierarchyPanel::Draw_Toolbar()
 {
     /* Create Object */
@@ -364,9 +358,7 @@ void CHierarchyPanel::Draw_DropTarget()
     }
 }
 
-/* =======================================================================*/
-/* ============================ Tree Helpers =============================*/
-/* =======================================================================*/
+/* ------------------------------------- Tree Helpers ------------------------------------- */
 void CHierarchyPanel::Refresh_Roots()
 {
     /* TODO ----------------------------------------------------*/
@@ -552,9 +544,7 @@ void CHierarchyPanel::Draw_Node_Recursive(Engine::CGameObject* pObj, int /*iDept
     }
 }
 
-/* =======================================================================*/
-/* ============================ Interaction ==============================*/
-/* =======================================================================*/
+/* ------------------------------------- Interaction -------------------------------------  */
 void CHierarchyPanel::Handle_Node_Click(Engine::CGameObject* pObj)
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -692,9 +682,7 @@ void CHierarchyPanel::Handle_DragDrop(Engine::CGameObject* pObj)
 
 }
 
-/* =======================================================================*/
-/* ============================= Operation ===============================*/
-/* =======================================================================*/
+/* ------------------------------------- Operation ------------------------------------- */
 Engine::CGameObject* CHierarchyPanel::Create_Empty_Object(Engine::CGameObject* pParent)
 {
     std::string szBaseName = "New GameObject";
@@ -724,10 +712,7 @@ void CHierarchyPanel::Destroy_Object(Engine::CGameObject* pObj)
     SYS_GAMEOBJECT.Destroy_Object(pObj);
 }
 
-/* =======================================================================*/
-/* ============================= Rename UI ===============================*/
-/* =======================================================================*/
-
+/* ------------------------------------- Rename UI ------------------------------------- */
 void CHierarchyPanel::Draw_Rename_Field(Engine::CGameObject* pObj)
 {
     if (m_bJustStartedRename)
@@ -782,9 +767,9 @@ void CHierarchyPanel::Commit_Rename()
     Cancel_Rename();
 }
 
-/* =======================================================================*/
-/* ============================== Internal ===============================*/
-/* =======================================================================*/
+
+/* ------------------------------------- Internal ------------------------------------- */
+
 void CHierarchyPanel::Notify_Selection_Changed()
 {
     if (m_fnSelectionChanged)

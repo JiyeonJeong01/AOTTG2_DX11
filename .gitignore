@@ -6,6 +6,8 @@
 ## thirdparty
 **/Assimp/*
 
+## Assets
+**/Assets/
 
 # minor modification
 **/Engine.lib

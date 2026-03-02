@@ -163,21 +163,31 @@ json CScene_Handler::Serialize_SceneObjectSpec(const SCENE_OBJECT_SPEC& tSpec)
     j["layer"] = (uint32_t)tSpec.layer;
     j["parent"] = tSpec.parent.Is_Valid() ? tSpec.parent.To_String_Utf8() : "";
 
-    // overrides
+    /* overrides sparse flat list */ 
     json jOverrides = json::array();
-    for (const auto& up : tSpec.overrides.components)
+
+    for (uint32_t i = 0; i < SCAST(uint32_t, COMPONENT_MAX); ++i)
     {
-        if (!up)
+        const auto& vSpecs = tSpec.overrides.components[i];
+        if (vSpecs.empty())
             continue;
 
-        json jc;
-        jc["type"] = (uint32_t)up->Get_Type();
-        json payload;
-        up->ToJson(payload);
-        jc["data"] = payload;
+        for (const auto& up : vSpecs)
+        {
+            if (!up)
+                continue;
 
-        jOverrides.push_back(std::move(jc));
+            json jc;
+            jc["type"] = (uint32_t)up->Get_Type();
+
+            json payload;
+            up->ToJson(payload);
+            jc["data"] = std::move(payload);
+
+            jOverrides.push_back(std::move(jc));
+        }
     }
+
     j["overrides"] = std::move(jOverrides);
     return j;
 }
@@ -187,7 +197,7 @@ _bool CScene_Handler::Deserialize_SceneObjectSpec(const json& j, SCENE_OBJECT_SP
 {
     if (!INSTANCE_UUID::Try_Utf8_To_UUID(j.value("uuid", ""), out.uuid))
         return false;
-    
+
     if (!ASSET_GUID::Try_Utf8_To_GUID(j.value("protoGuid", ""), out.protoGuid))
         out.protoGuid = ASSET_GUID{};
 
@@ -195,21 +205,28 @@ _bool CScene_Handler::Deserialize_SceneObjectSpec(const json& j, SCENE_OBJECT_SP
     out.name = j.value("name", "");
     out.layer = (Layer::LAYER_ID)j.value("layer", (uint32_t)Layer::DEFAULT_LAYER);
 
-    /* parent uuid can be null */
+    /* 부모 UUID는 비어있을 수 있다. */
     const std::string parentStr = j.value("parent", "");
     if (!parentStr.empty())
         INSTANCE_UUID::Try_Utf8_To_UUID(parentStr, out.parent);
     else
         out.parent = {}; // invalid
 
-    out.overrides.components.clear();
+    /* overrides 초기화 */
+    out.overrides.Clear_All();
+
     if (j.contains("overrides") && j["overrides"].is_array())
     {
         for (const auto& jc : j["overrides"])
         {
             const auto typeU32 = jc.value("type", (uint32_t)COMPONENT_TYPE::END);
             const auto eType = (COMPONENT_TYPE)typeU32;
-            if (eType == COMPONENT_TYPE::END) continue;
+            if (eType == COMPONENT_TYPE::END)
+                continue;
+
+            const uint32_t iSlot = SCAST(uint32_t, eType);
+            if (iSlot >= SCAST(uint32_t, COMPONENT_MAX))
+                continue;
 
             if (!jc.contains("data"))
             {
@@ -230,24 +247,33 @@ _bool CScene_Handler::Deserialize_SceneObjectSpec(const json& j, SCENE_OBJECT_SP
                 continue;
             }
 
-            /* 덮어쓰기 위한 COMPONENT_SPEC 구조체 그릇을 준비한다. */
-            out.overrides.components.push_back(std::move(spec));
+            /* 같은 타입 슬롯에 push하여 그룹(Primary/Extras) 형태로 빌드한다. */ 
+            out.overrides.components[iSlot].emplace_back(std::move(spec));
         }
     }
+
     return true;
 }
 
+/* 빌드된 스펙으로 오브젝트가 할당받은 컴포넌트에 override 한다. */
 HRESULT CScene_Handler::Apply_Overrides(CGameObject* pObject, const COMPONENT_SPEC_BUNDLE& tBundle)
 {
-    for (const auto& upSpec : tBundle.components)
+    IF_NULL_RETURN_MSG_BREAK(pObject, E_FAIL, "pObj is nullptr");
+
+    for (uint32_t i = 0; i < SCAST(uint32_t, COMPONENT_MAX); ++i)
     {
-        if (!upSpec)
-        {
-            _DEBUG_ERROR_BREAK("COMPONENT_SPEC is nullptr; so skip this.");
+        const auto& vSpecs = tBundle.components[i];
+        if (vSpecs.empty())
             continue;
+
+        for (const auto& upSpec : vSpecs)
+        {
+            if (!upSpec)
+                continue;
+
+            IF_FAIL_RETURN_MSG_BREAK(SYS_COMPONENT.Create_Component_From_Spec(pObject, upSpec.get()), E_FAIL,
+                "Apply overrides failed");
         }
-        IF_FAIL_RETURN_MSG_BREAK(SYS_COMPONENT.Create_Component_From_Spec(pObject, upSpec.get()), E_FAIL,
-            "Apply overrides failed");
     }
 
     return S_OK;
@@ -271,7 +297,7 @@ HRESULT CScene_Handler::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& 
     std::unordered_map<INSTANCE_UUID, CGameObject*, INSTANCE_UUID_HASHER> objectMap;
     objectMap.reserve(tSpecs.size());
 
-    /* Create objects */
+    /* 오브젝트 생성 */
     for (const auto& spec : tSpecs)
     {
         CGameObject* pObj = nullptr;
@@ -282,7 +308,7 @@ HRESULT CScene_Handler::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& 
 
         IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "Create_Object failed.");
 
-        /* build components by overrides */
+        /* 오브젝트가 가진 컴포넌트에 오버라이드 */
         IF_FAIL_RETURN_MSG_BREAK(Apply_Overrides(pObj, spec.overrides), E_FAIL, "Apply_Overrides failed.");
 
         pObj->Set_ProtoGUID(spec.protoGuid);
