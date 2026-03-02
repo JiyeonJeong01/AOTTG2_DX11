@@ -162,6 +162,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\CanvasRenderer.h" />
     <ClInclude Include="..\Public\CanvasRenderer_Processor.h" />
     <ClInclude Include="..\Public\Camera.h" />
+    <ClInclude Include="..\Public\Converter_Struct.h" />
     <ClInclude Include="..\Public\CRender_System.h" />
     <ClInclude Include="..\Public\Editor_System.h" />
     <ClInclude Include="..\Public\Environment_Processor.h" />
@@ -238,6 +239,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Timer_System.h" />
     <ClInclude Include="..\Public\Transform.h" />
     <ClInclude Include="..\Public\Transform_Processor.h" />
+    <ClInclude Include="..\Public\Load_Helper.h" />
     <ClInclude Include="Raycast.h" />
   </ItemGroup>
   <ItemGroup>

@@ -21,6 +21,7 @@ namespace  Engine
         const std::string CLIENT = "../../Client/";
         const std::string HEADER = "Public";
         const std::string IMPL = "Private";
+        const std::string MESH = "Assets/Meshes";
     }
 
 

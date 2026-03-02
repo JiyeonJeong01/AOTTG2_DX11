@@ -114,14 +114,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             /* --- Render --- */
             Editor::CProfilerPanel::CScope _render("Engine::Render");
             SYS_CORE.Bind_SceneRTV();
-            _float4 g_vClearColor = { 0.88f, 0.18f, 0.18f, 1.0f };
+            _float4 g_vClearColor = { 0.1f, 0.8f, 0.8f, 1.0f };
             SYS_CORE.Clear_Scene_Buffers(&g_vClearColor);
 
             pMainApp->Render();
 
             SYS_CORE.Bind_DefaultRTV();
-            //_float4 k_vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };
-            _float4 k_vClearColor = { 0.18f, 0.8f, 0.18f, 1.0f };
+            _float4 k_vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };
             SYS_CORE.Clear_Default_Buffers(&k_vClearColor);
             SYS_GUI.Begin_Render();
             upMainPanel->Render();

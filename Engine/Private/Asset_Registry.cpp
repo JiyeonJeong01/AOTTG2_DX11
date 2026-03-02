@@ -7,7 +7,7 @@
 #include "Engine_Log.h"
 #include "magic_enum.hpp"
 #include "String_Utils.h"
-
+#include "Resource_System.h"
 
 NS_BEGIN(Engine)
 
@@ -37,10 +37,10 @@ HRESULT CAsset_Registry::Initialize(const std::filesystem::path& assetRoot)
 
     Clear();
 
-    /* Built-in */
+    /* Built-in 에셋 */
     Register_Builtin_Asset();
 
-    /* File */
+    /* File 에셋 */
     Rebuild();
 
     Distribute_Assets_To_Handlers();
@@ -140,6 +140,9 @@ void CAsset_Registry::Distribute_Assets_To_Handlers()
             break;
         case ASSET_TYPE::SCRIPT :
             m_upScript_Handler->Cache_GUID(tGUID.first);
+            break;
+        case ASSET_TYPE::MESH :
+            SYS_RESOURCE.Load_Mesh(tGUID.first);
             break;
         }
     }

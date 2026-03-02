@@ -3,6 +3,7 @@
 #include "BuiltIn_GUID.h"
 #include "MeshBuilder.h"
 #include "Render_Struct.h"
+#include "Load_Helper.h"
 
 IMPLEMENT_SINGLETON(CResource_System)
 
@@ -91,7 +92,11 @@ uint32_t CResource_System::Load_Mesh(const ASSET_GUID& tGUID)
 
     auto pRec = SYS_ASSET.Find(tGUID);
     if (!pRec || pRec->eType != ASSET_TYPE::MESH)
+    {
+        _DEBUG_ERROR_BREAK("such guid not exists");
         return INVALID_HANDLE_UINT;
+    }
+
 
     if (pRec->eSrc == ASSET_SRC::BUILTIN)
     {
@@ -106,10 +111,8 @@ uint32_t CResource_System::Load_Mesh(const ASSET_GUID& tGUID)
     }
     else
     {
-        /* -------------------------------------------------- */
-        /* [TODO] 나중에 진짜.mesh 파일을 읽는 로직이 들어갈 곳  */
-        /* -------------------------------------------------- */
-        return INVALID_HANDLE_UINT; // 지금은 파일 로드가 없으니 에러 리턴
+        _bool bLoaded = Load_Mesh_Header(m_pDevice, pRec->path, entry);
+        IF_TRUE_RETURN_MSG_BREAK(bLoaded == false, INVALID_HANDLE_UINT, "Load mesh failed");
     }
 
     IF_FAIL_RETURN_MSG_BREAK(hr, INVALID_HANDLE_UINT, "Failed to Create/Load Mesh");

@@ -28,6 +28,42 @@ static constexpr D3D11_INPUT_ELEMENT_DESC VTXTEX_LAYOUT[] =
     { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
+static constexpr D3D11_INPUT_ELEMENT_DESC VTXNORTEX_LAYOUT[] =
+{
+    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+};
+
+typedef struct tagVertexPositionNormalTexcoord
+{
+    XMFLOAT3 vPosition;
+    XMFLOAT3 vNormal;
+    XMFLOAT2 vTexcoord;
+
+    static const unsigned int iNumElements = 3;
+    static constexpr D3D11_INPUT_ELEMENT_DESC Elements[iNumElements] = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+    };
+} VTXNORTEX;
+
+typedef struct tagVertexMesh
+{
+    XMFLOAT3 vPosition;
+    XMFLOAT3 vNormal;
+    XMFLOAT3 vTangent;
+    XMFLOAT2 vTexcoord;
+
+    static const unsigned int iNumElements = 4;
+    static constexpr D3D11_INPUT_ELEMENT_DESC Elements[iNumElements] = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TANGENT",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+    };
+} VTXMESH;
+
 typedef struct ENGINE_DLL tagILDesc
 {
     const D3D11_INPUT_ELEMENT_DESC* pDesc;
@@ -37,7 +73,9 @@ typedef struct ENGINE_DLL tagILDesc
 /* Blueprints for gpu to interpret memory chuncks  */
 static constexpr IL_DESC g_IL_TABLE[] = {
     { VTXCOL_LAYOUT, _countof(VTXCOL_LAYOUT) },
-    { VTXTEX_LAYOUT, _countof(VTXTEX_LAYOUT) }
+    { VTXTEX_LAYOUT, _countof(VTXTEX_LAYOUT) },
+    { VTXNORTEX::Elements, VTXNORTEX::iNumElements },
+    { VTXMESH::Elements, VTXMESH::iNumElements }
 };
 
 typedef struct ENGINE_DLL tagDrawCmd final
