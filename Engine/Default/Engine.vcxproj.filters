@@ -533,9 +533,6 @@
     <ClCompile Include="..\Private\Render_Context.cpp">
       <Filter>00. System\03. Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Script.cpp">
-      <Filter>01. Utility\04. Component\03. Script</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\CScript_Processor.cpp">
       <Filter>01. Utility\04. Component\03. Script</Filter>
     </ClCompile>

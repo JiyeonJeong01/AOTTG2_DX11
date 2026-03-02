@@ -32,6 +32,8 @@ public : /* Component Processor */
     HRESULT Create_Component_From_Spec(CGameObject* pObj, const COMPONENT_SPEC_BASE* pSpec);
 
     void Remove_Component_By_Type(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle);
+    void Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, _bool bEnable);
+
 
     void Get_Component_Handle_By_Type(COMPONENT_TYPE eComType, OBJECT_HANDLE hObj, vector<COMPONENT_HANDLE>& outHandles);
     void Bind_ComponentProcessor(COMPONENT_TYPE eComType, CComponent_Processor** ppOut);

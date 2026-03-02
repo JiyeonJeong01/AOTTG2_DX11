@@ -194,14 +194,32 @@ _bool CGameObject::Is_Valid() const
     return SYS_GAMEOBJECT.Is_Valid_Handle(m_hSelf);
 }
 
-void CGameObject::Set_Active(_bool bActive)
+void CGameObject::Set_Enable(_bool bActive)
 {
-    SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).bAllocated = bActive;
+    SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).bEnable = bActive;
+
+    Component::COMPONENT_MASK mask = Get_ComponentMask();
+
+    for (_uint j = 0; j < COMPONENT_MAX; ++j)
+    {
+        const COMPONENT_TYPE eType = INT_TO_COM(j);
+
+        if ((mask & Component::Component_Bit(eType)) == 0)
+            continue;
+
+        vector<COMPONENT_HANDLE> hComponents;
+        SYS_COMPONENT.Get_Component_Handle_By_Type(eType, Get_Handle(), hComponents);
+
+        for (auto hCom : hComponents)
+        {
+            SYS_COMPONENT.Set_Enable(eType, hCom, bActive);
+        }
+    }
 }
 
-_bool CGameObject::Get_Active() const
+_bool CGameObject::Get_Enabled() const
 {
-    return SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).bAllocated;
+    return SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).bEnable;
 }
 
 void CGameObject::Set_ComponentMask(Component::COMPONENT_MASK mask)

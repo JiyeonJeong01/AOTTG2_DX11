@@ -7,7 +7,8 @@ NS_BEGIN(Engine)
 
 typedef struct ENGINE_DLL tagLightData
 {
-    OBJECT_HANDLE hObject{};
+    OBJECT_HANDLE       hObject{};
+    _bool               bEnable = false;
 
     LIGHT_TYPE type = LIGHT_TYPE::DIRECTIONAL;
 

@@ -5,7 +5,9 @@ NS_BEGIN(Engine)
 
 typedef struct ENGINE_DLL tagMeshRendererData final
 {
-    OBJECT_HANDLE hObject{ };
+    OBJECT_HANDLE       hObject{ };
+    _bool               bEnable = false;
+
     COMPONENT_HANDLE hTransform = INVALID_HANDLE;
     uint32_t hMesh =        INVALID_HANDLE_UINT;
     uint32_t hMaterial =    INVALID_HANDLE_UINT;
@@ -15,8 +17,6 @@ typedef struct ENGINE_DLL tagMeshRendererData final
     RENDER_LAYER layer = RENDER_LAYER::NONBLEND;
 
     _float    sortZ = 0.f; // transparent/ui
-    uint8_t  bEnabled = 1;
-    uint8_t  pad[3] = {};
 }MESH_RENDERER_DATA;
 
 class ENGINE_DLL CMeshRenderer : public CComponent_Proxy_Base<MESH_RENDERER_DATA, CMeshRenderer, COMPONENT_TYPE::MESH_RENDERER>
@@ -29,9 +29,6 @@ public :
 
 public:
     // Settings
-    void Set_Enabled(_bool b);
-    bool Is_Enabled() const;
-
     void Set_Mesh(uint32_t h);
     void Set_Material(uint32_t h);
     void Set_MainTexture(uint32_t hTexture);

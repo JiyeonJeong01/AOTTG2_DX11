@@ -49,6 +49,12 @@ public :
 		return m_Pool.Get_Proxy(hComponent);
 	}
 
+    void Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable) override
+    {
+        IF_TRUE_RETURN_MSG_BREAK(eComType != KType, , "Wrong component type for this processor.");
+        m_Pool.Get_Data_By_Handle(hComponent)->bEnable = bEnable;
+    } 
+
 protected :
     virtual void Initialize_Component_Data(COMPONENT_HANDLE hComponent) {};
     virtual HRESULT Initialize_From_Spec_Impl(COMPONENT_HANDLE, const COMPONENT_SPEC_BASE*) { return S_OK; } /* In case multi-com processor */

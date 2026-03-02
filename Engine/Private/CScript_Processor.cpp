@@ -24,10 +24,7 @@ void CScript_Processor::Update(_float fDT)
         {
             const auto h = ticks[i].hScript;
             SCRIPT_DATA* pData = m_Pool.Get_Data_By_Handle(h);
-            if (!pData) continue;
-
-            if ((pData->iFlags & SCRIPT_FLAG_ENABLED) == 0)
-                continue;
+            if (!pData || !pData->bEnable) continue;
 
             const uint32_t iTypeID = pData->iTypeID;
             if (iTypeID == 0 || iTypeID >= m_Types.size())
@@ -50,7 +47,7 @@ void CScript_Processor::Update(_float fDT)
             SCRIPT_DATA* pData = m_Pool.Get_Data_By_Handle(h);
             if (!pData) continue;
 
-            if ((pData->iFlags & SCRIPT_FLAG_ENABLED) == 0) continue;
+            if (!pData->bEnable) continue;
 
             /* TODO Priority를 통과했다면 여기서부터는 지워도 될 거 같은데 확인해보기 */
             const uint32_t typeId = pData->iTypeID;
@@ -69,7 +66,7 @@ void CScript_Processor::Update(_float fDT)
         SCRIPT_DATA* pData = m_Pool.Get_Data_By_Handle(h);
         if (!pData) continue;
 
-        if ((pData->iFlags & SCRIPT_FLAG_ENABLED) == 0) continue;
+        if (!pData->bEnable) continue;
 
         const uint32_t typeId = pData->iTypeID;
         if (typeId == 0 || typeId >= m_Types.size()) continue;
@@ -110,9 +107,10 @@ HRESULT CScript_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONE
     m_Types[iTypeID].vt = *pVt; /* 슬롯에 넣기 */
 
     pData->iTypeID = iTypeID;
+    pData->bEnable = (spec->bEnabled != 0);
     pData->iFlags = 0;
     if (spec->bEnabled)
-        pData->iFlags |= SCRIPT_FLAG_ENABLED;
+        pData->iFlags = true;
 
     Create_State_If_Needed(hComponent, pData);
 
@@ -137,35 +135,35 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CScript_Processor::Build_Spec(COMPONENT_TYP
     auto out = std::make_unique<SCRIPT_SPEC>();
 
     out->scriptGuid = tGUID;
-    out->bEnabled = ((pData->iFlags & SCRIPT_FLAG_ENABLED) != 0) ? 1 : 0;
+    out->bEnabled = pData->bEnable ? 1 : 0;
 
     return out;
 }
 
-void CScript_Processor::Set_Enabled(COMPONENT_HANDLE hComponent, _bool bEnable)
+void CScript_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable)
 {
+    UNREFERENCED_PARAMETER(eComType);
+
     auto* pData = m_Pool.Get_Data_By_Handle(hComponent);
     if (!pData)
         return;
 
-    const _bool wasEnabled = ((pData->iFlags & SCRIPT_FLAG_ENABLED) != 0);
     const _bool nowEnabled = (bEnable != 0);
-
-    if (wasEnabled == nowEnabled)
+    if (pData->bEnable == nowEnabled)
         return;
 
-    if (nowEnabled)
+    if (nowEnabled) /* TODO : 필요 시 OnEnable 이곳에서 호출 */
     {
-        pData->iFlags |= SCRIPT_FLAG_ENABLED;
+        pData->bEnable = true;
 
-        if (!pData->pState)
+        if (!pData->pState) /* State가 없으면 만들어주기 */
             Create_State_If_Needed(hComponent, pData);
 
         Add_To_TickLists(hComponent, *pData);
     }
     else
     {
-        pData->iFlags &= ~SCRIPT_FLAG_ENABLED;
+        pData->bEnable = false; /* TODO : 필요 시 Disable 이곳에서 호출 */
         Remove_From_TickLists(hComponent);
     }
 }
@@ -234,7 +232,7 @@ void CScript_Processor::Initialize_Component_Data(COMPONENT_HANDLE hComponent)
     // Allocate 직후 초기값만 세팅 (정리는 Deallocate에서만)
     pData->pState = nullptr;
     pData->iTypeID = 0;
-    pData->iFlags |= SCRIPT_FLAG_ENABLED; /* TODO ::::::::::::::::::::::::::::: 이거 false여야 하려나?*/
+    pData->bEnable = true; /* TODO ::::::::::::::::::::::::::::: 이거 false여야 하려나?*/
 }
 
 void CScript_Processor::Ensure_Awake(SCRIPT_DATA& tData, SCRIPT_TYPE_INFO& tTypeInfo)
@@ -264,10 +262,7 @@ void CScript_Processor::Ensure_Start(SCRIPT_DATA& tData, SCRIPT_TYPE_INFO& tType
 
 void CScript_Processor::Add_To_TickLists(COMPONENT_HANDLE hScript, const SCRIPT_DATA& tData)
 {
-    if ((tData.iFlags & SCRIPT_FLAG_ENABLED) == 0)
-        return;
-
-    if (!tData.pState)
+    if (!tData.bEnable || !tData.pState)
         return;
 
     uint32_t iTypeID = tData.iTypeID;
@@ -333,7 +328,7 @@ void CScript_Processor::Create_State_If_Needed(COMPONENT_HANDLE hScript, SCRIPT_
     }
 
     /* Enable한 스크립트면 다시 등록한다. */
-    if ((pData->iFlags & SCRIPT_FLAG_ENABLED) != 0)
+    if (pData->bEnable)
         Add_To_TickLists(hScript, *pData);
 }
 
@@ -359,7 +354,7 @@ void CScript_Processor::Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, SCRIP
     if (!pData) return;
 
     Reset_Data(hScript, pData);
-
+    pData->bEnable = false;
     pData->iTypeID = 0;
     pData->iFlags = 0;
 }

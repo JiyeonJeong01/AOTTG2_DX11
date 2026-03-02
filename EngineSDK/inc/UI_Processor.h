@@ -25,10 +25,13 @@ public:
     void    LateUpdate(_float fDT) override;
     void    Render();
 
-    COMPONENT_HANDLE Create_Component_Data(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject) override;
-    void Remove_Component(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) override;
-    HRESULT Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pSpec) override;
+    COMPONENT_HANDLE    Create_Component_Data(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject) override;
+    void                Remove_Component(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) override;
+    HRESULT             Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pSpec) override;
     std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) override;
+    void                Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable) override;
+
+
 
     template<typename TProxy>
     TProxy Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
@@ -58,6 +61,14 @@ private:
     {
         pool.Deallocate(hComponent);
     }
+
+    template <typename TProxy>
+    void Set_Enable_Inner(CComponent_Pool<TProxy>& pool, COMPONENT_HANDLE hComponent, _bool bEnable)
+    {
+        pool.Get_Data_By_Handle(hComponent)->bEnable = bEnable;
+    }
+
+
     void Sync_Images_To_Canvas();
     void Update_Buttons(_float fDT);
     void Apply_ButtonVisual(const UI_BUTTON_DATA& tData);

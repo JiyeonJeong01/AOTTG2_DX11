@@ -436,7 +436,7 @@ void CHierarchyPanel::Draw_Node_Recursive(Engine::CGameObject* pObj, int /*iDept
     uint64_t iID = Get_Stable_Id(pObj);
     _bool bOpen = (m_openNodes.find(iID) != m_openNodes.end());
 
-    _bool bActive = pObj->Get_Active();
+    _bool bActive = pObj->Get_Enabled();
 
     const char* szName = pObj->Get_Label().data();
     if (!szName)
@@ -515,9 +515,9 @@ void CHierarchyPanel::Draw_Node_Recursive(Engine::CGameObject* pObj, int /*iDept
             }
 
 
-            _bool bCur = pObj->Get_Active();
+            _bool bCur = pObj->Get_Enabled();
             if (ImGui::MenuItem(bCur ? "Set Inactive" : "Set Active"))
-                pObj->Set_Active(!bCur);
+                pObj->Set_Enable(!bCur);
 
             ImGui::EndPopup();
         }

@@ -26,6 +26,7 @@
     <ClInclude Include="..\Public\PrototypeTest.h" />
     <ClInclude Include="..\Public\Script_Registry.h" />
     <ClInclude Include="..\Public\Tester.h" />
+    <ClInclude Include="..\Public\Test_ComponentEnable.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\CScript_Test.cpp" />
@@ -34,6 +35,7 @@
     <ClCompile Include="..\Private\PrototypeTest.cpp" />
     <ClCompile Include="..\Private\Script_Registry.gen.cpp" />
     <ClCompile Include="..\Private\Tester.cpp" />
+    <ClCompile Include="..\Private\Test_ComponentEnable.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

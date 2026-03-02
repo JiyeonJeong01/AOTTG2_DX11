@@ -430,6 +430,36 @@ void CGameObject_System::Flush_PendingDestroy()
     m_pendingDestroys.clear();
 }
 
+void CGameObject_System::Set_Enable(CGameObject* pObj, _bool bEnable)
+{
+    IF_NULL_RETURN_MSG_BREAK(pObj, , "Set_Enable failed : pObj is nullptr");
+    IF_TRUE_RETURN_MSG_BREAK(!pObj->Is_Valid(), , "Set_Enable failed : pObj is invalid");
+
+    GAMEOBJECT_DATA& data = Access_Data_Raw(pObj->Get_Handle());
+
+    /* Destroy 예약된 오브젝트는 enable 토글 막는다 -> 컴포넌트 정리 */
+    IF_TRUE_RETURN_MSG_BREAK(data.bPendingDestroy, , "Set_Enable ignored : object pending destroy");
+
+    if (data.bEnable == bEnable)
+        return;
+
+    data.bEnable = bEnable;
+
+    Component::COMPONENT_MASK mask = pObj->Get_ComponentMask();
+    for (_uint j = 0; j < COMPONENT_MAX; ++j)
+    {
+        const COMPONENT_TYPE eType = INT_TO_COM(j);
+        if ((mask & Component::Component_Bit(eType)) == 0)
+            continue;
+
+        vector<COMPONENT_HANDLE> hComponents;
+        SYS_COMPONENT.Get_Component_Handle_By_Type(eType, pObj->Get_Handle(), hComponents);
+
+        for (auto hCom : hComponents)
+            SYS_COMPONENT.Set_Enable(eType, hCom, bEnable);
+    }
+}
+
 GAMEOBJECT_DATA& CGameObject_System::Access_Data_Raw(OBJECT_HANDLE hObj)
 {
     IF_TRUE_RETURN_MSG_BREAK((hObj.Index() == 0 || hObj.Index() >= m_dataPool.size()), m_dataPool[0], "Access_Data_Raw failed: invalid index.");

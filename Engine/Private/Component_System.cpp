@@ -109,6 +109,17 @@ void CComponent_System::Remove_Component_By_Type(COMPONENT_TYPE eComType, COMPON
     m_pComProcessors[iProcIdx]->Remove_Component(eComType, handle);
 }
 
+void CComponent_System::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, _bool bEnable)
+{
+    const uint32_t iComIdx = COM_TO_INT(eComType);
+    const uint32_t iProcIdx = COM_TO_PID(eComType);
+
+    IF_TRUE_RETURN_MSG_BREAK((iComIdx >= COMPONENT_MAX || iProcIdx >= COMPONENT_PROCESSOR_MAX || !m_pComProcessors[iProcIdx]), ,
+        "Processor not registered for this component type.");
+
+    m_pComProcessors[iProcIdx]->Set_Enable(eComType, handle, bEnable);
+}
+
 void CComponent_System::Get_Component_Handle_By_Type(COMPONENT_TYPE eComType, OBJECT_HANDLE hObj, vector<COMPONENT_HANDLE>& outHandles)
 {
     outHandles.clear();

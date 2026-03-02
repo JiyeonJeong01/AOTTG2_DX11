@@ -120,6 +120,25 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CUI_Processor::Build_Spec(COMPONENT_TYPE eC
     return nullptr;
 }
 
+void CUI_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable)
+{
+    switch (eComType)
+    {
+    case COMPONENT_TYPE::UI_IMAGE:
+        Set_Enable_Inner<CUIImage>(m_ImagePool, hComponent, bEnable);
+        return;
+
+    case COMPONENT_TYPE::UI_BUTTON:
+        Set_Enable_Inner<CUIButton>(m_ButtonPool, hComponent, bEnable);
+        return;
+
+    default:
+        break;
+    }
+
+    _DEBUG_WARN("CUI_Processor::Remove_Component - unsupported component type");
+}
+
 void CUI_Processor::Sync_Images_To_Canvas()
 {
     const auto& ImagePages = m_ImagePool.GetPages();
@@ -130,11 +149,11 @@ void CUI_Processor::Sync_Images_To_Canvas()
 
         for (uint32_t i = 0; i < PAGE_SIZE; ++i)
         {
-            if (!pPage->Is_Active(i))
+            if (!pPage->Is_Allocated(i))
                 continue;
 
             auto* pData = pPage->Get_Ptr(i);
-            if (!pData || !pData->dirty)
+            if (!pData || !pData->dirty || !pData->bEnable)
                 continue;
 
             auto crProxy = m_pCanvasProcessor->Get_Proxy(COMPONENT_TYPE::CANVAS_RENDERER, pData->hCanvasRenderer);
@@ -159,7 +178,6 @@ void CUI_Processor::Apply_ButtonVisual(const UI_BUTTON_DATA& tData)
     auto crProxy = m_pCanvasProcessor->Get_Proxy(COMPONENT_TYPE::CANVAS_RENDERER, tData.hTargetCanvas);
     CANVAS_RENDERER_DATA* pCR = crProxy._Data();
     if (!pCR) return;
-
     pCR->vColor = Get_State_Color(tData);
 
     uint32_t hTex{};
@@ -189,11 +207,11 @@ void CUI_Processor::Update_Buttons(_float fDT)
 
         for (uint32_t i = 0; i < PAGE_SIZE; ++i)
         {
-            if (!pPage->Is_Active(i))
+            if (!pPage->Is_Allocated(i))
                 continue;
 
             auto* pData = pPage->Get_Ptr(i);
-            if (!pData) continue;
+            if (!pData || !pData->bEnable) continue;
 
             if (!pData->bInteractable)
             {

@@ -20,8 +20,10 @@ public:
     HRESULT Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) override;
     std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) override;
 
+    void Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable) override;
+
+
     /* 각 컴포넌트에 필요한 로직들 */
-    void    Set_Enabled(COMPONENT_HANDLE hComponent, _bool bEnable);
     _bool   Try_Get_Guid_By_TypeID(TypeID typeId, ASSET_GUID& out) const;
     HRESULT Rebind_ScriptGuid(COMPONENT_HANDLE hScript, const ASSET_GUID& guid);
 private :

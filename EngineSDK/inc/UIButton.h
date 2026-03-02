@@ -7,6 +7,8 @@ NS_BEGIN(Engine)
 typedef struct tagUIButtonData
 {
     OBJECT_HANDLE       hObject{};
+    _bool               bEnable = false;
+
     COMPONENT_HANDLE    hRectTransform{};
     COMPONENT_HANDLE    hTargetCanvas{};
 

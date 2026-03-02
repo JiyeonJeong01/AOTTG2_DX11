@@ -35,6 +35,8 @@ public:
     void            Destroy_All_SceneObjects() {  /* TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */ };
     void            Flush_PendingDestroy();
 
+    void            Set_Enable(CGameObject* pObj, _bool bEnable);
+
 public :
     void            Set_Layer(CGameObject* pObj, Layer::LAYER_ID iNewLayer);
     const std::vector<CGameObject*>& Get_LayerObjects(Layer::LAYER_ID iLayer) const;

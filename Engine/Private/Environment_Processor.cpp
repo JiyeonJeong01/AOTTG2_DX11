@@ -102,6 +102,25 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CEnvironment_Processor::Build_Spec(COMPONEN
     return nullptr;
 }
 
+void CEnvironment_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable)
+{
+    switch (eComType)
+    {
+    case COMPONENT_TYPE::CAMERA:
+        Set_Enable_Inner<CCamera>(m_CameraPool, hComponent, bEnable);
+        return;
+
+    case COMPONENT_TYPE::LIGHT:
+        Set_Enable_Inner<CLight>(m_LightPool, hComponent, bEnable);
+        return;
+
+    default:
+        break;
+    }
+
+    _DEBUG_WARN("CEnvironment_Processor::Remove_Component - unsupported component type");
+}
+
 HRESULT CEnvironment_Processor::Initialize_From_Spec_Camera(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec)
 {
     const auto* p = SCAST(const CAMERA_SPEC*, spec);

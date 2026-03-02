@@ -35,15 +35,17 @@ typedef struct tagScriptVTable
 
 enum : uint8_t
 {
-    SCRIPT_FLAG_ENABLED = 1 << 0,
-    SCRIPT_FLAG_AWOKEN = 1 << 1,
-    SCRIPT_FLAG_STARTED = 1 << 2,
+    SCRIPT_FLAG_AWOKEN = 1 << 0,
+    SCRIPT_FLAG_STARTED = 1 << 1,
 };
 
 typedef struct tagScriptData
 {
-    void*           pState{};   
     OBJECT_HANDLE   hObject{};
+    _bool           bEnable = false;
+
+    void* pState{};
+
     uint32_t        hState = INVALID_HANDLE_UINT; // 0
     TypeID          iTypeID = 0;                   // 0 = invalid
 

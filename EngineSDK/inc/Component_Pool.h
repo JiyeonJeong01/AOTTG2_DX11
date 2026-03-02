@@ -31,19 +31,19 @@ public:
     {
         alignas(DATA_T) std::byte storage[sizeof(DATA_T) * PAGE_SIZE]{};
         uint32_t iVersion[PAGE_SIZE]{};
-        uint64_t bActiveBitset[BITSET_COUNT]{};
+        uint64_t bAllocatedBitset[BITSET_COUNT]{};
 
-        bool Is_Active(uint32_t iOffset) const
+        bool Is_Allocated(uint32_t iOffset) const
         {
-            return bActiveBitset[iOffset / BITSET_WIDTH] & (1ULL << (iOffset % BITSET_WIDTH));
+            return bAllocatedBitset[iOffset / BITSET_WIDTH] & (1ULL << (iOffset % BITSET_WIDTH));
         }
-        void Set_Active(uint32_t iOffset)
+        void Set_Allocated(uint32_t iOffset)
         {
-            bActiveBitset[iOffset / BITSET_WIDTH] |= (1ULL << (iOffset % BITSET_WIDTH));
+            bAllocatedBitset[iOffset / BITSET_WIDTH] |= (1ULL << (iOffset % BITSET_WIDTH));
         }
-        void Set_Inactive(uint32_t iOffset)
+        void Set_Deallocated(uint32_t iOffset)
         {
-            bActiveBitset[iOffset / BITSET_WIDTH] &= ~(1ULL << (iOffset % BITSET_WIDTH));
+            bAllocatedBitset[iOffset / BITSET_WIDTH] &= ~(1ULL << (iOffset % BITSET_WIDTH));
         }
 
         DATA_T* Get_Ptr(uint32_t iOffset)
@@ -75,11 +75,11 @@ public:
 
             for (uint32_t i = 0; i < PAGE_SIZE; ++i)
             {
-                if (pPage->Is_Active(i))
+                if (pPage->Is_Allocated(i))
                 {
                     /* Call destructor for alive object */
                     Destroy_At(pPage->Get_Ptr(i));
-                    pPage->Set_Inactive(i);
+                    pPage->Set_Deallocated(i);
                 }
             }
         }
@@ -118,8 +118,8 @@ public:
         /* Construct object IN PLACE (placement new) */
         Construct_At(pPage->Get_Ptr(iOffset));
 
-        pPage->Set_Active(iOffset);
-
+        pPage->Set_Allocated(iOffset);
+        pPage->Get_Ptr(iOffset)->bEnable = true;
 
         /* TODO ================= TEST ===============================*/
         COMPONENT_HANDLE hTest = COMPONENT_HANDLE::Create(iGlobalIndex, pPage->iVersion[iOffset]);
@@ -140,7 +140,7 @@ public:
 
         PAGE* pPage = m_pages[iPageIndex].get();
         IF_TRUE_RETURN_MSG_BREAK((pPage->iVersion[iOffset] != handle.Get_Version()), , "Invalid Handle: Version mismatch!");
-        IF_TRUE_RETURN_MSG_BREAK((!pPage->Is_Active(iOffset)), , "Invalid Handle: Already deallocated!");
+        IF_TRUE_RETURN_MSG_BREAK((!pPage->Is_Allocated(iOffset)), , "Invalid Handle: Already deallocated!");
 
         DATA_T* pData = pPage->Get_Ptr(iOffset);
 
@@ -152,7 +152,7 @@ public:
 
         /* Invalidate handle */
         pPage->iVersion[iOffset]++;
-        pPage->Set_Inactive(iOffset);
+        pPage->Set_Deallocated(iOffset);
         m_freeIndices.push_back(iIndex);
     }
 
@@ -179,7 +179,7 @@ public:
             return nullptr;
 
         PAGE* pPage = m_pages[iPageIndex].get();
-        if (pPage->iVersion[iOffset] != handle.Get_Version() || !pPage->Is_Active(iOffset))
+        if (pPage->iVersion[iOffset] != handle.Get_Version() || !pPage->Is_Allocated(iOffset))
             return nullptr;
 
         return pPage->Get_Ptr(iOffset);

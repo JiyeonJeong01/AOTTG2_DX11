@@ -78,8 +78,6 @@ void CInspectorPanel::Validate_Target()
     /* TODO : Validiate  */
 }
 
-
-
 void CInspectorPanel::Render()
 {
     if (!m_bOpen)
@@ -141,9 +139,9 @@ void CInspectorPanel::Draw_Header()
 void CInspectorPanel::Draw_Basic_Info()
 {
     /* Active Toggle */
-    _bool bActive = m_pTarget->Get_Active();
+    _bool bActive = m_pTarget->Get_Enabled();
     if (ImGui::Checkbox("Active", &bActive))
-        m_pTarget->Set_Active(bActive);
+        m_pTarget->Set_Enable(bActive);
 
     /* Name Edit */
     ImGui::TextUnformatted("Name");
@@ -188,8 +186,6 @@ void CInspectorPanel::Draw_Basic_Info()
         m_pTarget->Set_Label(m_nameBuffer.c_str());
         return;
     }
-
-
 }
 
 void CInspectorPanel::Draw_ObjectLayer()
@@ -236,10 +232,8 @@ void CInspectorPanel::Draw_ObjectLayer()
         ImGui::EndCombo();
     }
 
-    // 콤보 닫힌 뒤에 팝업 열기 + 위치 지정
     if (openEditPopup)
     {
-        // 버튼/콤보 바로 아래에 띄우기
         ImVec2 itemMin = ImGui::GetItemRectMin();
         ImVec2 itemSize = ImGui::GetItemRectSize();
 
@@ -248,28 +242,24 @@ void CInspectorPanel::Draw_ObjectLayer()
             ImGuiCond_Appearing
         );
 
-        // 크기(원하는대로)
         ImGui::SetNextWindowSize(ImVec2(460.f, 420.f), ImGuiCond_Appearing);
 
         ImGui::OpenPopup("LayerEditorPopup");
     }
 
-    Draw_LayerEditorPopup(); // BeginPopup로 열려있으면 그려짐
+    Draw_LayerEditorPopup();
 }
 
 void CInspectorPanel::Draw_LayerEditorPopup()
 {
-    // 배경을 하얗게 만들지 않는 일반 Popup
     if (!ImGui::BeginPopup("LayerEditorPopup", ImGuiWindowFlags_AlwaysAutoResize))
         return;
 
     auto& layers = SYS_GAMEOBJECT.Layers();
 
-    // ====== 상단 헤더: Layers 타이틀 & 우측 닫기 버튼 ======
     ImGui::TextUnformatted("Layers");
     ImGui::SameLine();
 
-    // 버튼을 우측 끝으로 밀기 위한 계산
     float buttonWidth = 60.f;
     float padding = ImGui::GetStyle().ItemSpacing.x;
     ImGui::SetCursorPosX(ImGui::GetWindowWidth() - buttonWidth - padding - 10.f);
@@ -280,7 +270,7 @@ void CInspectorPanel::Draw_LayerEditorPopup()
     ImGui::Separator();
 
     const float listH = 260.f;
-    // 리스트 영역 스크롤 가능하게 Child로 구성
+
     if (ImGui::BeginChild("##LayerList", ImVec2(420.f, listH), true))
     {
         for (Layer::LAYER_ID i = 0; i < Layer::MAX_LAYERS; ++i)
@@ -295,7 +285,6 @@ void CInspectorPanel::Draw_LayerEditorPopup()
 
             ImGui::PushID((int)i);
 
-            // [ID] 표시
             ImGui::Text("[%02u]", (unsigned)i);
             ImGui::SameLine();
 
@@ -313,7 +302,6 @@ void CInspectorPanel::Draw_LayerEditorPopup()
             }
             else
             {
-                // 이름 편집 버퍼 (정적 배열로 관리)
                 static char editBuf[Layer::MAX_LAYERS][64] = {};
                 if (editBuf[i][0] == '\0')
                     strncpy_s(editBuf[i], name.c_str(), _TRUNCATE);
@@ -331,7 +319,7 @@ void CInspectorPanel::Draw_LayerEditorPopup()
                 if (ImGui::Button("Delete"))
                 {
                     layers.Unregister_Layer(i);
-                    editBuf[i][0] = '\0'; // 버퍼 초기화
+                    editBuf[i][0] = '\0';
                 }
             }
 
@@ -365,7 +353,7 @@ void CInspectorPanel::Draw_LayerEditorPopup()
     ImGui::SameLine();
 
     // 2. 이름 입력
-    ImGui::SetNextItemWidth(295.f); // 남은 공간에 맞춰 조정
+    ImGui::SetNextItemWidth(295.f);
     ImGui::InputTextWithHint("##NewLayerName", "New Layer Name...", s_newName, IM_ARRAYSIZE(s_newName));
 
     ImGui::SameLine();
@@ -378,7 +366,6 @@ void CInspectorPanel::Draw_LayerEditorPopup()
         layers.Register_Layer(s_selectedID, s_newName);
         s_newName[0] = '\0'; // 입력창 비우기
 
-        // 추가 성공 후 다음 사용 가능한 ID 자동 선택
         std::vector<Layer::LAYER_ID> nextUnused;
         layers.Gather_UnusedLayers(nextUnused);
         if (!nextUnused.empty()) s_selectedID = nextUnused.front();
@@ -474,7 +461,6 @@ void CInspectorPanel::Draw_CreateScriptPopup()
 
 void CInspectorPanel::Draw_Asset()
 {
-    // 리소스 로드 X: 메타만 표시
     const std::string name = m_selectedAsset.path.filename().string();
     const std::string path = m_selectedAsset.path.string();
 
@@ -482,7 +468,7 @@ void CInspectorPanel::Draw_Asset()
     ImGui::Separator();
 
     ImGui::Text("Name: %s", name.c_str());
-    ImGui::Text("Type: %s", CAsset_Registry::AssetType_ToStr(m_selectedAsset.type)); // 공용 함수 만들면 좋음
+    ImGui::Text("Type: %s", CAsset_Registry::AssetType_ToStr(m_selectedAsset.type));
     ImGui::Text("Path: %s", path.c_str());
     ImGui::Text("Directory: %s", m_selectedAsset.isDirectory ? "true" : "false");
 }
@@ -603,44 +589,69 @@ void CInspectorPanel::Draw_MeshRenderer()
     if (!pData)
         return;
 
-    if (ImGui::TreeNodeEx("MeshRenderer", ImGuiTreeNodeFlags_DefaultOpen))
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    const ImGuiID idHeader = window->GetID("MeshRenderer_Header");
+    const ImGuiID idCheck = window->GetID("MeshRenderer_Enable");
+
+    ImGui::PushID(idHeader);
+
+    ImGui::AlignTextToFramePadding();
+
+    _bool enabled = pData->bEnable;
+    if (ImGui::Checkbox("##Enable", &enabled))
     {
-        bool bChanged = false;
-
-        // --- Mesh ---
-        ImGui::TextUnformatted("Mesh handle");
-        ImGui::SameLine();
-        ImGui::Text("%u", pData->hMesh);
-
-        // --- Material ---
-        ImGui::TextUnformatted("Material handle");
-        ImGui::SameLine();
-        ImGui::Text("%u", pData->hMaterial);
-
-        // --- Layer ---
-        int layer = (int)pData->layer;
-        if (ImGui::DragInt("Layer", &layer, 1, 0, 10))
-        {
-            pData->layer = (RENDER_LAYER)layer;
-            bChanged = true;
-        }
-
-        // --- Flags ---
-        uint32_t flags = pData->flags;
-        if (ImGui::InputScalar("Flags", ImGuiDataType_U32, &flags))
-        {
-            pData->flags = flags;
-            bChanged = true;
-        }
-
-        //if (bChanged)
-            //pData->bDirty = true;
-
-        ImGui::TreePop();
+        SYS_COMPONENT.Set_Enable(COMPONENT_TYPE::MESH_RENDERER, mr.Get_Handle(), enabled);
+        pData->bEnable = enabled;
     }
 
-}
+    ImGui::SameLine();
 
+    const ImGuiTreeNodeFlags flags =
+        ImGuiTreeNodeFlags_DefaultOpen |
+        ImGuiTreeNodeFlags_Framed |
+        ImGuiTreeNodeFlags_SpanAvailWidth |
+        ImGuiTreeNodeFlags_AllowOverlap;
+
+    const bool open = ImGui::TreeNodeEx("MeshRenderer", flags);
+
+    ImGui::PopID();
+
+    if (!open)
+        return;
+
+    bool bChanged = false;
+
+    // --- Mesh ---
+    ImGui::TextUnformatted("Mesh handle");
+    ImGui::SameLine();
+    ImGui::Text("%u", pData->hMesh);
+
+    // --- Material ---
+    ImGui::TextUnformatted("Material handle");
+    ImGui::SameLine();
+    ImGui::Text("%u", pData->hMaterial);
+
+    // --- Layer ---
+    int layer = (int)pData->layer;
+    if (ImGui::DragInt("Layer", &layer, 1, 0, 10))
+    {
+        pData->layer = (RENDER_LAYER)layer;
+        bChanged = true;
+    }
+
+    // --- Flags ---
+    uint32_t flagsValue = pData->flags;
+    if (ImGui::InputScalar("Flags", ImGuiDataType_U32, &flagsValue))
+    {
+        pData->flags = flagsValue;
+        bChanged = true;
+    }
+
+    ImGui::TreePop();
+}
 void CInspectorPanel::Draw_CanvasRenderer()
 {
     CCanvasRenderer cr = m_pTarget->Get_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
@@ -651,102 +662,126 @@ void CInspectorPanel::Draw_CanvasRenderer()
     if (!pData)
         return;
 
-    if (ImGui::TreeNodeEx("CanvasRenderer", ImGuiTreeNodeFlags_DefaultOpen))
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    const ImGuiID idHeader = window->GetID("CanvasRenderer_Header");
+    const ImGuiID idCheck = window->GetID("CanvasRenderer_Enable");
+
+    ImGui::PushID(idHeader);
+
+    ImGui::AlignTextToFramePadding();
+
+    // 헤더 체크박스
+    bool enabled = (pData->bEnable != 0);
+    if (ImGui::Checkbox("##Enable", &enabled))
     {
-
-        bool bChanged = false;
-
-        // Enabled
-        bool enabled = (pData->bEnabled != 0);
-        if (ImGui::Checkbox("Enabled", &enabled))
-        {
-            pData->bEnabled = enabled ? 1 : 0;
-            bChanged = true;
-        }
-
-        // Material
-        ImGui::TextUnformatted("Material");
-        ImGui::SameLine();
-        ImGui::Text("%u", pData->hMaterial);
-
-        // Texture
-        ImGui::TextUnformatted("Texture");
-        ImGui::SameLine();
-        ImGui::Text("%u", pData->hTexture);
-
-        // Layer
-        int layer = (int)pData->layer;
-        if (ImGui::DragInt("Layer", &layer, 1, 0, 10))
-        {
-            pData->layer = (RENDER_LAYER)layer;
-            bChanged = true;
-        }
-
-        // Flags
-        uint32_t flags = pData->flags;
-        if (ImGui::InputScalar("Flags", ImGuiDataType_U32, &flags))
-        {
-            pData->flags = flags;
-            bChanged = true;
-        }
-
-        // SortZ
-        float sortZ = pData->sortZ;
-        if (ImGui::DragFloat("SortZ", &sortZ, 0.01f, 0.f, 1.f, "%.3f"))
-        {
-            if (sortZ < 0.f) sortZ = 0.f;
-            if (sortZ > 1.f) sortZ = 1.f;
-            pData->sortZ = sortZ;
-            bChanged = true;
-        }
-
-        // Color
-        _float4 col = pData->vColor;
-        float c[4] = { col.x, col.y, col.z, col.w };
-        if (ImGui::ColorEdit4("Color", c))
-        {
-            pData->vColor = { c[0], c[1], c[2], c[3] };
-            bChanged = true;
-        }
-
-        // UV
-        float uv[4] = { pData->rcUV.fLeft, pData->rcUV.fTop, pData->rcUV.fRight, pData->rcUV.fBottom };
-        if (ImGui::DragFloat4("UV (L,T,R,B)", uv, 0.001f, 0.f, 1.f, "%.3f"))
-        {
-            // clamp
-            for (int i = 0; i < 4; ++i)
-            {
-                if (uv[i] < 0.f) uv[i] = 0.f;
-                if (uv[i] > 1.f) uv[i] = 1.f;
-            }
-            pData->rcUV = { uv[0], uv[1], uv[2], uv[3] };
-            bChanged = true;
-        }
-
-        // Clip Rect (screen space)
-        bool clipEnabled = ((pData->flags & CF_CLIP_RECT) != 0);
-        if (ImGui::Checkbox("Enable ClipRect", &clipEnabled))
-        {
-            if (clipEnabled) pData->flags |= CF_CLIP_RECT;
-            else             pData->flags &= ~CF_CLIP_RECT;
-            bChanged = true;
-        }
-
-        float clip[4] = { pData->rcClip.fLeft, pData->rcClip.fTop, pData->rcClip.fRight, pData->rcClip.fBottom };
-        if (ImGui::DragFloat4("ClipRect (L,T,R,B)", clip, 1.f, 0.f, 0.f, "%.0f"))
-        {
-            pData->rcClip = { clip[0], clip[1], clip[2], clip[3] };
-            bChanged = true;
-        }
-
-        //if (bChanged)
-        //{
-        //    // TODO: 필요하면 dirty 플래그 넣어
-        //    // pData->bDirty = true;
-        //}
-
-        ImGui::TreePop();
+        pData->bEnable = enabled ? 1 : 0;
     }
+
+    ImGui::SameLine();
+
+    const ImGuiTreeNodeFlags flags =
+        ImGuiTreeNodeFlags_DefaultOpen |
+        ImGuiTreeNodeFlags_Framed |
+        ImGuiTreeNodeFlags_SpanAvailWidth |
+        ImGuiTreeNodeFlags_AllowOverlap;
+
+    const bool open = ImGui::TreeNodeEx("CanvasRenderer", flags);
+
+    ImGui::PopID();
+
+    if (!open)
+        return;
+
+    bool bChanged = false;
+
+    // (선택) 비활성화면 아래 UI 회색 + 입력 막기
+    if (pData->bEnable == 0)
+        ImGui::BeginDisabled();
+
+    // Material
+    ImGui::TextUnformatted("Material");
+    ImGui::SameLine();
+    ImGui::Text("%u", pData->hMaterial);
+
+    // Texture
+    ImGui::TextUnformatted("Texture");
+    ImGui::SameLine();
+    ImGui::Text("%u", pData->hTexture);
+
+    // Layer
+    int layer = (int)pData->layer;
+    if (ImGui::DragInt("Layer", &layer, 1, 0, 10))
+    {
+        pData->layer = (RENDER_LAYER)layer;
+        bChanged = true;
+    }
+
+    // Flags
+    uint32_t flagsValue = pData->flags;
+    if (ImGui::InputScalar("Flags", ImGuiDataType_U32, &flagsValue))
+    {
+        pData->flags = flagsValue;
+        bChanged = true;
+    }
+
+    // SortZ
+    float sortZ = pData->sortZ;
+    if (ImGui::DragFloat("SortZ", &sortZ, 0.01f, 0.f, 1.f, "%.3f"))
+    {
+        if (sortZ < 0.f) sortZ = 0.f;
+        if (sortZ > 1.f) sortZ = 1.f;
+        pData->sortZ = sortZ;
+        bChanged = true;
+    }
+
+    // Color
+    _float4 col = pData->vColor;
+    float c[4] = { col.x, col.y, col.z, col.w };
+    if (ImGui::ColorEdit4("Color", c))
+    {
+        pData->vColor = { c[0], c[1], c[2], c[3] };
+        bChanged = true;
+    }
+
+    // UV
+    float uv[4] = { pData->rcUV.fLeft, pData->rcUV.fTop, pData->rcUV.fRight, pData->rcUV.fBottom };
+    if (ImGui::DragFloat4("UV (L,T,R,B)", uv, 0.001f, 0.f, 1.f, "%.3f"))
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            if (uv[i] < 0.f) uv[i] = 0.f;
+            if (uv[i] > 1.f) uv[i] = 1.f;
+        }
+        pData->rcUV = { uv[0], uv[1], uv[2], uv[3] };
+        bChanged = true;
+    }
+
+    // Clip Rect
+    bool clipEnabled = ((pData->flags & CF_CLIP_RECT) != 0);
+    if (ImGui::Checkbox("Enable ClipRect", &clipEnabled))
+    {
+        if (clipEnabled) pData->flags |= CF_CLIP_RECT;
+        else             pData->flags &= ~CF_CLIP_RECT;
+        bChanged = true;
+    }
+
+    float clip[4] = { pData->rcClip.fLeft, pData->rcClip.fTop, pData->rcClip.fRight, pData->rcClip.fBottom };
+    if (ImGui::DragFloat4("ClipRect (L,T,R,B)", clip, 1.f, 0.f, 0.f, "%.0f"))
+    {
+        pData->rcClip = { clip[0], clip[1], clip[2], clip[3] };
+        bChanged = true;
+    }
+
+    if (pData->bEnable == 0)
+        ImGui::EndDisabled();
+
+    // if (bChanged)
+    //     pData->bDirty = true;
+
+    ImGui::TreePop();
 }
 
 void CInspectorPanel::Draw_Script()
@@ -759,21 +794,44 @@ void CInspectorPanel::Draw_Script()
     if (!pData)
         return;
 
-    if (!ImGui::TreeNodeEx("Script", ImGuiTreeNodeFlags_DefaultOpen))
+    // ------------------------------------------------------------
+    // Header : [Enable Checkbox] + [Collapsible "Script"]
+    // ------------------------------------------------------------
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    const ImGuiID idHeader = window->GetID("Script_Header");
+    const ImGuiID idCheck = window->GetID("Script_Enable");
+
+    ImGui::PushID(idHeader);
+
+    ImGui::AlignTextToFramePadding();
+
+    // 헤더 체크박스가 실제 enable을 담당
+    _bool enabled = pData->bEnable;
+    if (ImGui::Checkbox("##Enable", &enabled))
+    {
+        m_pScript_Processor->Set_Enable(COMPONENT_TYPE::SCRIPT, sc.Get_Handle(), enabled);
+        pData->bEnable = enabled;
+    }
+
+    ImGui::SameLine();
+
+    const ImGuiTreeNodeFlags flags =
+        ImGuiTreeNodeFlags_DefaultOpen |
+        ImGuiTreeNodeFlags_Framed |
+        ImGuiTreeNodeFlags_SpanAvailWidth |
+        ImGuiTreeNodeFlags_AllowOverlap;
+
+    const bool open = ImGui::TreeNodeEx("Script", flags);
+
+    ImGui::PopID();
+
+    if (!open)
         return;
 
     bool bChanged = false;
-
-    // Enabled
-    _bool enabled = ((pData->iFlags & SCRIPT_FLAG_ENABLED) != 0);
-    if (ImGui::Checkbox("Enabled", &enabled))
-    {
-        if (enabled) pData->iFlags |= SCRIPT_FLAG_ENABLED;
-        else         pData->iFlags &= ~SCRIPT_FLAG_ENABLED;
-
-        bChanged = true;
-        m_pScript_Processor->Set_Enabled(sc.Get_Handle(), enabled);
-    }
 
     /* TypeId, 런타임 인덱스 */
     ImGui::Text("TypeID: %u", (uint32_t)pData->iTypeID);

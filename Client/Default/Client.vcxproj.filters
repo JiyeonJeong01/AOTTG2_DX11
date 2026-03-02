@@ -37,6 +37,9 @@
     <ClInclude Include="..\Public\FirstScene.h">
       <Filter>MainApp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Test_ComponentEnable.h">
+      <Filter>MainApp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -55,6 +58,9 @@
       <Filter>MainApp</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\FirstScene.cpp">
+      <Filter>MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Test_ComponentEnable.cpp">
       <Filter>MainApp</Filter>
     </ClCompile>
   </ItemGroup>

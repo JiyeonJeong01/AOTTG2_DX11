@@ -73,11 +73,11 @@ void CCanvasRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
 
         for (uint32_t i = 0; i < PAGE_SIZE; ++i)
         {
-            if (!pPage->Is_Active(i))
+            if (!pPage->Is_Allocated(i))
                 continue;
 
             auto* pData = pPage->Get_Ptr(i);
-            if (!pData || !pData->bEnabled) continue;
+            if (!pData || !pData->bEnable) continue;
 
             if (pData->hMaterial == INVALID_HANDLE_UINT)
                 continue;

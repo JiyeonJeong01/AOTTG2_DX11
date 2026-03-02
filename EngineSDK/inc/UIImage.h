@@ -6,7 +6,9 @@ NS_BEGIN(Engine)
 
 typedef struct ENGINE_DLL tagUIImageData
 {
-    OBJECT_HANDLE    hObject{};
+    OBJECT_HANDLE       hObject{};
+    _bool               bEnable = false;
+
     COMPONENT_HANDLE hCanvasRenderer{};
 
     uint32_t hTexture = INVALID_HANDLE_UINT;

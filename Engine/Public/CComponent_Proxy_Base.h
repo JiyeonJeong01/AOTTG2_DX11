@@ -37,6 +37,16 @@ public:
         return m_pData != nullptr && m_hHandle.Is_Valid();
     }
 
+    void Set_Enable(_bool bEnable)
+    {
+        m_pData->bEnable = bEnable;
+    }
+
+    _bool Get_Enable()const noexcept
+    {
+        return m_pData->bEnable;
+    }
+
     COMPONENT_TYPE  Get_ComponentType() const noexcept
     {
 	    return m_eComType;

@@ -5,7 +5,9 @@ NS_BEGIN(Engine)
 
 typedef struct ENGINE_DLL tagCanvasRendererData final
 {
-    OBJECT_HANDLE    hObject{};
+    OBJECT_HANDLE       hObject{};
+    _bool               bEnable = false;
+
     COMPONENT_HANDLE hRectTransform = INVALID_HANDLE;
 
     uint32_t hMaterial = INVALID_HANDLE_UINT;
@@ -22,8 +24,6 @@ typedef struct ENGINE_DLL tagCanvasRendererData final
     RENDER_LAYER layer = RENDER_LAYER::UI;
 
     _float   sortZ = 0.f;
-    uint8_t  bEnabled = 1;
-    uint8_t  pad[3] = {};
 } CANVAS_RENDERER_DATA;
 
 class ENGINE_DLL CCanvasRenderer final
@@ -36,9 +36,6 @@ public:
 
 public:
     // Settings
-    void Set_Enabled(_bool bEnable);
-    bool Is_Enabled() const;
-
     void Set_Material(uint32_t h);
     void Set_Texture(uint32_t h);
 

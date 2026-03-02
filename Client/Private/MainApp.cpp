@@ -48,14 +48,14 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
         return E_FAIL;
     
     ASSET_GUID tmp("8976CDE9-2AE4-4DFC-A580-17E41FFB00D3");
-    ASSET_GUID fiona("7E96C6B5-B037-40C9-A356-9D30AEE15A54");
+    ASSET_GUID fiona("A9902A6C-5858-42F3-AFE7-70A453BE50DC");
 
     /* TEST : Create GameObject with various components */
     Engine::CGameObject* pGO = nullptr;
     Engine::CGameObject* pUO = nullptr;
     for (int i = 0; i < 1; ++i) {
 
-        for (int j = 0; j < 5; ++j)
+        for (int j = 0; j < 500; ++j)
         {
             pGO = SYS_GAMEOBJECT.Create_GameObject();
             pGO->Add_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);

@@ -37,10 +37,10 @@ void CRectTransform_Processor::Update(_float fDT)
 
         for (uint32_t i = 0; i < PAGE_SIZE; ++i)
         {
-            if (!pPage->Is_Active(i))
+            if (!pPage->Is_Allocated(i))
                 continue;
             auto* pData = pPage->Get_Ptr(i);
-            if (!pData->bDirty)
+            if (!pData->bDirty || !pData->bEnable)
                 continue;
             Bake_World(pData);
 

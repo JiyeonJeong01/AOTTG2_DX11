@@ -7,7 +7,8 @@ NS_BEGIN(Engine)
 
 typedef struct ENGINE_DLL tagCameraData
 {
-    OBJECT_HANDLE    hObject{};
+    OBJECT_HANDLE       hObject{};
+    _bool               bEnable = false;
 
     /* projection */
     _bool    bOrthographic = false;

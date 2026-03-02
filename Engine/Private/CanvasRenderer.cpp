@@ -12,15 +12,6 @@ CCanvasRenderer::CCanvasRenderer(DataType* pData, COMPONENT_HANDLE handle)
 {
 }
 
-void CCanvasRenderer::Set_Enabled(_bool b)
-{
-    m_pData->bEnabled = b ? 1 : 0;
-}
-bool CCanvasRenderer::Is_Enabled() const
-{
-    return m_pData->bEnabled != 0;
-}
-
 void CCanvasRenderer::Set_Material(uint32_t h)
 {
     m_pData->hMaterial = h;

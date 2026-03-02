@@ -6,7 +6,8 @@ NS_BEGIN(Engine)
 
 typedef struct ENGINE_DLL tagRectTransformData final
 {
-    OBJECT_HANDLE hObject{};
+    OBJECT_HANDLE       hObject{};
+    _bool               bEnable = false;
 
     // --- Input (authoring) ---
     _float2 vPosPx{ 0.f, 0.f };      // UI X,Y (px) from top-left

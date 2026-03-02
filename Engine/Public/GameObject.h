@@ -45,8 +45,8 @@ public:
     _bool                       Is_Valid() const;
 
     /* etc */
-    void                        Set_Active(_bool bActive);
-    _bool                       Get_Active() const;
+    void                        Set_Enable(_bool bActive);
+    _bool                       Get_Enabled() const;
 
     void                        Set_ComponentMask(Component::COMPONENT_MASK mask);
     Component::COMPONENT_MASK   Get_ComponentMask() const;

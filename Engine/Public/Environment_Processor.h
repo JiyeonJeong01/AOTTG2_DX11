@@ -22,6 +22,7 @@ public:
     void                Remove_Component(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) override;
     HRESULT             Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pSpec) override;
     std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) override;
+    void                Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable) override;
 
 public:
     template<typename TProxy>
@@ -51,6 +52,12 @@ private:
     void Remove_Component_Inner(CComponent_Pool<TProxy>& pool, COMPONENT_HANDLE hComponent)
     {
         pool.Deallocate(hComponent);
+    }
+
+    template <typename TProxy>
+    void Set_Enable_Inner(CComponent_Pool<TProxy>& pool, COMPONENT_HANDLE hComponent, _bool bEnable)
+    {
+        pool.Get_Data_By_Handle(hComponent)->bEnable = bEnable;
     }
 
 private:
