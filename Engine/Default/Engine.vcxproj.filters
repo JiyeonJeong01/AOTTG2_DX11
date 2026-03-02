@@ -399,6 +399,12 @@
     <ClInclude Include="Raycast.h">
       <Filter>00. System\02. Ray</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Converter_Struct.h">
+      <Filter>99. Defines\Engine_Struct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Load_Helper.h">
+      <Filter>00. System\05. Resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">

@@ -67,11 +67,11 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
     /* --- Log System --- */
     IF_FAIL_RETURN_MSG_BREAK(SYS_LOG.Initialize(), E_FAIL, "Log System failed Initialize");
 
-    /* --- Asset System --- */
-    IF_FAIL_RETURN_MSG_BREAK(SYS_ASSET.Initialize(ProjectConfig::PATH + ProjectConfig::ROOT), E_FAIL, "Asset System failed Initialize");
-
     /* --- Resource System --- */
     IF_FAIL_RETURN_MSG_BREAK(SYS_RESOURCE.Initialize(*ppDevice, *ppContext), E_FAIL, "Resource System failed Initialize");
+
+    /* --- Asset System --- */
+    IF_FAIL_RETURN_MSG_BREAK(SYS_ASSET.Initialize(ProjectConfig::PATH + ProjectConfig::ROOT), E_FAIL, "Asset System failed Initialize");
 
     /* --- Component System ---*/
     IF_FAIL_RETURN_MSG_BREAK(SYS_COMPONENT.Initialize(m_pDevice, m_pContext, iWidth, iHeight), E_FAIL, "Component System failed Initialize");
