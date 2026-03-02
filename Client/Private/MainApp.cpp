@@ -55,11 +55,11 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
     Engine::CGameObject* pUO = nullptr;
     for (int i = 0; i < 1; ++i) {
 
-        for (int j = 0; j < 500; ++j)
+        for (int j = 0; j < 5; ++j)
         {
             pGO = SYS_GAMEOBJECT.Create_GameObject();
-            pGO->Add_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
-            auto mr = pGO->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+            pGO->Add_Component<CMeshRenderer>();
+            auto mr = pGO->Get_Component<CMeshRenderer>();
             auto* d = mr._Data();
             d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXTEX);
             d->hMesh = SYS_RESOURCE.Load_Mesh(fiona);      // 또는 CreateCubeMesh()
@@ -67,16 +67,16 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             d->flags = RF_NONE;
             d->hMainTex = SYS_RESOURCE.Load_Texture(tmp);
 
-            auto tr1 = pGO->Get_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
-            auto mr1 = pGO->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+            auto tr1 = pGO->Get_Component<CTransform>();
+            auto mr1 = pGO->Get_Component<CMeshRenderer>();
 
             tr1->vPosition = { j * 2.f, j * 2.f, j * 2.f};
         }
 
         {
             pUO = SYS_GAMEOBJECT.Create_GameObjectUI();
-            pUO->Add_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
-            auto mr = pUO->Get_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
+            pUO->Add_Component<CCanvasRenderer>();
+            auto mr = pUO->Get_Component<CCanvasRenderer>();
             auto* d = mr._Data();
             d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXTEX);
             d->layer = RENDER_LAYER::NONBLEND;
@@ -84,11 +84,11 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             d->hTexture = SYS_RESOURCE.Load_Texture(tmp);
         }
 
-        auto tr1 = pGO->Get_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
-        auto mr1 = pGO->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+        auto tr1 = pGO->Get_Component<CTransform>();
+        auto mr1 = pGO->Get_Component<CMeshRenderer>();
 
-        auto rt1 = pGO->Get_Component<CRectTransform>(COMPONENT_TYPE::RECT_TRANSFORM);
-        auto cr1 = pGO->Get_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
+        auto rt1 = pGO->Get_Component<CRectTransform>();
+        auto cr1 = pGO->Get_Component<CCanvasRenderer>();
 
     }
 

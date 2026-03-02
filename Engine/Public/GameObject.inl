@@ -3,14 +3,14 @@
 #include "Component_System.h"
 
 template <typename TProxy>
-TProxy CGameObject::Add_Component(COMPONENT_TYPE eComType)
+TProxy CGameObject::Add_Component()
 {
     if (!Is_Valid())
         return TProxy{};
-
+    COMPONENT_TYPE eComType =  TProxy::ComponentType;
     if (!Component::Is_Multi_Allowed(eComType))
     {
-        auto existing = Get_Component<TProxy>(eComType);
+        auto existing = Get_Component<TProxy>();
         if (existing.Is_Valid())
             return existing;
     }
@@ -53,10 +53,11 @@ TProxy CGameObject::Add_Component(COMPONENT_TYPE eComType)
 }
 
 template <typename TProxy>
-TProxy CGameObject::Get_Component(COMPONENT_TYPE eComType)
+TProxy CGameObject::Get_Component()
 {
     if (!Is_Valid())
         return TProxy{};
+    COMPONENT_TYPE eComType = TProxy::ComponentType;
 
     const GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
 
@@ -87,10 +88,12 @@ TProxy CGameObject::Get_Component(COMPONENT_TYPE eComType)
 }
 
 template <typename TProxy>
-std::vector<TProxy> CGameObject::Get_Components(COMPONENT_TYPE eComType)
+std::vector<TProxy> CGameObject::Get_Components()
 {
     if (!Is_Valid())
         return std::vector<TProxy>{};
+
+    COMPONENT_TYPE eComType = TProxy::ComponentType;
 
     const GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
 

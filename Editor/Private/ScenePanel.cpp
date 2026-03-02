@@ -216,7 +216,7 @@ void CScenePanel::Set_Target(Engine::CGameObject* pObj)
     if (!m_pTarget)
         return;
 
-    Engine::CTransform tr = m_pTarget->Get_Component<Engine::CTransform>(Engine::COMPONENT_TYPE::TRANSFORM);
+    Engine::CTransform tr = m_pTarget->Get_Component<Engine::CTransform>();
     m_pData = tr._Data();
 }
 

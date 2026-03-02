@@ -427,27 +427,27 @@ void CInspectorPanel::Draw_AddComponentPopup()
 
     if (ImGui::MenuItem("Transform"))
     {
-        m_pTarget->Add_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
+        m_pTarget->Add_Component<CTransform>();
         ImGui::CloseCurrentPopup();
     }
     if (ImGui::MenuItem("MeshRenderer"))
     {
-        m_pTarget->Add_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+        m_pTarget->Add_Component<CMeshRenderer>();
         ImGui::CloseCurrentPopup();
     }
     if (ImGui::MenuItem("RectTransform"))
     {
-        m_pTarget->Add_Component<CRectTransform>(COMPONENT_TYPE::RECT_TRANSFORM);
+        m_pTarget->Add_Component<CRectTransform>();
         ImGui::CloseCurrentPopup();
     }
     if (ImGui::MenuItem("CanvasRenderer"))
     {
-        m_pTarget->Add_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
+        m_pTarget->Add_Component<CCanvasRenderer>();
         ImGui::CloseCurrentPopup();
     }
     if (ImGui::MenuItem("Script"))
     {
-        m_pTarget->Add_Component<CScript>(COMPONENT_TYPE::SCRIPT);
+        m_pTarget->Add_Component<CScript>();
         ImGui::CloseCurrentPopup();
     }
 
@@ -500,7 +500,7 @@ void CInspectorPanel::Draw_Transform()
     if (!ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
         return;
 
-    CTransform transform = m_pTarget->Get_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
+    CTransform transform = m_pTarget->Get_Component<CTransform>();
     TRANSFORM_DATA* pData = transform._Data();
 
     /* Transform is not implemented yet */
@@ -544,7 +544,7 @@ void CInspectorPanel::Draw_RectTransform()
     if (!ImGui::CollapsingHeader("RectTransform", ImGuiTreeNodeFlags_DefaultOpen))
         return;
 
-    CRectTransform rt = m_pTarget->Get_Component<CRectTransform>(COMPONENT_TYPE::RECT_TRANSFORM);
+    CRectTransform rt = m_pTarget->Get_Component<CRectTransform>();
     if (!rt.Is_Valid())
         return;
 
@@ -581,7 +581,7 @@ void CInspectorPanel::Draw_RectTransform()
 
 void CInspectorPanel::Draw_MeshRenderer()
 {
-    CMeshRenderer mr = m_pTarget->Get_Component<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+    CMeshRenderer mr = m_pTarget->Get_Component<CMeshRenderer>();
     if (!mr.Is_Valid())
         return;
 
@@ -654,7 +654,7 @@ void CInspectorPanel::Draw_MeshRenderer()
 }
 void CInspectorPanel::Draw_CanvasRenderer()
 {
-    CCanvasRenderer cr = m_pTarget->Get_Component<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
+    CCanvasRenderer cr = m_pTarget->Get_Component<CCanvasRenderer>();
     if (!cr.Is_Valid())
         return;
 
@@ -786,7 +786,7 @@ void CInspectorPanel::Draw_CanvasRenderer()
 
 void CInspectorPanel::Draw_Script()
 {
-    CScript sc = m_pTarget->Get_Component<CScript>(COMPONENT_TYPE::SCRIPT);
+    CScript sc = m_pTarget->Get_Component<CScript>();
     if (!sc.Is_Valid())
         return;
 

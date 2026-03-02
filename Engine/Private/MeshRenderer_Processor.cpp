@@ -103,7 +103,7 @@ void CMeshRenderer_Processor::Initialize_Component_Data(COMPONENT_HANDLE hCompon
 
     CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
 
-    pData->hTransform = pObj->Get_Component<CTransform>(COMPONENT_TYPE::TRANSFORM).Get_Handle();
+    pData->hTransform = pObj->Get_Component<CTransform>().Get_Handle();
 }
 
 uint64_t CMeshRenderer_Processor::Make_SortKey(const MESH_RENDERER_DATA& tData) const

@@ -159,7 +159,7 @@ void CCanvasRenderer_Processor::Initialize_Component_Data(COMPONENT_HANDLE hComp
     CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
     if (!pObj) return;
 
-    pData->hRectTransform = pObj->Get_Component<CRectTransform>(COMPONENT_TYPE::RECT_TRANSFORM).Get_Handle();
+    pData->hRectTransform = pObj->Get_Component<CRectTransform>().Get_Handle();
 }
 
 uint64_t CCanvasRenderer_Processor::Make_SortKey(const CANVAS_RENDERER_DATA& tData) const

@@ -22,13 +22,13 @@ protected:
 public:
     /* Components */
     template <typename TProxy>
-    TProxy Add_Component(COMPONENT_TYPE eComType);
+    TProxy Add_Component();
 
     template <typename TProxy>
-    TProxy Get_Component(COMPONENT_TYPE eComType);
+    TProxy Get_Component();
 
     template <typename TProxy>
-    std::vector<TProxy> Get_Components(COMPONENT_TYPE eComType);
+    std::vector<TProxy> Get_Components();
 
     void                Remove_Components(COMPONENT_TYPE eComType);
     void                Remove_All_Components();

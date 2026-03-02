@@ -105,32 +105,50 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
         if (fTimeAcc >= FRAME_DT)
         {
+            static auto s_prev = Editor::CProfilerPanel::clock::now();
+
             _float fDT = SYS_CORE.Compute_FrameDT();
 
-            Editor::CProfilerPanel::CScope _update("Engine::Begin_Render");
-            pMainApp->Update(fDT, APP_MODE::EDITOR_EDIT);
-            upMainPanel->Update();
+            {   /* 월드 갱신 */
+                Editor::CProfilerPanel::CScope _update("World::Update");
+                pMainApp->Update(fDT, APP_MODE::EDITOR_EDIT);
+            }
 
-            /* --- Render --- */
-            Editor::CProfilerPanel::CScope _render("Engine::Render");
-            SYS_CORE.Bind_SceneRTV();
-            _float4 g_vClearColor = { 0.1f, 0.8f, 0.8f, 1.0f };
-            SYS_CORE.Clear_Scene_Buffers(&g_vClearColor);
+            {   /* 에디터 갱신 */
+                Editor::CProfilerPanel::CScope _update("Editor::Update");
+                upMainPanel->Update();
+            }
 
-            pMainApp->Render();
+            {   /* 월드 렌더(SceneRTV) */
+                Editor::CProfilerPanel::CScope _world("World::Render");
+                SYS_CORE.Bind_SceneRTV();
+                _float4 g_vClearColor = { 0.1f, 0.8f, 0.8f, 1.0f };
+                SYS_CORE.Clear_Scene_Buffers(&g_vClearColor);
+                pMainApp->Render();
+            }
 
-            SYS_CORE.Bind_DefaultRTV();
-            _float4 k_vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };
-            SYS_CORE.Clear_Default_Buffers(&k_vClearColor);
-            SYS_GUI.Begin_Render();
-            upMainPanel->Render();
+            {   /* 에디터 렌더 */
+                Editor::CProfilerPanel::CScope _editor("Editor::Render");
+                SYS_CORE.Bind_DefaultRTV();
+                _float4 k_vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };
+                SYS_CORE.Clear_Default_Buffers(&k_vClearColor);
 
-            SYS_GUI.End_Render();
+                SYS_GUI.Begin_Render();
+                upMainPanel->Render();
+                SYS_GUI.End_Render();
+            }
 
-            SYS_CORE.Present();
+            {   /* Present */
+                Editor::CProfilerPanel::CScope _present("Engine::Present");
+                SYS_CORE.Present();
+            }
 
-            /* FIXED DT*/
-            // pMainApp->Fixed_Update(FIXED_DT);
+            /* frameMS 측정 */
+            const auto now = Editor::CProfilerPanel::clock::now();
+            const double frameMS = std::chrono::duration<double, std::milli>(now - s_prev).count();
+            s_prev = now;
+
+            Editor::CProfilerPanel::Set_Frame_Time_External(frameMS);
 
             fTimeAcc = 0.f;
         }

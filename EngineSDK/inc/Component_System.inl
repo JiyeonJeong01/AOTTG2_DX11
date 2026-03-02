@@ -32,7 +32,7 @@ void CComponent_System::Register_InitialSpecFactory(COMPONENT_TYPE eComType)
     m_InitialSpecFactory[iComIdx] = +[](CComponent_System* pSys, COMPONENT_TYPE eInType, CGameObject* pObj, const COMPONENT_SPEC_BASE* pBase)
         {
 
-            TProxy proxy = pObj->template Add_Component<TProxy>(eInType);
+            TProxy proxy = pObj->template Add_Component<TProxy>();
 
             if (pBase)
             {

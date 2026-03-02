@@ -111,7 +111,7 @@ CGameObject* CGameObject_System::Create_GameObject(Layer::LAYER_ID iLayer, const
     CGameObject* pWrapper = Create_Object_Inner(iLayer, strName, pParent, tUUID);
     IF_NULL_RETURN_MSG_BREAK(pWrapper, nullptr, "GameObject create failed");
 
-    CTransform tr = pWrapper->Add_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
+    CTransform tr = pWrapper->Add_Component<CTransform>();
     if (!tr.Is_Valid())
     {
         /* rollback */
@@ -129,7 +129,7 @@ CGameObject* CGameObject_System::Create_GameObjectUI(Layer::LAYER_ID iLayer, con
     CGameObject* pWrapper = Create_Object_Inner(iLayer, strName, pParent, tUUID);
     IF_NULL_RETURN_MSG_BREAK(pWrapper, nullptr, "GameObject create failed");
 
-    CRectTransform tr = pWrapper->Add_Component<CRectTransform>(COMPONENT_TYPE::RECT_TRANSFORM);
+    CRectTransform tr = pWrapper->Add_Component<CRectTransform>();
     if (!tr.Is_Valid())
     {
         /* rollback */
