@@ -91,7 +91,7 @@ CGameObject* CGameObject_System::Create_Object_Inner(Layer::LAYER_ID iLayer, con
 
     /* Reset data */
     data.Reset();
-    data.bActive = true;
+    data.bAllocated = data.bEnable = true;
     data.layer = iLayer;
     data.tUUID = tUUID;
 
@@ -109,6 +109,7 @@ CGameObject* CGameObject_System::Create_Object_Inner(Layer::LAYER_ID iLayer, con
 CGameObject* CGameObject_System::Create_GameObject(Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent, const INSTANCE_UUID& tUUID)
 {
     CGameObject* pWrapper = Create_Object_Inner(iLayer, strName, pParent, tUUID);
+    IF_NULL_RETURN_MSG_BREAK(pWrapper, nullptr, "GameObject create failed");
 
     CTransform tr = pWrapper->Add_Component<CTransform>(COMPONENT_TYPE::TRANSFORM);
     if (!tr.Is_Valid())
@@ -126,6 +127,8 @@ CGameObject* CGameObject_System::Create_GameObjectUI(Layer::LAYER_ID iLayer, con
     const INSTANCE_UUID& tUUID)
 {
     CGameObject* pWrapper = Create_Object_Inner(iLayer, strName, pParent, tUUID);
+    IF_NULL_RETURN_MSG_BREAK(pWrapper, nullptr, "GameObject create failed");
+
     CRectTransform tr = pWrapper->Add_Component<CRectTransform>(COMPONENT_TYPE::RECT_TRANSFORM);
     if (!tr.Is_Valid())
     {
@@ -179,9 +182,10 @@ void CGameObject_System::Destroy_Object(CGameObject* pObj)
     data.bPendingDestroy = true;
     m_pendingDestroys.push_back(handle.Index());
 
+    /* 레이어에서 제거 */
     Remove_From_LayerBucket(pObj);
 
-    /* Clean up the relationship with the parent. */
+    /* 부모 자식 관계 정리 */
     if (data.hParent.Is_Valid())
     {
         CGameObject* pParent = Get_Wrapper(data.hParent);
@@ -194,8 +198,6 @@ void CGameObject_System::Destroy_Object(CGameObject* pObj)
             data.hParent = {};
         }
     }
-
-    /* Clean up the relationship with the children */
     {
         auto childrenCopy = data.hChildren;
         for (const auto& hChild : childrenCopy)
@@ -209,7 +211,7 @@ void CGameObject_System::Destroy_Object(CGameObject* pObj)
     }
 
     /* NOTE : Pending 시 주의할 로직 */
-    data.bActive = false;
+    data.bEnable = false;
 }
 
 void CGameObject_System::Set_Layer(CGameObject* pObj, Layer::LAYER_ID iNewLayer)
@@ -396,6 +398,7 @@ void CGameObject_System::Add_To_LayerBucket(CGameObject* pObj, Layer::LAYER_ID l
 
 void CGameObject_System::Flush_PendingDestroy()
 {
+    /* 틱 마지막에 Destroy 예정된 객체 전부 삭제하기 */
     if (m_pendingDestroys.empty())
         return;
 
@@ -413,6 +416,7 @@ void CGameObject_System::Flush_PendingDestroy()
             continue;
 
         CGameObject* pObj = m_wrapperPool[idx].get();
+        /* 컴포넌트 전부 해제 */
         if (pObj)
             pObj->Remove_All_Components();
         else
@@ -438,7 +442,7 @@ CGameObject* CGameObject_System::Get_Wrapper(OBJECT_HANDLE hObj)
         return nullptr;
 
     const auto& data = m_dataPool[hObj.Index()];
-    if (!data.bActive)
+    if (!data.bAllocated)
         return nullptr;
 
     if (data.iVersion != hObj.Version())
@@ -449,12 +453,11 @@ CGameObject* CGameObject_System::Get_Wrapper(OBJECT_HANDLE hObj)
 
 bool CGameObject_System::Is_Valid_Handle(OBJECT_HANDLE hObj) const
 {
-
     if (hObj.Index() == 0 || hObj.Index() >= m_dataPool.size())
         return false;
 
     const auto& tData = m_dataPool[hObj.Index()];
-    return tData.bActive && (tData.iVersion == hObj.Version());
+    return tData.bAllocated && (tData.iVersion == hObj.Version());
 }
 
 HRESULT CGameObject_System::Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& outSpecs)

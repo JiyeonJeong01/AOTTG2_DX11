@@ -13,10 +13,13 @@ NS_BEGIN(Engine)
 typedef struct tagGameObjectData
 {
     uint32_t    iVersion = 1;       /* slot's current version */
-    _bool       bActive = false;
+    _bool       bAllocated = false;
     _bool       bPendingDestroy = false;
     INSTANCE_UUID   tUUID{};
     ASSET_GUID      tProtoGUID{};
+
+    /* Game */
+    _bool       bEnable = false;
 
     /* For layer access in O(1) */
     Layer::LAYER_ID layer = Layer::INVALID_LAYER;
@@ -33,7 +36,7 @@ typedef struct tagGameObjectData
     /* Reset helper */
     void Reset()
     {
-        bActive = false;
+        bAllocated = false;
         layer = Layer::INVALID_LAYER;
         tUUID = {};
         bPendingDestroy = false;

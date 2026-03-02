@@ -145,7 +145,7 @@ public:
         DATA_T* pData = pPage->Get_Ptr(iOffset);
 
         /* 컴포넌트 해제를 알리거나 페이지의 슬롯 정리 용도로 호출한다. */
-        m_OnDeallocate.Invoke(handle);
+        m_OnDeallocate.Invoke(handle, pData);
 
         /* Destroy data */
         Destroy_At(pData);
@@ -192,7 +192,7 @@ public:
 
 public :
     template <typename TProc>
-    ListenerID Subscribe_OnDeallocate(void(TProc::*func)(COMPONENT_HANDLE), TProc* pProc)
+    ListenerID Subscribe_OnDeallocate(void(TProc::*func)(COMPONENT_HANDLE, DATA_T*), TProc* pProc)
     {
         return m_OnDeallocate.Add_Listener(func, pProc);
     }
@@ -202,7 +202,7 @@ private:
     std::vector<uint32_t>    m_freeIndices{};
     uint32_t            m_iNextIndex = 1; /* 0 is invalid handle */
 
-    CEvent<COMPONENT_HANDLE>     m_OnDeallocate{};
+    CEvent<COMPONENT_HANDLE, DATA_T*>     m_OnDeallocate{};
 
     /* Construction/Destruction helpers */
     static void Construct_At(DATA_T* p)

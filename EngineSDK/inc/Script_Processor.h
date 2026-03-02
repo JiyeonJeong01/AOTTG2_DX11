@@ -50,7 +50,7 @@ private :
     TypeID Find_Or_Create(const ASSET_GUID& tGUID);
     void Create_State_If_Needed(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData);
     void Reset_Data(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData);
-    void Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript);
+    void Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData);
 
 
 public:

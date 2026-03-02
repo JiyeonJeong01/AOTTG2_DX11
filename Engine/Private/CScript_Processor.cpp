@@ -354,10 +354,8 @@ void CScript_Processor::Reset_Data(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData)
     }
 }
 
-void CScript_Processor::Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript)
+void CScript_Processor::Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData)
 {
-    SCRIPT_DATA* pData = m_Pool.Get_Data_By_Handle(hScript);
-
     if (!pData) return;
 
     Reset_Data(hScript, pData);

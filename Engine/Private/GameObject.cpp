@@ -196,12 +196,12 @@ _bool CGameObject::Is_Valid() const
 
 void CGameObject::Set_Active(_bool bActive)
 {
-    SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).bActive = bActive;
+    SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).bAllocated = bActive;
 }
 
 _bool CGameObject::Get_Active() const
 {
-    return SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).bActive;
+    return SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).bAllocated;
 }
 
 void CGameObject::Set_ComponentMask(Component::COMPONENT_MASK mask)
