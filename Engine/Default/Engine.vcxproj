@@ -166,6 +166,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\CRender_System.h" />
     <ClInclude Include="..\Public\Editor_System.h" />
     <ClInclude Include="..\Public\Environment_Processor.h" />
+    <ClInclude Include="..\Public\GameInstance.h" />
     <ClInclude Include="..\Public\LayerHelper.h" />
     <ClInclude Include="..\Public\Light.h" />
     <ClInclude Include="..\Public\Render_Context.h" />
@@ -243,6 +244,11 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="Raycast.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Docs\AssetRegistry_Doc.md">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </None>
+    <ClCompile Include="..\Private\GameInstance.cpp" />
     <ClCompile Include="Raycast.cpp" />
     <Text Include="..\Docs\Script_Doc.md">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -297,6 +303,9 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\UI_Processor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Docs\Scene_Doc.md">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="..\Public\Component_System.inl" />
     <None Include="..\Public\GameObject.inl" />
   </ItemGroup>

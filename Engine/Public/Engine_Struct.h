@@ -24,6 +24,14 @@ namespace  Engine
         const std::string MESH = "Assets/Meshes";
     }
 
+    namespace GameConfig
+    {
+        typedef struct tagGameConfig
+        {
+            std::string startSceneName{};
+        } GAME_CONFIG;
+    }
+
 
     typedef struct ENGINE_DLL tagLabel
     {

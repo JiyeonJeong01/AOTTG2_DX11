@@ -110,7 +110,7 @@ _bool CPrototype_Handler::Create_Prototype_Spec(CGameObject* pObj)
     _bool bSuccess = SYS_ASSET.Register_File_Asset(savePath, ASSET_TYPE::PROTOTYPE, newGUID);
     IF_TRUE_RETURN_MSG_BREAK(!bSuccess, false, "Register_File_Asset failed");
 
-    IF_TRUE_RETURN_MSG_BREAK(Load_Prototype_From_GUID(newGUID), false, "Load_Prototype_From_GUID failed");
+    IF_TRUE_RETURN_MSG_BREAK(Load_Prototype_From_GUID(newGUID), false, "Load_Prototype_From_GUID failed"); /* 프로토타입 만든 직후 씬에 끌어오기 가능 */
 
     return true;
 }

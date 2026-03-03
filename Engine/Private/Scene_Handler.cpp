@@ -40,13 +40,12 @@ HRESULT CScene_Handler::Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode)
 
     m_pCurrentScene = std::move(pNewScene);
 
-    if (FAILED(Load_NextScene(path, tGUID)))
+    if (FAILED(Load_NextScene(path, tGUID))) // Load_SceneFile(...) -> LoadScene_Runtime(...)
     {
         m_pCurrentScene = std::move(pOldScene);
         return E_FAIL;
     }
 
-    // Load_SceneFile(...) -> LoadScene_Runtime(...)
     // current guid 갱신
     m_pCurrentScene->Set_GUID(tGUID);
     m_pCurrentScene->Set_Label(path.stem().string());
@@ -54,7 +53,7 @@ HRESULT CScene_Handler::Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode)
     /* --- TODO (Optional) Handle Editor/Game scene change logic */
 
     /* Publish event */
-    SCENECHANGE_EVENT_DATA onSceneChange(EVENT_TYPE::On_Scene_Changed, pNewScene.get(), pOldScene.get());
+    SCENECHANGE_EVENT_DATA onSceneChange(EVENT_TYPE::On_Scene_Changed, m_pCurrentScene.get(), pOldScene.get());
     SYS_EVENT.Trigger(onSceneChange);
 
     if (eMode == APP_MODE::EDITOR_EDIT)
@@ -314,7 +313,7 @@ HRESULT CScene_Handler::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& 
         pObj->Set_ProtoGUID(spec.protoGuid);
 
         auto [it, inserted] = objectMap.emplace(spec.uuid, pObj);
-        IF_TRUE_RETURN_MSG_BREAK(!inserted, E_FAIL, "Duplicated UUID");
+        //IF_TRUE_RETURN_MSG_BREAK(!inserted, E_FAIL, "Duplicated UUID");
     }
 
     for (const auto& spec : tSpecs)

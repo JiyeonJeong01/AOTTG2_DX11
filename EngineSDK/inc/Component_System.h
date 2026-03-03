@@ -21,6 +21,8 @@ public :
     void Build_RenderQueue(vector<DRAW_CMD>& cmds);
 	void Render();
 
+    void Update_Debug();
+
 public : /* Component Processor */
     /* Create component with default value */
 	COMPONENT_HANDLE Create_Component_By_Type(COMPONENT_TYPE eComType, OBJECT_HANDLE hGameObject);

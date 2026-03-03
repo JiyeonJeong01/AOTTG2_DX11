@@ -74,6 +74,16 @@ void CComponent_System::Build_RenderQueue(vector<DRAW_CMD>& cmds)
 
 void CComponent_System::Render()
 {
+
+}
+
+void CComponent_System::Update_Debug()
+{
+    IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::TRANSFORM)], , "m_pComProcessor is nullptr");
+    IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::RECT_TRANSFORM)], , "m_pComProcessor is nullptr");
+
+    SCAST(CTransform_Processor*, m_pComProcessors[PID_TO_INT(PROCESSOR_ID::TRANSFORM)].get())->Update(0.f);
+    SCAST(CRectTransform_Processor*, m_pComProcessors[PID_TO_INT(PROCESSOR_ID::RECT_TRANSFORM)].get())->Update(0.f);
 }
 
 COMPONENT_HANDLE CComponent_System::Create_Component_By_Type(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject)

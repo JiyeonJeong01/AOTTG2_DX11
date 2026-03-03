@@ -267,6 +267,8 @@ void CAsset_Registry::Register_Builtin_Inner(const ASSET_GUID& tGUID, ASSET_TYPE
     m_byGUID.emplace(tGUID, std::move(rec));
 }
 
+/* CASE.1 : 런타임에 생성되어 레지스트리에 등록되지 않은 경우 (e.g., 에디터 실행 중에 추가) */
+/* CASE.2 : 에셋 파일은 존재하지만 .meta가 사라졌거나 GUID와의 매핑이 깨진 경우 */
 _bool CAsset_Registry::Register_File_Asset(const std::filesystem::path& rawPath, ASSET_TYPE forcedType, ASSET_GUID forcedGuid)
 {
     if (rawPath.empty() || Is_MetaFile(rawPath))
@@ -279,53 +281,37 @@ _bool CAsset_Registry::Register_File_Asset(const std::filesystem::path& rawPath,
     ASSET_TYPE eType = (forcedType != ASSET_TYPE::UNKNOWN) ? forcedType : Detect_Type(normPath, bDir);
     const char* szType = AssetType_ToStr(eType);
 
-    // 메타파일 확인 및 기본 GUID 획득
+    /* 메타파일 확인 및 기본 GUID 보장 */
     ASSET_GUID tGUID = Ensure_Asset_Has_Meta(normPath, szType);
     if (!tGUID.Is_Valid())
         return false;
 
-    // GUID 레코드를 가리킬 iterator
     auto itGUID = m_byGUID.end();
 
-    // SAVE_AS 등을 위한 GUID 강제 (forcedGuid) 처리
+    /* GUID를 강제하는 경우 (e.g., Save As... ) */
     if (forcedGuid.Is_Valid() && forcedGuid != tGUID)
     {
         itGUID = m_byGUID.find(forcedGuid);
 
-        // ID 중복 체크: 강제하려는 ID를 이미 다른 파일(경로)가 쓰고 있다면 실패
-        if (itGUID != m_byGUID.end() && itGUID->second.path != normPath)
+        if (itGUID != m_byGUID.end() && itGUID->second.path != normPath) /* 이미 사용 중인 GUID or 경로 */
             return false;
 
-
-        // 실제 메타 파일의 내용을 forcedGuid로 교체
-        Write_MetaFile(Make_MetaPath(normPath), forcedGuid, szType);
+        Write_MetaFile(Make_MetaPath(normPath), forcedGuid, szType); /* forceGUID로 교체 */
         tGUID = forcedGuid;
     }
 
-    // Path -> GUID 맵핑 업데이트
+    /* Path <-> GUID 맵핑 갱신 */ 
     const std::string key = StringUtils::Path_To_UTF8(normPath);
     m_byPathUtf8[key] = tGUID;
-
-    // GUID -> Record 맵핑 업데이트
-    // 위에서 찾지 못했다면 여기서 찾음
     if (itGUID == m_byGUID.end())
-    {
         itGUID = m_byGUID.find(tGUID);
-    }
 
-    if (itGUID != m_byGUID.end())
+    if (itGUID != m_byGUID.end()) /* 해당 GUID로 이미 ASSET_RECORD 등록한 상태 */
     {
-        // 만약 이 GUID가 이전에 다른 경로를 가리키고 있었다면,기존 경로의 맵핑을 제거하여 유령 데이터를 방지
-        if (itGUID->second.path != normPath)
-        {
-            std::string oldKey = StringUtils::Path_To_UTF8(itGUID->second.path);
-            if (oldKey != key) // 자기 자신을 지우는 실수 방지
-            {
-                m_byPathUtf8.erase(oldKey);
-            }
-        }
-
-        // 기존 레코드 정보 갱신
+        /* GUID 충돌: 다른 경로가 동일 GUID를 사용 중이면 실패 처리 */
+        IF_TRUE_RETURN_MSG_BREAK(itGUID->second.path != normPath, false, "Register_File_Asset failed: GUID collision");
+        
+        /* 기존 레코드 정보 갱신 */
         itGUID->second.eType = eType;
         itGUID->second.eSrc = ASSET_SRC::FILE;
         itGUID->second.path = normPath;
@@ -333,7 +319,7 @@ _bool CAsset_Registry::Register_File_Asset(const std::filesystem::path& rawPath,
     }
     else
     {
-        // 신규 레코드 등록
+        /* 신규 레코드 등록 */
         ASSET_RECORD rec{ tGUID, eType, ASSET_SRC::FILE, normPath, bDir };
         m_byGUID.emplace(tGUID, std::move(rec));
     }

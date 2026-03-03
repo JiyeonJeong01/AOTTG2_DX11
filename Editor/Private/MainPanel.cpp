@@ -275,6 +275,7 @@ void CMainPanel::Draw_Menu_File()
 
     if (ImGui::MenuItem("Open SCENE...", "Ctrl+O"))
     {
+        /* 오픈할 씬 선택 -> 경로 저장 */
         const std::wstring pathW = Editor_Util::SaveFileDialog(
             L"SCENE Files (*.scene)\0*.scene\0All Files (*.*)\0*.*\0\0",
             sceneFolder.c_str()
@@ -285,25 +286,22 @@ void CMainPanel::Draw_Menu_File()
             std::filesystem::path path(pathW);
 
             /* GUID 찾기 */
-            ASSET_GUID tGUID{};
-            SYS_ASSET.Try_Get_GUID(path, tGUID);
-            const ASSET_RECORD* pRec = tGUID.Is_Valid() ? SYS_ASSET.Find(tGUID) : nullptr;
-
-            if (pRec)
-            {
-                tGUID = pRec->tGUID;
-            }
-            else
+            ASSET_GUID outGUID{};
+            if (!SYS_ASSET.Try_Get_GUID(path, outGUID) || !outGUID.Is_Valid())
             {
                 /* Registry에 없으면 등록 시도 */
-                tGUID = ASSET_GUID::New_GUID();
-                IF_TRUE_RETURN_MSG_BREAK(!SYS_ASSET.Register_File_Asset(path, ASSET_TYPE::SCENE, tGUID), ,
+                IF_TRUE_RETURN_MSG_BREAK(!SYS_ASSET.Register_File_Asset(path, ASSET_TYPE::SCENE, ASSET_GUID{}), ,
                     "Open Scene failed: Register_File_Asset failed.");
+
+                /* 등록 후 다시 GUID를 얻는다 */
+                (void)SYS_ASSET.Try_Get_GUID(path, outGUID);
+                IF_TRUE_RETURN_MSG_BREAK(!outGUID.Is_Valid(), , "Open Scene failed: GUID invalid after register.");
             }
 
-            IF_TRUE_RETURN_MSG_BREAK(!tGUID.Is_Valid(), , "Open Scene failed: GUID invalid.");
 
-            IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(tGUID, APP_MODE::EDITOR_EDIT), ,
+            IF_TRUE_RETURN_MSG_BREAK(!outGUID.Is_Valid(), , "Open Scene failed: GUID invalid.");
+
+            IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(outGUID, APP_MODE::EDITOR_EDIT), ,
                 "Open Scene failed: Change_Scene failed.");
 
             m_scenePath = pathW;
@@ -468,7 +466,7 @@ void CMainPanel::Draw_Toolbar()
 
         ImGui::SameLine();
 
-        ImGui::BeginDisabled(!m_bPlaying);
+        ImGui::BeginDisabled(m_bPlaying);
         if (ImGui::Button("Step", ImVec2(button_size, 26)))
         {
             SYS_EDITOR.Step(SYS_CORE.Compute_FrameDT());

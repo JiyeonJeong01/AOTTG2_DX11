@@ -10,6 +10,7 @@
 #include "Event_System.h"
 #include "CRender_System.h"
 #include "Editor_System.h"
+#include "GameInstance.h"
 
 /* --- sub --- */
 #include "Graphic_Device.h"
@@ -91,6 +92,8 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
     /* --- Editor_System --- */
     IF_FAIL_RETURN_MSG_BREAK(SYS_EDITOR.Initialize(ProjectConfig::PATH + ProjectConfig::ROOT), E_FAIL, "Editor System failed Initialize");
 
+    /* --- GameInstance --- */
+    IF_FAIL_RETURN_MSG_BREAK(GAME_INSTANCE.Initialize(), E_FAIL, "GAME_INSTANCE failed Initialize");
 
     /* --- Register event --- */
     SYS_EVENT.Subscribe(EVENT_TYPE::On_Window_Resize, &CCore_System::On_Resize, this);
@@ -107,19 +110,15 @@ void CCore_System::Update_Editor_Engine(_float fDT)
     SYS_RENDER.Priority_Update();
 
     SYS_EDITOR.Update(fDT);
-    /* TODO 이거 빼라~*/
-    Update_RuntimeEngine(fDT, pScene);
 
     switch (pScene->Get_State())
     {
     case SCENE_STATE::EDIT :
-        /* 로직 실행하지 않는다. */
-        return;
-    case SCENE_STATE::PAUSE :
-        /* 스텝만 허용한다. */
+    case SCENE_STATE::PAUSE : /* 스텝 허용 */
+        SYS_COMPONENT.Update_Debug();
         return;
     case SCENE_STATE::PLAY :
-        //Update_RuntimeEngine(fDT, pScene);
+        Update_RuntimeEngine(fDT, pScene);
         return;
     }
 }
@@ -148,12 +147,7 @@ HRESULT CCore_System::Draw()
     //if (pScene)
     //    pScene->Render();
 
-    //SYS_COMPONENT.Render();
     SYS_RENDER.Render();
-
-    /* TODO --------------------------------------------------*/
-    /* TODO : Renderer에서 빌드된 렌더 큐 처리 로직 필수 추가    */
-    /* TODO --------------------------------------------------*/
 
     return S_OK;
 }

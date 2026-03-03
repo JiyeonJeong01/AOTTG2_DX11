@@ -111,6 +111,8 @@ private:                                                    \
 
 #define SYS_EDITOR		        GET_INSTANCE(Engine::CEditor_System)
 
+#define GAME_INSTANCE		        GET_INSTANCE(Engine::CGameInstance)
+
 
 //#define RESOURCES	GET_INSTANCE(CResourceManager)
 //#define SCENE		GET_INSTANCE(CScene_Handler)

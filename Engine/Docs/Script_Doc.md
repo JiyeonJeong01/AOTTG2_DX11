@@ -1,4 +1,4 @@
-## Script_System
+﻿## Script_System
 
 ### 0. 용어 정리
 #### Script Asset(`.script`)

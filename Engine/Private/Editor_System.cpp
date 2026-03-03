@@ -53,17 +53,18 @@ void CEditor_System::Update(_float fDT)
 	Submit_SceneViewCamera();
 }
 
+/* NOTE : 에디터 시작 시점에 기본 씬(Untitled)으로 시작한다. */
 ASSET_GUID CEditor_System::Ensure_DefaultScene()
 {
     IF_TRUE_RETURN_MSG_BREAK(m_pathAsset.empty(), ASSET_GUID{}, "Ensure_DefaultScene failed: assetRoot empty");
 
     const std::filesystem::path sceneDir = m_pathAsset / "Scenes";
-    const std::filesystem::path scenePath = sceneDir / "Untitled.scene";
+    const std::filesystem::path scenePath = sceneDir / "Untitled.scene"; /* 실제 파일 경로에 존재하는 기본 씬  */
 
     std::error_code ec;
     std::filesystem::create_directories(sceneDir, ec);
 
-    if (!std::filesystem::exists(scenePath))
+    if (!std::filesystem::exists(scenePath)) /* 만약 기본 씬이 없는 경우, 즉시 파일 시스템에 생성하여 보장한다. */
     {
         json root;
         root["version"] = 1;
@@ -74,7 +75,7 @@ ASSET_GUID CEditor_System::Ensure_DefaultScene()
         ofs << root.dump(2);
     }
 
-    /* 레지스트리에 등록 (.meta와 path<->guid 맵 보장) */
+    /* 기본 씬인 Untitled.scene이 CAsset_Registry에 등록돼 유효함을 보장한다 (.meta와 path<->guid 맵 보장) */
     SYS_ASSET.Register_File_Asset(scenePath, ASSET_TYPE::SCENE, ASSET_GUID{});
 
     ASSET_GUID guid{};
@@ -96,6 +97,8 @@ ASSET_GUID CEditor_System::Create_NewScene_Asset(std::filesystem::path* outPath)
     std::filesystem::create_directories(sceneDir, ec);
     std::filesystem::path path;
 
+    /* 새 씬 파일을 일단 디스크에 생성하고, GUID를 발급받아 CAsset_Registry에 우선 등록한다. */
+    /* 이름 변경은 직후 에디터에서 수행된다. */
     for (int i = 1; i < 10000; ++i)
     {
         path = sceneDir / ("Untitled_" + std::to_string(i) + ".scene");

@@ -5,6 +5,7 @@
 #include "Core_System.h"
 #include "Event_System.h"
 #include "WindowResize_Event.h"
+#include "GameInstance.h"
 
 #define MAX_LOADSTRING 100
 
@@ -57,6 +58,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     if (nullptr == pMainApp)
         return FALSE;
 
+    GAME_INSTANCE.SetUp_Game();
 
     if (!CCore_System::GetInstancePtr())
     {
