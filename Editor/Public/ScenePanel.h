@@ -6,6 +6,7 @@ struct ID3D11ShaderResourceView;
 NS_BEGIN(Engine)
 class CGameObject;
 struct tagTransformData;
+struct tagRectTransformData;
 NS_END
 
 NS_BEGIN(Editor)
@@ -45,7 +46,8 @@ private:
     _bool    m_bShowAxis = true;
 
     Engine::CGameObject*        m_pTarget{};
-    Engine::tagTransformData*   m_pData{};
+    Engine::tagTransformData*   m_pTransformData{};
+    Engine::tagRectTransformData*   m_pRectTransformData{};
 
 private:
     // cached SRV ptr for ImGui::Image

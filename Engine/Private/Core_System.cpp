@@ -75,7 +75,7 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
     IF_FAIL_RETURN_MSG_BREAK(SYS_ASSET.Initialize(ProjectConfig::PATH + ProjectConfig::ROOT), E_FAIL, "Asset System failed Initialize");
 
     /* --- Component System ---*/
-    IF_FAIL_RETURN_MSG_BREAK(SYS_COMPONENT.Initialize(m_pDevice, m_pContext, iWidth, iHeight), E_FAIL, "Component System failed Initialize");
+    IF_FAIL_RETURN_MSG_BREAK(SYS_COMPONENT.Initialize(m_pDevice, m_pContext), E_FAIL, "Component System failed Initialize");
 
     /* --- Object System --- */
     IF_FAIL_RETURN_MSG_BREAK(SYS_GAMEOBJECT.Initialize(), E_FAIL, "Object System failed Initialize");
@@ -86,7 +86,7 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
     /* --- Event System --- */
     IF_FAIL_RETURN_MSG_BREAK(SYS_EVENT.Initialize(), E_FAIL, "Event System failed Initialize");
 
-    /* --- Event System --- */
+    /* --- Render System --- */
     IF_FAIL_RETURN_MSG_BREAK(SYS_RENDER.Initialize(m_pDevice, m_pContext, iWidth, iHeight), E_FAIL, "Renderer System failed Initialize");
 
     /* --- Editor_System --- */

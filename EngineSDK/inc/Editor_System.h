@@ -74,8 +74,8 @@ private:
     /* 회전 입력 관련 */
     _bool    m_bCalculAcc = true; 
 
-    _float m_fMouseSens = 3.f;
-
+    _float  m_fMouseSens = 3.f;
+    _float  m_fWheelZoomSpeed = 3.f;
 /* -------------------- SceneView camera -------------------- */
 private :
     CTransform_Processor*           m_pTransform_Processor{};

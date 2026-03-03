@@ -3,6 +3,7 @@
 
 NS_BEGIN(Engine)
 struct tagTransformData;
+struct tagRectTransformData;
 NS_END
 
 NS_BEGIN(Editor)
@@ -26,8 +27,16 @@ public:
         const ImVec2& viewportPos,
         const ImVec2& viewportSize
     );
-
     static void Apply_World_To_TransformData(const float* world16, Engine::tagTransformData& td);
+
+    //void Render_UI(
+    //    const float* view,
+    //    const float* proj,
+    //    float* world,
+    //    const ImVec2& viewportPos,
+    //    const ImVec2& viewportSize
+    //);
+    //static void Apply_World_To_RectTransformData(const float* world16, tagRectTransformData& td, const ImVec2& viewportSize);
 
 private:
     GIZMO_MODE  m_Mode = GIZMO_MODE::TRANSLATE;

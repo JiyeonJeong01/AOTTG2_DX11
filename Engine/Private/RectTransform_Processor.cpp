@@ -92,11 +92,8 @@ CRectTransform_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE h
 
 inline void CRectTransform_Processor::Bake_World(RECTTRANSFORM_DATA* pData)
 {
-    const _float xCentered = pData->vPosPx.x;
-    const _float yCentered = pData->vPosPx.y;
-
     const _matrix S = XMMatrixScaling(pData->vSizePx.x, -pData->vSizePx.y, 1.f);
-    const _matrix T = XMMatrixTranslation(xCentered, yCentered, 0.f);
+    const _matrix T = XMMatrixTranslation(pData->vPosPx.x, pData->vPosPx.y, 0.f);
 
     XMStoreFloat4x4(&pData->matWorld, S * T);
 

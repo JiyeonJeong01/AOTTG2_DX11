@@ -52,7 +52,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     EngineDesc.eWinMode = WINMODE::WIN;
     EngineDesc.hWnd = g_hWnd;
     EngineDesc.hInst = g_hInst;
-    EngineDesc.iViewportSize = {Client::g_iWinSizeX, Client::g_iWinSizeY };
+    EngineDesc.iViewportSize = {Client::g_iWinSizeX, Client::g_iWinSizeY }; /* 고정 해상도 1920 * 1080 */
 
     pMainApp = Client::CMainApp::Create(EngineDesc);
     if (nullptr == pMainApp)

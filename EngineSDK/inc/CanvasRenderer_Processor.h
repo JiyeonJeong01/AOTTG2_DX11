@@ -15,7 +15,7 @@ public:
     ~CCanvasRenderer_Processor() override;
 
 public:
-    HRESULT Initialize(_uint iWidth, _uint iHeight);
+    HRESULT Initialize();
     void    Update(_float fDT) override;
     void    LateUpdate(_float fDT) override;
     void    Build_RenderQueue(vector<DRAW_CMD>& outCmds);
@@ -40,7 +40,7 @@ private:
     _float4x4 m_matProj{};
 
 public:
-    static std::unique_ptr<CCanvasRenderer_Processor> Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CRectTransform_Processor* pProcessor,_uint iWidth, _uint iHeight);
+    static std::unique_ptr<CCanvasRenderer_Processor> Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CRectTransform_Processor* pProcessor);
 };
 
 NS_END

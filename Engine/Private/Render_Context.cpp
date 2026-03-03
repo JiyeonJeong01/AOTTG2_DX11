@@ -69,8 +69,6 @@ const UI_GLOBAL& CRender_Context::Get_UI_Global()
 
 void CRender_Context::Set_UI_Global(const UI_GLOBAL& tUI)
 {
-    __debugbreak(); // 누가 덮는지 콜스택으로 잡기
-
     m_gUI = tUI;
 }
 

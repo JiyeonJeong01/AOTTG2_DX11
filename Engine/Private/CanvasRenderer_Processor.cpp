@@ -21,14 +21,11 @@ CCanvasRenderer_Processor::CCanvasRenderer_Processor(ID3D11Device* pDevice, ID3D
 
 CCanvasRenderer_Processor::~CCanvasRenderer_Processor() = default;
 
-HRESULT CCanvasRenderer_Processor::Initialize(_uint iWidth, _uint iHeight)
+HRESULT CCanvasRenderer_Processor::Initialize()
 {
     IF_NULL_RETURN_MSG_BREAK(m_pRectTransform_Processor, E_FAIL, "Transform Processor is nullptr");
 
     m_hUIRectMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_RECT);
-
-    Math::Store(m_matProj, XMMatrixOrthographicOffCenterLH(0.f, SCAST(_float, iWidth), SCAST(_float, iHeight), 0.f, 0.f, 1.f));
-    Math::Store(m_matView, XMMatrixIdentity());
 
     D3D11_RASTERIZER_DESC rd{};
     rd.FillMode = D3D11_FILL_SOLID;
@@ -48,9 +45,6 @@ HRESULT CCanvasRenderer_Processor::Initialize(_uint iWidth, _uint iHeight)
 
 void CCanvasRenderer_Processor::Update(_float fDT)
 {
-    //auto ui = SYS_RENDER.Get_UI_Global();
-    //m_matProj = ui.matProj;
-    //m_matView = ui.matView;
 }
 
 void CCanvasRenderer_Processor::LateUpdate(_float fDT)
@@ -187,11 +181,11 @@ uint64_t CCanvasRenderer_Processor::Make_SortKey(const CANVAS_RENDERER_DATA& tDa
     return key;
 }
 
-std::unique_ptr<CCanvasRenderer_Processor> CCanvasRenderer_Processor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CRectTransform_Processor* pProcessor, _uint iWidth, _uint iHeight)
+std::unique_ptr<CCanvasRenderer_Processor> CCanvasRenderer_Processor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CRectTransform_Processor* pProcessor)
 {
     auto pInstance = std::make_unique<CCanvasRenderer_Processor>(pDevice, pContext, pProcessor);
 
-    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(iWidth, iHeight), nullptr, "Create instance failed");
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "Create instance failed");
     return pInstance;
 }
 

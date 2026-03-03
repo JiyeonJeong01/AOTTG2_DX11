@@ -1,7 +1,9 @@
 ﻿#include "Gizmo.h"
 
+#include "Editor_Util.h"
 #include "ImGuizmo.h"
 #include "Transform.h"
+#include "RectTransform.h"
 
 using namespace DirectX;
 
@@ -26,6 +28,18 @@ static ImGuizmo::OPERATION To_Op(GIZMO_MODE m)
     }
 }
 
+static ImGuizmo::OPERATION To_UI_Op(GIZMO_MODE m)
+{
+    switch (m)
+    {
+    case GIZMO_MODE::TRANSLATE: return ImGuizmo::TRANSLATE; 
+    case GIZMO_MODE::ROTATE:    return ImGuizmo::ROTATE_Z;
+    case GIZMO_MODE::SCALE:     return ImGuizmo::SCALE_X | ImGuizmo::SCALE_Y;
+    default:                    return ImGuizmo::TRANSLATE;
+    }
+}
+
+
 static ImGuizmo::MODE To_Mode(GIZMO_SPACE s)
 {
     switch (s)
@@ -36,16 +50,7 @@ static ImGuizmo::MODE To_Mode(GIZMO_SPACE s)
     }
 }
 
-static void Transpose16(const float* src16, float* dst16)
-{
-    float t[16];
-    memcpy(t, src16, sizeof(float) * 16);
 
-    dst16[0] = t[0];  dst16[1] = t[4];  dst16[2] = t[8];  dst16[3] = t[12];
-    dst16[4] = t[1];  dst16[5] = t[5];  dst16[6] = t[9];  dst16[7] = t[13];
-    dst16[8] = t[2];  dst16[9] = t[6];  dst16[10] = t[10]; dst16[11] = t[14];
-    dst16[12] = t[3];  dst16[13] = t[7];  dst16[14] = t[11]; dst16[15] = t[15];
-}
 
 void CGizmo::Set_Mode(GIZMO_MODE eMode)
 {
@@ -78,21 +83,14 @@ void CGizmo::Render(
     if (!view || !proj || !world)
         return;
 
-    // SceneView 위에 그리기 위해 rect 설정
     ImGuizmo::BeginFrame();
     ImGuizmo::SetOrthographic(false);
 
     ImGuizmo::SetDrawlist();
     ImGuizmo::SetRect(viewportPos.x, viewportPos.y, viewportSize.x, viewportSize.y);
 
-    // ImGuizmo가 column-major로 취급하는 경우가 많아서 transpose로 안전하게
     const ImGuizmo::OPERATION op = To_Op(m_Mode);
     const ImGuizmo::MODE mode = To_Mode(m_Space);
-
-    // (선택) 스냅
-    // float snap[3] = { 1.f, 1.f, 1.f }; // move
-    // float snapAngle = 15.f;           // rotate degree
-    // bool useSnap = ImGui::IsKeyDown(ImGuiKey_LeftCtrl);
 
     ImGuizmo::Manipulate(
         view,
@@ -101,12 +99,11 @@ void CGizmo::Render(
         mode,
         world,
         nullptr,
-        nullptr // useSnap ? (op==ImGuizmo::ROTATE ? &snapAngle : snap) : nullptr
+        nullptr
     );
 
     if (ImGuizmo::IsUsing() || ImGuizmo::IsOver())
     {
-        // 다시 DX row-major world로 되돌려서 out
         //Transpose16(world, world);
     }
 }
@@ -133,6 +130,60 @@ void CGizmo::Apply_World_To_TransformData(const float* world16, tagTransformData
     td.matWorld = m;
     td.bDirty = true;
 }
+
+/* TODO UI 기즈모 보류 : 전치 시키면 기즈모 안 보이고 안 시키면 Nan 이슈 아 짜증나 미치겟네 */
+//void CGizmo::Render_UI(
+//    const float* view,
+//    const float* proj,
+//    float* world,
+//    const ImVec2& viewportPos,
+//    const ImVec2& viewportSize
+//)
+//{
+//    if (!view || !proj || !world) return;
+//
+//    ImGuizmo::BeginFrame();
+//    ImGuizmo::SetOrthographic(true);
+//    ImGuizmo::SetDrawlist();
+//    ImGuizmo::SetRect(viewportPos.x, viewportPos.y, viewportSize.x, viewportSize.y);
+//
+//    const ImGuizmo::OPERATION op = To_UI_Op(m_Mode);
+//    const ImGuizmo::MODE mode = ImGuizmo::LOCAL;
+//
+//    ImGuizmo::Manipulate(
+//        view,
+//        proj,
+//        op,
+//        mode,
+//        world,
+//        nullptr,
+//        nullptr
+//    );
+//}
+//
+//void CGizmo::Apply_World_To_RectTransformData(const float* world16, tagRectTransformData& td, const ImVec2& viewportSize)
+//{
+//    float worldRM[16];
+//    Editor_Util::Transpose16(world16, worldRM);
+//
+//    XMFLOAT4X4 m;
+//    memcpy(&m, worldRM, sizeof(float) * 16);
+//
+//    XMMATRIX M = XMLoadFloat4x4(&m);
+//
+//    XMVECTOR S, R, T;
+//    if (!XMMatrixDecompose(&S, &R, &T, M))
+//        return;
+//
+//    XMFLOAT3 s; XMStoreFloat3(&s, S);
+//    XMFLOAT3 t; XMStoreFloat3(&t, T);
+//
+//    td.vSizePx = { fabsf(s.x), fabsf(s.y) };
+//    td.vPosPx = { t.x, t.y };
+//
+//    td.matWorld = m;
+//    td.bDirty = true;
+//}
 
 std::unique_ptr<CGizmo> CGizmo::Create()
 {

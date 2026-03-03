@@ -18,7 +18,7 @@ CComponent_System::CComponent_System() = default;
 CComponent_System::~CComponent_System() = default;
 
 
-HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iWidth, _uint iHeight)
+HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     static_assert((uint32_t)COMPONENT_TYPE::END <= 32);
 
@@ -36,7 +36,7 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::RECT_TRANSFORM)]
         = CRectTransform_Processor::Create();
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)]
-        = CCanvasRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CRectTransform_Processor*, m_pComProcessors[COM_TO_PID(COMPONENT_TYPE::RECT_TRANSFORM)].get()), iWidth, iHeight);
+        = CCanvasRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CRectTransform_Processor*, m_pComProcessors[COM_TO_PID(COMPONENT_TYPE::RECT_TRANSFORM)].get()));
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::SCRIPT)]
         = CScript_Processor::Create();
 

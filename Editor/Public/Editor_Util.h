@@ -154,4 +154,15 @@ static void OpenFile_In_VisualStudio(const std::filesystem::path& p)
     ShellExecuteA(NULL, "edit", p.string().c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 
+static void Transpose16(const float* src16, float* dst16)
+{
+    float t[16];
+    memcpy(t, src16, sizeof(float) * 16);
+
+    dst16[0] = t[0];  dst16[1] = t[4];  dst16[2] = t[8];  dst16[3] = t[12];
+    dst16[4] = t[1];  dst16[5] = t[5];  dst16[6] = t[9];  dst16[7] = t[13];
+    dst16[8] = t[2];  dst16[9] = t[6];  dst16[10] = t[10]; dst16[11] = t[14];
+    dst16[12] = t[3];  dst16[13] = t[7];  dst16[14] = t[11]; dst16[15] = t[15];
+}
+
 NS_END

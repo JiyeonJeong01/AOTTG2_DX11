@@ -14,7 +14,7 @@ class ENGINE_DLL CComponent_System final
 {
     DECLARE_SINGLETON(CComponent_System)
 public :
-	HRESULT Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iWidth, _uint iHeight);
+	HRESULT Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void Update(_float fDT);
 	void LateUpdate(_float fDT);
 	void FixedUpdate(_float fDT);

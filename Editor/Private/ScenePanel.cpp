@@ -10,6 +10,9 @@
 #include "CRender_System.h"
 #include "Render_Context.h"
 #include "Editor_System.h"
+#include "Editor_Util.h"
+#include "RectTransform.h"
+
 
 NS_BEGIN(Editor)
     CScenePanel::CScenePanel(const std::string& strPanelName)
@@ -174,35 +177,37 @@ void CScenePanel::Draw_Viewport()
         SYS_EDITOR.Pick_SceneView(px, py, m_FIXEDW, m_FIXEDH);
     }
 
-    if (!m_pTarget || !m_pData)
+    if (!m_pTarget)
         return;
 
-    /* ----------------------- 기즈모  ----------------------- */
-    const _matrix matWorld = Math::Load(m_pData->matWorld);
-
-    _float view[16];
-    _float proj[16];
-    _float world[16];
-
-    auto MatToFloat16 = [this](const _matrix& mat, _float(&outFloat)[16])->void
-        {
-            _float4x4 tmpMat;
-            Math::Store(tmpMat, mat);
-
-            for (size_t i = 0; i < 4; ++i)
-                for (size_t j = 0; j < 4; ++j)
-                    outFloat[i * 4 + j] = tmpMat.m[i][j];
-        };
-
-    MatToFloat16(matWorld, world);
-    MatToFloat16(matView, view);
-    MatToFloat16(matProj, proj);
-
-    m_pGizmo->Render(view, proj, world, vpPos, vpSize);
-
-    if (ImGuizmo::IsUsing())
+    if (m_pTransformData) /* ---------------- Transform -----------------*/
     {
-        CGizmo::Apply_World_To_TransformData(world, *m_pData);
+        const _matrix matWorld = Math::Load(m_pTransformData->matWorld);
+
+        _float view[16];
+        _float proj[16];
+        _float world[16];
+
+        auto MatToFloat16 = [this](const _matrix& mat, _float(&outFloat)[16])->void
+            {
+                _float4x4 tmpMat;
+                Math::Store(tmpMat, mat);
+
+                for (size_t i = 0; i < 4; ++i)
+                    for (size_t j = 0; j < 4; ++j)
+                        outFloat[i * 4 + j] = tmpMat.m[i][j];
+            };
+
+        MatToFloat16(matWorld, world);
+        MatToFloat16(matView, view);
+        MatToFloat16(matProj, proj);
+
+        m_pGizmo->Render(view, proj, world, vpPos, vpSize);
+
+        if (ImGuizmo::IsUsing())
+        {
+            CGizmo::Apply_World_To_TransformData(world, *m_pTransformData);
+        }
     }
 }
 
@@ -212,12 +217,15 @@ void CScenePanel::Set_Target(Engine::CGameObject* pObj)
         return;
 
     m_pTarget = pObj;
-    m_pData = nullptr;
-    if (!m_pTarget)
-        return;
+    m_pTransformData = nullptr;
+    m_pRectTransformData = nullptr;
 
-    Engine::CTransform tr = m_pTarget->Get_Component<Engine::CTransform>();
-    m_pData = tr._Data();
+    if (false == pObj->Get_Handle().Is_UI()) /* 3d */
+    {
+        Engine::CTransform tr = m_pTarget->Get_Component<Engine::CTransform>();
+        m_pTransformData = tr._Data();
+    }
+
 }
 
 void CScenePanel::Ensure_RenderTarget()
@@ -226,6 +234,11 @@ void CScenePanel::Ensure_RenderTarget()
     if (m_pSceneSRV)
         return;
 
+    UI_GLOBAL tSceneRTV{};
+    Math::Store(tSceneRTV.matView, XMMatrixIdentity());
+    Math::Store(tSceneRTV.matProj, XMMatrixOrthographicOffCenterLH(0.f, m_FIXEDW, m_FIXEDH, 0.f, 0.f, 1.f));
+
+    SYS_RENDER.Set_UI_Global(tSceneRTV);
     SYS_CORE.Ready_SceneRenderTarget(m_FIXEDW, m_FIXEDH);
     SYS_CORE.Share_SceneSRV(&m_pSceneSRV);
 }

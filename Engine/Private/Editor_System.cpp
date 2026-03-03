@@ -337,9 +337,10 @@ void CEditor_System::Build_SceneView_Matrices()
 
 void CEditor_System::Update_Input(_float fDT)
 {
-	/* ----------------------------- 마우스 입력 ----------------------------- */
-	const long dx = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::HORIZONTAL);
-	const long dy = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::VERTICAL);
+    /* ----------------------------- 마우스 입력 ----------------------------- */
+    const long dx = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::HORIZONTAL);
+    const long dy = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::VERTICAL);
+    const long dz = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::DEPTH);
 
     if (SYS_INPUT.Get_Key(VK_RBUTTON))
     {
@@ -352,69 +353,79 @@ void CEditor_System::Update_Input(_float fDT)
         if (m_fPitch < -limit) m_fPitch = -limit;
     }
 
-	/* ----------------------------- 이동 입력 ----------------------------- */
+    /* ----------------------------- 이동 입력 ----------------------------- */
 
-	/* 현재 카메라 회전으로 로컬 축 만들기
-	 * NOTE ! 반드시 Build_SceneView_Matrices와 동기화해줘야 한다. */ 
-	const _matrix matRot = Math::Load(Math::RotationRollPitchYaw(m_fPitch, m_fYaw, 0.f));
+    /* 현재 카메라 회전으로 로컬 축 만들기
+     * NOTE ! 반드시 Build_SceneView_Matrices와 동기화해줘야 한다. */
+    const _matrix matRot = Math::Load(Math::RotationRollPitchYaw(m_fPitch, m_fYaw, 0.f));
 
-	const _float3 vForward = Engine::Math::TransformNormal(_float3{ 0.f, 0.f, 1.f }, matRot);   /* Look(Z+) */ 
-	const _float3 vRight = Engine::Math::TransformNormal(_float3{ 1.f, 0.f, 0.f }, matRot);     /* Right(X+) */ 
-	const _float3 vUp = Engine::Math::TransformNormal(_float3{ 0.f, 1.f, 0.f }, matRot);        /* Up(Y+) */ 
+    const _float3 vForward = Engine::Math::TransformNormal(_float3{ 0.f, 0.f, 1.f }, matRot);   /* Look(Z+) */
+    const _float3 vRight = Engine::Math::TransformNormal(_float3{ 1.f, 0.f, 0.f }, matRot);     /* Right(X+) */
+    const _float3 vUp = Engine::Math::TransformNormal(_float3{ 0.f, 1.f, 0.f }, matRot);        /* Up(Y+) */
 
-	_float3 vMove = { 0.f, 0.f, 0.f };
+    /* 마우스 휠 줌인/아웃 : 카메라를 전방/후방으로 이동 */
+    if (dz != 0)
+    {
+        const _float fWheelStep = SCAST(_float, dz) * 0.01f * m_fWheelZoomSpeed;
 
-	if (SYS_INPUT.Get_Key('W')) { vMove.x += vForward.x; vMove.y += vForward.y; vMove.z += vForward.z; }
-	if (SYS_INPUT.Get_Key('S')) { vMove.x -= vForward.x; vMove.y -= vForward.y; vMove.z -= vForward.z; }
+        m_vCamPos.x += vForward.x * fWheelStep;
+        m_vCamPos.y += vForward.y * fWheelStep;
+        m_vCamPos.z += vForward.z * fWheelStep;
+    }
 
-	if (SYS_INPUT.Get_Key('D')) { vMove.x += vRight.x;   vMove.y += vRight.y;   vMove.z += vRight.z; }
-	if (SYS_INPUT.Get_Key('A')) { vMove.x -= vRight.x;   vMove.y -= vRight.y;   vMove.z -= vRight.z; }
+    _float3 vMove = { 0.f, 0.f, 0.f };
 
-	/* E/Q : 로컬 기준으로 상승/하강 */ 
-	if (SYS_INPUT.Get_Key('E')) { vMove.x += vUp.x;      vMove.y += vUp.y;      vMove.z += vUp.z; }
-	if (SYS_INPUT.Get_Key('Q')) { vMove.x -= vUp.x;      vMove.y -= vUp.y;      vMove.z -= vUp.z; }
+    if (SYS_INPUT.Get_Key('W')) { vMove.x += vForward.x; vMove.y += vForward.y; vMove.z += vForward.z; }
+    if (SYS_INPUT.Get_Key('S')) { vMove.x -= vForward.x; vMove.y -= vForward.y; vMove.z -= vForward.z; }
 
-	/* 입력 방향 정규화 */ 
-	{
-		const _float lenSq = vMove.x * vMove.x + vMove.y * vMove.y + vMove.z * vMove.z;
-		if (lenSq > 0.f)
-		{
-			const _float invLen = 1.f / sqrtf(lenSq);
-			vMove.x *= invLen;
-			vMove.y *= invLen;
-			vMove.z *= invLen;
-		}
-	}
-	_float fTargetSpeed = m_fCamSpeed;
+    if (SYS_INPUT.Get_Key('D')) { vMove.x += vRight.x;   vMove.y += vRight.y;   vMove.z += vRight.z; }
+    if (SYS_INPUT.Get_Key('A')) { vMove.x -= vRight.x;   vMove.y -= vRight.y;   vMove.z -= vRight.z; }
 
-	/* 가속/감속 포함한 이동 */ 
-	if (m_bCalculAcc)
-	{
-		const _float3 vTargetVel = { vMove.x * fTargetSpeed, vMove.y * fTargetSpeed, vMove.z * fTargetSpeed };
+    /* E/Q : 로컬 기준으로 상승/하강 */
+    if (SYS_INPUT.Get_Key('E')) { vMove.x += vUp.x;      vMove.y += vUp.y;      vMove.z += vUp.z; }
+    if (SYS_INPUT.Get_Key('Q')) { vMove.x -= vUp.x;      vMove.y -= vUp.y;      vMove.z -= vUp.z; }
 
-		const _float tAcc = (m_fCamAcc > 0.f) ? (m_fCamAcc * fDT) : 1.f;
-		m_vCamVel.x += (vTargetVel.x - m_vCamVel.x) * (tAcc > 1.f ? 1.f : tAcc);
-		m_vCamVel.y += (vTargetVel.y - m_vCamVel.y) * (tAcc > 1.f ? 1.f : tAcc);
-		m_vCamVel.z += (vTargetVel.z - m_vCamVel.z) * (tAcc > 1.f ? 1.f : tAcc);
+    /* 입력 방향 정규화 */
+    {
+        const _float lenSq = vMove.x * vMove.x + vMove.y * vMove.y + vMove.z * vMove.z;
+        if (lenSq > 0.f)
+        {
+            const _float invLen = 1.f / sqrtf(lenSq);
+            vMove.x *= invLen;
+            vMove.y *= invLen;
+            vMove.z *= invLen;
+        }
+    }
+    _float fTargetSpeed = m_fCamSpeed;
 
-		const _float lenSq = vMove.x * vMove.x + vMove.y * vMove.y + vMove.z * vMove.z;
-		if (lenSq == 0.f && m_fCamDamping > 0.f)
-		{
-			const _float tDamp = m_fCamDamping * fDT;
-			const _float k = (tDamp > 1.f) ? 0.f : (1.f - tDamp);
-			m_vCamVel.x *= k;
-			m_vCamVel.y *= k;
-			m_vCamVel.z *= k;
-		}
+    /* 가속/감속 포함한 이동 */
+    if (m_bCalculAcc)
+    {
+        const _float3 vTargetVel = { vMove.x * fTargetSpeed, vMove.y * fTargetSpeed, vMove.z * fTargetSpeed };
 
-		m_vCamPos.x += m_vCamVel.x * fDT;
-		m_vCamPos.y += m_vCamVel.y * fDT;
-		m_vCamPos.z += m_vCamVel.z * fDT;
-	}
-	else
-	{
-		m_vCamPos.x += vMove.x * fTargetSpeed * fDT;
-		m_vCamPos.y += vMove.y * fTargetSpeed * fDT;
-		m_vCamPos.z += vMove.z * fTargetSpeed * fDT;
-	}
+        const _float tAcc = (m_fCamAcc > 0.f) ? (m_fCamAcc * fDT) : 1.f;
+        m_vCamVel.x += (vTargetVel.x - m_vCamVel.x) * (tAcc > 1.f ? 1.f : tAcc);
+        m_vCamVel.y += (vTargetVel.y - m_vCamVel.y) * (tAcc > 1.f ? 1.f : tAcc);
+        m_vCamVel.z += (vTargetVel.z - m_vCamVel.z) * (tAcc > 1.f ? 1.f : tAcc);
+
+        const _float lenSq = vMove.x * vMove.x + vMove.y * vMove.y + vMove.z * vMove.z;
+        if (lenSq == 0.f && m_fCamDamping > 0.f)
+        {
+            const _float tDamp = m_fCamDamping * fDT;
+            const _float k = (tDamp > 1.f) ? 0.f : (1.f - tDamp);
+            m_vCamVel.x *= k;
+            m_vCamVel.y *= k;
+            m_vCamVel.z *= k;
+        }
+
+        m_vCamPos.x += m_vCamVel.x * fDT;
+        m_vCamPos.y += m_vCamVel.y * fDT;
+        m_vCamPos.z += m_vCamVel.z * fDT;
+    }
+    else
+    {
+        m_vCamPos.x += vMove.x * fTargetSpeed * fDT;
+        m_vCamPos.y += vMove.y * fTargetSpeed * fDT;
+        m_vCamPos.z += vMove.z * fTargetSpeed * fDT;
+    }
 }
