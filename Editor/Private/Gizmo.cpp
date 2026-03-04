@@ -131,6 +131,44 @@ void CGizmo::Apply_World_To_TransformData(const float* world16, tagTransformData
     td.bDirty = true;
 }
 
+void CGizmo::Render_ViewAxis(
+    float* view,
+    const ImVec2& viewportPos,
+    const ImVec2& viewportSize,
+    float gizmoSize,
+    float padding,
+    float distance
+)
+{
+    if (!view)
+        return ;
+
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (!window || window->SkipItems)
+        return ;
+
+    ImGuizmo::BeginFrame();
+    ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
+    ImGuizmo::SetRect(viewportPos.x, viewportPos.y, viewportSize.x, viewportSize.y);
+
+    const ImVec2 gizmoPos(
+        viewportPos.x + viewportSize.x - gizmoSize - padding,
+        viewportPos.y + padding
+    );
+
+    const ImU32 bgColor = IM_COL32(0, 0, 0, 0);
+
+    // 이 호출이 "카메라 축 기즈모" 자체입니다.
+    ImGuizmo::ViewManipulate(
+        view,
+        distance,
+        gizmoPos,
+        ImVec2(gizmoSize, gizmoSize),
+        bgColor
+    );
+}
+
+
 /* TODO UI 기즈모 보류 : 전치 시키면 기즈모 안 보이고 안 시키면 Nan 이슈 아 짜증나 미치겟네 */
 //void CGizmo::Render_UI(
 //    const float* view,

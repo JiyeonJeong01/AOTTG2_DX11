@@ -38,6 +38,15 @@ public:
     //);
     //static void Apply_World_To_RectTransformData(const float* world16, tagRectTransformData& td, const ImVec2& viewportSize);
 
+    void Render_ViewAxis(
+        _float* view,                       // in/out
+        const ImVec2& viewportPos,
+        const ImVec2& viewportSize,
+        _float gizmoSize = 96.f,
+        _float padding = 10.f,
+        _float distance = 8.f
+    );
+
 private:
     GIZMO_MODE  m_Mode = GIZMO_MODE::TRANSLATE;
     GIZMO_SPACE m_Space = GIZMO_SPACE::LOCAL;

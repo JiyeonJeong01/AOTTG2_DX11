@@ -265,7 +265,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Component_System.cpp" />
     <ClCompile Include="..\Private\CLI_Sink.cpp" />
     <ClCompile Include="..\Private\CRender_System.cpp" />
-    <ClCompile Include="..\Private\CScript_Processor.cpp" />
+    <ClCompile Include="..\Private\Script_Processor.cpp" />
     <ClCompile Include="..\Private\Editor_System.cpp" />
     <ClCompile Include="..\Private\Environment_Processor.cpp" />
     <ClCompile Include="..\Private\Event_System.cpp" />

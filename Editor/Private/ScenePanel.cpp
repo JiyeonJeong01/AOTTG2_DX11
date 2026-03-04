@@ -159,6 +159,7 @@ void CScenePanel::Draw_Viewport()
         if (inside)
         {
             SYS_EDITOR.Toggle_SceneViewCamera(true);
+            m_ShowSceneGizmo = true;
 
             float u = (mouse.x - vpPos.x) / vpSize.x;
             float v = (mouse.y - vpPos.y) / vpSize.y;
@@ -170,57 +171,63 @@ void CScenePanel::Draw_Viewport()
             const _uint py = (_uint)(v * (float)m_FIXEDH);
 
             SYS_EDITOR.Pick_SceneView(px, py, m_FIXEDW, m_FIXEDH);
-            }
+        }
         else /* 씬 뷰 바깥 영역 클릭 시 에디터 자유캠 막기 */
         {
             SYS_EDITOR.Toggle_SceneViewCamera(false);
+            m_ShowSceneGizmo = false;
         }
     }
 
-    if (!m_pTarget)
-        return;
+    auto MatToFloat16 = [this](const _matrix& mat, _float(&outFloat)[16])->void
+        {
+            _float4x4 tmpMat;
+            Math::Store(tmpMat, mat);
+
+            for (size_t i = 0; i < 4; ++i)
+                for (size_t j = 0; j < 4; ++j)
+                    outFloat[i * 4 + j] = tmpMat.m[i][j];
+        };
+
+    _float view[16];
+    _float proj[16];
+    _float world[16];
+
+    MatToFloat16(matView, view);
+    MatToFloat16(matProj, proj);
+
+    if (m_ShowSceneGizmo)
+    {
+        m_pGizmo->Render_ViewAxis(view, vpPos, vpSize);
+    }
 
     if (m_pTransformData) /* ---------------- Transform -----------------*/
     {
         const _matrix matWorld = Math::Load(m_pTransformData->matWorld);
 
-        _float view[16];
-        _float proj[16];
-        _float world[16];
-
-        auto MatToFloat16 = [this](const _matrix& mat, _float(&outFloat)[16])->void
-            {
-                _float4x4 tmpMat;
-                Math::Store(tmpMat, mat);
-
-                for (size_t i = 0; i < 4; ++i)
-                    for (size_t j = 0; j < 4; ++j)
-                        outFloat[i * 4 + j] = tmpMat.m[i][j];
-            };
-
         MatToFloat16(matWorld, world);
-        MatToFloat16(matView, view);
-        MatToFloat16(matProj, proj);
 
         m_pGizmo->Render(view, proj, world, vpPos, vpSize);
-
         if (ImGuizmo::IsUsing())
         {
             CGizmo::Apply_World_To_TransformData(world, *m_pTransformData);
         }
+
+        m_ShowSceneGizmo = true;
     }
+
 }
 
 void CScenePanel::Set_Target(Engine::CGameObject* pObj)
 {
-    if (m_pTarget == pObj || m_pTarget == nullptr)
+    if (m_pTarget == pObj)
         return;
 
     m_pTarget = pObj;
     m_pTransformData = nullptr;
     m_pRectTransformData = nullptr;
 
-    if (false == pObj->Get_Handle().Is_UI()) /* 3d */
+    if (pObj != nullptr && false == pObj->Get_Handle().Is_UI()) /* 3d */
     {
         Engine::CTransform tr = m_pTarget->Get_Component<Engine::CTransform>();
         m_pTransformData = tr._Data();

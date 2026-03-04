@@ -166,6 +166,44 @@ void CEditor_System::Toggle_SceneViewCamera(_bool bToggle)
     m_bScencViewCam = bToggle;
 }
 
+void CEditor_System::Apply_SceneView_From_View16(const float* view16)
+{
+    if (!view16)
+        return;
+
+    /* view16 -> _matrix */
+    _float4x4 v{};
+    for (int r = 0; r < 4; ++r)
+        for (int c = 0; c < 4; ++c)
+            v.m[r][c] = view16[r * 4 + c];
+
+    const _matrix matView = Math::Load(v);
+
+    const _matrix matCamWorld = XMMatrixInverse(nullptr, matView);
+
+    _float4x4 camW{};
+    Math::Store(camW, matCamWorld);
+
+    m_vCamPos = _float3{ camW._41, camW._42, camW._43 };
+    const _float3 vForward = Engine::Math::TransformNormal(_float3{ 0.f, 0.f, 1.f }, matCamWorld);
+
+    /* yaw/pitch 재계산 */ 
+    const float fx = vForward.x;
+    const float fy = vForward.y;
+    const float fz = vForward.z;
+
+    m_fYaw = atan2f(fx, fz);
+
+    const float lenXZ = sqrtf(fx * fx + fz * fz);
+    m_fPitch = atan2f(fy, (lenXZ < 1e-6f ? 1e-6f : lenXZ));
+
+    const _float limit = 1.55334306f;
+    if (m_fPitch > limit) m_fPitch = limit;
+    if (m_fPitch < -limit) m_fPitch = -limit;
+
+    m_vCamVel = _float3{ 0.f, 0.f, 0.f };
+}
+
 /* Editor 마우스 피킹은 Ray <-> AABB */
 static inline bool Ray_AABB(const _float3& vOrigin, const _float3& vDir, const _float3& vMin, const _float3& vMax, _float* fOutT)
 {

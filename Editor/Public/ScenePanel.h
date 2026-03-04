@@ -53,6 +53,7 @@ private:
     // cached SRV ptr for ImGui::Image
     ID3D11ShaderResourceView* m_pSceneSRV = nullptr;
     std::unique_ptr<CGizmo> m_pGizmo;
+    _bool                       m_ShowSceneGizmo = true;
 
 public:
     static std::unique_ptr<CScenePanel> Create(const std::string& strPanelName, CHierarchyPanel* pHierarchy);
