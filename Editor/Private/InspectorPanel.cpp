@@ -15,6 +15,11 @@
 #include "Editor_Util.h"
 #include "Script_Processor.h"
 
+#include "UIImage.h"
+#include "UIButton.h"
+
+#include "UI_Processor.h"
+
 
 NS_BEGIN(Editor)
 
@@ -420,29 +425,38 @@ void CInspectorPanel::Draw_CurrentComponents()
 
 void CInspectorPanel::Draw_AddComponentPopup()
 {
+    _bool bIsUI = m_pTarget->Get_Handle().Is_UI();
+
     if (!ImGui::BeginPopup("##AddComponentPopup"))
         return;
+    if (false == bIsUI) /* ----------------------- Not UI--------------------------*/
+    {
+        if (ImGui::MenuItem("MeshRenderer"))
+        {
+            m_pTarget->Add_Component<CMeshRenderer>();
+            ImGui::CloseCurrentPopup();
+        }
+    }
+    else   /* ------------------------------ UI ----------------------------------*/
+    {
+        if (ImGui::MenuItem("CanvasRenderer"))
+        {
+            m_pTarget->Add_Component<CCanvasRenderer>();
+            ImGui::CloseCurrentPopup();
+        }
+        if (ImGui::MenuItem("Image"))
+        {
+            m_pTarget->Add_Component<CUIImage>();
+            ImGui::CloseCurrentPopup();
+        }
+        if (ImGui::MenuItem("Button"))
+        {
+            m_pTarget->Add_Component<CUIButton>();
+            ImGui::CloseCurrentPopup();
+        }
+    }
 
-    if (ImGui::MenuItem("Transform"))
-    {
-        m_pTarget->Add_Component<CTransform>();
-        ImGui::CloseCurrentPopup();
-    }
-    if (ImGui::MenuItem("MeshRenderer"))
-    {
-        m_pTarget->Add_Component<CMeshRenderer>();
-        ImGui::CloseCurrentPopup();
-    }
-    if (ImGui::MenuItem("RectTransform"))
-    {
-        m_pTarget->Add_Component<CRectTransform>();
-        ImGui::CloseCurrentPopup();
-    }
-    if (ImGui::MenuItem("CanvasRenderer"))
-    {
-        m_pTarget->Add_Component<CCanvasRenderer>();
-        ImGui::CloseCurrentPopup();
-    }
+    /* ------------------------------ Common ----------------------------------*/
     if (ImGui::MenuItem("Script"))
     {
         m_pTarget->Add_Component<CScript>();
@@ -489,6 +503,9 @@ void CInspectorPanel::Draw_ComponentByType(COMPONENT_TYPE eComType)
         break;
     case COMPONENT_TYPE::SCRIPT:
         Draw_Script();
+        break;
+    case COMPONENT_TYPE::UI_IMAGE:
+        Draw_UIImage();
         break;
     }
 }
@@ -1055,6 +1072,122 @@ void CInspectorPanel::Draw_AllScripts(COMPONENT_HANDLE hComponent)
 
     ImGui::TreePop();
     ImGui::PopID(); // PushID(hComponent)
+}
+
+void CInspectorPanel::Draw_UIImage()
+{
+    CUIImage img = m_pTarget->Get_Component<CUIImage>();
+    if (!img.Is_Valid())
+        return;
+
+    UI_IMAGE_DATA* pData = img._Data();
+    if (!pData)
+        return;
+
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    ImGuiWindow* w = ImGui::GetCurrentWindow();
+    const ImGuiID idHeader = w->GetID("UIImage_Header");
+    ImGui::PushID(idHeader);
+
+    ImGui::AlignTextToFramePadding();
+
+    bool enabled = (pData->bEnable != 0);
+    if (ImGui::Checkbox("##Enable", &enabled))
+    {
+        pData->bEnable = enabled ? 1 : 0;
+        pData->dirty = true;
+    }
+
+    ImGui::SameLine();
+
+    const ImGuiTreeNodeFlags flags =
+        ImGuiTreeNodeFlags_DefaultOpen |
+        ImGuiTreeNodeFlags_Framed |
+        ImGuiTreeNodeFlags_SpanAvailWidth |
+        ImGuiTreeNodeFlags_AllowOverlap;
+
+    const bool open = ImGui::TreeNodeEx("UIImage", flags);
+
+    ImGui::PopID();
+
+    if (!open)
+        return;
+
+    bool bChanged = false;
+
+    if (pData->bEnable == 0)
+        ImGui::BeginDisabled();
+
+    // 연결 상태 확인용: 오브젝트 핸들 / CanvasRenderer 핸들
+    ImGui::TextUnformatted("Owner Object");
+    ImGui::SameLine();
+    ImGui::Text("%u", pData->hObject.raw);
+
+    ImGui::TextUnformatted("CanvasRenderer");
+    ImGui::SameLine();
+    ImGui::Text("%u", pData->hCanvasRenderer);
+
+    // (선택) dirty 플래그 확인
+    bool dirty = (pData->dirty != 0);
+    if (ImGui::Checkbox("Dirty", &dirty))
+    {
+        pData->dirty = dirty ? 1 : 0;
+        bChanged = true;
+    }
+
+    // VisualPriority
+    int pr = (int)pData->visualPriority;
+    if (ImGui::DragInt("VisualPriority", &pr, 1.f, 0, 255))
+    {
+        if (pr < 0) pr = 0;
+        if (pr > 255) pr = 255;
+        pData->visualPriority = (uint8_t)pr;
+        bChanged = true;
+    }
+
+    // Texture
+    uint32_t hTex = pData->hTexture;
+    if (ImGui::InputScalar("Texture", ImGuiDataType_U32, &hTex))
+    {
+        pData->hTexture = hTex;
+        bChanged = true;
+    }
+
+    // Color
+    _float4 col = pData->color;
+    float c[4] = { col.x, col.y, col.z, col.w };
+    if (ImGui::ColorEdit4("Color", c))
+    {
+        pData->color = { c[0], c[1], c[2], c[3] };
+        bChanged = true;
+    }
+
+    // UV
+    float uv[4] = { pData->rcUV.fLeft, pData->rcUV.fTop, pData->rcUV.fRight, pData->rcUV.fBottom };
+    if (ImGui::DragFloat4("UV (L,T,R,B)", uv, 0.001f, 0.f, 1.f, "%.3f"))
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            if (uv[i] < 0.f) uv[i] = 0.f;
+            if (uv[i] > 1.f) uv[i] = 1.f;
+        }
+        pData->rcUV = { uv[0], uv[1], uv[2], uv[3] };
+        bChanged = true;
+    }
+
+    if (pData->bEnable == 0)
+        ImGui::EndDisabled();
+
+    if (bChanged)
+        pData->dirty = true;
+
+    ImGui::TreePop();
+}
+void CInspectorPanel::Draw_UIButton()
+{
 }
 
 std::unique_ptr<CInspectorPanel> CInspectorPanel::Create(const std::string& strPanelName, CHierarchyPanel* pHierarcy, CProjectPanel* pProject)

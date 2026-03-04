@@ -36,6 +36,10 @@ public:
     const TEXTURE_ENTRY*        Get_Texture(uint32_t handle) const;
 
 private :
+    _bool Read_MetaFileDecl(const std::filesystem::path& metaPath, uint32_t& outDecl);
+
+
+private :
     /* ---- MESH ---- */
     std::vector<MESH_ENTRY> m_Meshes;
     std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_MeshGUIDMap;

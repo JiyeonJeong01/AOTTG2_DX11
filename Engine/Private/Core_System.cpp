@@ -234,6 +234,18 @@ _float CCore_System::Get_FrameDT() const
     return m_pTimer_Handler->Get_FrameDT();
 }
 
+HRESULT CCore_System::Register_Scenes(const ASSET_GUID& tGUID, const std::filesystem::path& scenePath)
+{
+    return m_pScene_Handler->Register_Scenes(tGUID, scenePath);
+}
+
+HRESULT CCore_System::Change_Scene(const std::string& sceneName, APP_MODE eMode)
+{
+    ASSET_GUID outGuUID{};
+    m_pScene_Handler->Find_GUID_By_Name(sceneName, outGuUID);
+    return m_pScene_Handler->Change_Scene(outGuUID, eMode);
+}
+
 HRESULT CCore_System::Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode)
 {
     return m_pScene_Handler->Change_Scene(tGUID, eMode);

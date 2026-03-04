@@ -154,6 +154,11 @@ void CCanvasRenderer_Processor::Initialize_Component_Data(COMPONENT_HANDLE hComp
     if (!pObj) return;
 
     pData->hRectTransform = pObj->Get_Component<CRectTransform>().Get_Handle();
+    pData->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXTEX);
+    pData->layer = RENDER_LAYER::NONBLEND;
+    pData->flags = RF_NONE;
+    ASSET_GUID tmp("8976CDE9-2AE4-4DFC-A580-17E41FFB00D3");
+    pData->hTexture = SYS_RESOURCE.Load_Texture(tmp);
 }
 
 uint64_t CCanvasRenderer_Processor::Make_SortKey(const CANVAS_RENDERER_DATA& tData) const

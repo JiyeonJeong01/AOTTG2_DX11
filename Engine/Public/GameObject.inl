@@ -49,7 +49,8 @@ TProxy CGameObject::Add_Component()
     mask |= Component::Component_Bit(eComType);
     Set_ComponentMask(mask);
 
-    return SYS_COMPONENT.Get_Proxy<TProxy>(eComType, hNewHandle);
+    TProxy pr = SYS_COMPONENT.Get_Proxy<TProxy>(eComType, hNewHandle);
+    return pr;
 }
 
 template <typename TProxy>

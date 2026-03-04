@@ -121,6 +121,16 @@ void CEnvironment_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDL
     _DEBUG_WARN("CEnvironment_Processor::Remove_Component - unsupported component type");
 }
 
+void* CEnvironment_Processor::Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) noexcept
+{
+    switch (eComType)
+    {
+    case COMPONENT_TYPE::CAMERA:  return m_CameraPool.Get_Data_By_Handle(hComponent);
+    case COMPONENT_TYPE::LIGHT: return m_LightPool.Get_Data_By_Handle(hComponent);
+    default: return nullptr;
+    }
+}
+
 HRESULT CEnvironment_Processor::Initialize_From_Spec_Camera(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec)
 {
     const auto* p = SCAST(const CAMERA_SPEC*, spec);

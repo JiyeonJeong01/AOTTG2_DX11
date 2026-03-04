@@ -4,6 +4,8 @@
 
 NS_BEGIN(Engine)
 
+class CUI_Processor;
+
 typedef struct tagUIButtonData
 {
     OBJECT_HANDLE       hObject{};
@@ -34,6 +36,9 @@ typedef struct tagUIButtonData
 
 class CUIButton final : public CComponent_Proxy_Base<UI_BUTTON_DATA, CUIButton, COMPONENT_TYPE::UI_BUTTON>
 {
+public:
+    using ProcessorType = CUI_Processor;
+
 public:
     CUIButton() : CComponent_Proxy_Base() {}
     CUIButton(DataType* pData, COMPONENT_HANDLE handle)

@@ -42,12 +42,18 @@ public :
 		m_Pool.Deallocate(hComponent);
 	}
 
+    void* Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) noexcept override
+    {
+        if (eComType != KType) return nullptr;
+        return m_Pool.Get_Data_By_Handle(hComponent);
+    }
+
     TProxy Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
-	{
+    {
         IF_TRUE_RETURN_MSG_BREAK(eComType != KType, TProxy{}, "Wrong component type for this processor.");
 
-		return m_Pool.Get_Proxy(hComponent);
-	}
+        return m_Pool.Get_Proxy(hComponent);
+    }
 
     void Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable) override
     {

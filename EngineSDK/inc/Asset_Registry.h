@@ -29,6 +29,7 @@ public :
     CScript_Handler&    Scripts()       { return *m_upScript_Handler; }
 public :
     const std::filesystem::path& Get_Root() const;
+    _bool Make_MetaPath_By_GUID(const ASSET_GUID& tGUID, std::filesystem::path& outPath) const;
 
     /* path -> GUID */
     _bool   Try_Get_GUID(const std::filesystem::path& inPath, ASSET_GUID& outGUID) const;

@@ -66,7 +66,7 @@ private:
     void Handle_DragDrop(Engine::CGameObject* pObj);
 
     /* Operations */
-    Engine::CGameObject* Create_Empty_Object(Engine::CGameObject* pParent /*nullable*/);
+    Engine::CGameObject* Create_Empty_Object(Engine::CGameObject* pParent , _bool bUI = false);
     Engine::CGameObject* Duplicate_Object(Engine::CGameObject* pSrc, Engine::CGameObject* pParent /*nullable*/);
     void Destroy_Object(Engine::CGameObject* pObj);
 
@@ -113,6 +113,7 @@ private:
 
     /* Create Prefab*/
     std::filesystem::path m_PrototypePath;
+    _bool m_bCreateUI = false;
 
 public:
         static std::unique_ptr<CHierarchyPanel>Create(const std::string& strPanelName);

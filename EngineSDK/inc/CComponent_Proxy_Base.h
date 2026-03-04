@@ -56,6 +56,7 @@ public:
     {
         return m_hHandle;
     }
+
     DataType* _Data() noexcept { return m_pData; }
     const DataType* _Data() const noexcept { return m_pData; }
 

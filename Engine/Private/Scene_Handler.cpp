@@ -19,6 +19,41 @@ CScene_Handler::~CScene_Handler()
 {
 }
 
+HRESULT CScene_Handler::Register_Scenes(const ASSET_GUID& tGUID, const std::filesystem::path& scenePath)
+{
+    const std::string name = scenePath.stem().string();
+    if (name.empty())
+        return E_FAIL;
+
+    auto it = m_NameToGUID.find(name);
+    if (it != m_NameToGUID.end()) /* 이름 중복 시, 덮어쓰기 */
+    {
+        _DEBUG_INFO_BREAK("Scene name duplicated: %s (overwrite)", name.c_str());
+        it->second = tGUID;
+        return S_OK;
+    }
+    m_NameToGUID.emplace(name, tGUID);
+    return S_OK;
+}
+
+_bool CScene_Handler::Find_GUID_By_Name(const std::string& name, ASSET_GUID& outGUID) const
+{
+    /* ~.scene으로 들어올 경우 대비하여 정규화*/
+    std::string key = name;
+    {
+        std::filesystem::path p = key;
+        if (p.has_extension())
+            key = p.stem().string();
+    }
+
+    auto it = m_NameToGUID.find(name);
+    if (it == m_NameToGUID.end())
+        return false;
+
+    outGUID = it->second;
+    return true;
+}
+
 HRESULT CScene_Handler::Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode)
 {
     IF_TRUE_RETURN_MSG_BREAK(!tGUID.Is_Valid(), E_FAIL, "Invalid scene GUID");

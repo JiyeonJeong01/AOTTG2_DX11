@@ -19,6 +19,8 @@ public:
     ~CScene_Handler();
 
 public:
+    HRESULT Register_Scenes(const ASSET_GUID& tGUID, const std::filesystem::path& scenePath);
+    _bool   Find_GUID_By_Name(const std::string& name, ASSET_GUID& outGUID) const;
     HRESULT Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode);
     void    Update(_float fTimeDelta);
     HRESULT Render();
@@ -48,6 +50,8 @@ private:
     std::unique_ptr<CScene>         m_pCurrentScene{};
     _uint			                m_iCurrentSceneIndex = 0;
     std::vector<SCENE_OBJECT_SPEC>  m_SceneObjectSpecs;
+
+    std::unordered_map<std::string, ASSET_GUID> m_NameToGUID;
 
 public :
     static std::unique_ptr<CScene_Handler> Create();

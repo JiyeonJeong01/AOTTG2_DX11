@@ -4,6 +4,8 @@
 
 NS_BEGIN(Engine)
 
+class CUI_Processor;
+
 typedef struct ENGINE_DLL tagUIImageData
 {
     OBJECT_HANDLE       hObject{};
@@ -21,6 +23,9 @@ typedef struct ENGINE_DLL tagUIImageData
 
 class ENGINE_DLL CUIImage final : public CComponent_Proxy_Base<UI_IMAGE_DATA, CUIImage, COMPONENT_TYPE::UI_IMAGE>
 {
+public :
+    using ProcessorType = CUI_Processor;
+
 public:
     CUIImage() : CComponent_Proxy_Base() {}
     CUIImage(DataType* pData, COMPONENT_HANDLE handle) : CComponent_Proxy_Base(pData, handle) {}

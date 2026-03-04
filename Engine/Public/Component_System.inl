@@ -16,10 +16,11 @@ TProxy CComponent_System::Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE ha
         TProxy(nullptr, COMPONENT_HANDLE{}),
         "Processor not registered for this component type.");
 
-    using PROCESSOR_T = typename TProxy::ProcessorType;
-    PROCESSOR_T* pProcessor = static_cast<PROCESSOR_T*>(m_pComProcessors[iProcIdx].get());
+    CComponent_Processor* pBase = m_pComProcessors[iProcIdx].get();
+    void* p = pBase->Get_DataPtr(eComType, handle);
+    IF_NULL_RETURN_MSG_BREAK(p, TProxy(nullptr, COMPONENT_HANDLE{}), "Get_DataPtr returned null");
 
-    return pProcessor->Get_Proxy(eComType, handle);
+    return TProxy(SCAST(typename TProxy::DataType*, p), handle);
 }
 
 template <typename TProxy, typename TSpec>

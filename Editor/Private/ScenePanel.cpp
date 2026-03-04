@@ -213,7 +213,7 @@ void CScenePanel::Draw_Viewport()
 
 void CScenePanel::Set_Target(Engine::CGameObject* pObj)
 {
-    if (m_pTarget == pObj)
+    if (m_pTarget == pObj || m_pTarget == nullptr)
         return;
 
     m_pTarget = pObj;
@@ -236,7 +236,7 @@ void CScenePanel::Ensure_RenderTarget()
 
     UI_GLOBAL tSceneRTV{};
     Math::Store(tSceneRTV.matView, XMMatrixIdentity());
-    Math::Store(tSceneRTV.matProj, XMMatrixOrthographicOffCenterLH(0.f, m_FIXEDW, m_FIXEDH, 0.f, 0.f, 1.f));
+    Math::Store(tSceneRTV.matProj, XMMatrixOrthographicOffCenterLH(0.f, (_float)m_FIXEDW, (_float)m_FIXEDH, 0.f, 0.f, 1.f));
 
     SYS_RENDER.Set_UI_Global(tSceneRTV);
     SYS_CORE.Ready_SceneRenderTarget(m_FIXEDW, m_FIXEDH);

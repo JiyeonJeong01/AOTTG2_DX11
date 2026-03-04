@@ -16,7 +16,7 @@ class CUIText;
 class ENGINE_DLL CUI_Processor final : public CComponent_Processor
 {
 public :
-    CUI_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCanvasRenderer_Processor* pCanvasProcessor, CRectTransform_Processor* pRTProcessor);
+    CUI_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     ~CUI_Processor() override;
 
 public:
@@ -30,8 +30,7 @@ public:
     HRESULT             Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pSpec) override;
     std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) override;
     void                Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable) override;
-
-
+    void*               Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) noexcept override;
 
     template<typename TProxy>
     TProxy Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
@@ -53,6 +52,9 @@ private:
         COMPONENT_HANDLE hComponent = pool.Allocate();
         auto pData = pool.Get_Data_By_Handle(hComponent);
         pData->hObject = hObject;
+
+        Initialize_Component_Data(TProxy::ComponentType, hComponent);
+
         return hComponent;
     }
 
@@ -79,6 +81,8 @@ private:
     HRESULT Initialize_From_Spec_UIImage(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
     //HRESULT Initialize_From_Spec_UIText(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
 
+    HRESULT Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE h);
+
 private :
     CCanvasRenderer_Processor*  m_pCanvasProcessor{};
     CRectTransform_Processor*   m_pRectTransformProcessor{};
@@ -86,7 +90,7 @@ private :
     CComponent_Pool<CUIImage>   m_ImagePool;
 
 public :
-    static std::unique_ptr<CUI_Processor> Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCanvasRenderer_Processor* pCanvasProcessor, CRectTransform_Processor* pRTProcessor);
+    static std::unique_ptr<CUI_Processor> Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 };
 
 NS_END

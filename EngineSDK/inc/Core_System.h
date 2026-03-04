@@ -41,6 +41,8 @@ public: /* For.Timer_Manager */
     _float Get_FrameDT() const;
 
 public: /* For.Scene_Handler */
+    HRESULT Register_Scenes(const ASSET_GUID& tGUID, const std::filesystem::path& scenePath);
+    HRESULT Change_Scene(const std::string& sceneName, APP_MODE eMode);
     HRESULT Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode);
     HRESULT Save_CurrentScene(const std::filesystem::path& path);
     CScene* Get_CurrentScene();

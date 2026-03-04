@@ -8,6 +8,7 @@
 #include "magic_enum.hpp"
 #include "String_Utils.h"
 #include "Resource_System.h"
+#include "Core_System.h"
 
 NS_BEGIN(Engine)
 
@@ -127,30 +128,115 @@ void CAsset_Registry::Rebuild()
 
 void CAsset_Registry::Distribute_Assets_To_Handlers()
 {
+    /* 타입별 배치(스택) */
+    std::vector<ASSET_GUID> vShader;
+    std::vector<ASSET_GUID> vTexture;
+    std::vector<ASSET_GUID> vMaterial;
+    std::vector<ASSET_GUID> vMesh;
+
+    std::vector<ASSET_GUID> vPrototype;
+    std::vector<std::pair<ASSET_GUID, std::filesystem::path>> vScene;
+    std::vector<ASSET_GUID> vScript;
+
+    vShader.reserve(m_byGUID.size());
+    vTexture.reserve(m_byGUID.size());
+    vMaterial.reserve(m_byGUID.size());
+    vMesh.reserve(m_byGUID.size());
+
+    vPrototype.reserve(m_byGUID.size());
+    vScene.reserve(m_byGUID.size());
+    vScript.reserve(m_byGUID.size());
+
+    /* GUID->Record 스캔하면서 타입별로 모으기 */
     for (const auto& tGUID : m_byGUID)
     {
         const auto pRecord = tGUID.second;
 
         switch (pRecord.eType)
         {
-        case ASSET_TYPE::PROTOTYPE :
-            m_upPrototype_Handler->Load_Prototype_From_GUID(tGUID.first);
+        case ASSET_TYPE::PROTOTYPE:
+            vPrototype.emplace_back(tGUID.first);
             break;
-        case ASSET_TYPE::SCENE :
+
+        case ASSET_TYPE::SCENE:
+            vScene.emplace_back(tGUID.first, pRecord.path);
             break;
-        case ASSET_TYPE::SCRIPT :
-            m_upScript_Handler->Cache_GUID(tGUID.first);
+
+        case ASSET_TYPE::SCRIPT:
+            vScript.emplace_back(tGUID.first);
             break;
-        case ASSET_TYPE::MESH :
-            SYS_RESOURCE.Load_Mesh(tGUID.first);
+
+        case ASSET_TYPE::SHADER:
+            vShader.emplace_back(tGUID.first);
+            break;
+
+        case ASSET_TYPE::TEXTURE:
+            vTexture.emplace_back(tGUID.first);
+            break;
+
+        case ASSET_TYPE::MATERIAL:
+            vMaterial.emplace_back(tGUID.first);
+            break;
+
+        case ASSET_TYPE::MESH:
+            vMesh.emplace_back(tGUID.first);
+            break;
+
+        default:
             break;
         }
     }
+
+    /* 2) 한 번에 처리 : 로드 순서 중요 */
+        /* Resource: 의존성 고려해서 Shader/Texture -> Material -> Mesh */
+    for (const auto& tGUID : vShader)
+        SYS_RESOURCE.Load_Shader(tGUID);
+
+    for (const auto& tGUID : vTexture)
+        SYS_RESOURCE.Load_Texture(tGUID);
+
+    for (const auto& tGUID : vMaterial)
+        SYS_RESOURCE.Load_Material(tGUID);
+
+    for (const auto& tGUID : vMesh)
+        SYS_RESOURCE.Load_Mesh(tGUID);
+
+    /* Scene: GUID->Path 등록 */
+    for (const auto& it : vScene)
+        SYS_CORE.Register_Scenes(it.first, it.second);
+
+    /* Script: GUID 캐시 */
+    for (const auto& tGUID : vScript)
+        m_upScript_Handler->Cache_GUID(tGUID);
+
+    /* Prototype: GUID 기반 로드 */
+    for (const auto& tGUID : vPrototype)
+        m_upPrototype_Handler->Load_Prototype_From_GUID(tGUID);
 }
 
 const std::filesystem::path& CAsset_Registry::Get_Root() const
 {
     return m_assetRoot;
+}
+
+_bool CAsset_Registry::Make_MetaPath_By_GUID(const ASSET_GUID& tGUID, std::filesystem::path& outPath) const
+{
+    static const std::filesystem::path s_empty{};
+
+    auto it = m_byGUID.find(tGUID);
+    if (it == m_byGUID.end())
+        return false;
+
+    const ASSET_RECORD& rec = it->second;
+    if (rec.path.empty())
+        return false;
+
+    /* 모든 메타는 "<원본파일확장자>.meta" */
+    /* 예: "MyShader.fx" -> "MyShader.fx.meta" */
+    outPath = rec.path;
+    outPath += ".meta";
+
+    return true;
 }
 
 _bool CAsset_Registry::Try_Get_GUID(const std::filesystem::path& inPath, ASSET_GUID& outGUID) const

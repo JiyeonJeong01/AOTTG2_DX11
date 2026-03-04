@@ -8,31 +8,27 @@ typedef struct tagVertexPositionColor
 {
     XMFLOAT3			vPosition;
     XMFLOAT4			vColor;
+
+    static const unsigned int iNumElements = 2;
+    static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    };
 }VTXCOL;
 
 typedef struct tagVertexPositionTexcoord
 {
     XMFLOAT3			vPosition;
     XMFLOAT2			vTexcoord;
+
+    static const unsigned int iNumElements = 2;
+    static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    };
 }VTXTEX;
-
-static constexpr D3D11_INPUT_ELEMENT_DESC VTXCOL_LAYOUT[] =
-{
-    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    { "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-};
-
-static constexpr D3D11_INPUT_ELEMENT_DESC VTXTEX_LAYOUT[] =
-{
-    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-};
-
-static constexpr D3D11_INPUT_ELEMENT_DESC VTXNORTEX_LAYOUT[] =
-{
-    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-};
 
 typedef struct tagVertexPositionNormalTexcoord
 {
@@ -56,7 +52,7 @@ typedef struct tagVertexMesh
     XMFLOAT2 vTexcoord;
 
     static const unsigned int iNumElements = 4;
-    static constexpr D3D11_INPUT_ELEMENT_DESC Elements[iNumElements] = {
+    static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TANGENT",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -72,8 +68,8 @@ typedef struct ENGINE_DLL tagILDesc
 
 /* Blueprints for gpu to interpret memory chuncks  */
 static constexpr IL_DESC g_IL_TABLE[] = {
-    { VTXCOL_LAYOUT, _countof(VTXCOL_LAYOUT) },
-    { VTXTEX_LAYOUT, _countof(VTXTEX_LAYOUT) },
+    { VTXCOL::Elements, VTXCOL::iNumElements },
+    { VTXTEX::Elements, VTXTEX::iNumElements },
     { VTXNORTEX::Elements, VTXNORTEX::iNumElements },
     { VTXMESH::Elements, VTXMESH::iNumElements }
 };

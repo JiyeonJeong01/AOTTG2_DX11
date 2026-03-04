@@ -205,15 +205,24 @@ bool CHierarchyPanel::Is_Renaming() const
 
 void CHierarchyPanel::Draw_Toolbar()
 {
-    /* Create Object */
-    if (ImGui::Button("Create"))
+    if (ImGui::Button("New"))
+        ImGui::OpenPopup("##CreateMenu");
+
+    if (ImGui::BeginPopup("##CreateMenu"))
     {
-        Engine::CGameObject* pNew = Create_Empty_Object(nullptr);
-        if (pNew)
+        if (ImGui::MenuItem("New GameObject"))
         {
-            Set_Selection_Single(pNew);
-            Begin_Rename(pNew);
+            Engine::CGameObject* pNew = Create_Empty_Object(nullptr, false);
+            if (pNew) { Set_Selection_Single(pNew); Begin_Rename(pNew); }
         }
+
+        if (ImGui::MenuItem("New UI Object"))
+        {
+            Engine::CGameObject* pNew = Create_Empty_Object(nullptr, true);
+            if (pNew) { Set_Selection_Single(pNew); Begin_Rename(pNew); }
+        }
+
+        ImGui::EndPopup();
     }
 
     ImGui::SameLine();
@@ -314,7 +323,13 @@ void CHierarchyPanel::Draw_Context_Menu()
         /* Right-click on empty space, Context menu */
         if (ImGui::MenuItem("Create Empty"))
         {
-            Engine::CGameObject* pNew = Create_Empty_Object(nullptr);
+            Engine::CGameObject* pNew = Create_Empty_Object(nullptr, false);
+            if (pNew) { Set_Selection_Single(pNew); Begin_Rename(pNew); }
+        }
+
+        if (ImGui::MenuItem("Create Empty (UI)"))
+        {
+            Engine::CGameObject* pNew = Create_Empty_Object(nullptr, true);
             if (pNew) { Set_Selection_Single(pNew); Begin_Rename(pNew); }
         }
 
@@ -454,16 +469,23 @@ void CHierarchyPanel::Draw_Node_Recursive(Engine::CGameObject* pObj, int /*iDept
         if (ImGui::BeginPopupContextItem(("##HierarchyNodeCtx" + std::to_string((uintptr_t)pObj)).c_str()))
         {
             m_pContextTarget = pObj;
-
-            if (ImGui::MenuItem("Create Empty Child"))
+            std::string strNewChildLabel = "Create Empty Child";
+            _bool isUI = false;
+            if (m_pContextTarget->Get_Handle().Is_UI())
             {
-                Engine::CGameObject* pNew = Create_Empty_Object(pObj);
+                strNewChildLabel += "(UI)";
+                isUI = true;
+            }
+            if (ImGui::MenuItem(strNewChildLabel.c_str()))
+            {
+                Engine::CGameObject* pNew = Create_Empty_Object(pObj, isUI);
                 if (pNew)
                 {
                     Set_Selection_Single(pNew);
                     Begin_Rename(pNew);
                 }
             }
+
             ImGui::Separator();
 
             if (ImGui::MenuItem("Duplicate"))
@@ -683,10 +705,16 @@ void CHierarchyPanel::Handle_DragDrop(Engine::CGameObject* pObj)
 }
 
 /* ------------------------------------- Operation ------------------------------------- */
-Engine::CGameObject* CHierarchyPanel::Create_Empty_Object(Engine::CGameObject* pParent)
+Engine::CGameObject* CHierarchyPanel::Create_Empty_Object(Engine::CGameObject* pParent, _bool IsUI)
 {
     std::string szBaseName = "New GameObject";
-    Engine::CGameObject* pNew = SYS_GAMEOBJECT.Create_GameObject(Layer::DEFAULT_LAYER, szBaseName, pParent);
+
+    Engine::CGameObject* pNew = nullptr;
+
+    if (IsUI)
+        pNew = SYS_GAMEOBJECT.Create_GameObjectUI(Layer::UI_LAYER, szBaseName, pParent);
+    else
+        pNew = SYS_GAMEOBJECT.Create_GameObject(Layer::DEFAULT_LAYER, szBaseName, pParent);
 
     return pNew;
 }

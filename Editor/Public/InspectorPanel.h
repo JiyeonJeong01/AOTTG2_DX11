@@ -61,6 +61,8 @@ private:
     void Draw_CanvasRenderer();
     void Draw_Script();
     void Draw_AllScripts(COMPONENT_HANDLE hComponent);
+    void Draw_UIImage();
+    void Draw_UIButton();
 
 
     void Validate_Target();

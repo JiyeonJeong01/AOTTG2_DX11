@@ -25,6 +25,13 @@ inline _bool Write_MetaFile(const std::filesystem::path& metaPath, const ASSET_G
     if (szTypeStr && szTypeStr[0])
         ofs << "type=" << szTypeStr << "\n";
 
+    /* Extend : 만약 확장자에 따라 .meta에 작성할 게 많아진다면 여길 확장해야 한다. */
+    if (szTypeStr && 0 == std::strcmp(szTypeStr, "SHADER"))
+    {
+        /* 기본값: VTXTEX. 추후 에디터 등에서 변경 */
+        ofs << "decl=" << SCAST(_uint, VERTEX_DECL::VTXTEX) << "\n";
+    }
+
     return true;
 }
 

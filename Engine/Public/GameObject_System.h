@@ -69,6 +69,8 @@ private :
     std::queue<uint32_t>                        m_freeIndices;
     std::vector<uint32_t>                       m_pendingDestroys;
 
+    CGameObject*                                m_pCanvas{};
+
 
 private:
     void Remove_From_LayerBucket(CGameObject* pObj);

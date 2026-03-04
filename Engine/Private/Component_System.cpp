@@ -7,6 +7,7 @@
 #include "RectTransform_Processor.h"
 #include "CanvasRenderer_Processor.h"
 #include "Script_Processor.h"
+#include "UI_Processor.h"
 
 #include "Render_Struct.h"
 
@@ -39,6 +40,8 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
         = CCanvasRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CRectTransform_Processor*, m_pComProcessors[COM_TO_PID(COMPONENT_TYPE::RECT_TRANSFORM)].get()));
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::SCRIPT)]
         = CScript_Processor::Create();
+    m_pComProcessors[PID_TO_INT(PROCESSOR_ID::UI)]
+        = CUI_Processor::Create(m_pDevice, m_pContext);
 
 	return S_OK;
 }

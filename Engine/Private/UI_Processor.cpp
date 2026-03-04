@@ -1,5 +1,7 @@
 ﻿#include "UI_Processor.h"
 
+#include "Component_System.h"
+#include "Resource_System.h"
 #include "CanvasRenderer_Processor.h"
 #include "RectTransform_Processor.h" 
 
@@ -7,6 +9,7 @@
 #include "UIImage.h"
 //#include "UIText.h" 나중에 추가
 
+#include "BuiltIn_GUID.h"
 #include "Engine_Log.h"
 #include "Input_System.h"
 
@@ -43,9 +46,9 @@ static inline void Get_State_Sprite(const UI_BUTTON_DATA& bData, uint32_t& outTe
     }
 }
 
-CUI_Processor::CUI_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCanvasRenderer_Processor* pCanvasProcessor, CRectTransform_Processor* pRTProcessor)
+CUI_Processor::CUI_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CComponent_Processor()
-    , m_pCanvasProcessor(pCanvasProcessor), m_pRectTransformProcessor(pRTProcessor)
+    , m_pCanvasProcessor(nullptr), m_pRectTransformProcessor(nullptr)
 {
 }
 
@@ -53,6 +56,21 @@ CUI_Processor::~CUI_Processor() = default;
 
 HRESULT CUI_Processor::Initialize()
 {
+    //SYS_COMPONENT.Register_InitialSpecFactory<CUIImage, UIButtonSpec>(COMPONENT_TYPE::UI_BUTTON); /* TODO 만든 뒤 등록하기  
+    //SYS_COMPONENT.Register_InitialSpecFactory<CUIImage, UIImageSpec>(COMPONENT_TYPE::UI_IMAGE);
+    SYS_COMPONENT.Register_BuildSpecFacotry<CUIButton>(COMPONENT_TYPE::UI_BUTTON);
+    SYS_COMPONENT.Register_BuildSpecFacotry<CUIImage>(COMPONENT_TYPE::UI_IMAGE);
+
+
+    CComponent_Processor* pBase = nullptr;
+    SYS_COMPONENT.Bind_ComponentProcessor(COMPONENT_TYPE::RECT_TRANSFORM, &pBase);
+    IF_NULL_RETURN_MSG_BREAK(pBase, E_FAIL, "RectTransform processor bind failed");
+    m_pRectTransformProcessor = SCAST(CRectTransform_Processor*, pBase);
+
+    pBase = nullptr;
+    SYS_COMPONENT.Bind_ComponentProcessor(COMPONENT_TYPE::CANVAS_RENDERER, &pBase);
+    IF_NULL_RETURN_MSG_BREAK(pBase, E_FAIL, "Canvas Render processor bind failed");
+    m_pCanvasProcessor = SCAST(CCanvasRenderer_Processor*, pBase);
 
     return S_OK;
 }
@@ -137,6 +155,16 @@ void CUI_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hCompon
     }
 
     _DEBUG_WARN("CUI_Processor::Remove_Component - unsupported component type");
+}
+
+void* CUI_Processor::Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) noexcept
+{
+    switch (eComType)
+    {
+    case COMPONENT_TYPE::UI_IMAGE:  return m_ImagePool.Get_Data_By_Handle(hComponent);
+    case COMPONENT_TYPE::UI_BUTTON: return m_ButtonPool.Get_Data_By_Handle(hComponent);
+    default: return nullptr;
+    }
 }
 
 void CUI_Processor::Sync_Images_To_Canvas()
@@ -281,9 +309,107 @@ HRESULT CUI_Processor::Initialize_From_Spec_UIImage(COMPONENT_HANDLE hComponent,
     return S_OK;
 }
 
-std::unique_ptr<CUI_Processor> CUI_Processor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCanvasRenderer_Processor* pCanvasProcessor, CRectTransform_Processor* pRTProcessor)
+HRESULT CUI_Processor::Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE h)
 {
-    auto pInstance = std::make_unique<CUI_Processor>(pDevice, pContext, pCanvasProcessor, pRTProcessor);
+    void* pRaw = Get_DataPtr(eComType, h);
+    IF_NULL_RETURN_MSG_BREAK(pRaw, E_FAIL, "Initialize_Component_Data failed: Get_DataPtr returned null");
+
+    if (eComType == COMPONENT_TYPE::UI_IMAGE)
+    {
+        auto* pData = SCAST(UI_IMAGE_DATA*, pRaw);
+
+        pData->hTexture = SYS_RESOURCE.Load_Texture(DefaultAssetGuid::TEXTURE_UI_DEFAULT);
+
+        CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
+        IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "Initialize_Component_Data(UI_IMAGE) failed: invalid hObject");
+
+        /* CanvasRenderer 보장 및 캐싱 */
+        {
+            auto cr = pObj->Get_Component<CCanvasRenderer>();
+            COMPONENT_HANDLE hCR = cr.Get_Handle();
+
+            if (!hCR.Is_Valid()) 
+            {
+                cr = pObj->Add_Component<CCanvasRenderer>();
+                cr.Set_Texture(pData->hTexture);
+                hCR = cr.Get_Handle();
+                
+                IF_TRUE_RETURN_MSG_BREAK(!hCR.Is_Valid(), E_FAIL, "Initialize_Component_Data(UI_IMAGE) failed: add CanvasRenderer failed");
+            }
+
+            pData->hCanvasRenderer = hCR;
+        }
+
+        /* 기본 값 추가 */
+        pData->bEnable = true;
+        pData->dirty = true;
+        // pData->visualPriority = 0;
+
+        return S_OK;
+    }
+
+    if (eComType == COMPONENT_TYPE::UI_BUTTON)
+    {
+        auto* pData = SCAST(UI_BUTTON_DATA*, pRaw);
+
+        CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
+        IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "Initialize_Component_Data(UI_BUTTON) failed: invalid hObject");
+
+        // 1) RectTransform 확보 (없으면 추가)
+        {
+            auto rt = pObj->Get_Component<CRectTransform>();
+            COMPONENT_HANDLE hRT = rt.Get_Handle();
+
+            if (!hRT.Is_Valid())
+            {
+                rt = pObj->Add_Component<CRectTransform>();
+                hRT = rt.Get_Handle();
+
+                IF_TRUE_RETURN_MSG_BREAK(!hRT.Is_Valid(), E_FAIL, "Initialize_Component_Data(UI_BUTTON) failed: add RectTransform failed");
+            }
+
+            pData->hRectTransform = hRT;
+        }
+
+        // 2) Button이 실제로 때릴 CanvasRenderer 확보 (없으면 추가)
+        //    - 보통 버튼은 "자기 이미지(CanvasRenderer)"를 타겟으로 씁니다.
+        {
+            auto cr = pObj->Get_Component<CCanvasRenderer>();
+            COMPONENT_HANDLE hCR = cr.Get_Handle();
+
+            if (!hCR.Is_Valid())
+            {
+                cr = pObj->Add_Component<CCanvasRenderer>();
+                hCR = cr.Get_Handle();
+
+                IF_TRUE_RETURN_MSG_BREAK(!hCR.Is_Valid(), E_FAIL, "Initialize_Component_Data(UI_BUTTON) failed: add CanvasRenderer failed");
+            }
+
+            // 타겟 캔버스가 비어있으면 기본으로 자기 CanvasRenderer를 타겟으로
+            if (!pData->hTargetCanvas.Is_Valid())
+                pData->hTargetCanvas = hCR;
+        }
+
+        // 3) 기본 상태값
+        pData->bEnable = true;
+        pData->eState = UI_BTN_STATE::Normal;
+        pData->bInteractable = true;
+
+        // 4) 비주얼 우선순위(버튼이 더 높게 덮어쓰게)
+        // pData->visualPriority = 10;
+
+        // 5) 최초 1회 비주얼 적용(선택)
+        Apply_ButtonVisual(*pData);
+
+        return S_OK;
+    }
+
+    return E_FAIL;
+}
+
+std::unique_ptr<CUI_Processor> CUI_Processor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+{
+    auto pInstance = std::make_unique<CUI_Processor>(pDevice, pContext);
 
     IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "Create instance failed");
     return pInstance;

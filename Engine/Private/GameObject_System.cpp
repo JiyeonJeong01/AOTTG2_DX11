@@ -61,6 +61,9 @@ HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
 
     m_pLayerHelper = CLayerHelper::Create(iMaxLayers);
 
+    /* Seperate UI */
+    m_pCanvas = Create_GameObjectUI(Layer::UI_LAYER, "Canvas");
+
     return S_OK;
 }
 
@@ -138,6 +141,9 @@ CGameObject* CGameObject_System::Create_GameObjectUI(Layer::LAYER_ID iLayer, con
         return nullptr;
     }
     IF_TRUE_RETURN_MSG_BREAK((!pWrapper->Get_Handle().Is_UI()), pWrapper, "Create UIObject, but it has GameObject handle");
+
+    if (pParent == nullptr)
+        pWrapper->Set_Parent(m_pCanvas);
 
     return pWrapper;
 }

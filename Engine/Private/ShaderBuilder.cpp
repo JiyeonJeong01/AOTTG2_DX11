@@ -36,16 +36,8 @@ HRESULT CShaderBuilder::Load_FX(ID3D11Device* pDevice, const _tchar* pFxPath, VE
     const D3D11_INPUT_ELEMENT_DESC* pElems = nullptr;
     UINT iElemCnt = 0;
 
-    if (eDecl == VERTEX_DECL::VTXCOL)
-    {
-        pElems = VTXCOL_LAYOUT;
-        iElemCnt = (UINT)_countof(VTXCOL_LAYOUT);
-    }
-    else
-    {
-        pElems = VTXTEX_LAYOUT;
-        iElemCnt = (UINT)_countof(VTXTEX_LAYOUT);
-    }
+    pElems = g_IL_TABLE[SCAST(_uint, eDecl)].pDesc;
+    iElemCnt = g_IL_TABLE[SCAST(_uint, eDecl)].iCount;
 
     for (UINT i = 0; i < tTD.Passes; ++i)
     {

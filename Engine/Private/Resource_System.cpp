@@ -142,16 +142,25 @@ uint32_t CResource_System::Load_Shader(const ASSET_GUID& tGUID)
 #endif	
     SHADER_ENTRY entry{};
     entry.tGUID = tGUID;
+
+    /* .meta 파일에 정의된 decl을 셰이더 파일 당 한 번씩만 읽어온다. */
+    std::filesystem::path metaPath;
+    IF_TRUE_RETURN_MSG_BREAK(!SYS_ASSET.Make_MetaPath_By_GUID(tGUID, metaPath), INVALID_HANDLE_UINT,
+        "Read meta file failed; set entry's decl as default.");
+    uint32_t metaDecl = SCAST(uint32_t, VERTEX_DECL::END);
+
+    if (Read_MetaFileDecl(metaPath, metaDecl))
+        entry.eDecl = SCAST(VERTEX_DECL, metaDecl);
+
+    if (metaDecl >= _countof(g_IL_TABLE))
+        metaDecl = SCAST(uint32_t, VERTEX_DECL::VTXTEX);
+
     HRESULT hr = D3DX11CompileEffectFromFile(shaderPath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, iHlslFlag, 0, m_pDevice, entry.pEffect.GetAddressOf(), nullptr);
     IF_FAIL_RETURN_MSG_BREAK(hr, INVALID_HANDLE_UINT, "Create Effect file failed");
 
     /* NOTE : Tech는 한 개인 경우만 고려한다. */
     entry.pTech = entry.pEffect->GetTechniqueByIndex(0);
     if (!entry.pTech || !entry.pTech->IsValid())
-        return INVALID_HANDLE_UINT;
-
-    const uint32_t decl = SCAST(_uint, entry.eDecl);
-    if (decl >= _countof(g_IL_TABLE))
         return INVALID_HANDLE_UINT;
 
     D3DX11_TECHNIQUE_DESC TechniqueDesc{};
@@ -166,9 +175,17 @@ uint32_t CResource_System::Load_Shader(const ASSET_GUID& tGUID)
 
         D3DX11_PASS_DESC PassDesc{};
         cache.pPass->GetDesc(&PassDesc);
+        {
+            _DEBUG_INFO("PassDesc: SigPtr=%p SigSize=%u", PassDesc.pIAInputSignature, (uint32_t)PassDesc.IAInputSignatureSize);
 
-        //HRESULT hr = m_pDevice->CreateInputLayout(g_IL_TABLE[SCAST(_uint, entry.eDecl)].pDesc, g_IL_TABLE[SCAST(_uint, entry.eDecl)].iCount, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, cache.pInputLayout.GetAddressOf());
-        HRESULT hr = m_pDevice->CreateInputLayout(g_IL_TABLE[SCAST(_uint, VERTEX_DECL::VTXTEX)].pDesc, g_IL_TABLE[SCAST(_uint, VERTEX_DECL::VTXTEX)].iCount, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, cache.pInputLayout.GetAddressOf());
+            if (!PassDesc.pIAInputSignature || PassDesc.IAInputSignatureSize == 0)
+            {
+                _DEBUG_ERROR("No IA signature in pass. Shader=%ls Pass=%u", shaderPath.c_str(), i);
+                return INVALID_HANDLE_UINT; // 또는 continue;
+            }
+        }
+
+        HRESULT hr = m_pDevice->CreateInputLayout(g_IL_TABLE[SCAST(_uint, entry.eDecl)].pDesc, g_IL_TABLE[SCAST(_uint, entry.eDecl)].iCount, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, cache.pInputLayout.GetAddressOf());
         IF_FAIL_RETURN_MSG_BREAK(hr, INVALID_HANDLE_UINT, "Create InputLayout failed! Shader: %ls, Pass Index: %d", shaderPath.c_str(), i);
 
         entry.pPasses.push_back(cache);
@@ -283,4 +300,34 @@ MATERIAL_ENTRY* CResource_System::Get_Material(uint32_t handle)
         return nullptr;
 
     return &m_Materials[handle];
+}
+
+/* 셰이더의 .meta 파일의 decl=을 읽어온다. */
+_bool CResource_System::Read_MetaFileDecl(const std::filesystem::path& metaPath, uint32_t& outDecl)
+{
+    std::ifstream ifs(metaPath, std::ios_base::binary);
+    if (!ifs.is_open())
+        return false;
+
+    std::string line;
+
+    constexpr const char* k = "decl=";
+    while (std::getline(ifs, line))
+    {
+        if (line.rfind(k, 0) == 0)
+        {
+            const std::string v = line.substr(5);
+            try
+            {
+                outDecl = SCAST(uint32_t, std::stoul(v));
+                return true;
+            }
+            catch (...)
+            {
+                return false;
+            }
+        }
+    }
+
+    return false;
 }
