@@ -334,6 +334,9 @@ _bool CPrototype_Handler::Deserialize_PrototypeSpec(const json& j, PROTOTYPE_SPE
 /* SpecFactoryFn */
 std::unique_ptr<COMPONENT_SPEC_BASE> CPrototype_Handler::Create_Spec_By_Type(COMPONENT_TYPE eType)
 {
+    /* ---------------------------------------------------------------------
+    *  TODO : 컴포넌트 추가 시 반드시 추가
+    * --------------------------------------------------------------------- */
     switch (eType)
     {
     case COMPONENT_TYPE::TRANSFORM: return std::make_unique<TRANSFORM_SPEC>();
@@ -341,7 +344,9 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CPrototype_Handler::Create_Spec_By_Type(COM
     case COMPONENT_TYPE::CANVAS_RENDERER: return std::make_unique<CANVAS_RENDERER_SPEC>();
     case COMPONENT_TYPE::MESH_RENDERER: return std::make_unique<MESH_RENDERER_SPEC>();
     case COMPONENT_TYPE::SCRIPT: return std::make_unique<SCRIPT_SPEC>();
-    /* TODO : 컴포넌트 추가 시  */
+    case COMPONENT_TYPE::UI_IMAGE: return std::make_unique<UI_IMAGE_SPEC>();
+    case COMPONENT_TYPE::UI_BUTTON: return std::make_unique<UI_BUTTON_SPEC>();
+
     default:
         return nullptr;
     }

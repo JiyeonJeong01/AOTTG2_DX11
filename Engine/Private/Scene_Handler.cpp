@@ -315,12 +315,18 @@ HRESULT CScene_Handler::Apply_Overrides(CGameObject* pObject, const COMPONENT_SP
 
 std::unique_ptr<COMPONENT_SPEC_BASE> CScene_Handler::Create_Spec_By_Type(COMPONENT_TYPE eType)
 {
+    /* ---------------------------------------------------------------------
+     *  TODO : 컴포넌트 추가 시 반드시 추가 
+     * --------------------------------------------------------------------- */
     switch (eType)
     {
     case COMPONENT_TYPE::TRANSFORM: return std::make_unique<TRANSFORM_SPEC>();
     case COMPONENT_TYPE::RECT_TRANSFORM: return std::make_unique<RECTTRANSFORM_SPEC>();
     case COMPONENT_TYPE::CANVAS_RENDERER: return std::make_unique<CANVAS_RENDERER_SPEC>();
     case COMPONENT_TYPE::MESH_RENDERER: return std::make_unique<MESH_RENDERER_SPEC>();
+    case COMPONENT_TYPE::SCRIPT: return std::make_unique<SCRIPT_SPEC>();
+    case COMPONENT_TYPE::UI_IMAGE: return std::make_unique<UI_IMAGE_SPEC>();
+    case COMPONENT_TYPE::UI_BUTTON: return std::make_unique<UI_BUTTON_SPEC>();
     default:
         return nullptr;
     }

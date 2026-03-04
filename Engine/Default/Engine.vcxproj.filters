@@ -411,6 +411,9 @@
     <ClInclude Include="..\Public\GameInstance.h">
       <Filter>00. System\99. GameInstance</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Spec_Util.h">
+      <Filter>01. Utility\04. Component\98. Spec</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">

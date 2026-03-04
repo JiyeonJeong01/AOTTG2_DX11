@@ -62,7 +62,7 @@ HRESULT CRectTransform_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, 
         m_fWidth = ui.vViewport.x;
         m_fHeight = ui.vViewport.y;
 
-        IF_TRUE_RETURN_MSG_BREAK((m_fHeight == 0 || m_fWidth == 0), E_FAIL, "Initialize_From_Spec failed : Invalid viewport size");
+        //IF_TRUE_RETURN_MSG_BREAK((m_fHeight == 0 || m_fWidth == 0), E_FAIL, "Initialize_From_Spec failed : Invalid viewport size");
     }
 
     RECTTRANSFORM_DATA* pData = m_Pool.Get_Data_By_Handle(handle);

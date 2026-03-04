@@ -165,4 +165,96 @@ static void Transpose16(const float* src16, float* dst16)
     dst16[12] = t[3];  dst16[13] = t[7];  dst16[14] = t[11]; dst16[15] = t[15];
 }
 
+// =============================================================
+// Drag & Drop 공용 유틸
+// - Payload가 ASSET_GUID로 오면 그대로 사용한다.
+// - Payload가 ASSET_SELECTION(경로 포함)로 오면 경로 -> GUID로 Resolve한다.
+// - 타입 체크는 caller가 원하는 대로(Shader/Texture 등) 걸어줄 수 있게 분리한다.
+// =============================================================
+
+/* NOTE:
+ * payloadName 은 ProjectPanel에서 SetDragDropPayload에 쓰는 이름과 반드시 같아야 한다.
+ * 예) ImGui::SetDragDropPayload("ASSET_GUID", &guid, sizeof(ASSET_GUID));
+ */
+
+inline _bool Try_Get_GUID_From_Payload(const ImGuiPayload* payload, ASSET_GUID& outGUID)
+{
+    if (!payload || !payload->Data || payload->DataSize <= 0)
+        return false;
+
+    /* Payload가 GUID 자체인 경우 */
+    if (payload->DataSize == sizeof(ASSET_GUID))
+    {
+        outGUID = *reinterpret_cast<const ASSET_GUID*>(payload->Data);
+        return outGUID.Is_Valid();
+    }
+
+    /* Payload가 ASSET_SELECTION인 경우 */
+    if (payload->DataSize == sizeof(Editor::ASSET_SELECTION))
+    {
+        const Editor::ASSET_SELECTION& sel = *reinterpret_cast<const Editor::ASSET_SELECTION*>(payload->Data);
+
+        if (sel.path.empty())
+            return false;
+
+        /* 경로 -> GUID : 이미 레지스트리에 meta가 있고 guid 매핑이 있으니 여기서 resolve */
+        return SYS_ASSET.Try_Get_GUID(sel.path, outGUID);
+    }
+
+    return false;
+}
+
+template<typename TOnAccept>
+inline _bool Draw_DropTarget_GUID(
+    const char* label,
+    const char* payloadName,
+    TOnAccept&& onAccept,
+    const char* tooltip = nullptr
+)
+{
+    _bool changed = false;
+
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(payloadName))
+        {
+            ASSET_GUID dropped{};
+            if (Try_Get_GUID_From_Payload(payload, dropped))
+            {
+                onAccept(dropped);
+                changed = true;
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
+
+    if (tooltip && ImGui::IsItemHovered())
+        ImGui::SetTooltip("%s", tooltip);
+
+    return changed;
+}
+
+/* 타입 체크(optional) */
+template<typename TOnAccept>
+inline _bool Draw_DropTarget_GUID_Typed(
+    const char* label,
+    const char* payloadName,
+    ASSET_TYPE allowedType,
+    TOnAccept&& onAccept,
+    const char* tooltip = nullptr
+)
+{
+    return Draw_DropTarget_GUID(label, payloadName,
+        [&](const ASSET_GUID& dropped)
+        {
+            const ASSET_TYPE t = SYS_ASSET.Find(dropped)->eType;
+            if (t != allowedType)
+                return;
+
+            onAccept(dropped);
+        },
+        tooltip
+    );
+}
+
 NS_END

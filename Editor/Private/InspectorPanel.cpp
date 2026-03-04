@@ -14,6 +14,7 @@
 #include "Component_System.h"
 #include "Editor_Util.h"
 #include "Script_Processor.h"
+#include "Resource_System.h"
 
 #include "UIImage.h"
 #include "UIButton.h"
@@ -1130,7 +1131,7 @@ void CInspectorPanel::Draw_UIImage()
     ImGui::SameLine();
     ImGui::Text("%u", pData->hCanvasRenderer);
 
-    // (선택) dirty 플래그 확인
+    // dirty 플래그 확인
     bool dirty = (pData->dirty != 0);
     if (ImGui::Checkbox("Dirty", &dirty))
     {
@@ -1149,11 +1150,32 @@ void CInspectorPanel::Draw_UIImage()
     }
 
     // Texture
-    uint32_t hTex = pData->hTexture;
-    if (ImGui::InputScalar("Texture", ImGuiDataType_U32, &hTex))
     {
-        pData->hTexture = hTex;
-        bChanged = true;
+        uint32_t hTex = pData->hTexture;
+
+        /* 기존: 숫자 입력(유지) */
+        if (ImGui::InputScalar("Texture", ImGuiDataType_U32, &hTex))
+        {
+            pData->hTexture = hTex;
+            bChanged = true;
+        }
+
+        /*  드래그&드롭으로 텍스처 GUID 받아서 핸들로 로드 후 세팅 */
+        Editor_Util::Draw_DropTarget_GUID_Typed(
+            "Texture",          // label (현재는 내부에서 안 쓰지만 그대로)
+            "ASSET_GUID",       // payloadName (프로젝트 패널에서 넣는 문자열)
+            ASSET_TYPE::TEXTURE,
+            [&](const ASSET_GUID& dropped)
+            {
+                const uint32_t newHandle = SYS_RESOURCE.Load_Texture(dropped);
+                if (newHandle != INVALID_HANDLE_UINT && newHandle != pData->hTexture)
+                {
+                    pData->hTexture = newHandle;
+                    bChanged = true;
+                }
+            },
+            "Drop Texture here"
+        );
     }
 
     // Color

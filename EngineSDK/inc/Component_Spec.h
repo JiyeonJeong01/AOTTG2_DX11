@@ -1,6 +1,5 @@
 ﻿#pragma once
-#include "Engine_Define.h"
-#include "Spec_Struct.h"
+#include "Spec_Util.h"
 
 NS_BEGIN(Engine)
 
@@ -586,5 +585,136 @@ typedef struct ENGINE_DLL tagLightSpec final : public COMPONENT_SPEC_BASE
         }
     }
 } LIGHT_SPEC;
+
+typedef struct tagUIImageSpec final : public COMPONENT_SPEC_BASE
+{
+    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::UI_IMAGE)
+
+    RECT_F      rcUV{};
+    _float4     color{ 1,1,1,1 };
+
+    ASSET_GUID  textureGuid{};
+
+    _bool       bEnable = false;
+    uint8_t     visualPriority = 0;
+    uint8_t     pad1[2] = {};
+
+    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
+    {
+        return std::make_unique<tagUIImageSpec>(*this);
+    }
+
+    void ToJson(json& j) const override
+    {
+        j["Type"] = SCAST(_uint, Get_Type());
+        j["Enabled"] = bEnable;
+
+        Guid_ToJson(j["TextureGuid"], textureGuid);
+        RectF_ToJson(j["UV"], rcUV);
+        Float4_ToJson(j["Color"], color);
+        j["VisualPriority"] = visualPriority;
+    }
+
+    _bool FromJson(const json& j) override
+    {
+        try
+        {
+            if (j.contains("Enabled"))        bEnable = j["Enabled"];
+            if (j.contains("TextureGuid"))    Guid_FromJson(j["TextureGuid"], textureGuid);
+            if (j.contains("UV"))             RectF_FromJson(j["UV"], rcUV);
+            if (j.contains("Color"))          Float4_FromJson(j["Color"], color);
+            if (j.contains("VisualPriority")) visualPriority = j["VisualPriority"];
+            return true;
+        }
+        catch (...) { return false; }
+    }
+} UI_IMAGE_SPEC;
+
+
+typedef struct tagUIButtonSpec final : public COMPONENT_SPEC_BASE
+{
+    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::UI_BUTTON)
+
+    _float4 normal{ 1,1,1,1 };
+    _float4 hover{ 1,1,1,1 };
+    _float4 pressed{ 1,1,1,1 };
+    _float4 disabled{ 1,1,1,1 };
+
+    ASSET_GUID normalTexGuid{};
+    RECT_F     normalUV{};
+    ASSET_GUID hoverTexGuid{};
+    RECT_F     hoverUV{};
+    ASSET_GUID pressedTexGuid{};
+    RECT_F     pressedUV{};
+
+    uint32_t   onClickEventId = 0;
+    uint8_t    visualPriority = 10;
+    _bool      bEnable = false;
+    _bool      bInteractable = true;
+    uint8_t    pad1[1] = {};
+
+    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
+    {
+        return std::make_unique<tagUIButtonSpec>(*this);
+    }
+
+    void ToJson(json& j) const override
+    {
+        j["Type"] = SCAST(_uint, Get_Type());
+        j["Enabled"] = bEnable;
+        j["Interactable"] = bInteractable;
+
+        Float4_ToJson(j["NormalColor"], normal);
+        Float4_ToJson(j["HoverColor"], hover);
+        Float4_ToJson(j["PressedColor"], pressed);
+        Float4_ToJson(j["DisabledColor"], disabled);
+
+        Guid_ToJson(j["NormalTexGuid"], normalTexGuid);  RectF_ToJson(j["NormalUV"], normalUV);
+        Guid_ToJson(j["HoverTexGuid"], hoverTexGuid);    RectF_ToJson(j["HoverUV"], hoverUV);
+        Guid_ToJson(j["PressedTexGuid"], pressedTexGuid); RectF_ToJson(j["PressedUV"], pressedUV);
+
+        j["VisualPriority"] = visualPriority;
+        j["OnClickEventId"] = onClickEventId;
+    }
+
+    _bool FromJson(const json& j) override
+    {
+        try
+        {
+            if (j.contains("Enabled"))        bEnable = j["Enabled"];
+            if (j.contains("Interactable"))   bInteractable = j["Interactable"];
+
+            if (j.contains("NormalColor"))    Float4_FromJson(j["NormalColor"], normal);
+            if (j.contains("HoverColor"))     Float4_FromJson(j["HoverColor"], hover);
+            if (j.contains("PressedColor"))   Float4_FromJson(j["PressedColor"], pressed);
+            if (j.contains("DisabledColor"))  Float4_FromJson(j["DisabledColor"], disabled);
+
+            if (j.contains("NormalTexGuid"))  Guid_FromJson(j["NormalTexGuid"], normalTexGuid);
+            if (j.contains("NormalUV"))       RectF_FromJson(j["NormalUV"], normalUV);
+
+            if (j.contains("HoverTexGuid"))   Guid_FromJson(j["HoverTexGuid"], hoverTexGuid);
+            if (j.contains("HoverUV"))        RectF_FromJson(j["HoverUV"], hoverUV);
+
+            if (j.contains("PressedTexGuid")) Guid_FromJson(j["PressedTexGuid"], pressedTexGuid);
+            if (j.contains("PressedUV"))      RectF_FromJson(j["PressedUV"], pressedUV);
+
+            if (j.contains("VisualPriority")) visualPriority = j["VisualPriority"];
+            if (j.contains("OnClickEventId")) onClickEventId = j["OnClickEventId"];
+
+            return true;
+        }
+        catch (...) { return false; }
+    }
+} UI_BUTTON_SPEC;
+
+
+
+
+
+
+
+
+
+
 
 NS_END

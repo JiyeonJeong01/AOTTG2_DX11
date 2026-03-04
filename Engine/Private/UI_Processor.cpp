@@ -12,6 +12,7 @@
 #include "BuiltIn_GUID.h"
 #include "Engine_Log.h"
 #include "Input_System.h"
+#include "Component_Spec.h"
 
 NS_BEGIN(Engine)
 
@@ -56,8 +57,8 @@ CUI_Processor::~CUI_Processor() = default;
 
 HRESULT CUI_Processor::Initialize()
 {
-    //SYS_COMPONENT.Register_InitialSpecFactory<CUIImage, UIButtonSpec>(COMPONENT_TYPE::UI_BUTTON); /* TODO 만든 뒤 등록하기  
-    //SYS_COMPONENT.Register_InitialSpecFactory<CUIImage, UIImageSpec>(COMPONENT_TYPE::UI_IMAGE);
+    SYS_COMPONENT.Register_InitialSpecFactory<CUIButton, UI_BUTTON_SPEC>(COMPONENT_TYPE::UI_BUTTON);
+    SYS_COMPONENT.Register_InitialSpecFactory<CUIImage, UI_IMAGE_SPEC>(COMPONENT_TYPE::UI_IMAGE);
     SYS_COMPONENT.Register_BuildSpecFacotry<CUIButton>(COMPONENT_TYPE::UI_BUTTON);
     SYS_COMPONENT.Register_BuildSpecFacotry<CUIImage>(COMPONENT_TYPE::UI_IMAGE);
 
@@ -135,6 +136,60 @@ HRESULT CUI_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_H
 
 std::unique_ptr<COMPONENT_SPEC_BASE> CUI_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
 {
+    switch (eComType)
+    {
+    case COMPONENT_TYPE::UI_IMAGE:
+    {
+        UI_IMAGE_DATA* pData = m_ImagePool.Get_Data_By_Handle(hComponent);
+        IF_NULL_RETURN_MSG_BREAK(pData, nullptr, "pData is nullptr");
+
+        UI_IMAGE_SPEC spec{};
+        spec.bEnable = pData->bEnable;
+
+        /* Handle -> GUID */
+        spec.textureGuid = SYS_RESOURCE.Get_Texture(pData->hTexture)->tGUID;
+
+        spec.rcUV = pData->rcUV;
+        spec.color = pData->color;
+        spec.visualPriority = pData->visualPriority;
+
+        return std::make_unique<UI_IMAGE_SPEC>(spec);
+    }
+
+    case COMPONENT_TYPE::UI_BUTTON:
+    {
+        UI_BUTTON_DATA* pData = m_ButtonPool.Get_Data_By_Handle(hComponent);
+        IF_NULL_RETURN_MSG_BREAK(pData, nullptr, "pData is nullptr");
+
+        UI_BUTTON_SPEC spec{};
+        spec.bEnable = pData->bEnable;
+        spec.bInteractable = pData->bInteractable;
+
+        spec.normal = pData->normal;
+        spec.hover = pData->hover;
+        spec.pressed = pData->pressed;
+        spec.disabled = pData->disabled;
+
+        /* Handle -> GUID (저장) */
+        spec.normalTexGuid = SYS_RESOURCE.Get_Texture(pData->normalTex)->tGUID;
+        spec.normalUV = pData->normalUV;
+
+        spec.hoverTexGuid = SYS_RESOURCE.Get_Texture(pData->hoverTex)->tGUID;
+        spec.hoverUV = pData->hoverUV;
+
+        spec.pressedTexGuid = SYS_RESOURCE.Get_Texture(pData->pressedTex)->tGUID;
+        spec.pressedUV = pData->pressedUV;
+
+        spec.visualPriority = pData->visualPriority;
+        spec.onClickEventId = pData->onClickEventId;
+
+        return std::make_unique<UI_BUTTON_SPEC>(spec);
+    }
+
+    default:
+        break;
+    }
+
     return nullptr;
 }
 
@@ -204,6 +259,8 @@ void CUI_Processor::Sync_Images_To_Canvas()
 void CUI_Processor::Apply_ButtonVisual(const UI_BUTTON_DATA& tData)
 {
     auto crProxy = m_pCanvasProcessor->Get_Proxy(COMPONENT_TYPE::CANVAS_RENDERER, tData.hTargetCanvas);
+    IF_TRUE_RETURN_MSG_BREAK(crProxy.Is_Valid() == false, , "UIButton is not valid");
+
     CANVAS_RENDERER_DATA* pCR = crProxy._Data();
     if (!pCR) return;
     pCR->vColor = Get_State_Color(tData);
@@ -301,11 +358,59 @@ _bool CUI_Processor::HitTest_Rect(const RECT& rcScreen, const POINT& ptMouse) no
 
 HRESULT CUI_Processor::Initialize_From_Spec_UIButton(COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pSpec)
 {
+    IF_NULL_RETURN_MSG_BREAK(pSpec, E_FAIL, "pSpec is nulptr");
+
+    const UI_BUTTON_SPEC* p = static_cast<const UI_BUTTON_SPEC*>(pSpec);
+
+    UI_BUTTON_DATA* pData = m_ButtonPool.Get_Data_By_Handle(hComponent);
+    IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "pData is nulptr");
+
+    pData->bEnable = p->bEnable;
+    pData->bInteractable = p->bInteractable;
+
+    pData->normal = p->normal;
+    pData->hover = p->hover;
+    pData->pressed = p->pressed;
+    pData->disabled = p->disabled;
+
+    /* GUID -> Handle */
+    pData->normalTex = SYS_RESOURCE.Load_Texture(p->normalTexGuid);
+    pData->normalUV = p->normalUV;
+
+    pData->hoverTex = SYS_RESOURCE.Load_Texture(p->hoverTexGuid);
+    pData->hoverUV = p->hoverUV;
+
+    pData->pressedTex = SYS_RESOURCE.Load_Texture(p->pressedTexGuid);
+    pData->pressedUV = p->pressedUV;
+
+    pData->visualPriority = p->visualPriority;
+    pData->onClickEventId = p->onClickEventId;
+
+    pData->eState = UI_BTN_STATE::Normal;
+
     return S_OK;
 }
 
 HRESULT CUI_Processor::Initialize_From_Spec_UIImage(COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pSpec)
 {
+    IF_NULL_RETURN_MSG_BREAK(pSpec, E_FAIL, "pSpec is nulptr");
+
+    const UI_IMAGE_SPEC* p = static_cast<const UI_IMAGE_SPEC*>(pSpec);
+
+    UI_IMAGE_DATA* pData = m_ImagePool.Get_Data_By_Handle(hComponent);
+    IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "pData is nulptr");
+
+    pData->bEnable = p->bEnable;
+
+    /* GUID -> Handle */
+    pData->hTexture = SYS_RESOURCE.Load_Texture(p->textureGuid);
+
+    pData->rcUV = p->rcUV;
+    pData->color = p->color;
+    pData->visualPriority = p->visualPriority;
+
+    pData->dirty = true;
+
     return S_OK;
 }
 
@@ -355,7 +460,7 @@ HRESULT CUI_Processor::Initialize_Component_Data(COMPONENT_TYPE eComType, COMPON
         CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
         IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "Initialize_Component_Data(UI_BUTTON) failed: invalid hObject");
 
-        // 1) RectTransform 확보 (없으면 추가)
+        /* RectTransform 보장 */
         {
             auto rt = pObj->Get_Component<CRectTransform>();
             COMPONENT_HANDLE hRT = rt.Get_Handle();
@@ -371,8 +476,7 @@ HRESULT CUI_Processor::Initialize_Component_Data(COMPONENT_TYPE eComType, COMPON
             pData->hRectTransform = hRT;
         }
 
-        // 2) Button이 실제로 때릴 CanvasRenderer 확보 (없으면 추가)
-        //    - 보통 버튼은 "자기 이미지(CanvasRenderer)"를 타겟으로 씁니다.
+        /* CanvasRenderer 보장 및 캐싱 */
         {
             auto cr = pObj->Get_Component<CCanvasRenderer>();
             COMPONENT_HANDLE hCR = cr.Get_Handle();
@@ -385,20 +489,17 @@ HRESULT CUI_Processor::Initialize_Component_Data(COMPONENT_TYPE eComType, COMPON
                 IF_TRUE_RETURN_MSG_BREAK(!hCR.Is_Valid(), E_FAIL, "Initialize_Component_Data(UI_BUTTON) failed: add CanvasRenderer failed");
             }
 
-            // 타겟 캔버스가 비어있으면 기본으로 자기 CanvasRenderer를 타겟으로
+            /* 타겟 캔버스가 비어있으면 기본으로 자기 CanvasRenderer를 타겟으로 */
             if (!pData->hTargetCanvas.Is_Valid())
                 pData->hTargetCanvas = hCR;
         }
 
-        // 3) 기본 상태값
+        /* 기본 상태값 */
         pData->bEnable = true;
         pData->eState = UI_BTN_STATE::Normal;
         pData->bInteractable = true;
 
-        // 4) 비주얼 우선순위(버튼이 더 높게 덮어쓰게)
         // pData->visualPriority = 10;
-
-        // 5) 최초 1회 비주얼 적용(선택)
         Apply_ButtonVisual(*pData);
 
         return S_OK;

@@ -276,7 +276,7 @@ void CMainPanel::Draw_Menu_File()
     if (ImGui::MenuItem("Open SCENE...", "Ctrl+O"))
     {
         /* 오픈할 씬 선택 -> 경로 저장 */
-        const std::wstring pathW = Editor_Util::SaveFileDialog(
+        const std::wstring pathW = Editor_Util::OpenFileDialog(
             L"SCENE Files (*.scene)\0*.scene\0All Files (*.*)\0*.*\0\0",
             sceneFolder.c_str()
         );
