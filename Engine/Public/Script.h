@@ -6,7 +6,7 @@ using TypeID = uint32_t;
 
 typedef struct tagScriptCtx
 {
-    /* 일단 비워둠 */
+    OBJECT_HANDLE hObject{};
 }SCRIPT_CTX;
 
 enum class SCRIPT_TICK : uint8_t
@@ -46,10 +46,10 @@ typedef struct tagScriptData
 
     void* pState{};
 
-    uint32_t        hState = INVALID_HANDLE_UINT; // 0
-    TypeID          iTypeID = 0;                   // 0 = invalid
+    uint32_t        hState = INVALID_HANDLE_UINT;   // 0
+    TypeID          iTypeID = 0;                    // 0 = invalid
 
-    uint8_t         iFlags = 0;                    // bit0 enabled, bit1 awoken, bit2 started
+    uint8_t         iFlags = 0;                     // bit1 awoken, bit2 started
     uint8_t         pad[3] = {};
 } SCRIPT_DATA;
 
@@ -75,6 +75,15 @@ public:
     virtual void Priority_Update(void* pCtx, _float fDT) { (void)pCtx; (void)fDT; }
     virtual void Update(void* pCtx, _float fDT) { (void)pCtx; (void)fDT; }
     virtual void Late_Update(void* pCtx, _float fDT) { (void)pCtx; (void)fDT; }
+
+public :
+    void Set_Owner(OBJECT_HANDLE hObject)
+    {
+        m_hObject = hObject;
+    }
+
+protected :
+    OBJECT_HANDLE m_hObject{};
 };
 
 

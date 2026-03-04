@@ -5,6 +5,7 @@
 #include "Script_Register.h"
 
 #include "FirstScene.h"
+#include "Hello.h"
 #include "PrototypeTest.h"
 #include "CScript_Test.h"
 #include "Test_ComponentEnable.h"
@@ -16,6 +17,10 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\FirstScene.script");
         handler.Register_VTable(guid, ScriptBinder<CFirstScene>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Hello.script");
+        handler.Register_VTable(guid, ScriptBinder<CHello>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\PrototypeTest.script");

@@ -21,11 +21,17 @@ void CScript_Handler::Clear()
 
 void CScript_Handler::Cache_GUID(const ASSET_GUID& tGUID)
 {
-    m_CachedGUID.push_back(tGUID);
+    /* void CAsset_Registry::Distribute_Assets_To_Handlers()에 의해 호출된다.
+     * CScript_Processor에서 요청 시 바로 반환할 수 있도록 캐싱한다. */
+    m_CachedGUID.push_back(tGUID); 
 }
 
 void CScript_Handler::Register_VTable(const ASSET_GUID& tGUID, const SCRIPT_VTABLE& vt)
 {
+    /* -------------------------------- NOTE -------------------------------- *
+     * 에서 호출되는 함수이다.         
+     * 모든 스크립트 클래스가 자신을 Script_Processor에 등록하는 데 사용된다.
+     * ---------------------------------------------------------------------- */
     if(m_VTableMap.find(tGUID) == m_VTableMap.end())
         m_VTableMap[tGUID] = vt;
 }
@@ -40,6 +46,10 @@ const SCRIPT_VTABLE* CScript_Handler::Find(const ASSET_GUID& tGUID) const
 
 HRESULT CScript_Handler::Generate(const std::filesystem::path& outCppPath)
 {
+    /* -------------------------------- NOTE -------------------------------- *
+     * Clinet::Script_Registry.gen.cpp를 생성하는 함수이다.
+     * ---------------------------------------------------------------------- */
+
     struct ScriptInfo
     {
         ASSET_GUID   tGUID{};

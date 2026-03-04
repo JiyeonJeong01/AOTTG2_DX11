@@ -5,6 +5,7 @@
 #include "Asset_Registry.h"
 #include "Core_System.h"
 #include "Asset_Meta.h"
+#include "Create_Asset_Helper.h"
 
 NS_BEGIN(Editor)
 
@@ -98,9 +99,7 @@ void CProjectPanel::Render()
     ImGui::End();
 }
 
-/* =======================================================================*/
-/* ============================== Selection ==============================*/
-/* =======================================================================*/
+/* ----------------------------- Selection ----------------------------- */
 const std::filesystem::path& CProjectPanel::Get_Selected_Path() const
 {
     return m_selectedPath;
@@ -121,9 +120,7 @@ void CProjectPanel::Clear_Selection()
     m_selectedPath.clear();
 }
 
-/* =======================================================================*/
-/* ============================== Rename =================================*/
-/* =======================================================================*/
+/* ----------------------------- Rename ----------------------------- */
 void CProjectPanel::Begin_Rename(const std::filesystem::path& targetPath)
 {
     if (targetPath.empty())
@@ -146,9 +143,7 @@ _bool CProjectPanel::Is_Renaming() const
     return !m_renameTargetPath.empty();
 }
 
-/* =======================================================================*/
-/* ============================== UI State ===============================*/
-/* =======================================================================*/
+/* ----------------------------- UI State ----------------------------- */
 void CProjectPanel::Draw_Toolbar()
 {
     /* Minimal toolbar, expand later */
@@ -201,9 +196,7 @@ void CProjectPanel::Draw_Main_Split()
     ImGui::EndChild();
 }
 
-/* =======================================================================*/
-/* ========================= Left : FOLDER tree ==========================*/
-/* =======================================================================*/
+/* ----------------------------- Left : FOLDER tree ----------------------------- */
 void CProjectPanel::Draw_Folder_Tree()
 {
     if (!std::filesystem::exists(m_assetsRoot))
@@ -277,9 +270,7 @@ void CProjectPanel::Draw_Folder_Node_Recursive(const FOLDER_NODE& tNode, _int iD
     }
 }
 
-/* =======================================================================*/
-/* ========================= Right : File list ===========================*/
-/* =======================================================================*/
+/* ----------------------------- Right : File list ----------------------------- */
 void CProjectPanel::Draw_File_List()
 {
     if (!std::filesystem::exists(m_currentFolder))
@@ -403,9 +394,7 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
     ImGui::PopID();
 }
 
-/* =======================================================================*/
-/* ======================= Context menu(blank space) =====================*/
-/* =======================================================================*/
+/* ----------------------------- Context menu(blank space) ----------------------------- */
 void CProjectPanel::Draw_Context_Menu()
 {
     /* shortcuts */
@@ -438,24 +427,23 @@ void CProjectPanel::Draw_Context_Menu()
 
 void CProjectPanel::Draw_Context_Popup()
 {
-    // 패널 영역에서 우클릭이 일어났는데, 아이템 우클릭으로 타겟이 설정되지 않았다면
-    // 빈 공간 우클릭로 취급
+    /* 패널 영역 우클릭 시, 아이템 우클릭 타겟 설정이 아니라면 빈 공간 우클릭 취급 */
     const _bool bPanelHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
 
     if (bPanelHovered && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
     {
-        // 방금 아이템에서 m_popupTargetIsItem을 true로 세팅했을 수도 있으니
-        // 한 프레임에서 우클릭 타겟이 없으면 빈 공간으로 처리
+
+        /* 방금 아이템에서 m_popupTargetIsItem을 true로 세팅했을 수도 있으니, 한 프레임에서 우클릭 타겟이 없으면 빈 공간으로 처리 */ 
         if (!m_popupTargetIsItem)
             m_popupTargetPath.clear();
 
         ImGui::OpenPopup("##ProjectContextUnified");
     }
 
-    // 팝업 그리기
+    /* 팝업 그리기 */
     Draw_Project_Context_Unified();
 
-    // 프레임 끝에서 reset(다음 프레임에 남지 않게)
+    /* 프레임 끝에서 reset */ 
     m_popupTargetIsItem = false;
 }
 
@@ -486,8 +474,6 @@ void CProjectPanel::Draw_Project_Context_Unified()
 {
     if (ImGui::BeginPopup("##ProjectContextUnified"))
     {
-        // 대상이 아이템인지 아닌지에 따라 동작만 달라지고,
-        // “보이는 메뉴”는 최대한 동일하게 유지할 수 있습니다.
         const _bool bHasTarget = !m_popupTargetPath.empty();
 
         /* TODO /* -------------------------------------------------------------- */
@@ -569,9 +555,7 @@ void CProjectPanel::Draw_Project_Context_Unified()
     }
 }
 
-/* =======================================================================*/
-/* ============================== Refresh ================================*/
-/* =======================================================================*/
+/* ----------------------------- Refresh ----------------------------- */
 void CProjectPanel::Refresh_Folder_Tree()
 {
     m_rootNode = FOLDER_NODE{};
@@ -641,9 +625,8 @@ void CProjectPanel::Refresh_File_List()
     m_bListDirty = false;
 }
 
-/* =======================================================================*/
-/* ============================== Helpers ================================*/
-/* =======================================================================*/
+/* ------------------------------ Helpers ------------------------------ */
+
 _bool CProjectPanel::Is_Visible_By_Filter(const std::string& name, const std::string& filter)
 {
     return String_IContains(name, filter);
@@ -675,9 +658,7 @@ void CProjectPanel::Ensure_Path_Exists(std::filesystem::path& inoutPath)
     inoutPath = std::filesystem::weakly_canonical(inoutPath);
 }
 
-/* =======================================================================*/
-/* ============================= Operations ==============================*/
-/* =======================================================================*/
+/* ------------------------------ Operations ------------------------------ */
 _bool CProjectPanel::Rename_Path(const std::filesystem::path& src, const std::string& newName)
 {
     if (src.empty() || newName.empty())
@@ -857,7 +838,6 @@ void CProjectPanel::Commit_Rename()
 {
     if (m_renameTargetPath.empty()) return;
 
-    // 기존 헬퍼 함수 호출 (여기 안에 선택 경로 갱신 로직 등이 이미 일부 포함되어 있음)
     if (Rename_Path(m_renameTargetPath, m_renameBuffer))
     {
         m_bListDirty = true;
@@ -866,8 +846,6 @@ void CProjectPanel::Commit_Rename()
 
     Cancel_Rename();
 }
-
-// ProjectPanel.cpp
 
 _bool CProjectPanel::Is_Scene_Asset(const LIST_ASSET& tAsset) const
 {
@@ -909,6 +887,7 @@ void CProjectPanel::Try_Open_Scene_On_DoubleClick(const LIST_ASSET& tAsset)
     /* TODO : 에디터의 게임 모드에서는 ??  */
     Open_Scene_By_GUID(guid, APP_MODE::EDITOR_EDIT);
 }
+
 
 
 /* =======================================================================*/
@@ -961,85 +940,6 @@ std::string CProjectPanel::Make_Unique_Folder_Name_Impl(const std::filesystem::p
     // fallback
     return baseName + " (9999)";
 }
-
-_bool CProjectPanel::Write_Text_File(const std::filesystem::path& p, const std::string& utf8)
-{
-    std::error_code ec;
-    std::filesystem::create_directories(p.parent_path(), ec);
-
-    std::ofstream ofs(p, std::ios_base::binary);
-    if (!ofs.is_open())
-        return false;
-
-    ofs.write(utf8.data(), (std::streamsize)utf8.size());
-    return true;
-}
-
-std::string CProjectPanel::Make_Unique_File_Stem_Impl(const std::filesystem::path& parent, const std::string& baseStem)
-{
-    std::string stem = baseStem;
-
-    auto exists_pair = [&](const std::string& s)
-        {
-            std::filesystem::path scriptPath = parent / (s + ".script");
-            std::filesystem::path headerPath = m_HeaderPath / (s + ".h");
-            std::filesystem::path cppPath = m_ImplPath / (s + ".cpp");
-
-            return std::filesystem::exists(scriptPath) ||
-                std::filesystem::exists(headerPath) ||
-                std::filesystem::exists(cppPath);
-        };
-
-    if (!exists_pair(stem))
-        return stem;
-
-    for (int i = 1; i < 9999; ++i)
-    {
-        stem = baseStem + " (" + std::to_string(i) + ")";
-        if (!exists_pair(stem))
-            return stem;
-    }
-
-    return baseStem + " (9999)";
-}
-
-/* 클래스 명에는 + C 붙여주기 */
-std::string CProjectPanel::Make_Script_File_From_Stem(const std::string& stem)
-{
-    std::string out;
-    out.reserve(stem.size() + 16);
-
-    _bool bPrevUnderscore = false;
-
-    for (char c : stem)
-    {
-        if (std::isalnum((unsigned char)c))
-        {
-            out.push_back(c);
-            bPrevUnderscore = false;
-        }
-        else
-        {
-            // 구분자는 '_' 하나로만
-            if (!bPrevUnderscore && !out.empty())
-            {
-                out.push_back('_');
-                bPrevUnderscore = true;
-            }
-        }
-    }
-
-    // 끝에 '_' 붙었으면 제거
-    while (!out.empty() && out.back() == '_')
-        out.pop_back();
-
-    // 비어 있으면 fallback
-    if (out.empty())
-        out = "New_Script";
-
-    return out;
-}
-
 
 void CProjectPanel::Draw_Create_Script_Popup()
 {
@@ -1099,8 +999,8 @@ _bool CProjectPanel::Create_Script_By_Name(const std::string& baseStem, std::fil
     outCreatedPath.clear();
 
     /* unique stem 보장 */
-    const std::string stem = Make_Unique_File_Stem_Impl(m_ScriptPath, baseStem);
-    const std::string className = "C" + Make_Script_File_From_Stem(stem);
+    const std::string stem = CCreate_Asset_Helper::Make_Unique_File_Stem_Impl(m_ScriptPath, baseStem, m_HeaderPath, m_ImplPath);
+    const std::string className = "C" + CCreate_Asset_Helper::Make_Script_File_From_Stem(stem);
 
     const std::filesystem::path headerPath = m_HeaderPath / (stem + ".h");
     const std::filesystem::path cppPath = m_ImplPath / (stem + ".cpp");
@@ -1110,54 +1010,15 @@ _bool CProjectPanel::Create_Script_By_Name(const std::string& baseStem, std::fil
 
     /* 헤더/CPP 생성 */
     std::string header;
-    header += "#pragma once\n";
-    header += "#include \"Client_Define.h\"\n";
-    header += "#include \"Script.h\"\n\n\n";
-    header += "NS_BEGIN(Client)\n\n";
-    header += "class " + className + " : public IScript\n";
-    header += "{\n";
-    header += "public:\n";
-    header += "    void Awake(void* pCtx) override;\n";
-    header += "    void Start(void* pCtx) override;\n\n";
-    header += "    void Priority_Update(void* pCtx, _float fDT) override;\n";
-    header += "    void Update(void* pCtx, _float fDT) override;\n";
-    header += "    void Late_Update(void* pCtx, _float fDT) override;\n";
-    header += "};\n\n";
-    header += "NS_END;\n";
-
     std::string cpp;
-    cpp += "#include \"" + Editor_Util::To_UTF8(headerPath.filename()) + "\"\n\n";
-    cpp += "NS_BEGIN(Client)\n\n";
-    cpp += "void " + className + "::Awake(void* pCtx)\n{\n}\n\n";
-    cpp += "void " + className + "::Start(void* pCtx)\n{\n}\n\n";
-    cpp += "void " + className + "::Priority_Update(void* pCtx, _float fDT)\n{\n}\n\n";
-    cpp += "void " + className + "::Update(void* pCtx, _float fDT)\n{\n}\n\n";
-    cpp += "void " + className + "::Late_Update(void* pCtx, _float fDT)\n{\n}\n\n";
-    cpp += "NS_END;\n";
-
-    if (!Write_Text_File(headerPath, header))
+    CCreate_Asset_Helper::Build_Script_Source(className, headerPath, header, cpp);
+    if (!CCreate_Asset_Helper::Write_Script_Source_Files(headerPath, cppPath, header, cpp))
         return false;
-
-    if (!Write_Text_File(cppPath, cpp))
-    {
-        std::error_code ec;
-        std::filesystem::remove(headerPath, ec);
-        return false;
-    }
 
     /* .script 생성 + GUID 보장 */
-    std::filesystem::path savePath = m_ScriptPath / (stem + ".script");
-
-    json j;
-    j["ClassName"] = className;
-    j["Header"] = Editor_Util::To_UTF8(headerPath.filename());
-
-    const std::string scriptJson = j.dump(2) + "\n";
-
-    if (!Write_Text_File(savePath, scriptJson))
+    const std::filesystem::path savePath = m_ScriptPath / (stem + ".script");
+    if (!CCreate_Asset_Helper::Write_Script_Asset_File(savePath, className, headerPath))
         return false;
-
-    SYS_ASSET.Ensure_GUID_For_Path(savePath);
 
     outCreatedPath = savePath;
     return true;

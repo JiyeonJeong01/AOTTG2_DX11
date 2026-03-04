@@ -110,7 +110,7 @@ HRESULT CScript_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONE
     pData->bEnable = spec->bEnable;
     pData->iFlags = 0;
     if (spec->bEnable)
-        pData->iFlags = true;
+        pData->iFlags = 0;
 
     Create_State_If_Needed(hComponent, pData);
 
@@ -168,7 +168,7 @@ void CScript_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hCo
     }
 }
 
-/* Editor에서 Script 컴포넌트를 '추가'한 경우, 아직 Initialize_From_Spec 경로를 타지 않아서 pData->iTypeID == 0(Invalid) 상태로 남는다.
+/* Editor에서 Script 컴포넌트를 막 추가한 경우, 아직 Initialize_From_Spec 경로를 타지 않아서 pData->iTypeID == 0(Invalid) 상태로 남는다.
  * 이 상태로 저장(Build_Spec)하면 scriptGuid가 invalid로 기록되어, 로드 시 vtable 조회가 실패할 수 있다.
  * 따라서 Editor에서는 Script 컴포넌트 추가 직후, 반드시 유효한 scriptGuid를 지정하기 위해
  * Rebind_ScriptGuid를 호출해야 한다. (타입 바인딩 -> state 생성/등록)  */
@@ -229,10 +229,10 @@ void CScript_Processor::Initialize_Component_Data(COMPONENT_HANDLE hComponent)
     if (!pData)
         return;
 
-    // Allocate 직후 초기값만 세팅 (정리는 Deallocate에서만)
+    /* 초기값만 세팅한다. 정리는 Deallocate 시 */
     pData->pState = nullptr;
     pData->iTypeID = 0;
-    pData->bEnable = true; /* TODO ::::::::::::::::::::::::::::: 이거 false여야 하려나?*/
+    pData->bEnable = true;
 }
 
 void CScript_Processor::Ensure_Awake(SCRIPT_DATA& tData, SCRIPT_TYPE_INFO& tTypeInfo)
@@ -315,21 +315,30 @@ TypeID CScript_Processor::Find_Or_Create(const ASSET_GUID& tGUID)
 void CScript_Processor::Create_State_If_Needed(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData)
 {
     const uint32_t typeId = pData->iTypeID;
-    if (typeId == 0 || typeId >= m_Types.size()) return;
+    if (typeId == 0 || typeId >= m_Types.size())
+        return;
 
     auto& vt = m_Types[typeId].vt;
-    if (!vt.Create) return;
+    if (!vt.Create)
+        return;
 
-    if (!pData->pState)
+    const _bool created = (pData->pState == nullptr);
+
+    if (created) /* 비어있다면 State(TScript) 생성 */
     {
         pData->pState = vt.Create();
-        if (vt.Awake)
-            vt.Awake(pData->pState, m_ctx);
-    }
+        SCAST(IScript*, pData->pState)->Set_Owner(pData->hObject);
 
-    /* Enable한 스크립트면 다시 등록한다. */
-    if (pData->bEnable)
-        Add_To_TickLists(hScript, *pData);
+        if (vt.Awake)
+        {
+            vt.Awake(pData->pState, m_ctx);
+            pData->iFlags |= SCRIPT_FLAG_AWOKEN;
+        }
+
+        /* state를 처음 만들었고, Enable 상태라면 최초 1회만 TickList 등록 */
+        if (pData->bEnable)
+            Add_To_TickLists(hScript, *pData);
+    }
 }
 
 void CScript_Processor::Reset_Data(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData)

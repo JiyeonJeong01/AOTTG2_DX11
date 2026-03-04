@@ -83,9 +83,6 @@ private:
     /* Scripts */
     void Draw_Create_Script_Popup();
     _bool Create_Script_By_Name(const std::string& baseStem, std::filesystem::path& outCreatedPath);
-    std::string Make_Unique_File_Stem_Impl(const std::filesystem::path& parent, const std::string& baseStem);
-    _bool Write_Text_File(const std::filesystem::path& p, const std::string& utf8);
-    std::string Make_Script_File_From_Stem(const std::string& stem);
 
 public :
     /* Helpers */

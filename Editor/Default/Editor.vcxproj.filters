@@ -105,6 +105,9 @@
     <ClCompile Include="..\Private\Gizmo.cpp">
       <Filter>02. Gizmo</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Create_Asset_Helper.cpp">
+      <Filter>01. Editor Panel\Project</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ThirdParty\magic_enum.hpp">
@@ -164,9 +167,6 @@
     <ClInclude Include="..\Public\MainPanel.h">
       <Filter>01. Editor Panel\Main</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\ProjectPanel.h">
-      <Filter>01. Editor Panel\Project</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\ProfilerPanel.h">
       <Filter>01. Editor Panel\Profiler</Filter>
     </ClInclude>
@@ -178,6 +178,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Gizmo.h">
       <Filter>02. Gizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Create_Asset_Helper.h">
+      <Filter>01. Editor Panel\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ProjectPanel.h">
+      <Filter>01. Editor Panel\Project</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

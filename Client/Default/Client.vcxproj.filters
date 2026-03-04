@@ -40,6 +40,9 @@
     <ClInclude Include="..\Public\PrototypeTest.h">
       <Filter>Test</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Hello.h">
+      <Filter>Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -62,6 +65,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Script_Registry.gen.cpp">
       <Filter>MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Hello.cpp">
+      <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
