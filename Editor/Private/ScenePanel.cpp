@@ -53,8 +53,8 @@ void CScenePanel::Render()
 
 void CScenePanel::Draw_Toolbar()
 {
-    // Scene 패널(현재 윈도우) 위에 고정 오버레이 위치 잡기
-    ImVec2 winPos = ImGui::GetWindowPos();       // Scene 패널 좌상단 (screen space)
+    // Scene 패널 위에 고정 오버레이 위치 잡기
+    ImVec2 winPos = ImGui::GetWindowPos();              // Scene 패널 좌상단
     ImVec2 winPad = ImGui::GetWindowContentRegionMin(); // content 시작 오프셋
     ImVec2 pos = ImVec2(winPos.x + winPad.x + 10.0f, winPos.y + winPad.y + 10.0f);
 
@@ -66,13 +66,9 @@ void CScenePanel::Draw_Toolbar()
         ImGuiWindowFlags_NoFocusOnAppearing |
         ImGuiWindowFlags_NoNav;
 
-    // 오버레이는 별도 윈도우로 띄워야 "겹침"이 됩니다.
     ImGui::SetNextWindowPos(pos, ImGuiCond_Always);
-
-    // 배경을 원하면 0.35f 정도, 완전 투명은 0.0f
     ImGui::SetNextWindowBgAlpha(0.35f);
 
-    // 중요한 점: 이름을 유니크하게(같은 이름이면 합쳐질 수 있음)
     if (ImGui::Begin("##SceneToolbarOverlay", nullptr, window_flags))
     {
         if (m_pTarget)
@@ -121,36 +117,31 @@ void CScenePanel::Draw_Viewport()
     ImVec2 drawSize{};
     ImVec2 offset{};
 
-    if (panelAspect > rtAspect)
+    if (panelAspect > rtAspect) /* 패널이 더 넓음 -> 높이에 맞추고 좌우 공백 */
     {
-        // 패널이 더 넓음 -> 높이에 맞추고 좌우 공백
         drawSize.y = panelH;
         drawSize.x = panelH * rtAspect;
         offset.x = (panelW - drawSize.x) * 0.5f;
         offset.y = 0.f;
     }
-    else
+    else /* 패널이 더 높음 -> 너비에 맞추고 상하 공백 */
     {
-        // 패널이 더 높음 -> 너비에 맞추고 상하 공백
         drawSize.x = panelW;
         drawSize.y = panelW / rtAspect;
         offset.x = 0.f;
         offset.y = (panelH - drawSize.y) * 0.5f;
     }
 
-    // 이미지 출력(레터박스)
+    /* NOTE : 여기서 이미지 출력 */ 
     ImVec2 cursor = ImGui::GetCursorPos();
     ImGui::SetCursorPos(ImVec2(cursor.x + offset.x, cursor.y + offset.y));
 
-    // UV 뒤집혀 보이면 아래 두 줄을 바꿔서 사용하세요.
-    ImVec2 uv0 = ImVec2(0.f, 0.f);
-    ImVec2 uv1 = ImVec2(1.f, 1.f);
-    // ImVec2 uv0 = ImVec2(0.f, 1.f);
-    // ImVec2 uv1 = ImVec2(1.f, 0.f);
+    ImVec2 uv0 = ImVec2(0.f, 0.f); // ImVec2 uv0 = ImVec2(0.f, 1.f);
+    ImVec2 uv1 = ImVec2(1.f, 1.f); // ImVec2 uv1 = ImVec2(1.f, 0.f);
 
     ImGui::Image((ImTextureID)m_pSceneSRV, drawSize, uv0, uv1);
 
-    // 뷰포트 rect 계산 (※ 이제 avail이 아니라 "실제 이미지" 사각형이 기준)
+    /* 뷰포트 rect 계산 */
     ImVec2 vpPos = ImGui::GetItemRectMin();
     ImVec2 vpSize = ImGui::GetItemRectSize();
 
@@ -163,18 +154,27 @@ void CScenePanel::Draw_Viewport()
         (mouse.x >= vpPos.x) && (mouse.y >= vpPos.y) &&
         (mouse.x < vpPos.x + vpSize.x) && (mouse.y < vpPos.y + vpSize.y);
 
-    if (inside && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) /* 씬 뷰 클릭 시 활성화 */
     {
-        float u = (mouse.x - vpPos.x) / vpSize.x;
-        float v = (mouse.y - vpPos.y) / vpSize.y;
+        if (inside)
+        {
+            SYS_EDITOR.Toggle_SceneViewCamera(true);
 
-        if (u < 0.f) u = 0.f; if (u > 0.999999f) u = 0.999999f;
-        if (v < 0.f) v = 0.f; if (v > 0.999999f) v = 0.999999f;
+            float u = (mouse.x - vpPos.x) / vpSize.x;
+            float v = (mouse.y - vpPos.y) / vpSize.y;
 
-        const _uint px = (_uint)(u * (float)m_FIXEDW);
-        const _uint py = (_uint)(v * (float)m_FIXEDH);
+            if (u < 0.f) u = 0.f; if (u > 0.999999f) u = 0.999999f;
+            if (v < 0.f) v = 0.f; if (v > 0.999999f) v = 0.999999f;
 
-        SYS_EDITOR.Pick_SceneView(px, py, m_FIXEDW, m_FIXEDH);
+            const _uint px = (_uint)(u * (float)m_FIXEDW);
+            const _uint py = (_uint)(v * (float)m_FIXEDH);
+
+            SYS_EDITOR.Pick_SceneView(px, py, m_FIXEDW, m_FIXEDH);
+            }
+        else /* 씬 뷰 바깥 영역 클릭 시 에디터 자유캠 막기 */
+        {
+            SYS_EDITOR.Toggle_SceneViewCamera(false);
+        }
     }
 
     if (!m_pTarget)
@@ -245,15 +245,6 @@ void CScenePanel::Ensure_RenderTarget()
 
 void CScenePanel::Render_Scene(_uint w, _uint h)
 {
-    // 여기서 "텍스처 없는 VIBuffer" 한 방
-    // 1) 간단 셰이더 바인드(상수색 PS)
-    // 2) 카메라 상수 버퍼 세팅(임시 고정 카메라라도)
-    // 3) VIBuffer Render
-
-    // 예시(네 인터페이스로 교체):
-    // SYS_RENDERER.Draw_TestTriangle();
-    // or m_pTestVIBuffer->Render();
-
     if (m_bShowGrid)
     {
         // SYS_DEBUGDRAW.DrawGrid();

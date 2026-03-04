@@ -161,6 +161,11 @@ void CEditor_System::Update_SceneView_State(_float fWidth, _float fHeight)
     Engine::Math::Store(m_matCamProj, matProj);
 }
 
+void CEditor_System::Toggle_SceneViewCamera(_bool bToggle)
+{
+    m_bScencViewCam = bToggle;
+}
+
 /* Editor 마우스 피킹은 Ray <-> AABB */
 static inline bool Ray_AABB(const _float3& vOrigin, const _float3& vDir, const _float3& vMin, const _float3& vMax, _float* fOutT)
 {
@@ -337,6 +342,9 @@ void CEditor_System::Build_SceneView_Matrices()
 
 void CEditor_System::Update_Input(_float fDT)
 {
+    if (!m_bScencViewCam)
+        return;
+
     /* ----------------------------- 마우스 입력 ----------------------------- */
     const long dx = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::HORIZONTAL);
     const long dy = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::VERTICAL);

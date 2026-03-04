@@ -33,6 +33,7 @@ public:
 public:  
     void Submit_SceneViewCamera();
     void Update_SceneView_State(_float fWidth, _float fHeight);
+    void Toggle_SceneViewCamera(_bool bToggle);
 
 private: /* SceneView Camera */
     void Build_SceneView_Matrices();
@@ -80,7 +81,8 @@ private:
 private :
     CTransform_Processor*           m_pTransform_Processor{};
     OBJECT_HANDLE                   m_hSelectedObject{};
-    CEvent<GAMEOBJECT_EVENT_DATA&>   m_OnPicking{};
+    CEvent<GAMEOBJECT_EVENT_DATA&>  m_OnPicking{};
+    _bool                           m_bScencViewCam = false;
 };
 
 NS_END
