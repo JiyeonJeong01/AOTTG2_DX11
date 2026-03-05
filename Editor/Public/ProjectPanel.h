@@ -76,7 +76,9 @@ private:
     void    Draw_Rename_Field(const LIST_ASSET& item);
     void    Commit_Rename();
 
-    void  Try_Open_Scene_On_DoubleClick(const LIST_ASSET& tAsset);
+    void    Try_Open_Scene_On_DoubleClick(const LIST_ASSET& tAsset);
+    void    Try_Open_Material_On_DoublieClick(const LIST_ASSET& tAsset);
+
     _bool Is_Scene_Asset(const LIST_ASSET& tAsset) const;
     _bool Try_Get_Asset_GUID(const std::filesystem::path& path, Engine::ASSET_GUID& outGuid) const;
     void  Open_Scene_By_GUID(const Engine::ASSET_GUID& guid, APP_MODE eMode);
@@ -149,6 +151,9 @@ private:
         ASSET_GUID  m_createMaterialShaderGUID = DEFAULT_ASSET_GUID::SHADER_VTXTEX;
         ASSET_GUID  m_createMaterialBaseMapGUID = DEFAULT_ASSET_GUID::TEXTURE_BASEMAP_DEFAULT;
         _float4     m_createMaterialBaseColor = { 1.f, 1.f, 1.f, 1.f };
+
+        _bool       m_bEditMaterialPopup = false;
+        ASSET_GUID  m_editMaterialGUID{};
 
 
 private:

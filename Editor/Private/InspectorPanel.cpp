@@ -644,6 +644,37 @@ void CInspectorPanel::Draw_MeshRenderer()
     ImGui::TextUnformatted("Mesh handle");
     ImGui::SameLine();
     ImGui::Text("%u", pData->hMesh);
+    {
+        uint32_t hMesh = pData->hMesh;
+        if (ImGui::InputScalar("Mesh", ImGuiDataType_U32, &hMesh))
+        {
+            pData->hMesh = hMesh;
+            bChanged = true;
+        }
+        Editor_Util::Draw_DropTarget_GUID("Mesh", "ASSET_GUID",
+            [&](const ASSET_GUID& dropped)
+            {
+                ASSET_TYPE eType = SYS_ASSET.Find(dropped)->eType;
+
+                uint32_t newHandle = INVALID_HANDLE_UINT;
+                if (eType == ASSET_TYPE::MODEL)
+                    newHandle = SYS_RESOURCE.Load_Model(dropped);
+                else if (eType == ASSET_TYPE::MESH)
+                    newHandle = SYS_RESOURCE.Load_Mesh(dropped);
+                else
+                    return;
+
+                if (newHandle != INVALID_HANDLE_UINT && newHandle != pData->hMesh)
+                {
+                    pData->hMesh = newHandle;
+                    bChanged = true;
+
+                    _DEBUG_INFO("MeshRenderer hMesh set=%u isModel=%d",
+                        pData->hMesh, SYS_RESOURCE.Is_ModelHandle(pData->hMesh) ? 1 : 0);
+                }
+            },
+            "Drop Mesh or Model here");
+    }
 
     // --- Material ---
     ImGui::TextUnformatted("Material handle");

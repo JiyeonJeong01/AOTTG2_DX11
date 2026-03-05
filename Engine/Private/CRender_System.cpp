@@ -178,57 +178,28 @@ void CRender_System::Execute_Draw(const DRAW_CMD& cmd)
 
 void CRender_System::Execute_Draw_Mesh(const DRAW_CMD& cmd)
 {
-    /* 메쉬 + 머테리얼 + 셰이더 리소스 가져오기 */
-    const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(cmd.mesh.hMesh);
-    IF_NULL_RETURN_MSG_BREAK(pMesh, , "Mesh is nullptr.");
-
-    MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(cmd.mesh.hMaterial);
-    IF_NULL_RETURN_MSG_BREAK(pMat, , "Material is nullptr.");
-
-    SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(pMat->hShader);
-    IF_NULL_RETURN_MSG_BREAK(pShader, , "Shader is nullptr.");
-
-    const uint16_t passIndex = pMat->passIndex;
-    if (passIndex >= pShader->pPasses.size())
-        return;
-
-    /* 1. 행렬 설정하기 : 월드, 뷰, 투영 */
-    const auto tr = m_pTransform_Processor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, cmd.mesh.hTransform);
-    IF_TRUE_RETURN_MSG_BREAK(!tr.Is_Valid(), , "Transform proxy invalid.");
-
-    const _matrix matWorld = Engine::Math::Load(tr->matWorld);
-
-    IF_NULL_RETURN_MSG_BREAK(pMat->pWorld, , "pWorld is nullptr.");
-    IF_NULL_RETURN_MSG_BREAK(pMat->pView, , "pView is nullptr.");
-    IF_NULL_RETURN_MSG_BREAK(pMat->pProj, , "pProj is nullptr.");
-
-    pMat->pWorld->SetMatrix(reinterpret_cast<const float*>(&matWorld));
-    pMat->pView->SetMatrix(reinterpret_cast<const float*>(&m_matView));     /* TODO : 렌더링 최적화 !! 프레임 당 한 번으로 수정 */
-    pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&m_matProj));     /* TODO : 렌더링 최적화 !! 프레임 당 한 번으로 수정 */
-
-    /* 재질은 머테리얼이 담당 */
-    Apply_Block_To_Shader(pShader, pMat->materialParams);
-
-    /* 사용자가 정의한 셰이더 변수 적용 */
-    if (cmd.mesh.hPerObjectParams != INVALID_HANDLE_UINT)
+    if (!SYS_RESOURCE.Is_ModelHandle(cmd.mesh.hMesh))
     {
-        PER_OBJECT_PARAM_BLOCK* pBlk = SYS_RESOURCE.Get_PerObjectParamBlock(cmd.mesh.hPerObjectParams);
-        if (pBlk)
-            Apply_Block_To_Shader(pShader, pBlk->block);
+        Execute_Draw_Mesh_Inner(cmd.mesh.hMesh, cmd.mesh.hMaterial, cmd.mesh.hTransform, cmd.mesh.hPerObjectParams,
+            cmd.mesh.firstIndex, cmd.mesh.indexCount);
+        return;
     }
 
+    const MODEL_ENTRY* pModel = SYS_RESOURCE.Get_Model(cmd.mesh.hMesh);
+    IF_NULL_RETURN_MSG_BREAK(pModel, , "Model is nullptr.");
 
-    ID3D11InputLayout* pIL = pShader->pPasses[passIndex].pInputLayout.Get();
-    m_pContext->IASetInputLayout(pIL);
+    for (const auto& part : pModel->parts)
+    {
+        /* 파트 머티리얼 없으면 렌더러 머티리얼로 fallback */
+        const uint32_t hMat = (part.hMaterial != INVALID_HANDLE_UINT) ? part.hMaterial : cmd.mesh.hMaterial;
 
-    ID3DX11EffectPass* pPass = pShader->pPasses[passIndex].pPass;
-    if (!pPass)
-        return;
+        /* 파트 메쉬가 이상하면 건너뜀  */
+        if (part.hMesh == INVALID_HANDLE_UINT)
+            continue;
 
-    pPass->Apply(0, m_pContext);
-
-    pMesh->Bind_IA(m_pContext);
-    pMesh->Draw(m_pContext, cmd.mesh.firstIndex, cmd.mesh.indexCount);
+        Execute_Draw_Mesh_Inner(part.hMesh, hMat, cmd.mesh.hTransform, cmd.mesh.hPerObjectParams,
+            cmd.mesh.firstIndex, cmd.mesh.indexCount);
+    }
 }
 
 void CRender_System::Execute_Draw_Canvas(const DRAW_CMD& tCmd)
@@ -326,6 +297,63 @@ void CRender_System::Render()
     Execute_RenderQueue();
 }
 
+
+void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, uint32_t hPerObjectParams, uint32_t iFirstIdx, uint32_t iNumIdx)
+{
+    /* 메쉬 + 머테리얼 + 셰이더 리소스 가져오기 */
+    const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(hMesh);
+    IF_NULL_RETURN_MSG_BREAK(pMesh, , "Mesh is nullptr.");
+
+    MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(hMaterial);
+    IF_NULL_RETURN_MSG_BREAK(pMat, , "Material is nullptr.");
+
+    SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(pMat->hShader);
+    IF_NULL_RETURN_MSG_BREAK(pShader, , "Shader is nullptr.");
+
+    const uint16_t passIndex = pMat->passIndex;
+    if (passIndex >= pShader->pPasses.size())
+        return;
+
+    /* 행렬 설정하기 : 월드, 뷰, 투영 */
+    const auto tr = m_pTransform_Processor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, hComponent);
+    IF_TRUE_RETURN_MSG_BREAK(!tr.Is_Valid(), , "Transform proxy invalid.");
+
+    const _matrix matWorld = Engine::Math::Load(tr->matWorld);
+
+    IF_NULL_RETURN_MSG_BREAK(pMat->pWorld, , "pWorld is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(pMat->pView, , "pView is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(pMat->pProj, , "pProj is nullptr.");
+
+    pMat->pWorld->SetMatrix(reinterpret_cast<const float*>(&matWorld));
+    pMat->pView->SetMatrix(reinterpret_cast<const float*>(&m_matView));     /* TODO : 렌더링 최적화 !! 프레임 당 한 번으로 수정 */
+    pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&m_matProj));     /* TODO : 렌더링 최적화 !! 프레임 당 한 번으로 수정 */
+
+    /* 재질은 머테리얼이 담당 */
+    Apply_Block_To_Shader(pShader, pMat->materialParams);
+
+    /* 사용자가 정의한 셰이더 변수 적용 */
+    if (hPerObjectParams != INVALID_HANDLE_UINT)
+    {
+        PER_OBJECT_PARAM_BLOCK* pBlk = SYS_RESOURCE.Get_PerObjectParamBlock(hPerObjectParams);
+        if (pBlk)
+            Apply_Block_To_Shader(pShader, pBlk->block);
+    }
+
+
+    ID3D11InputLayout* pIL = pShader->pPasses[passIndex].pInputLayout.Get();
+    m_pContext->IASetInputLayout(pIL);
+
+    ID3DX11EffectPass* pPass = pShader->pPasses[passIndex].pPass;
+    if (!pPass)
+        return;
+
+    pPass->Apply(0, m_pContext);
+
+    pMesh->Bind_IA(m_pContext);
+    pMesh->Draw(m_pContext, iFirstIdx, iNumIdx);
+}
+
+
 CRender_Context* CRender_System::Contexts()
 {
     return m_upRenderContext.get();
@@ -360,7 +388,7 @@ void CRender_System::Apply_Block_To_Shader(SHADER_ENTRY* pShader, const NAME_VAL
     for (const auto& it : blk.params)
     {
         ID3DX11EffectVariable* pVar = pShader->Get_VarCached(it.strName.c_str());
-        if(!pVar)
+        if (!pVar)
         {
             _DEBUG_ERROR_BREAK("EffectVariable is nullptr");
             continue;
@@ -369,20 +397,29 @@ void CRender_System::Apply_Block_To_Shader(SHADER_ENTRY* pShader, const NAME_VAL
         switch (it.value.eType)
         {
         case PARAM_TYPE::FLOAT:
-            pVar->AsScalar()->SetFloat(std::get<_float>(it.value.data));
+        {
+            const _float* p = std::get_if<_float>(&it.value.data);
+            if (p) pVar->AsScalar()->SetFloat(*p);
             break;
-
+        }
         case PARAM_TYPE::FLOAT4:
-            pVar->AsVector()->SetFloatVector(reinterpret_cast<const float*>(&std::get<_float4>(it.value.data)));
+        {
+            const _float4* p = std::get_if<_float4>(&it.value.data);
+            if (p) pVar->AsVector()->SetFloatVector(reinterpret_cast<const float*>(p));
             break;
-
+        }
         case PARAM_TYPE::FLOAT4X4:
-            pVar->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&std::get<_float4x4>(it.value.data)));
+        {
+            const _float4x4* p = std::get_if<_float4x4>(&it.value.data);
+            if (p) pVar->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(p));
             break;
-
+        }
         case PARAM_TYPE::TEXTURE_HANDLE:
         {
-            const TEXTURE_ENTRY* pTex = SYS_RESOURCE.Get_Texture(std::get<uint32_t>(it.value.data));
+            const uint32_t* p = std::get_if<uint32_t>(&it.value.data);
+            if (!p) break;
+
+            const TEXTURE_ENTRY* pTex = SYS_RESOURCE.Get_Texture(*p);
             if (pTex && pTex->Is_Valid())
                 pVar->AsShaderResource()->SetResource(pTex->SRV());
             break;

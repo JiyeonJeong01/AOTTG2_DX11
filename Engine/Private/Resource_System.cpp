@@ -27,6 +27,7 @@ HRESULT CResource_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext*
     m_Materials.emplace_back();
     m_Shaders.emplace_back();
     m_Textures.emplace_back();
+    m_Models.emplace_back();
 
     return S_OK;
 }
@@ -98,7 +99,6 @@ uint32_t CResource_System::Load_Mesh(const ASSET_GUID& tGUID)
         return INVALID_HANDLE_UINT;
     }
 
-
     if (pRec->eSrc == ASSET_SRC::BUILTIN)
     {
         if (tGUID == DEFAULT_ASSET_GUID::MESH_CUBE)
@@ -122,7 +122,43 @@ uint32_t CResource_System::Load_Mesh(const ASSET_GUID& tGUID)
     m_Meshes.push_back(std::move(entry));
     m_MeshGUIDMap[tGUID] = handle;
 
-    return handle;
+    return (handle & ASSET_TAG_MESH); /* MSB = 0 */
+}
+
+uint32_t CResource_System::Load_Model(const ASSET_GUID& tGUID)
+{
+    auto it = m_ModelGUIDMap.find(tGUID);
+    if (it != m_ModelGUIDMap.end())
+        return (it->second | ASSET_TAG_MODEL);
+
+    auto pRec = SYS_ASSET.Find(tGUID);
+
+    MODEL_DESC desc{};
+    IF_FAIL_RETURN_MSG_BREAK(CMeshBuilder::Load_ModelDesc(pRec->path, desc), E_FAIL, "Load_Model failed");
+
+    MODEL_ENTRY model{};
+    model.tGUID = tGUID;
+    model.parts.reserve(desc.parts.size());
+
+    for (const auto& partDesc : desc.parts)
+    {
+        const uint32_t hMesh = Load_Mesh(partDesc.tMeshGUID);
+        if (hMesh == INVALID_HANDLE_UINT)
+            continue;
+
+        MODEL_PART part{};
+        part.hMesh = hMesh;
+        part.hMaterial = INVALID_HANDLE_UINT;
+        model.parts.push_back(part);
+    }
+
+    IF_TRUE_RETURN_MSG_BREAK(model.parts.empty(), INVALID_HANDLE_UINT, "Load_Model failed: no valid parts");
+
+    const uint32_t handle = (uint32_t)m_Models.size();
+    m_Models.push_back(std::move(model));
+    m_ModelGUIDMap[tGUID] = handle;
+
+    return (handle | ASSET_TAG_MODEL);
 }
 
 uint32_t CResource_System::Load_Shader(const ASSET_GUID& tGUID)
@@ -275,14 +311,24 @@ uint32_t CResource_System::Load_Material(const MATERIAL_ENTRY& tDesc)
 
 const MESH_ENTRY* CResource_System::Get_Mesh(uint32_t handle) const
 {
-    if (handle == INVALID_HANDLE_UINT || handle >= m_Meshes.size())
+    const uint32_t iIndex = Handle_Index(handle);
+    if (handle == INVALID_HANDLE_UINT || iIndex >= m_Meshes.size())
         return nullptr;
 
-    return &m_Meshes[handle];
+    return &m_Meshes[iIndex];
+}
+const MODEL_ENTRY* CResource_System::Get_Model(uint32_t handle) const
+{
+    const uint32_t iIndex = Handle_Index(handle);
+    if (handle == INVALID_HANDLE_UINT || iIndex >= m_Models.size())
+        return nullptr;
+
+    return &m_Models[iIndex];
 }
 
 SHADER_ENTRY* CResource_System::Get_Shader(uint32_t handle)
 {
+
     if (handle == INVALID_HANDLE_UINT || handle >= m_Shaders.size())
         return nullptr;
 

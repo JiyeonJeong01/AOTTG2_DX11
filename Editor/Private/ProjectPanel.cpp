@@ -6,6 +6,7 @@
 #include "Core_System.h"
 #include "Asset_Meta.h"
 #include "Create_Asset_Helper.h"
+#include "Resource_System.h"
 
 NS_BEGIN(Editor)
 
@@ -358,7 +359,15 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
             /* 더블클릭: 씬이면 열기*/ 
             if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
             {
-                Try_Open_Scene_On_DoubleClick(tAsset);
+                switch (tAsset.type)
+                {
+                case ASSET_TYPE::SCENE:
+                    Try_Open_Scene_On_DoubleClick(tAsset);
+                    break;
+                case ASSET_TYPE::MATERIAL:
+                    Try_Open_Material_On_DoublieClick(tAsset);
+                    break;
+                }
             }
         }
     }
@@ -897,11 +906,39 @@ void CProjectPanel::Try_Open_Scene_On_DoubleClick(const LIST_ASSET& tAsset)
     Open_Scene_By_GUID(guid, APP_MODE::EDITOR_EDIT);
 }
 
+void CProjectPanel::Try_Open_Material_On_DoublieClick(const LIST_ASSET& tAsset)
+{
+    /* 경로로 guid 찾기 */
+    if (!Try_Get_Asset_GUID(tAsset.path, m_editMaterialGUID))
+    {
+        _DEBUG_WARN("Material double click but GUID not found: %s", tAsset.path.string().c_str());
+        return;
+    }
+    /* GUID -> ASSET_RECORD 찾기 */
+    const ASSET_RECORD* pRec = SYS_ASSET.Find(m_editMaterialGUID);
+    IF_NULL_RETURN_MSG_BREAK(pRec, , "Can't find ASSET_RECORD by GUID");
+
+    const std::filesystem::path& matPath = pRec->path;
+
+    /* MATERIAL ENTRY 받아오기 */
+    const uint32_t hMat = SYS_RESOURCE.Load_Material(m_editMaterialGUID);
+    IF_TRUE_RETURN_MSG_BREAK(hMat == INVALID_HANDLE_UINT, , "Load_Material failed: %s", matPath.string().c_str());
+
+    MATERIAL_ENTRY* pEntry = SYS_RESOURCE.Get_Material(hMat);
+    IF_NULL_RETURN_MSG_BREAK(pEntry, , "Get_Material returned null: %s", matPath.string().c_str());
+
+    /* 정상적으로 찾은 경우 보일 값 채우기 */
+    m_createMaterialShaderGUID = pEntry->shaderGUID;
+    m_createMaterialBaseMapGUID = pEntry->baseMapGUID;
+    m_createMaterialBaseColor = pEntry->baseColor;
+    m_createMaterialNameBuffer = Editor_Util::To_UTF8(matPath.stem());
+
+    m_bEditMaterialPopup = true;
+    m_bOpenCreateMaterialPopup = true;
+}
 
 
-/* =======================================================================*/
 /* ============================== Utility ================================*/
-/* =======================================================================*/
 uint64_t CProjectPanel::Get_Stable_Id_From_Path(const std::filesystem::path& p)
 {
     /* stable enough for editor session; for real GUID, add meta later */
@@ -1096,31 +1133,59 @@ void CProjectPanel::Draw_Create_Material_Popup()
 
         ImGui::Spacing();
 
-        if (ImGui::Button("Create") || bSubmit)
+        if (ImGui::Button(m_bEditMaterialPopup ? "Save" : "Create") || bSubmit)
         {
-            std::filesystem::path createdPath;
+            std::filesystem::path targetPath;
 
-            if (!m_createMaterialNameBuffer.empty())
+            if (m_bEditMaterialPopup) /* ----------------- Edit ----------------- */
             {
-                if (Create_Material_By_Name(m_createMaterialNameBuffer, createdPath))
+                const ASSET_RECORD* pRec = SYS_ASSET.Find(m_editMaterialGUID);
+                if (pRec)
+                    targetPath = pRec->path;
+
+                if (!targetPath.empty())
                 {
-                    m_bListDirty = true;
-                    m_bTreeDirty = true;
+                    /* 편집 시 덮어쓰기 저장 */
+                    if (CCreate_Asset_Helper::Write_Material_Asset_File(targetPath, m_editMaterialGUID, m_createMaterialShaderGUID,
+                        m_createMaterialBaseMapGUID, m_createMaterialBaseColor))
+                    {
+                        m_bListDirty = true;
+                        m_bTreeDirty = true;
 
-                    Set_Selection(createdPath);
-                    Notify_Selection_Changed();
+                        Set_Selection(targetPath);
+                        Notify_Selection_Changed();
 
-                    m_createMaterialNameBuffer.clear();
-                    m_createMaterialShaderGUID = DEFAULT_ASSET_GUID::SHADER_VTXTEX;
-                    m_createMaterialBaseMapGUID = DEFAULT_ASSET_GUID::TEXTURE_BASEMAP_DEFAULT;
-                    m_createMaterialBaseColor = _float4{ 1.f, 1.f, 1.f, 1.f };
-
-                    m_bOpenCreateMaterialPopup = false;
-                    ImGui::CloseCurrentPopup();
-
-                    SYS_ASSET.Register_File_Asset(createdPath, ASSET_TYPE::MATERIAL);
+                        SYS_ASSET.Register_File_Asset(targetPath, ASSET_TYPE::MATERIAL, m_editMaterialGUID);
+                    }
                 }
             }
+            else /* ----------------- Create -----------------*/
+            {
+                std::filesystem::path createdPath;
+                if (!m_createMaterialNameBuffer.empty())
+                {
+                    if (Create_Material_By_Name(m_createMaterialNameBuffer, createdPath))
+                    {
+                        m_bListDirty = true;
+                        m_bTreeDirty = true;
+
+                        Set_Selection(createdPath);
+                        Notify_Selection_Changed();
+
+                        SYS_ASSET.Register_File_Asset(createdPath, ASSET_TYPE::MATERIAL);
+                    }
+                }
+            }
+
+            /* ----------------- Common ----------------- */
+            m_createMaterialNameBuffer.clear();
+            m_createMaterialShaderGUID = DEFAULT_ASSET_GUID::SHADER_VTXTEX;
+            m_createMaterialBaseMapGUID = DEFAULT_ASSET_GUID::TEXTURE_BASEMAP_DEFAULT;
+            m_createMaterialBaseColor = _float4{ 1.f, 1.f, 1.f, 1.f };
+            m_bEditMaterialPopup = false;
+            m_editMaterialGUID = ASSET_GUID{};
+            m_bOpenCreateMaterialPopup = false;
+            ImGui::CloseCurrentPopup();
         }
 
         ImGui::SameLine();

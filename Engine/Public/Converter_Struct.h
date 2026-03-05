@@ -1,14 +1,46 @@
 ﻿#pragma once
 
 #include "Render_Struct.h"
+#include "Identity.h"
 
 NS_BEGIN(Engine)
+
 
 typedef struct tagConvertedMesh
 {
     std::vector<Engine::VTXMESH> vertices;
     std::vector<uint32_t> indices;
-}CONVERTED_MESH;
+} CONVERTED_MESH;
+
+typedef struct tagConvertedModelPart
+{
+    std::string     strName;
+    CONVERTED_MESH  mesh;
+} CONVERTED_MODEL_PART;
+
+typedef struct tagConvertedModel
+{
+    std::vector<CONVERTED_MODEL_PART> parts;
+} CONVERTED_MODEL;
+
+typedef struct tagSavedModelPartInfo
+{
+    std::string strName;
+    std::string strMeshGUID;
+}SAVED_MODEL_PART_INFO;
+
+typedef struct tagModelPartDesc
+{
+    std::string strName;
+    ASSET_GUID  tMeshGUID{};
+}MODEL_PART_DESC;
+
+typedef struct tagModelDesc
+{
+    ASSET_GUID tGUID{};
+    std::filesystem::path pathSource;
+    std::vector<MODEL_PART_DESC> parts;
+}MODEL_DESC;
 
 typedef struct tagMeshHeader
 {

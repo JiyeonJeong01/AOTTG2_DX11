@@ -208,3 +208,77 @@ HRESULT CMeshBuilder::Create_Sphere_VtxCol(ID3D11Device* pDevice, MESH_ENTRY& ou
 
     return Create_Mesh(pDevice, d, outEntry);
 }
+
+HRESULT CMeshBuilder::Load_ModelDesc(const std::filesystem::path& modelPath, MODEL_DESC& outDesc)
+{
+    std::ifstream ifs(modelPath);
+    IF_TRUE_RETURN_MSG_BREAK(!ifs.is_open(), E_FAIL, "Load_ModelDesc failed: file open failed");
+
+    outDesc = MODEL_DESC{};
+
+    std::string line;
+    while (std::getline(ifs, line))
+    {
+        if (line.empty())
+            continue;
+
+        std::string key, value;
+        if (!Split_KeyValue(line, key, value))
+            continue;
+
+        if (key == "guid")
+        {
+            /* .model에 guid가 없을 수도 있으니, 있으면만 반영 */
+            ASSET_GUID::Try_Utf8_To_GUID(value, outDesc.tGUID);
+        }
+        else if (key == "source")
+        {
+            outDesc.pathSource = value;
+        }
+        else if (key == "meshCount")
+        {
+            const uint32_t count = (uint32_t)std::stoul(value);
+            outDesc.parts.resize(count);
+        }
+        else if (key.rfind("part", 0) == 0)
+        {
+            const size_t namePos = key.find("Name");
+            const size_t guidPos = key.find("MeshGuid");
+
+            if (namePos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, namePos - 4);
+                const uint32_t idx = (uint32_t)std::stoul(numStr);
+
+                if (idx >= outDesc.parts.size())
+                    outDesc.parts.resize(idx + 1);
+
+                outDesc.parts[idx].strName = value;
+            }
+            else if (guidPos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, guidPos - 4);
+                const uint32_t idx = (uint32_t)std::stoul(numStr);
+
+                if (idx >= outDesc.parts.size())
+                    outDesc.parts.resize(idx + 1);
+
+                ASSET_GUID::Try_Utf8_To_GUID(value, outDesc.parts[idx].tMeshGUID);
+            }
+        }
+    }
+
+    /* guid가 없어도 괜찮고, parts가 비었으면 실패 */
+    return outDesc.parts.empty() ? E_FAIL : S_OK;
+}
+
+_bool CMeshBuilder::Split_KeyValue(const std::string& line, std::string& outKey, std::string& outValue)
+{
+    const size_t pos = line.find('=');
+    if (pos == std::string::npos)
+        return false;
+
+    outKey = line.substr(0, pos);
+    outValue = line.substr(pos + 1);
+    return true;
+}

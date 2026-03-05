@@ -154,6 +154,9 @@
     <Filter Include="00. System\99. GameInstance">
       <UniqueIdentifier>{7f93f160-c286-4d4f-be97-160b84aedff9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\05. Resource\05. Model">
+      <UniqueIdentifier>{e68221df-4f6c-4bc3-a617-7d2315a490cb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -413,6 +416,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Spec_Util.h">
       <Filter>01. Utility\04. Component\98. Spec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Model.h">
+      <Filter>01. Utility\05. Resource\05. Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

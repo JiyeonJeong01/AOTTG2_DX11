@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Converter_Struct.h"
 #include "Engine_Define.h"
 #include "Mesh.h"
 
@@ -13,6 +14,10 @@ public :
     static HRESULT  Create_Rect_VtxTex(ID3D11Device* pDevice, MESH_ENTRY& outEntry);
     static HRESULT  Create_Cube_VtxCol(ID3D11Device* pDevice, MESH_ENTRY& outEntry);
     static HRESULT  Create_Sphere_VtxCol(ID3D11Device* pDevice, MESH_ENTRY& outEntry, _uint iStack = 5, _uint iSlice = 5, _float fRadius = 0.5f);
+
+    static HRESULT Load_ModelDesc(const std::filesystem::path& modelPath, MODEL_DESC& outDesc);
+private :
+    static _bool Split_KeyValue(const std::string& line, std::string& outKey, std::string& outValue);
 
 };
 

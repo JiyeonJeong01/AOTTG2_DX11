@@ -12,7 +12,7 @@ int main()
     }
 
     /* 이미 만들어진 .mesh 목록 빌드 */
-    std::unordered_set<std::wstring> existing = Build_ExistingMeshStemSet(meshPath);
+    std::unordered_set<std::wstring> existing = Build_ExistingModelStemSet(meshPath);
 
 
     /* /FBXs/ 폴더의 중복되지 않는 .fbx만 추출 */
@@ -43,10 +43,11 @@ int main()
             continue;
         }
 
-        std::filesystem::path outPath = meshPath / (stem + L".mesh");
+        std::filesystem::path outPath = meshPath / (stem + L".model");
         outPath.make_preferred();
-        std::filesystem::path outMeta = outPath;
-        outMeta += L".meta";
+
+        std::filesystem::path outMeta = meshPath / (stem + L".model.meta");
+        outMeta.make_preferred();
 
         _bool bOK = Converter::Convert(const_cast<std::filesystem::path&>(inPath),
             outPath,

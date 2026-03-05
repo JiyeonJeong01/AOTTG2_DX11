@@ -169,6 +169,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\GameInstance.h" />
     <ClInclude Include="..\Public\LayerHelper.h" />
     <ClInclude Include="..\Public\Light.h" />
+    <ClInclude Include="..\Public\Model.h" />
     <ClInclude Include="..\Public\Render_Context.h" />
     <ClInclude Include="..\Public\SceneChange_Event.h" />
     <ClInclude Include="..\Public\Script.h" />

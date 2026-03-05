@@ -60,6 +60,10 @@ private:
     void     Execute_Draw(const DRAW_CMD& cmd);
     void     Execute_Draw_Mesh(const DRAW_CMD& cmd);
     void     Execute_Draw_Canvas(const DRAW_CMD& tCmd);
+
+    void     Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, uint32_t hPerObjectParams, uint32_t iFirstIdx, uint32_t iNumIdx);
+
 };
+
 
 NS_END

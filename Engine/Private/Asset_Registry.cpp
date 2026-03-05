@@ -133,6 +133,7 @@ void CAsset_Registry::Distribute_Assets_To_Handlers()
     std::vector<ASSET_GUID> vTexture;
     std::vector<ASSET_GUID> vMaterial;
     std::vector<ASSET_GUID> vMesh;
+    std::vector<ASSET_GUID> vModel;
 
     std::vector<ASSET_GUID> vPrototype;
     std::vector<std::pair<ASSET_GUID, std::filesystem::path>> vScene;
@@ -142,6 +143,7 @@ void CAsset_Registry::Distribute_Assets_To_Handlers()
     vTexture.reserve(m_byGUID.size());
     vMaterial.reserve(m_byGUID.size());
     vMesh.reserve(m_byGUID.size());
+    vModel.reserve(m_byGUID.size());
 
     vPrototype.reserve(m_byGUID.size());
     vScene.reserve(m_byGUID.size());
@@ -182,13 +184,17 @@ void CAsset_Registry::Distribute_Assets_To_Handlers()
             vMesh.emplace_back(tGUID.first);
             break;
 
+        case ASSET_TYPE::MODEL:
+            vModel.emplace_back(tGUID.first);
+            break;
+
         default:
             break;
         }
     }
 
-    /* 2) 한 번에 처리 : 로드 순서 중요 */
-        /* Resource: 의존성 고려해서 Shader/Texture -> Material -> Mesh */
+
+   /* Resource: 의존성 고려해서 Shader/Texture -> Material -> Mesh */
     for (const auto& tGUID : vShader)
         SYS_RESOURCE.Load_Shader(tGUID);
 
@@ -200,6 +206,9 @@ void CAsset_Registry::Distribute_Assets_To_Handlers()
 
     for (const auto& tGUID : vMesh)
         SYS_RESOURCE.Load_Mesh(tGUID);
+
+    for (const auto& tGUID : vModel)
+        SYS_RESOURCE.Load_Model(tGUID);
 
     /* Scene: GUID->Path 등록 */
     for (const auto& it : vScene)
@@ -277,7 +286,7 @@ const ASSET_TYPE CAsset_Registry::Detect_Type(const std::filesystem::path& path,
     if (szExt == ".mesh")
         return ASSET_TYPE::MESH;
 
-    if (szExt == ".fbx" || szExt == ".obj" || szExt == ".gltf" || szExt == ".glb")
+    if (szExt == ".model")
         return ASSET_TYPE::MODEL;
 
     if (szExt == ".mat")

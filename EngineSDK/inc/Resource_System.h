@@ -6,6 +6,7 @@
 #include "Render_Struct.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Model.h"
 
 NS_BEGIN(Engine)
     /*
@@ -23,6 +24,7 @@ public:
 
 public:
     uint32_t Load_Mesh(const ASSET_GUID& tGUID);
+    uint32_t Load_Model(const ASSET_GUID& desc);
     uint32_t Load_Material(const ASSET_GUID& tGUID);
     uint32_t Load_Material(const MATERIAL_ENTRY& desc);
     uint32_t Load_Shader(const ASSET_GUID& tGUID);
@@ -32,6 +34,7 @@ public:
 
 
     const MESH_ENTRY*           Get_Mesh(uint32_t handle) const;
+    const MODEL_ENTRY*          Get_Model(uint32_t handle) const;
     MATERIAL_ENTRY*             Get_Material(uint32_t handle);
     SHADER_ENTRY*               Get_Shader(uint32_t handle);
     const TEXTURE_ENTRY*        Get_Texture(uint32_t handle) const;
@@ -44,13 +47,21 @@ public:
 private :
     _bool Read_MetaFileDecl(const std::filesystem::path& metaPath, uint32_t& outDecl);
 
+private:
+    ID3D11Device* m_pDevice = nullptr;
+    ID3D11DeviceContext* m_pContext = nullptr;
 
 private :
     /* ---- MESH ---- */
     std::vector<MESH_ENTRY> m_Meshes;
     std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_MeshGUIDMap;
 
-    /* ---- MATERIAL_VTXTEX ---- */
+
+    /* ---- MODEL ---- */
+    std::vector<MODEL_ENTRY> m_Models;
+    std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_ModelGUIDMap;
+
+    /* ---- MATERIAL ---- */
     std::vector<MATERIAL_ENTRY> m_Materials;
     std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_MaterialGUIDMap;
     std::unordered_map<uint64_t, uint32_t> m_MaterialComboMap;
@@ -67,8 +78,15 @@ private :
     CPerObjectParamPool m_PerObjectParamPool;
 
 private :
-    ID3D11Device* m_pDevice = nullptr;
-    ID3D11DeviceContext* m_pContext = nullptr;
+    static constexpr uint32_t ASSET_TAG_MESH = 0x00000000u;
+    static constexpr uint32_t ASSET_TAG_MODEL = 0x80000000u;
+    static constexpr uint32_t ASSET_INDEX_MASK = 0x7FFFFFFFu;
+    inline uint32_t Make_MeshHandle(uint32_t idx) const noexcept { return (idx & ASSET_INDEX_MASK); }                     /* MSB = 0 */
+    inline uint32_t Make_ModelHandle(uint32_t idx)const  noexcept { return (idx & ASSET_INDEX_MASK) | ASSET_TAG_MODEL; }  /* MSB = 1 */
+
+public :
+    inline _bool Is_ModelHandle(uint32_t h) const noexcept { return (h & ASSET_TAG_MODEL) != 0; }
+    inline uint32_t Handle_Index(uint32_t h) const noexcept { return (h & ASSET_INDEX_MASK); }
 };
 
 NS_END

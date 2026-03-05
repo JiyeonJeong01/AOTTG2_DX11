@@ -48,21 +48,21 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
         return E_FAIL;
     
     ASSET_GUID tmp("8976CDE9-2AE4-4DFC-A580-17E41FFB00D3");
-    ASSET_GUID fiona("A9902A6C-5858-42F3-AFE7-70A453BE50DC");
+    ASSET_GUID fiona("A727B7CD-8D3A-4EFE-BC5F-E59D0C34821C");
 
     /* TEST : Create GameObject with various components */
     Engine::CGameObject* pGO = nullptr;
     Engine::CGameObject* pUO = nullptr;
     for (int i = 0; i < 1; ++i) {
 
-        for (int j = 0; j < 5; ++j)
+        for (int j = 0; j < 1; ++j)
         {
             pGO = SYS_GAMEOBJECT.Create_GameObject();
             pGO->Add_Component<CMeshRenderer>();
             auto mr = pGO->Get_Component<CMeshRenderer>();
             auto* d = mr._Data();
             d->hMaterial = SYS_RESOURCE.Load_Material(DefaultAssetGuid::MATERIAL_VTXTEX);
-            d->hMesh = SYS_RESOURCE.Load_Mesh(fiona);      // 또는 CreateCubeMesh()
+            d->hMesh = SYS_RESOURCE.Load_Model(fiona);      // 또는 CreateCubeMesh()
             d->layer = RENDER_LAYER::NONBLEND;
             d->flags = RF_NONE;
 
