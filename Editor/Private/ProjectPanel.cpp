@@ -1155,6 +1155,11 @@ void CProjectPanel::Draw_Create_Material_Popup()
                         Set_Selection(targetPath);
                         Notify_Selection_Changed();
 
+                        auto* pMat = SYS_RESOURCE.Get_Material(SYS_RESOURCE.Load_Material(m_editMaterialGUID));
+                        pMat->baseMapGUID = m_createMaterialBaseMapGUID;
+                        pMat->hBaseMap = SYS_RESOURCE.Load_Texture(m_createMaterialBaseMapGUID);
+                        pMat->baseColor = m_createMaterialBaseColor;
+
                         SYS_ASSET.Register_File_Asset(targetPath, ASSET_TYPE::MATERIAL, m_editMaterialGUID);
                     }
                 }
