@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "EditorPanel.h"
+#include "BuiltIn_GUID.h"
 #include "Event.h"
 
 NS_BEGIN(Editor)
@@ -84,6 +85,10 @@ private:
     void Draw_Create_Script_Popup();
     _bool Create_Script_By_Name(const std::string& baseStem, std::filesystem::path& outCreatedPath);
 
+    /* Materials */
+    void Draw_Create_Material_Popup();
+    _bool Create_Material_By_Name(const std::string& baseStem, std::filesystem::path& outCreatedPath);
+
 public :
     /* Helpers */
     static _bool        Is_Visible_By_Filter(const std::string& name, const std::string& filter);
@@ -135,6 +140,16 @@ private:
     /* R-Button Popup */
     std::filesystem::path m_popupTargetPath;
     _bool m_popupTargetIsItem = false;
+
+    /* --- Material --- */
+    private:
+        _bool       m_bOpenCreateMaterialPopup = false;
+        std::string m_createMaterialNameBuffer;
+
+        ASSET_GUID  m_createMaterialShaderGUID = DEFAULT_ASSET_GUID::SHADER_VTXTEX;
+        ASSET_GUID  m_createMaterialBaseMapGUID = DEFAULT_ASSET_GUID::TEXTURE_BASEMAP_DEFAULT;
+        _float4     m_createMaterialBaseColor = { 1.f, 1.f, 1.f, 1.f };
+
 
 private:
     static uint64_t Get_Stable_Id_From_Path(const std::filesystem::path& p);

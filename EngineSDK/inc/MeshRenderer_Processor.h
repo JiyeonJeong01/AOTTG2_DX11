@@ -26,6 +26,7 @@ private :
     void Initialize_Component_Data(COMPONENT_HANDLE hComponent) override;
     uint64_t Make_SortKey(const MESH_RENDERER_DATA& d) const;
 
+    void Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, MESH_RENDERER_DATA* pData);
 
 private :
     ID3D11Device*               m_pDevice{};

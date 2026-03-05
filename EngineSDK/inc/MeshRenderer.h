@@ -9,9 +9,9 @@ typedef struct ENGINE_DLL tagMeshRendererData final
     _bool               bEnable = false;
 
     COMPONENT_HANDLE hTransform = INVALID_HANDLE;
-    uint32_t hMesh =        INVALID_HANDLE_UINT;
-    uint32_t hMaterial =    INVALID_HANDLE_UINT;
-    uint32_t hMainTex =     INVALID_HANDLE_UINT;
+    uint32_t hMesh =            INVALID_HANDLE_UINT;
+    uint32_t hMaterial =        INVALID_HANDLE_UINT;
+    uint32_t hPerObjectParams = INVALID_HANDLE_UINT;
 
     uint32_t     flags = RF_NONE;
     RENDER_LAYER layer = RENDER_LAYER::NONBLEND;
@@ -31,7 +31,6 @@ public:
     // Settings
     void Set_Mesh(uint32_t h);
     void Set_Material(uint32_t h);
-    void Set_MainTexture(uint32_t hTexture);
 
     void Set_Layer(RENDER_LAYER e);
     void Set_Flags(uint32_t f);
@@ -44,7 +43,6 @@ public:
     COMPONENT_HANDLE Get_Transform() const;
     uint32_t         Get_Mesh() const;
     uint32_t         Get_Material() const;
-    uint32_t         Get_MainTexture() const;
     uint32_t         Get_Flags() const;
     RENDER_LAYER     Get_Layer() const;
     float            Get_SortZ() const;

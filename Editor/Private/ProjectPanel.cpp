@@ -94,6 +94,7 @@ void CProjectPanel::Render()
     Draw_Main_Split();
     Draw_Context_Menu();
     Draw_Create_Script_Popup();
+    Draw_Create_Material_Popup();
     Draw_Context_Popup();
 
     ImGui::End();
@@ -511,6 +512,14 @@ void CProjectPanel::Draw_Project_Context_Unified()
                 const std::filesystem::path createFolder = Resolve_Create_Folder_By_Type_("Scene");
                 m_currentFolder = createFolder;
 
+                m_bListDirty = true;
+            }
+
+            if (ImGui::MenuItem("Material"))
+            {
+                const std::filesystem::path createFolder = Resolve_Create_Folder_By_Type_("Material");
+                m_currentFolder = createFolder;
+                m_bOpenCreateMaterialPopup = true;
                 m_bListDirty = true;
             }
 
@@ -1021,6 +1030,140 @@ _bool CProjectPanel::Create_Script_By_Name(const std::string& baseStem, std::fil
         return false;
 
     outCreatedPath = savePath;
+    return true;
+}
+
+void CProjectPanel::Draw_Create_Material_Popup()
+{
+    if (!m_bOpenCreateMaterialPopup)
+        return;
+    ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+    if (ImGui::Begin("Create Material", &m_bOpenCreateMaterialPopup, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+
+        ImGui::SetNextItemWidth(360.f);
+        ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
+        _bool bSubmit = ImGui::InputText("##MaterialName", &m_createMaterialNameBuffer, flags);
+
+        ImGui::Spacing();
+
+        {
+            std::filesystem::path shaderPath = SYS_ASSET.Get_Asset_Path(m_createMaterialShaderGUID);
+            std::string strShaderName = shaderPath.empty() ? std::string("<None>") : Editor_Util::To_UTF8(shaderPath.filename());
+
+            ImGui::Text("Shader");
+            ImGui::TextDisabled("%s", strShaderName.c_str());
+
+            Editor_Util::Draw_DropTarget_GUID_Typed(
+                "Shader",
+                "ASSET_GUID",
+                ASSET_TYPE::SHADER,
+                [&](const ASSET_GUID& dropped)
+                {
+                    m_createMaterialShaderGUID = dropped;
+                },
+                "Drop Shader here"
+            );
+        }
+
+        ImGui::Spacing();
+
+        {
+            std::filesystem::path baseMapPath = SYS_ASSET.Get_Asset_Path(m_createMaterialBaseMapGUID);
+            std::string strBaseMapName = baseMapPath.empty() ? std::string("<None>") : Editor_Util::To_UTF8(baseMapPath.filename());
+
+            ImGui::Text("BaseMap");
+            ImGui::TextDisabled("%s", strBaseMapName.c_str());
+
+            Editor_Util::Draw_DropTarget_GUID_Typed(
+                "BaseMap",
+                "ASSET_GUID",
+                ASSET_TYPE::TEXTURE,
+                [&](const ASSET_GUID& dropped)
+                {
+                    m_createMaterialBaseMapGUID = dropped;
+                },
+                "Drop Texture here"
+            );
+        }
+
+        ImGui::Spacing();
+
+        ImGui::Text("BaseColor");
+        ImGui::ColorEdit4("##MaterialBaseColor", &m_createMaterialBaseColor.x);
+
+        ImGui::Spacing();
+
+        if (ImGui::Button("Create") || bSubmit)
+        {
+            std::filesystem::path createdPath;
+
+            if (!m_createMaterialNameBuffer.empty())
+            {
+                if (Create_Material_By_Name(m_createMaterialNameBuffer, createdPath))
+                {
+                    m_bListDirty = true;
+                    m_bTreeDirty = true;
+
+                    Set_Selection(createdPath);
+                    Notify_Selection_Changed();
+
+                    m_createMaterialNameBuffer.clear();
+                    m_createMaterialShaderGUID = DEFAULT_ASSET_GUID::SHADER_VTXTEX;
+                    m_createMaterialBaseMapGUID = DEFAULT_ASSET_GUID::TEXTURE_BASEMAP_DEFAULT;
+                    m_createMaterialBaseColor = _float4{ 1.f, 1.f, 1.f, 1.f };
+
+                    m_bOpenCreateMaterialPopup = false;
+                    ImGui::CloseCurrentPopup();
+
+                    SYS_ASSET.Register_File_Asset(createdPath, ASSET_TYPE::MATERIAL);
+                }
+            }
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel") || ImGui::IsKeyPressed(ImGuiKey_Escape))
+        {
+            m_createMaterialNameBuffer.clear();
+            m_createMaterialShaderGUID = DEFAULT_ASSET_GUID::SHADER_VTXTEX;
+            m_createMaterialBaseMapGUID = DEFAULT_ASSET_GUID::TEXTURE_BASEMAP_DEFAULT;
+            m_createMaterialBaseColor = _float4{ 1.f, 1.f, 1.f, 1.f };
+
+            m_bOpenCreateMaterialPopup = false;
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::End();
+    }
+}
+
+_bool CProjectPanel::Create_Material_By_Name(const std::string& baseStem, std::filesystem::path& outCreatedPath)
+{
+    outCreatedPath.clear();
+
+    const std::string stem = CCreate_Asset_Helper::Make_Unique_File_Stem_Single(m_MaterialPath, baseStem, ".mat");
+    const std::filesystem::path savePath = m_MaterialPath / (stem + ".mat");
+
+    if (std::filesystem::exists(savePath))
+        return false;
+
+    ASSET_GUID materialGUID = ASSET_GUID::New_GUID();
+
+    if (!CCreate_Asset_Helper::Write_Material_Asset_File(
+        savePath,
+        materialGUID,
+        m_createMaterialShaderGUID,
+        m_createMaterialBaseMapGUID,
+        m_createMaterialBaseColor))
+    {
+        return false;
+    }
+
+    outCreatedPath = savePath;
+
     return true;
 }
 

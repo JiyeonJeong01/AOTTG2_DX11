@@ -15,18 +15,18 @@ CMeshRenderer_Processor::CMeshRenderer_Processor(ID3D11Device* pDevice, ID3D11De
 CMeshRenderer_Processor::~CMeshRenderer_Processor()
 {
 }
-D3D11_RASTERIZER_DESC rd{};
-D3D11_DEPTH_STENCIL_DESC ds{};
-ID3D11RasterizerState* g_rsCullNone = nullptr;
-ID3D11DepthStencilState* g_dsOff = nullptr;
-
 
 HRESULT CMeshRenderer_Processor::Initialize()
 {
     IF_NULL_RETURN_MSG_BREAK(m_pTransformProcessor, E_FAIL, "Transform Processor is nullptr");
 
+    /* 팩토리 등록 */
     SYS_COMPONENT.Register_InitialSpecFactory<CMeshRenderer, MESH_RENDERER_SPEC>(COMPONENT_TYPE::MESH_RENDERER);
     SYS_COMPONENT.Register_BuildSpecFacotry<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+
+    /* 프로페서에서 new 생성하는 객체는 직접 해제해준다. */
+    m_Pool.Subscribe_OnDeallocate(&CMeshRenderer_Processor::Reset_Data_On_Deallocate, this);
+
     return S_OK;
 }
 
@@ -58,7 +58,8 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             if (pData->hMesh == 0 || pData->hMaterial == 0)
                 continue;
 
-            DRAW_CMD tCmd = DRAW_CMD::Create_Mesh(pData->hMesh, pData->hMaterial, pData->hMainTex, pData->hTransform, pData->flags, 0, 0);
+            DRAW_CMD tCmd = DRAW_CMD::Create_Mesh(pData->hMesh, pData->hMaterial, pData->hTransform, pData->flags, 0, 0);
+            tCmd.mesh.hPerObjectParams = pData->hPerObjectParams;
             tCmd.sortKey = Make_SortKey(*pData);
             outCmds.push_back(tCmd);
         }
@@ -101,9 +102,13 @@ void CMeshRenderer_Processor::Initialize_Component_Data(COMPONENT_HANDLE hCompon
 {
     auto pData = m_Pool.Get_Data_By_Handle(hComponent);
 
+    /* Transform 핸들을 캐싱한다. */
     CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
-
     pData->hTransform = pObj->Get_Component<CTransform>().Get_Handle();
+
+    /* 오브젝트별 세팅 가능한 셰이더 변수의 핸들 */
+    if (pData->hPerObjectParams == INVALID_HANDLE_UINT)
+        pData->hPerObjectParams = SYS_RESOURCE.Alloc_PerObjectParamBlock();
 }
 
 uint64_t CMeshRenderer_Processor::Make_SortKey(const MESH_RENDERER_DATA& tData) const
@@ -116,6 +121,11 @@ uint64_t CMeshRenderer_Processor::Make_SortKey(const MESH_RENDERER_DATA& tData) 
     key |= (uint64_t)(tData.hMaterial) << 28;
     key |= (uint64_t)(tData.hMesh & 0x0FFFFFFF);
     return key;
+}
+
+void CMeshRenderer_Processor::Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, MESH_RENDERER_DATA* pData)
+{
+    SYS_RESOURCE.Free_PerObjectParamBlock(pData->hPerObjectParams);
 }
 
 std::unique_ptr<CMeshRenderer_Processor> CMeshRenderer_Processor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CTransform_Processor* pTransform)

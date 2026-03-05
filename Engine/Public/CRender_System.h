@@ -3,10 +3,10 @@
 #pragma once
 #include "Engine_Define.h"
 #include "Render_Struct.h"
+#include "Shader.h"
 
 NS_BEGIN(Engine)
-
-class CRender_Context;
+    class CRender_Context;
 
 class ENGINE_DLL CRender_System final
 {
@@ -22,6 +22,8 @@ public:
 
     const UI_GLOBAL&    Get_UI_Global();
     void                Set_UI_Global(const UI_GLOBAL& tUI);
+
+    static void         Apply_Block_To_Shader(SHADER_ENTRY* pShader, const NAME_VALUE_PARAM_BLOCK& blk);
 
 public:
     const std::vector<DRAW_CMD>& Get_AllDrawCmds() const { return m_AllDrawCmds; }

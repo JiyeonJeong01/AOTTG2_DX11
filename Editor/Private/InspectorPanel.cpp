@@ -649,6 +649,31 @@ void CInspectorPanel::Draw_MeshRenderer()
     ImGui::TextUnformatted("Material handle");
     ImGui::SameLine();
     ImGui::Text("%u", pData->hMaterial);
+    {
+        uint32_t hMaterial = pData->hMaterial;
+
+        if (ImGui::InputScalar("Material", ImGuiDataType_U32, &hMaterial))
+        {
+            pData->hMaterial = hMaterial;
+            bChanged = true;
+        }
+
+        Editor_Util::Draw_DropTarget_GUID_Typed(
+            "Material",
+            "ASSET_GUID",
+            ASSET_TYPE::MATERIAL,
+            [&](const ASSET_GUID& dropped)
+            {
+                const uint32_t newHandle = SYS_RESOURCE.Load_Material(dropped);
+                if (newHandle != INVALID_HANDLE_UINT && newHandle != pData->hMaterial)
+                {
+                    pData->hMaterial = newHandle;
+                    bChanged = true;
+                }
+            },
+            "Drop Material here"
+        );
+    }
 
     // --- Layer ---
     int layer = (int)pData->layer;

@@ -43,6 +43,7 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
     IF_NULL_RETURN_MSG_BREAK(m_pDevice, E_FAIL, "RenderSystem device is nullptr");
     IF_NULL_RETURN_MSG_BREAK(m_pContext, E_FAIL, "RenderSystem context is nullptr");
 
+    /* UI 메쉬 = VtxRect 준비 */
     m_hUIRectMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_RECT);
     IF_TRUE_RETURN_MSG_BREAK(m_hUIRectMesh == INVALID_HANDLE_UINT, E_FAIL, "UI rect mesh load failed");
 
@@ -59,15 +60,18 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
     IF_FAIL_RETURN_MSG_BREAK(m_pDevice->CreateRasterizerState(&rs, m_rsNoScissor.GetAddressOf()),
         E_FAIL, "CreateRasterizerState(no scissor) failed");
 
-    CComponent_Processor* pBase = nullptr;
-    SYS_COMPONENT.Bind_ComponentProcessor(COMPONENT_TYPE::TRANSFORM, &pBase);
-    IF_NULL_RETURN_MSG_BREAK(pBase, E_FAIL, "Transform processor bind failed");
-    m_pTransform_Processor = SCAST(CTransform_Processor*, pBase);
+    /* 렌더에 필요한 컴포넌트 프로세서 가져오기 */
+    {
+        CComponent_Processor* pBase = nullptr;
+        SYS_COMPONENT.Bind_ComponentProcessor(COMPONENT_TYPE::TRANSFORM, &pBase);
+        IF_NULL_RETURN_MSG_BREAK(pBase, E_FAIL, "Transform processor bind failed");
+        m_pTransform_Processor = SCAST(CTransform_Processor*, pBase);
 
-    pBase = nullptr;
-    SYS_COMPONENT.Bind_ComponentProcessor(COMPONENT_TYPE::RECT_TRANSFORM, &pBase);
-    IF_NULL_RETURN_MSG_BREAK(pBase, E_FAIL, "RectTransform processor bind failed");
-    m_pRectTransform_Processor = SCAST(CRectTransform_Processor*, pBase);
+        pBase = nullptr;
+        SYS_COMPONENT.Bind_ComponentProcessor(COMPONENT_TYPE::RECT_TRANSFORM, &pBase);
+        IF_NULL_RETURN_MSG_BREAK(pBase, E_FAIL, "RectTransform processor bind failed");
+        m_pRectTransform_Processor = SCAST(CRectTransform_Processor*, pBase);
+    }
 
     m_upRenderContext = CRender_Context::Create(iWidth, iHeight);
 
@@ -90,7 +94,9 @@ void CRender_System::Build_RenderQueue()
 
     /* 모든 DRAW_CMD 빌드하기 */
     m_AllDrawCmds.clear();
-    // TODO : 빌드 전 벡터 사이즈 조절 할 수 있는 로직 추가하기 
+
+    // TODO : 빌드 전 벡터 사이즈 조절 할 수 있는 로직 추가하기. 잦은 재할당 방지.
+
     SYS_COMPONENT.Build_RenderQueue(m_AllDrawCmds);
 
     /* 분배 */
@@ -104,29 +110,30 @@ void CRender_System::Build_RenderQueue()
     }
 
     /* 패스별 정렬 */
-    {
-        auto& q = m_LayerCmds[LAYER_TO_IDX(RENDER_LAYER::NONBLEND)];
-        std::sort(q.begin(), q.end(), [](const DRAW_CMD* a, const DRAW_CMD* b)
-            {
-                return a->sortKey < b->sortKey;
-            });
-    }
+    /* TODO : 프로파일링 할 부분  */
+    //{
+    //    auto& q = m_LayerCmds[LAYER_TO_IDX(RENDER_LAYER::NONBLEND)];
+    //    std::sort(q.begin(), q.end(), [](const DRAW_CMD* a, const DRAW_CMD* b)
+    //        {
+    //            return a->sortKey < b->sortKey;
+    //        });
+    //}
 
-    {
-        auto& q = m_LayerCmds[LAYER_TO_IDX(RENDER_LAYER::BLEND)];
-        std::sort(q.begin(), q.end(), [](const DRAW_CMD* a, const DRAW_CMD* b)
-            {
-                return a->sortKey > b->sortKey;
-            });
-    }
+    //{
+    //    auto& q = m_LayerCmds[LAYER_TO_IDX(RENDER_LAYER::BLEND)];
+    //    std::sort(q.begin(), q.end(), [](const DRAW_CMD* a, const DRAW_CMD* b)
+    //        {
+    //            return a->sortKey > b->sortKey;
+    //        });
+    //}
 
-    {
-        auto& q = m_LayerCmds[LAYER_TO_IDX(RENDER_LAYER::UI)];
-        std::sort(q.begin(), q.end(), [](const DRAW_CMD* a, const DRAW_CMD* b)
-            {
-                return a->canvas.sortZ < b->canvas.sortZ;
-            });
-    }
+    //{
+    //    auto& q = m_LayerCmds[LAYER_TO_IDX(RENDER_LAYER::UI)];
+    //    std::sort(q.begin(), q.end(), [](const DRAW_CMD* a, const DRAW_CMD* b)
+    //        {
+    //            return a->canvas.sortZ < b->canvas.sortZ;
+    //        });
+    //}
 }
 
 void CRender_System::Execute_RenderQueue()
@@ -171,19 +178,21 @@ void CRender_System::Execute_Draw(const DRAW_CMD& cmd)
 
 void CRender_System::Execute_Draw_Mesh(const DRAW_CMD& cmd)
 {
+    /* 메쉬 + 머테리얼 + 셰이더 리소스 가져오기 */
     const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(cmd.mesh.hMesh);
     IF_NULL_RETURN_MSG_BREAK(pMesh, , "Mesh is nullptr.");
 
     MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(cmd.mesh.hMaterial);
     IF_NULL_RETURN_MSG_BREAK(pMat, , "Material is nullptr.");
 
-    const SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(pMat->hShader);
+    SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(pMat->hShader);
     IF_NULL_RETURN_MSG_BREAK(pShader, , "Shader is nullptr.");
 
     const uint16_t passIndex = pMat->passIndex;
     if (passIndex >= pShader->pPasses.size())
         return;
 
+    /* 1. 행렬 설정하기 : 월드, 뷰, 투영 */
     const auto tr = m_pTransform_Processor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, cmd.mesh.hTransform);
     IF_TRUE_RETURN_MSG_BREAK(!tr.Is_Valid(), , "Transform proxy invalid.");
 
@@ -193,17 +202,21 @@ void CRender_System::Execute_Draw_Mesh(const DRAW_CMD& cmd)
     IF_NULL_RETURN_MSG_BREAK(pMat->pView, , "pView is nullptr.");
     IF_NULL_RETURN_MSG_BREAK(pMat->pProj, , "pProj is nullptr.");
 
-
     pMat->pWorld->SetMatrix(reinterpret_cast<const float*>(&matWorld));
-    pMat->pView->SetMatrix(reinterpret_cast<const float*>(&m_matView));
-    pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&m_matProj));
+    pMat->pView->SetMatrix(reinterpret_cast<const float*>(&m_matView));     /* TODO : 렌더링 최적화 !! 프레임 당 한 번으로 수정 */
+    pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&m_matProj));     /* TODO : 렌더링 최적화 !! 프레임 당 한 번으로 수정 */
 
-    if (cmd.mesh.hMainTexture != INVALID_HANDLE_UINT)
+    /* 재질은 머테리얼이 담당 */
+    Apply_Block_To_Shader(pShader, pMat->materialParams);
+
+    /* 사용자가 정의한 셰이더 변수 적용 */
+    if (cmd.mesh.hPerObjectParams != INVALID_HANDLE_UINT)
     {
-        const TEXTURE_ENTRY* pTex = SYS_RESOURCE.Get_Texture(cmd.mesh.hMainTexture);
-        if (pTex && pTex->Is_Valid() && pMat->pMainTex)
-            pMat->pMainTex->SetResource(pTex->SRV());
+        PER_OBJECT_PARAM_BLOCK* pBlk = SYS_RESOURCE.Get_PerObjectParamBlock(cmd.mesh.hPerObjectParams);
+        if (pBlk)
+            Apply_Block_To_Shader(pShader, pBlk->block);
     }
+
 
     ID3D11InputLayout* pIL = pShader->pPasses[passIndex].pInputLayout.Get();
     m_pContext->IASetInputLayout(pIL);
@@ -337,5 +350,46 @@ const UI_GLOBAL& CRender_System::Get_UI_Global()
 void CRender_System::Set_UI_Global(const UI_GLOBAL& tUI)
 {
     m_upRenderContext->Set_UI_Global(tUI);
+}
+
+void CRender_System::Apply_Block_To_Shader(SHADER_ENTRY* pShader, const NAME_VALUE_PARAM_BLOCK& blk)
+{
+    if (!pShader || !pShader->pEffect)
+        return;
+
+    for (const auto& it : blk.params)
+    {
+        ID3DX11EffectVariable* pVar = pShader->Get_VarCached(it.strName.c_str());
+        if(!pVar)
+        {
+            _DEBUG_ERROR_BREAK("EffectVariable is nullptr");
+            continue;
+        }
+
+        switch (it.value.eType)
+        {
+        case PARAM_TYPE::FLOAT:
+            pVar->AsScalar()->SetFloat(std::get<_float>(it.value.data));
+            break;
+
+        case PARAM_TYPE::FLOAT4:
+            pVar->AsVector()->SetFloatVector(reinterpret_cast<const float*>(&std::get<_float4>(it.value.data)));
+            break;
+
+        case PARAM_TYPE::FLOAT4X4:
+            pVar->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&std::get<_float4x4>(it.value.data)));
+            break;
+
+        case PARAM_TYPE::TEXTURE_HANDLE:
+        {
+            const TEXTURE_ENTRY* pTex = SYS_RESOURCE.Get_Texture(std::get<uint32_t>(it.value.data));
+            if (pTex && pTex->Is_Valid())
+                pVar->AsShaderResource()->SetResource(pTex->SRV());
+            break;
+        }
+        default:
+            break;
+        }
+    }
 }
 

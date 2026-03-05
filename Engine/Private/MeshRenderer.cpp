@@ -12,16 +12,6 @@ void CMeshRenderer::Set_Material(uint32_t h)
     m_pData->hMaterial = h;
 }
 
-
-void CMeshRenderer::Set_MainTexture(uint32_t hTexture)
-{
-    m_pData->hMainTex = hTexture;
-}
-
-uint32_t CMeshRenderer::Get_MainTexture() const
-{
-    return m_pData->hMainTex;
-}
 void CMeshRenderer::Set_Layer(RENDER_LAYER e)
 {
     m_pData->layer = e;

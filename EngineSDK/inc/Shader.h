@@ -18,6 +18,7 @@ typedef struct ENGINE_DLL tagShaderEntry final
     };
 
     std::vector<PASS_CACHE> pPasses;
+    std::unordered_map<std::string, ID3DX11EffectVariable*> varCache;
 
     VERTEX_DECL eDecl = VERTEX_DECL::VTXTEX;
 
@@ -25,6 +26,22 @@ public:
     _bool Is_Valid() const noexcept
     {
         return pEffect != nullptr && pTech != nullptr && !pPasses.empty();
+    }
+
+    ID3DX11EffectVariable* Get_VarCached(const char* name)
+    {
+        if (!pEffect || !name) return nullptr;
+
+        auto it = varCache.find(name);
+        if (it != varCache.end())
+            return it->second;
+
+        ID3DX11EffectVariable* v = pEffect->GetVariableByName(name);
+        if (!v || !v->IsValid())
+            v = nullptr;
+
+        varCache.emplace(name, v);
+        return v;
     }
 
 } SHADER_ENTRY;

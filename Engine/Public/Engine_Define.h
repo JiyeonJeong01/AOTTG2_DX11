@@ -27,6 +27,7 @@ using namespace DirectX;
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <variant>
 
 #include "DirectXTK/DDSTextureLoader.h"
 #include "DirectXTK/WICTextureLoader.h"

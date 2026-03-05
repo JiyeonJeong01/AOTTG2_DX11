@@ -1,6 +1,7 @@
 ﻿#include "Create_Asset_Helper.h"
 
 #include "Editor_Util.h"
+#include "MaterialBuilder.h"
 
 NS_BEGIN(Editor)
 
@@ -131,6 +132,74 @@ std::string CCreate_Asset_Helper::Make_Unique_File_Stem_Impl(const std::filesyst
     return baseStem + " (9999)";
 }
 
+void CCreate_Asset_Helper::Build_Material_Entry(const ASSET_GUID& materialGUID,
+    const ASSET_GUID& shaderGUID,
+    const ASSET_GUID& baseMapGUID,
+    const _float4& baseColor,
+    MATERIAL_ENTRY& outMaterial)
+{
+    outMaterial = MATERIAL_ENTRY{};
+
+    outMaterial.tGUID = materialGUID;
+    outMaterial.shaderGUID = shaderGUID;
+    outMaterial.passIndex = 0;
+
+    outMaterial.baseColor = baseColor;
+    outMaterial.baseMapGUID = baseMapGUID;
+
+    outMaterial.hShader = INVALID_HANDLE_UINT;
+    outMaterial.hBaseMap = INVALID_HANDLE_UINT;
+
+    outMaterial.pWorld = nullptr;
+    outMaterial.pView = nullptr;
+    outMaterial.pProj = nullptr;
+
+    outMaterial.pMainTex = nullptr;
+    outMaterial.pColor = nullptr;
+    outMaterial.pUV = nullptr;
+    outMaterial.pClip = nullptr;
+
+    outMaterial.materialParams.params.clear();
+}
+
+_bool CCreate_Asset_Helper::Write_Material_Asset_File(const std::filesystem::path& savePath,
+    const ASSET_GUID& materialGUID,
+    const ASSET_GUID& shaderGUID,
+    const ASSET_GUID& baseMapGUID,
+    const _float4& baseColor)
+{
+    MATERIAL_ENTRY material{};
+    Build_Material_Entry(materialGUID, shaderGUID, baseMapGUID, baseColor, material);
+
+    if (FAILED(CMaterialBuilder::Save_Material(material, savePath)))
+        return false;
+
+    return true;
+}
+
+std::string CCreate_Asset_Helper::Make_Unique_File_Stem_Single(const std::filesystem::path& rootPath,
+    const std::string& baseStem,
+    const std::string& extension)
+{
+    std::string stem = baseStem;
+    std::filesystem::path candidate = rootPath / (stem + extension);
+
+    if (!std::filesystem::exists(candidate))
+        return stem;
+
+    _uint iSuffix = 1;
+    while (true)
+    {
+        stem = baseStem + std::to_string(iSuffix);
+        candidate = rootPath / (stem + extension);
+
+        if (!std::filesystem::exists(candidate))
+            return stem;
+
+        ++iSuffix;
+    }
+}
+
 _bool CCreate_Asset_Helper::Write_Text_File(const std::filesystem::path& p, const std::string& utf8)
 {
     std::error_code ec;
@@ -143,6 +212,5 @@ _bool CCreate_Asset_Helper::Write_Text_File(const std::filesystem::path& p, cons
     ofs.write(utf8.data(), (std::streamsize)utf8.size());
     return ofs.good();
 }
-
 
 NS_END

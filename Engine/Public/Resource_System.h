@@ -3,6 +3,7 @@
 #include "Base.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "Render_Struct.h"
 #include "Shader.h"
 #include "Texture.h"
 
@@ -32,8 +33,13 @@ public:
 
     const MESH_ENTRY*           Get_Mesh(uint32_t handle) const;
     MATERIAL_ENTRY*             Get_Material(uint32_t handle);
-    const SHADER_ENTRY*         Get_Shader(uint32_t handle) const;
+    SHADER_ENTRY*               Get_Shader(uint32_t handle);
     const TEXTURE_ENTRY*        Get_Texture(uint32_t handle) const;
+
+public:
+    uint32_t Alloc_PerObjectParamBlock();
+    void     Free_PerObjectParamBlock(uint32_t handle);
+    PER_OBJECT_PARAM_BLOCK* Get_PerObjectParamBlock(uint32_t handle);
 
 private :
     _bool Read_MetaFileDecl(const std::filesystem::path& metaPath, uint32_t& outDecl);
@@ -44,7 +50,7 @@ private :
     std::vector<MESH_ENTRY> m_Meshes;
     std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_MeshGUIDMap;
 
-    /* ---- MATERIAL ---- */
+    /* ---- MATERIAL_VTXTEX ---- */
     std::vector<MATERIAL_ENTRY> m_Materials;
     std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_MaterialGUIDMap;
     std::unordered_map<uint64_t, uint32_t> m_MaterialComboMap;
@@ -56,6 +62,9 @@ private :
     /* ---- TEXTURE ---- */
     std::vector<TEXTURE_ENTRY> m_Textures;
     std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_TextureGUIDMap;
+
+    /* ---- Object Param ---- */
+    CPerObjectParamPool m_PerObjectParamPool;
 
 private :
     ID3D11Device* m_pDevice = nullptr;

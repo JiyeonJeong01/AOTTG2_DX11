@@ -4,6 +4,7 @@
 #include "MeshBuilder.h"
 #include "Render_Struct.h"
 #include "Load_Helper.h"
+#include "MaterialBuilder.h"
 
 IMPLEMENT_SINGLETON(CResource_System)
 
@@ -155,8 +156,14 @@ uint32_t CResource_System::Load_Shader(const ASSET_GUID& tGUID)
     if (metaDecl >= _countof(g_IL_TABLE))
         metaDecl = SCAST(uint32_t, VERTEX_DECL::VTXTEX);
 
-    HRESULT hr = D3DX11CompileEffectFromFile(shaderPath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, iHlslFlag, 0, m_pDevice, entry.pEffect.GetAddressOf(), nullptr);
-    IF_FAIL_RETURN_MSG_BREAK(hr, INVALID_HANDLE_UINT, "Create Effect file failed");
+    ID3DBlob* pBlob = nullptr;
+    HRESULT hr = D3DX11CompileEffectFromFile(shaderPath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, iHlslFlag, 0, m_pDevice, entry.pEffect.GetAddressOf(), &pBlob);
+    if (FAILED(hr))
+    {
+        OutputDebugStringA((char*)pBlob->GetBufferPointer());
+        _DEBUG_ERROR_BREAK("Create Effect file failed");
+        return INVALID_HANDLE_UINT;
+    }
 
     /* NOTE : Tech는 한 개인 경우만 고려한다. */
     entry.pTech = entry.pEffect->GetTechniqueByIndex(0);
@@ -198,27 +205,36 @@ uint32_t CResource_System::Load_Shader(const ASSET_GUID& tGUID)
     return handle;
 }
 
+/* GUID -> .mat 에서 읽어온 데이터로 MATERIAL_ENTRY를 생성한다. */
+/* 생성한 MATERIAL_ENTRY로 런타임 리소스를 할당받는다. */
 uint32_t CResource_System::Load_Material(const ASSET_GUID& tGUID)
 {
     auto it = m_MaterialGUIDMap.find(tGUID);
     if (it != m_MaterialGUIDMap.end())
         return it->second;
 
+    std::filesystem::path matPath = SYS_ASSET.Get_Asset_Path(tGUID);
+    IF_TRUE_RETURN_MSG_BREAK(matPath.empty(), INVALID_HANDLE_UINT, "Load_Material failed: asset path empty.");
+
+    /* .mat 파일에서 데이터를 읽어온다. */
     MATERIAL_ENTRY desc{};
-    desc.tGUID = tGUID;
+    IF_FAIL_RETURN_MSG_BREAK(CMaterialBuilder::Load_MaterialDesc(matPath, desc), INVALID_HANDLE_UINT, "Load_Material failed: Load_MaterialDesc failed.");
 
-    /* ---------------------------------------------------------------------------- */
-    /* TODO : 셰이더, 패스 추가 시 아래 로직 변경. 현재는 기본 셰이더, 0번 패스만 가져옴 */
-    /* ---------------------------------------------------------------------------- */
-    desc.hShader = Load_Shader(DEFAULT_ASSET_GUID::SHADER_VTXTEX);
-    desc.passIndex = 0;
+    desc.hShader = Load_Shader(desc.shaderGUID);
+    IF_TRUE_RETURN_MSG_BREAK(desc.hShader == INVALID_HANDLE_UINT, INVALID_HANDLE_UINT, "Load_Material failed: invalid shader handle.");
 
-    if (desc.hShader == INVALID_HANDLE_UINT)
-        return INVALID_HANDLE_UINT;
+    /* 머테리얼의 기본 텍스쳐를 로드해온다. */
+    desc.hBaseMap = Load_Texture(desc.baseMapGUID);
+    IF_TRUE_RETURN_MSG_BREAK(desc.hBaseMap == INVALID_HANDLE_UINT, INVALID_HANDLE_UINT, "Load_Material failed: invalid base map handle.");
 
-    uint32_t hMaterial = Load_Material(desc);
-    m_MaterialGUIDMap[tGUID] = hMaterial;
+    /* param block에 반영한다. */
+    desc.Sync_StandardParams();
 
+    /* Effect 변수 포인터 캐싱 포함한 런타임 머테리얼 엔트리를 생성한다. */
+    const uint32_t hMaterial = Load_Material(desc); // 기존 Load_Material(const MATERIAL_ENTRY&) 사용
+    IF_TRUE_RETURN_MSG_BREAK(hMaterial == INVALID_HANDLE_UINT, INVALID_HANDLE_UINT, "Load_Material failed: Load_Material(desc) failed.");
+
+    m_MaterialGUIDMap.emplace(tGUID, hMaterial);
     return hMaterial;
 }
 
@@ -226,17 +242,12 @@ uint32_t CResource_System::Load_Material(const MATERIAL_ENTRY& tDesc)
 {
     IF_TRUE_RETURN_MSG_BREAK((tDesc.hShader == INVALID_HANDLE_UINT), INVALID_HANDLE_UINT, "Load_Material failed: invalid shader handle(0).");
 
-    // 캐시 키: shader(32) + pass(16)
-    const uint64_t key = (uint64_t(tDesc.hShader) << 16) | uint64_t(tDesc.passIndex);
-
-    if (auto it = m_MaterialComboMap.find(key); it != m_MaterialComboMap.end())
-        return it->second;
-
     const SHADER_ENTRY* pShader = Get_Shader(tDesc.hShader);
-
-    IF_NULL_RETURN_MSG_BREAK(pShader, INVALID_HANDLE_UINT, "Load_Material failed: pshader is nullptr");
-    IF_TRUE_RETURN_MSG_BREAK(!pShader->Is_Valid(), INVALID_HANDLE_UINT, "Load_Material failed: pshader is invalid.");
-    IF_TRUE_RETURN_MSG_BREAK(tDesc.passIndex >= pShader->pPasses.size(), INVALID_HANDLE_UINT, "Load_Material failed: passIndex out of range.");
+    {
+        IF_NULL_RETURN_MSG_BREAK(pShader, INVALID_HANDLE_UINT, "Load_Material failed: pshader is nullptr");
+        IF_TRUE_RETURN_MSG_BREAK(!pShader->Is_Valid(), INVALID_HANDLE_UINT, "Load_Material failed: pshader is invalid.");
+        IF_TRUE_RETURN_MSG_BREAK(tDesc.passIndex >= pShader->pPasses.size(), INVALID_HANDLE_UINT, "Load_Material failed: passIndex out of range.");
+    }
 
     ID3DX11Effect* pFx = pShader->pEffect.Get();
     IF_NULL_RETURN_MSG_BREAK(pFx, INVALID_HANDLE_UINT, "Load_Material failed: pFX is nullptr");
@@ -246,27 +257,19 @@ uint32_t CResource_System::Load_Material(const MATERIAL_ENTRY& tDesc)
     entry.pView = pFx->GetVariableByName("g_ViewMatrix")->AsMatrix();
     entry.pProj = pFx->GetVariableByName("g_ProjMatrix")->AsMatrix();
 
-    entry.pMainTex = pFx->GetVariableByName("g_MainTex")->AsShaderResource();
-    //entry.pColor = pFx->GetVariableByName("g_Color")->AsVector();
-    //entry.pUV = pFx->GetVariableByName("g_UVRect")->AsVector();
-    //entry.pClip = pFx->GetVariableByName("g_ClipRect")->AsVector();
-
+    entry.pMainTex = pFx->GetVariableByName("g_BaseMap")->AsShaderResource();
+    entry.pColor = pFx->GetVariableByName("g_BaseColor")->AsVector();
 
 #ifdef _DEBUG
     IF_TRUE_RETURN_MSG_BREAK(!entry.pWorld || !entry.pWorld->IsValid(), INVALID_HANDLE_UINT, "Material matrix variable invalid: g_WorldMatrix");
     IF_TRUE_RETURN_MSG_BREAK(!entry.pView || !entry.pView->IsValid(), INVALID_HANDLE_UINT, "Material matrix variable invalid: g_ViewMatrix");
     IF_TRUE_RETURN_MSG_BREAK(!entry.pProj || !entry.pProj->IsValid(), INVALID_HANDLE_UINT, "Material matrix variable invalid: g_ProjMatrix");
 
-    IF_TRUE_RETURN_MSG_BREAK(entry.pMainTex && !entry.pMainTex->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_MainTex");
-    //IF_TRUE_RETURN_MSG_BREAK(entry.pColor && !entry.pColor->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_Color");
-    //IF_TRUE_RETURN_MSG_BREAK(entry.pUV && !entry.pUV->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_UVRect");
-    //IF_TRUE_RETURN_MSG_BREAK(entry.pClip && !entry.pClip->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_ClipRect");
+    IF_TRUE_RETURN_MSG_BREAK(entry.pMainTex && !entry.pMainTex->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_BaseMap");
 #endif
 
     const uint32_t handle = (uint32_t)m_Materials.size();
     m_Materials.push_back(entry);
-    m_MaterialComboMap.emplace(key, handle);
-
     return handle;
 }
 
@@ -278,7 +281,7 @@ const MESH_ENTRY* CResource_System::Get_Mesh(uint32_t handle) const
     return &m_Meshes[handle];
 }
 
-const SHADER_ENTRY* CResource_System::Get_Shader(uint32_t handle) const
+SHADER_ENTRY* CResource_System::Get_Shader(uint32_t handle)
 {
     if (handle == INVALID_HANDLE_UINT || handle >= m_Shaders.size())
         return nullptr;
@@ -292,6 +295,21 @@ const TEXTURE_ENTRY* CResource_System::Get_Texture(uint32_t handle) const
         return nullptr;
 
     return &m_Textures[handle];
+}
+
+uint32_t CResource_System::Alloc_PerObjectParamBlock()
+{
+    return m_PerObjectParamPool.Alloc();
+}
+
+void CResource_System::Free_PerObjectParamBlock(uint32_t handle)
+{
+    m_PerObjectParamPool.Free(handle);
+}
+
+PER_OBJECT_PARAM_BLOCK* CResource_System::Get_PerObjectParamBlock(uint32_t handle)
+{
+    return m_PerObjectParamPool.Get(handle);
 }
 
 MATERIAL_ENTRY* CResource_System::Get_Material(uint32_t handle)

@@ -262,7 +262,7 @@ const ASSET_RECORD* CAsset_Registry::Find(const ASSET_GUID& tGUID) const
     return &it->second;
 }
 
-//     enum class ASSET_TYPE : uint8_t { UNKNOWN = 0, FOLDER, TEXTURE, MESH, MODEL, MATERIAL, SCENE, PREFAB, PROTOTYPE, SCRIPT, };
+//     enum class ASSET_TYPE : uint8_t { UNKNOWN = 0, FOLDER, TEXTURE, MESH, MODEL, MATERIAL_VTXTEX, SCENE, PREFAB, PROTOTYPE, SCRIPT, };
 const ASSET_TYPE CAsset_Registry::Detect_Type(const std::filesystem::path& path, _bool bDir)
 {
     if (bDir)
@@ -336,7 +336,7 @@ void CAsset_Registry::Register_Builtin_Asset()
     Register_Builtin_Inner(DEFAULT_ASSET_GUID::MESH_SPHERE, ASSET_TYPE::MESH);
 
     //Register_Builtin_Inner(DEFAULT_ASSET_GUID::SHADER_VTXCOL, ASSET_TYPE::SHADER);
-    Register_Builtin_Inner(DEFAULT_ASSET_GUID::MATERIAL, ASSET_TYPE::MATERIAL);
+    //Register_Builtin_Inner(DEFAULT_ASSET_GUID::MATERIAL_VTXTEX, ASSET_TYPE::MATERIAL_VTXTEX);
 }
 
 void CAsset_Registry::Register_Builtin_Inner(const ASSET_GUID& tGUID, ASSET_TYPE eType)

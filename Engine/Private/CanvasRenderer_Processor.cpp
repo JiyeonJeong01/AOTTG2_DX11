@@ -25,6 +25,7 @@ HRESULT CCanvasRenderer_Processor::Initialize()
 {
     IF_NULL_RETURN_MSG_BREAK(m_pRectTransform_Processor, E_FAIL, "Transform Processor is nullptr");
 
+    /* RectTex 기본 메쉬 */
     m_hUIRectMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_RECT);
 
     D3D11_RASTERIZER_DESC rd{};
@@ -38,6 +39,7 @@ HRESULT CCanvasRenderer_Processor::Initialize()
     rd.ScissorEnable = TRUE;
     IF_FAIL_RETURN_MSG_BREAK(m_pDevice->CreateRasterizerState(&rd, m_rsScissor.GetAddressOf()), E_FAIL, "CCanvasRenderer_Processor initialize failed");
 
+    /* 팩토리 등록 */
     SYS_COMPONENT.Register_InitialSpecFactory<CCanvasRenderer, CANVAS_RENDERER_SPEC>(COMPONENT_TYPE::CANVAS_RENDERER);
     SYS_COMPONENT.Register_BuildSpecFacotry<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
     return S_OK;
@@ -154,7 +156,7 @@ void CCanvasRenderer_Processor::Initialize_Component_Data(COMPONENT_HANDLE hComp
     if (!pObj) return;
 
     pData->hRectTransform = pObj->Get_Component<CRectTransform>().Get_Handle();
-    pData->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXTEX);
+    pData->hMaterial = SYS_RESOURCE.Load_Material(DefaultAssetGuid::MATERIAL_VTXTEX);
     pData->layer = RENDER_LAYER::NONBLEND;
     pData->flags = RF_NONE;
     ASSET_GUID tmp("8976CDE9-2AE4-4DFC-A580-17E41FFB00D3");

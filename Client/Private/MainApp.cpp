@@ -61,11 +61,10 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             pGO->Add_Component<CMeshRenderer>();
             auto mr = pGO->Get_Component<CMeshRenderer>();
             auto* d = mr._Data();
-            d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXTEX);
+            d->hMaterial = SYS_RESOURCE.Load_Material(DefaultAssetGuid::MATERIAL_VTXTEX);
             d->hMesh = SYS_RESOURCE.Load_Mesh(fiona);      // 또는 CreateCubeMesh()
             d->layer = RENDER_LAYER::NONBLEND;
             d->flags = RF_NONE;
-            d->hMainTex = SYS_RESOURCE.Load_Texture(tmp);
 
             auto tr1 = pGO->Get_Component<CTransform>();
             auto mr1 = pGO->Get_Component<CMeshRenderer>();
@@ -78,7 +77,7 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             pUO->Add_Component<CCanvasRenderer>();
             auto mr = pUO->Get_Component<CCanvasRenderer>();
             auto* d = mr._Data();
-            d->hMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::SHADER_VTXTEX);
+            d->hMaterial = SYS_RESOURCE.Load_Material(DefaultAssetGuid::MATERIAL_VTXTEX);
             d->layer = RENDER_LAYER::NONBLEND;
             d->flags = RF_NONE;
             d->hTexture = SYS_RESOURCE.Load_Texture(tmp);
