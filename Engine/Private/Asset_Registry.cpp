@@ -360,7 +360,7 @@ void CAsset_Registry::Register_Builtin_Inner(const ASSET_GUID& tGUID, ASSET_TYPE
     rec.bDirectory = false;
 
     m_byGUID.emplace(tGUID, std::move(rec));
-}
+ }
 
 /* CASE.1 : 런타임에 생성되어 레지스트리에 등록되지 않은 경우 (e.g., 에디터 실행 중에 추가) */
 /* CASE.2 : 에셋 파일은 존재하지만 .meta가 사라졌거나 GUID와의 매핑이 깨진 경우 */

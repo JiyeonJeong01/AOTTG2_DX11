@@ -49,6 +49,7 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
     
     ASSET_GUID tmp("8976CDE9-2AE4-4DFC-A580-17E41FFB00D3");
     ASSET_GUID fiona("A727B7CD-8D3A-4EFE-BC5F-E59D0C34821C");
+    ASSET_GUID default_mat("B69F88A4-F574-48AC-BD74-8410EA2AA6BB");
 
     /* TEST : Create GameObject with various components */
     Engine::CGameObject* pGO = nullptr;
@@ -61,10 +62,11 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             pGO->Add_Component<CMeshRenderer>();
             auto mr = pGO->Get_Component<CMeshRenderer>();
             auto* d = mr._Data();
-            d->hMaterial = SYS_RESOURCE.Load_Material(DefaultAssetGuid::MATERIAL_VTXTEX);
-            d->hMesh = SYS_RESOURCE.Load_Model(fiona);      // 또는 CreateCubeMesh()
+            d->hMaterial = SYS_RESOURCE.Load_Material(default_mat);
+            d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_CUBE);
             d->layer = RENDER_LAYER::NONBLEND;
             d->flags = RF_NONE;
+
 
             auto tr1 = pGO->Get_Component<CTransform>();
             auto mr1 = pGO->Get_Component<CMeshRenderer>();
@@ -72,22 +74,22 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             tr1->vPosition = { j * 2.f, j * 2.f, j * 2.f};
         }
 
-        {
-            pUO = SYS_GAMEOBJECT.Create_GameObjectUI();
-            pUO->Add_Component<CCanvasRenderer>();
-            auto mr = pUO->Get_Component<CCanvasRenderer>();
-            auto* d = mr._Data();
-            d->hMaterial = SYS_RESOURCE.Load_Material(DefaultAssetGuid::MATERIAL_VTXTEX);
-            d->layer = RENDER_LAYER::NONBLEND;
-            d->flags = RF_NONE;
-            d->hTexture = SYS_RESOURCE.Load_Texture(tmp);
-        }
+        //{
+        //    pUO = SYS_GAMEOBJECT.Create_GameObjectUI();
+        //    pUO->Add_Component<CCanvasRenderer>();
+        //    auto mr = pUO->Get_Component<CCanvasRenderer>();
+        //    auto* d = mr._Data();
+        //    d->hMaterial = SYS_RESOURCE.Load_Material(DefaultAssetGuid::MATERIAL_VTXTEX);
+        //    d->layer = RENDER_LAYER::NONBLEND;
+        //    d->flags = RF_NONE;
+        //    d->hTexture = SYS_RESOURCE.Load_Texture(tmp);
+        //}
 
-        auto tr1 = pGO->Get_Component<CTransform>();
-        auto mr1 = pGO->Get_Component<CMeshRenderer>();
+        //auto tr1 = pGO->Get_Component<CTransform>();
+        //auto mr1 = pGO->Get_Component<CMeshRenderer>();
 
-        auto rt1 = pGO->Get_Component<CRectTransform>();
-        auto cr1 = pGO->Get_Component<CCanvasRenderer>();
+        //auto rt1 = pGO->Get_Component<CRectTransform>();
+        //auto cr1 = pGO->Get_Component<CCanvasRenderer>();
 
     }
 

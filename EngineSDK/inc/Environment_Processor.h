@@ -9,6 +9,7 @@ NS_BEGIN(Engine)
 
 class ENGINE_DLL CEnvironment_Processor final : public CComponent_Processor
 {
+    DEF_PROCESSOR_ID(PROCESSOR_ID::ENVIRONMENT)
 public:
     CEnvironment_Processor();
     ~CEnvironment_Processor() override;

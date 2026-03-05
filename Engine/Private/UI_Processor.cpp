@@ -62,16 +62,11 @@ HRESULT CUI_Processor::Initialize()
     SYS_COMPONENT.Register_BuildSpecFacotry<CUIButton>(COMPONENT_TYPE::UI_BUTTON);
     SYS_COMPONENT.Register_BuildSpecFacotry<CUIImage>(COMPONENT_TYPE::UI_IMAGE);
 
+    m_pRectTransformProcessor = SYS_COMPONENT.Bind_Processor<CRectTransform_Processor>();
+    IF_NULL_RETURN_MSG_BREAK(m_pRectTransformProcessor, E_FAIL, "RectTransform processor bind failed");
 
-    CComponent_Processor* pBase = nullptr;
-    SYS_COMPONENT.Bind_ComponentProcessor(COMPONENT_TYPE::RECT_TRANSFORM, &pBase);
-    IF_NULL_RETURN_MSG_BREAK(pBase, E_FAIL, "RectTransform processor bind failed");
-    m_pRectTransformProcessor = SCAST(CRectTransform_Processor*, pBase);
-
-    pBase = nullptr;
-    SYS_COMPONENT.Bind_ComponentProcessor(COMPONENT_TYPE::CANVAS_RENDERER, &pBase);
-    IF_NULL_RETURN_MSG_BREAK(pBase, E_FAIL, "Canvas Render processor bind failed");
-    m_pCanvasProcessor = SCAST(CCanvasRenderer_Processor*, pBase);
+    m_pCanvasProcessor = SYS_COMPONENT.Bind_Processor<CCanvasRenderer_Processor>();
+    IF_NULL_RETURN_MSG_BREAK(m_pCanvasProcessor, E_FAIL, "Canvas Render processor bind failed");
 
     return S_OK;
 }

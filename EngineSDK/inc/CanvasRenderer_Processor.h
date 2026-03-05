@@ -10,10 +10,10 @@ class CRectTransform_Processor;
 
 class ENGINE_DLL CCanvasRenderer_Processor final : public CComponent_Processor_Impl<CCanvasRenderer, COMPONENT_TYPE::CANVAS_RENDERER>
 {
+    DEF_PROCESSOR_ID(PROCESSOR_ID::CANVAS_RENDERER)
 public:
     CCanvasRenderer_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CRectTransform_Processor* pRTProcessor);
     ~CCanvasRenderer_Processor() override;
-
 public:
     HRESULT Initialize();
     void    Update(_float fDT) override;

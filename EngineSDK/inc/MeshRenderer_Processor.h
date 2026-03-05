@@ -10,6 +10,7 @@ class CRenderer_System;
 
 class ENGINE_DLL CMeshRenderer_Processor final : public CComponent_Processor_Impl<CMeshRenderer, COMPONENT_TYPE::MESH_RENDERER>
 {
+    DEF_PROCESSOR_ID(PROCESSOR_ID::MESH_RENDERER)
 public :
     CMeshRenderer_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CTransform_Processor* pTransformProcessor);
     ~CMeshRenderer_Processor() override;

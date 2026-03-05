@@ -52,7 +52,7 @@ static std::filesystem::path Get_AssetRoot() {
 
 static std::filesystem::path Get_SceneRoot() {
     // path / path 연산자는 폴더 구분자를 자동으로 관리합니다.
-    return std::filesystem::path(Engine::ProjectConfig::PATH) / Engine::ProjectConfig::ROOT / "Scene";
+    return std::filesystem::path(Engine::ProjectConfig::PATH) / Engine::ProjectConfig::ROOT / "Scenes";
 }
 
 static std::wstring OpenFileDialog(const wchar_t* filter, const wchar_t* initialDir)

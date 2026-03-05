@@ -36,10 +36,7 @@ public : /* Component Processor */
     void Remove_Component_By_Type(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle);
     void Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, _bool bEnable);
 
-
     void Get_Component_Handle_By_Type(COMPONENT_TYPE eComType, OBJECT_HANDLE hObj, vector<COMPONENT_HANDLE>& outHandles);
-    void Bind_ComponentProcessor(COMPONENT_TYPE eComType, CComponent_Processor** ppOut);
-
 
 public : /* CComponentGroup_Manager */
 	uint32_t				Promote(COMPONENT_HANDLE hOld, COMPONENT_HANDLE hNew);
@@ -76,6 +73,9 @@ public :
     /* Register a callback for Build_Spec_By_Type */
     template<typename TProxy>
     void Register_BuildSpecFacotry(COMPONENT_TYPE eComType);
+
+    template<typename TPRoc>
+    TPRoc* Bind_Processor();
 };
 
 

@@ -38,10 +38,9 @@ HRESULT CInspectorPanel::Initialize(CHierarchyPanel* pPanel, CProjectPanel* pPro
     pPanel->m_OnPrimarySelectionChanged.Add_Listener(&CInspectorPanel::Set_Target, this);
     pProject->m_OnSelectionChanged.Add_Listener(&CInspectorPanel::Set_Selected_Asset, this);
 
-    CComponent_Processor* pBase = nullptr;
-    SYS_COMPONENT.Bind_ComponentProcessor(COMPONENT_TYPE::SCRIPT, &pBase);
-    IF_NULL_RETURN_MSG_BREAK(pBase, E_FAIL, "Transform processor bind failed");
-    m_pScript_Processor = SCAST(CScript_Processor*, pBase);
+    m_pScript_Processor = SYS_COMPONENT.Bind_Processor<CScript_Processor>();
+    IF_NULL_RETURN_MSG_BREAK(m_pScript_Processor, E_FAIL, "Transform processor bind failed");
+
     return S_OK;
 }
 

@@ -47,30 +47,29 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
     m_hUIRectMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_RECT);
     IF_TRUE_RETURN_MSG_BREAK(m_hUIRectMesh == INVALID_HANDLE_UINT, E_FAIL, "UI rect mesh load failed");
 
-    D3D11_RASTERIZER_DESC rs{};
-    rs.FillMode = D3D11_FILL_SOLID;
-    rs.CullMode = D3D11_CULL_NONE;
-    rs.DepthClipEnable = TRUE;
+    /* 랜더 관련 장치 세팅  */
+    {
+        D3D11_RASTERIZER_DESC rs{};
+        rs.FillMode = D3D11_FILL_SOLID;
+        rs.CullMode = D3D11_CULL_NONE;
+        rs.DepthClipEnable = TRUE;
 
-    rs.ScissorEnable = TRUE;
-    IF_FAIL_RETURN_MSG_BREAK(m_pDevice->CreateRasterizerState(&rs, m_rsScissor.GetAddressOf()),
-        E_FAIL, "CreateRasterizerState(scissor) failed");
+        rs.ScissorEnable = TRUE;
+        IF_FAIL_RETURN_MSG_BREAK(m_pDevice->CreateRasterizerState(&rs, m_rsScissor.GetAddressOf()),
+            E_FAIL, "CreateRasterizerState(scissor) failed");
 
-    rs.ScissorEnable = FALSE;
-    IF_FAIL_RETURN_MSG_BREAK(m_pDevice->CreateRasterizerState(&rs, m_rsNoScissor.GetAddressOf()),
-        E_FAIL, "CreateRasterizerState(no scissor) failed");
+        rs.ScissorEnable = FALSE;
+        IF_FAIL_RETURN_MSG_BREAK(m_pDevice->CreateRasterizerState(&rs, m_rsNoScissor.GetAddressOf()),
+            E_FAIL, "CreateRasterizerState(no scissor) failed");
+    }
 
     /* 렌더에 필요한 컴포넌트 프로세서 가져오기 */
     {
-        CComponent_Processor* pBase = nullptr;
-        SYS_COMPONENT.Bind_ComponentProcessor(COMPONENT_TYPE::TRANSFORM, &pBase);
-        IF_NULL_RETURN_MSG_BREAK(pBase, E_FAIL, "Transform processor bind failed");
-        m_pTransform_Processor = SCAST(CTransform_Processor*, pBase);
+        m_pTransform_Processor = SYS_COMPONENT.Bind_Processor<CTransform_Processor>();
+        IF_NULL_RETURN_MSG_BREAK(m_pTransform_Processor, E_FAIL, "Transform processor bind failed");
 
-        pBase = nullptr;
-        SYS_COMPONENT.Bind_ComponentProcessor(COMPONENT_TYPE::RECT_TRANSFORM, &pBase);
-        IF_NULL_RETURN_MSG_BREAK(pBase, E_FAIL, "RectTransform processor bind failed");
-        m_pRectTransform_Processor = SCAST(CRectTransform_Processor*, pBase);
+        m_pRectTransform_Processor = SYS_COMPONENT.Bind_Processor<CRectTransform_Processor>();
+        IF_NULL_RETURN_MSG_BREAK(m_pRectTransform_Processor, E_FAIL, "RectTransform processor bind failed");
     }
 
     m_upRenderContext = CRender_Context::Create(iWidth, iHeight);

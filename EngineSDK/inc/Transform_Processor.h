@@ -6,6 +6,7 @@ NS_BEGIN(Engine)
 
 class ENGINE_DLL CTransform_Processor final : public CComponent_Processor_Impl<CTransform, COMPONENT_TYPE::TRANSFORM>
 {
+    DEF_PROCESSOR_ID(PROCESSOR_ID::TRANSFORM)
 public:
     HRESULT Initialize() override;
     void Update(_float fDT) override;
@@ -20,6 +21,7 @@ private:
 
 public:
     static std::unique_ptr<CTransform_Processor> Create();
+
 };
 
 NS_END

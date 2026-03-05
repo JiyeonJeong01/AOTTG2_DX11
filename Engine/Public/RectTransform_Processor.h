@@ -6,6 +6,7 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CRectTransform_Processor final
     : public CComponent_Processor_Impl<CRectTransform, COMPONENT_TYPE::RECT_TRANSFORM>
 {
+    DEF_PROCESSOR_ID(PROCESSOR_ID::RECT_TRANSFORM)
 public:
     HRESULT Initialize() override;
     void    Update(_float fDT) override;

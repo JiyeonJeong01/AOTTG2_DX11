@@ -59,4 +59,10 @@ void CComponent_System::Register_BuildSpecFacotry(COMPONENT_TYPE eComType)
 
 }
 
+template <typename TProc>
+TProc* CComponent_System::Bind_Processor()
+{
+    PROCESSOR_ID PID = TProc::Get_Static_PID();
+    return To<TProc*>(m_pComProcessors[PID_TO_INT(PID)].get());
+}
 NS_END

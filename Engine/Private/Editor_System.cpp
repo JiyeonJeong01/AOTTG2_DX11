@@ -38,10 +38,8 @@ HRESULT CEditor_System::Initialize(const std::filesystem::path& assetRoot)
     m_bCalculAcc = true;
 	m_fMouseSens = 0.0025f;
 
-	CComponent_Processor* pBase = nullptr;
-	SYS_COMPONENT.Bind_ComponentProcessor(COMPONENT_TYPE::TRANSFORM, &pBase);
-	IF_NULL_RETURN_MSG_BREAK(pBase, E_FAIL, "Transform processor bind failed");
-	m_pTransform_Processor = SCAST(CTransform_Processor*, pBase);
+	m_pTransform_Processor = SYS_COMPONENT.Bind_Processor<CTransform_Processor>();
+    IF_NULL_RETURN_MSG_BREAK(m_pTransform_Processor, E_FAIL, "Transform processor bind failed");
 
     return S_OK;
 }

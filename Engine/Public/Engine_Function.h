@@ -4,6 +4,11 @@
 
 namespace Engine
 {
+    template <typename T, typename U>
+    inline T To(U&& value) {
+        return static_cast<T>(std::forward<U>(value));
+    }
+
 	template<typename T>
 	void Safe_Delete(T& Pointer)
 	{

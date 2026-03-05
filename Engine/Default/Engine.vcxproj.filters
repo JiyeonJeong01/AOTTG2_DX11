@@ -157,6 +157,12 @@
     <Filter Include="01. Utility\05. Resource\05. Model">
       <UniqueIdentifier>{e68221df-4f6c-4bc3-a617-7d2315a490cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\04. Component\02. Physics\Collider">
+      <UniqueIdentifier>{00b1141c-d6f2-4556-a7b0-0c08950fed20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\02. Physics\Rigidbody">
+      <UniqueIdentifier>{099c066c-9a75-4826-a395-5fcef36dad66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -197,9 +203,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\Engine_Log.h">
       <Filter>99. Defines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Collider.h">
-      <Filter>01. Utility\04. Component\02. Physics</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Timer.h">
       <Filter>00. System\01. Timer</Filter>
@@ -420,6 +423,12 @@
     <ClInclude Include="..\Public\Model.h">
       <Filter>01. Utility\05. Resource\05. Model</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Collider.h">
+      <Filter>01. Utility\04. Component\02. Physics\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Physics_Processor.h">
+      <Filter>01. Utility\04. Component\02. Physics\Collider</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -439,9 +448,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\ISink.cpp">
       <Filter>00. System\06. Log</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Collider.cpp">
-      <Filter>01. Utility\04. Component\02. Physics</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Timer.cpp">
       <Filter>00. System\01. Timer</Filter>
@@ -568,6 +574,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\GameInstance.cpp">
       <Filter>00. System\99. GameInstance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Collider.cpp">
+      <Filter>01. Utility\04. Component\02. Physics\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Physics_Processor.cpp">
+      <Filter>01. Utility\04. Component\02. Physics\Collider</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

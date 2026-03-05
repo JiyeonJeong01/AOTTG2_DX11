@@ -12,6 +12,7 @@ typedef struct tagScriptTypeInfo
 
 class ENGINE_DLL CScript_Processor : public CComponent_Processor_Impl<CScript, COMPONENT_TYPE::SCRIPT>
 {
+    DEF_PROCESSOR_ID(PROCESSOR_ID::SCRIPT)
 public:
     HRESULT Initialize() override;
     void Update(_float fDT) override;
@@ -53,7 +54,6 @@ private :
     void Create_State_If_Needed(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData);
     void Reset_Data(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData);
     void Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData);
-
 
 public:
     static std::unique_ptr<CScript_Processor> Create();

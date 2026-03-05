@@ -15,6 +15,7 @@ class CUIText;
 
 class ENGINE_DLL CUI_Processor final : public CComponent_Processor
 {
+    DEF_PROCESSOR_ID(PROCESSOR_ID::UI)
 public :
     CUI_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     ~CUI_Processor() override;

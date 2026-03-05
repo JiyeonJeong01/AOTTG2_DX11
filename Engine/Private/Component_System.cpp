@@ -161,15 +161,6 @@ void CComponent_System::Get_Component_Handle_By_Type(COMPONENT_TYPE eComType, OB
         outHandles.push_back(hCom);
 }
 
-void CComponent_System::Bind_ComponentProcessor(COMPONENT_TYPE eComType, CComponent_Processor** ppOut)
-{
-    const uint32_t iProcIdx = COM_TO_PID(eComType);
-    IF_TRUE_RETURN_MSG_BREAK((iProcIdx >= COMPONENT_PROCESSOR_MAX || !m_pComProcessors[iProcIdx]), ,
-        "Processor not registered for this component type.");
-
-    *ppOut = m_pComProcessors[iProcIdx].get();
-}
-
 HRESULT CComponent_System::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pBase)
 {
     const uint32_t iComIdx = COM_TO_INT(eComType);
