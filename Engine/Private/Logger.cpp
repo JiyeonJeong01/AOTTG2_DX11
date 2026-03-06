@@ -161,11 +161,14 @@ std::string CLogger::Get_TimeStamp() const
     using namespace std::chrono;
 
     auto now = system_clock::now();
-    auto sec = floor<seconds>(now);
+    auto ms = duration_cast<milliseconds>(now.time_since_epoch()) % 1000; 
 
-    hh_mm_ss hms{ sec.time_since_epoch() };
+    auto timer = system_clock::to_time_t(now);
+    std::tm bt;
+    localtime_s(&bt, &timer); 
 
-    return std::format("{:02}:{:02}", hms.minutes().count(), hms.seconds().count());
+    return std::format("{:02}:{:02}:{:02}.{:03}",
+        bt.tm_hour, bt.tm_min, bt.tm_sec, ms.count());
 }
 
 NS_END

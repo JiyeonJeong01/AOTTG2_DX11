@@ -101,7 +101,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
         }
 
-        fTimeAcc += SYS_CORE.Compute_SystemDT();
+        const _float fDT = SYS_CORE.Compute_SystemDT();
+        fTimeAcc += fDT;
 
         if (fTimeAcc >= FRAME_DT)
         {
@@ -151,6 +152,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             Editor::CProfilerPanel::Set_Frame_Time_External(frameMS);
 
             fTimeAcc = 0.f;
+        }
+
+        fFixedAcc += fDT;
+        if (fFixedAcc >= FIXED_DT)
+        {
+            SYS_CORE.Fixed_Update(FIXED_DT);
+            fFixedAcc = 0.f;
         }
     }
 

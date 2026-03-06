@@ -134,6 +134,11 @@ void CCore_System::Update_Game_Engine(_float fDT)
     Update_RuntimeEngine(fDT, pScene);
 }
 
+void CCore_System::Fixed_Update(_float fDT)
+{
+    SYS_COMPONENT.FixedUpdate(fDT);
+}
+
 void CCore_System::Request_Step(_float fDT, CScene* pScene)
 {
     if (pScene->Get_State() == SCENE_STATE::PAUSE)

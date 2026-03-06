@@ -162,6 +162,8 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\CanvasRenderer.h" />
     <ClInclude Include="..\Public\CanvasRenderer_Processor.h" />
     <ClInclude Include="..\Public\Camera.h" />
+    <ClInclude Include="..\Public\Collider_Proxy_Builder.h" />
+    <ClInclude Include="..\Public\Collision_Detector.h" />
     <ClInclude Include="..\Public\Converter_Struct.h" />
     <ClInclude Include="..\Public\CRender_System.h" />
     <ClInclude Include="..\Public\Editor_System.h" />
@@ -251,6 +253,8 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <FileType>Document</FileType>
     </None>
+    <ClCompile Include="..\Private\Collider_Proxy_Builder.cpp" />
+    <ClCompile Include="..\Private\Collision_Detector.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
     <ClCompile Include="..\Private\Physics_Processor.cpp" />
     <ClCompile Include="Raycast.cpp" />

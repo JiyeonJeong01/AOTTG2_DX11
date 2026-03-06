@@ -99,6 +99,11 @@ namespace Math
         return m;
     }
 
+    inline _vector Rotate(_fvector v, _fvector vQuat)
+    {
+        return XMVector3Rotate(v, vQuat);
+    }
+
     inline _float4x4 RotationX(float rad)
     {
         _float4x4 m;
@@ -201,9 +206,8 @@ namespace Math
         return out;
     }
 
-    inline _float3 Normalize(const _float3& v)
+    inline _float3 Normalize(const _float3& v) /* 저장용 */
     {
-        using namespace DirectX;
         XMVECTOR vv = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&v));
         vv = XMVector3Normalize(vv);
 
@@ -212,9 +216,13 @@ namespace Math
         return out;
     }
 
+    inline _vector Normalize(_fvector v) /* 연산용 */
+    {
+        return XMVector3Normalize(v);
+    }
+
     inline _float3 TransformCoord(const _float3& p, _matrix m)
     {
-        using namespace DirectX;
         XMVECTOR vp = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&p));
         XMVECTOR r = XMVector3TransformCoord(vp, m);
 
@@ -225,14 +233,11 @@ namespace Math
 
     inline _matrix Matrix_Inverse(_matrix m)
     {
-        using namespace DirectX;
         return XMMatrixInverse(nullptr, m);
     }
 
     inline _matrix Matrix_LookAtLH(const _float3& vEye, const _float3& vAt, const _float3& vUp)
     {
-        using namespace DirectX;
-
         const XMVECTOR eye = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&vEye));
         const XMVECTOR at = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&vAt));
         const XMVECTOR up = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&vUp));
@@ -249,6 +254,7 @@ namespace Math
     inline _vector Right_Vec() { return XMVectorSet(1.f, 0.f, 0.f, 0.f); }
     inline _vector Up_Vec() { return XMVectorSet(0.f, 1.f, 0.f, 0.f); }
     inline _vector Look_Vec() { return XMVectorSet(0.f, 0.f, 1.f, 0.f); }
+    inline _vector Set_Vec(_float fX, _float fY, _float fZ, _float fW) { return XMVectorSet(fX, fY, fZ, fW); }
 
     inline _float3 QuaternionToEulerRad(const _vector& q)
     {
@@ -328,6 +334,28 @@ namespace Math
     inline _float3 Zero3()
     {
         return { 0.f, 0.f, 0.f };
+    }
+
+    inline _float Get_X(_fvector v)
+    {
+        return XMVectorGetX(v);
+    }
+    inline _float Get_Y(_fvector v)
+    {
+        return XMVectorGetY(v);
+    }
+    inline _float Get_Z(_fvector v)
+    {
+        return XMVectorGetZ(v);
+    }
+
+    inline _vector Dot(_fvector v1, _fvector v2)
+    {
+        return XMVector3Dot(v1, v2);
+    }
+    inline _vector Cross(_fvector v1, _fvector v2)
+    {
+        return XMVector3Cross(v1, v2);
     }
 }
 

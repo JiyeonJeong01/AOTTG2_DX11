@@ -3,6 +3,7 @@
 #include "ComponentGroup_Manager.h"
 
 #include "Transform_Processor.h"
+#include "Physics_Processor.h"
 #include "MeshRenderer_Processor.h"
 #include "RectTransform_Processor.h"
 #include "CanvasRenderer_Processor.h"
@@ -32,6 +33,8 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
 
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::TRANSFORM)]
         = CTransform_Processor::Create();
+    m_pComProcessors[PID_TO_INT(PROCESSOR_ID::PHYSICS)]
+        = CPhysics_Processor::Create();
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)]
         = CMeshRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CTransform_Processor*, m_pComProcessors[COM_TO_PID(COMPONENT_TYPE::TRANSFORM)].get()));
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::RECT_TRANSFORM)]
@@ -64,6 +67,9 @@ void CComponent_System::LateUpdate(_float fDT)
 
 void CComponent_System::FixedUpdate(_float fDT)
 {
+    IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::PHYSICS)], , "m_pComProcessor is nullptr");
+
+    To<CPhysics_Processor*>(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::PHYSICS)].get())->Fixed_Update(0.02f);
 }
 
 void CComponent_System::Build_RenderQueue(vector<DRAW_CMD>& cmds)

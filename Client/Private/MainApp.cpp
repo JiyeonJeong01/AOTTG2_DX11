@@ -16,6 +16,7 @@
 
 #include "BuiltIn_GUID.h"
 #include "Script_Registry.h"
+#include "Collider.h"
 
 
 namespace Engine
@@ -56,22 +57,25 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
     Engine::CGameObject* pUO = nullptr;
     for (int i = 0; i < 1; ++i) {
 
-        for (int j = 0; j < 1; ++j)
+        for (int j = 0; j < 2; ++j)
         {
             pGO = SYS_GAMEOBJECT.Create_GameObject();
             pGO->Add_Component<CMeshRenderer>();
+            pGO->Add_Component<CCollider>();
             auto mr = pGO->Get_Component<CMeshRenderer>();
             auto* d = mr._Data();
             d->hMaterial = SYS_RESOURCE.Load_Material(default_mat);
-            d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_CUBE);
+            d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_SPHERE);
             d->layer = RENDER_LAYER::NONBLEND;
             d->flags = RF_NONE;
 
 
             auto tr1 = pGO->Get_Component<CTransform>();
             auto mr1 = pGO->Get_Component<CMeshRenderer>();
+            auto cldr = pGO->Get_Component<CCollider>();
+            cldr.Set_Shape(SHAPE::SPHERE);
 
-            tr1->vPosition = { j * 2.f, j * 2.f, j * 2.f};
+            tr1->vPosition = { j * 3.f, j * 3.f, j * 2.f};
         }
 
         //{

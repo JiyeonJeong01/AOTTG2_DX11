@@ -61,11 +61,21 @@ private :
 
 private :
     HRESULT Initialize_From_Spec_Collider(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
+    HRESULT Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE h);
 
+public :
 
 private:
     CTransform_Processor* m_pTransformProcessor{};
     CComponent_Pool<CCollider>  m_ColliderPool;
+
+    std::unique_ptr<class CCollision_Detector>      m_upCollision_Detector{};
+    std::unique_ptr<class CCollider_Proxy_Builder>   m_upCollider_Builder{};
+
+    std::vector<COLLIDER_PROXY_DATA> m_AllColliders{}; /* this tick */
+
+public :
+    static std::unique_ptr<CPhysics_Processor> Create();
 };
 
 NS_END

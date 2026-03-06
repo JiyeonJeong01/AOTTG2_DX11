@@ -5,7 +5,7 @@
 namespace Engine
 {
     template <typename T, typename U>
-    inline T To(U&& value) {
+    constexpr  T To(U&& value) {
         return static_cast<T>(std::forward<U>(value));
     }
 

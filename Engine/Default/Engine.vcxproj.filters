@@ -429,6 +429,12 @@
     <ClInclude Include="..\Public\Physics_Processor.h">
       <Filter>01. Utility\04. Component\02. Physics\Collider</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Collision_Detector.h">
+      <Filter>01. Utility\04. Component\02. Physics\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Collider_Proxy_Builder.h">
+      <Filter>01. Utility\04. Component\02. Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -580,6 +586,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Physics_Processor.cpp">
       <Filter>01. Utility\04. Component\02. Physics\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Collision_Detector.cpp">
+      <Filter>01. Utility\04. Component\02. Physics\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Collider_Proxy_Builder.cpp">
+      <Filter>01. Utility\04. Component\02. Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
