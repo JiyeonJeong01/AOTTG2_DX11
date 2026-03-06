@@ -167,7 +167,7 @@ std::string CLogger::Get_TimeStamp() const
     std::tm bt;
     localtime_s(&bt, &timer); 
 
-    return std::format("{:02}:{:02}:{:02}.{:03}",
+    return std::format("{:02}:{:02}:{:02}.{:02} ",
         bt.tm_hour, bt.tm_min, bt.tm_sec, ms.count());
 }
 

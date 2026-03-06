@@ -192,7 +192,208 @@ _bool CCollision_Detector::Detect_SpherePlaneCollision(CONTACT_DESC* pOut, COLLI
 
 _bool CCollision_Detector::Detect_BoxPlaneCollision(CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)
 {
-    return false;
+    if (!pOut || !pColA || !pColB || !pColA->pCol || !pColB->pCol)
+        return false;
+
+    if (pColA->pCol->eShape != SHAPE::BOX || pColB->pCol->eShape != SHAPE::PLANE)
+        return false;
+
+    const _vector vBoxCenter = Get_ColliderCenter(pColA);
+    const _vector vPlaneN = Get_PlaneNormal(pColB);
+
+    const _float fSignedDist = Calculate_SignedDistToPlane(pColB, vBoxCenter);
+    const _float fAbsDist = fabsf(fSignedDist);
+
+    const _float3 vHalf = pColA->box.vHalfExtentsWorld;
+
+    /* AABB를 plane normal에 투영한 반경 */
+    const _float fBoxRad =
+        fabsf(Math::Get_X(Math::Dot(vPlaneN, Math::Right_Vec()))) * vHalf.x +
+        fabsf(Math::Get_X(Math::Dot(vPlaneN, Math::Up_Vec()))) * vHalf.y +
+        fabsf(Math::Get_X(Math::Dot(vPlaneN, Math::Look_Vec()))) * vHalf.z;
+
+    const _float fDiff = fAbsDist - fBoxRad;
+    const _float fEpsilon = 1e-5f;
+    if (fDiff > fEpsilon)
+        return false;
+
+    const _vector vSep = (fSignedDist >= 0.f) ? vPlaneN : -vPlaneN;
+    const _vector vPlanePoint = vBoxCenter - vPlaneN * fSignedDist;
+
+    if (!pColB->plane.bInfinite)
+    {
+        // TODO : finite plane 영역 판정 필요
+    }
+
+    pOut->pColA = pColA->pCol;
+    pOut->pColB = pColB->pCol;
+    Math::Store(pOut->vResolveN_A, vSep);
+    Math::Store(pOut->vPoint, vPlanePoint);
+    pOut->fDepth = fBoxRad - fAbsDist;
+
+    return true;
+}
+
+_bool CCollision_Detector::Detect_BoxSphereCollision(CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)
+{
+    if (!pOut || !pColA || !pColB || !pColA->pCol || !pColB->pCol)
+        return false;
+
+    if (pColA->pCol->eShape != SHAPE::BOX || pColB->pCol->eShape != SHAPE::SPHERE)
+        return false;
+
+    const _vector vSphereCenter = Get_ColliderCenter(pColB);
+    const _float fSphereRadius = Get_SphereWorldRadius(pColB);
+
+    const _float3& vBoxMin = pColA->aabbWorld.vMin;
+    const _float3& vBoxMax = pColA->aabbWorld.vMax;
+
+    _float3 vClosest{};
+    vClosest.x = (Math::Get_X(vSphereCenter) < vBoxMin.x) ? vBoxMin.x : ((Math::Get_X(vSphereCenter) > vBoxMax.x) ? vBoxMax.x : Math::Get_X(vSphereCenter));
+    vClosest.y = (Math::Get_Y(vSphereCenter) < vBoxMin.y) ? vBoxMin.y : ((Math::Get_Y(vSphereCenter) > vBoxMax.y) ? vBoxMax.y : Math::Get_Y(vSphereCenter));
+    vClosest.z = (Math::Get_Z(vSphereCenter) < vBoxMin.z) ? vBoxMin.z : ((Math::Get_Z(vSphereCenter) > vBoxMax.z) ? vBoxMax.z : Math::Get_Z(vSphereCenter));
+
+    const _vector vClosestPoint = Math::Load(vClosest);
+    const _vector vDiff = vSphereCenter - vClosestPoint;
+    const _float fDistSq = Math::Get_X(XMVector3LengthSq(vDiff));
+    const _float fRadiusSq = fSphereRadius * fSphereRadius;
+
+    if (fDistSq > fRadiusSq)
+        return false;
+
+    const _float fDist = sqrtf(fDistSq);
+
+    _vector vResolveN = Math::Right_Vec();
+    _vector vPoint = vClosestPoint;
+    _float fDepth = 0.f;
+
+    if (fDist > 1e-8f)
+    {
+        vResolveN = XMVector3Normalize(vDiff);   /* Box -> Sphere 방향, Sphere를 Box 밖으로 밀기 위해 반대 사용 */
+        vResolveN = -vResolveN;                  /* A(Box)가 B(Sphere)에게서 멀어지는 방향 */
+        fDepth = fSphereRadius - fDist;
+    }
+    else
+    {
+        /* 구 중심이 박스 내부/경계에 정확히 있는 경우 */
+        const _vector vBoxCenter = Get_ColliderCenter(pColA);
+
+        const _float fDxMin = fabsf(Math::Get_X(vSphereCenter) - vBoxMin.x);
+        const _float fDxMax = fabsf(vBoxMax.x - Math::Get_X(vSphereCenter));
+        const _float fDyMin = fabsf(Math::Get_Y(vSphereCenter) - vBoxMin.y);
+        const _float fDyMax = fabsf(vBoxMax.y - Math::Get_Y(vSphereCenter));
+        const _float fDzMin = fabsf(Math::Get_Z(vSphereCenter) - vBoxMin.z);
+        const _float fDzMax = fabsf(vBoxMax.z - Math::Get_Z(vSphereCenter));
+
+        _float fBest = fDxMin;
+        vResolveN = -Math::Right_Vec();
+        vPoint = Math::Set_Vec(vBoxMin.x, Math::Get_Y(vSphereCenter), Math::Get_Z(vSphereCenter), 1.f);
+
+        if (fDxMax < fBest)
+        {
+            fBest = fDxMax;
+            vResolveN = Math::Right_Vec();
+            vPoint = Math::Set_Vec(vBoxMax.x, Math::Get_Y(vSphereCenter), Math::Get_Z(vSphereCenter), 1.f);
+        }
+        if (fDyMin < fBest)
+        {
+            fBest = fDyMin;
+            vResolveN = -Math::Up_Vec();
+            vPoint = Math::Set_Vec(Math::Get_X(vSphereCenter), vBoxMin.y, Math::Get_Z(vSphereCenter), 1.f);
+        }
+        if (fDyMax < fBest)
+        {
+            fBest = fDyMax;
+            vResolveN = Math::Up_Vec();
+            vPoint = Math::Set_Vec(Math::Get_X(vSphereCenter), vBoxMax.y, Math::Get_Z(vSphereCenter), 1.f);
+        }
+        if (fDzMin < fBest)
+        {
+            fBest = fDzMin;
+            vResolveN = -Math::Look_Vec();
+            vPoint = Math::Set_Vec(Math::Get_X(vSphereCenter), Math::Get_Y(vSphereCenter), vBoxMin.z, 1.f);
+        }
+        if (fDzMax < fBest)
+        {
+            fBest = fDzMax;
+            vResolveN = Math::Look_Vec();
+            vPoint = Math::Set_Vec(Math::Get_X(vSphereCenter), Math::Get_Y(vSphereCenter), vBoxMax.z, 1.f);
+        }
+
+        /* Box를 Sphere에게서 떼는 방향 = Sphere가 Box를 향해 들어온 반대방향 */
+        vResolveN = -vResolveN;
+        fDepth = fSphereRadius + fBest;
+    }
+
+    pOut->pColA = pColA->pCol;
+    pOut->pColB = pColB->pCol;
+    Math::Store(pOut->vResolveN_A, vResolveN);
+    Math::Store(pOut->vPoint, vPoint);
+    pOut->fDepth = fDepth;
+
+    return true;
+}
+_bool CCollision_Detector::Detect_BoxCollision(CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)
+{
+    if (!pOut || !pColA || !pColB || !pColA->pCol || !pColB->pCol)
+        return false;
+
+    if (pColA->pCol->eShape != SHAPE::BOX || pColB->pCol->eShape != SHAPE::BOX)
+        return false;
+
+    const _float3& aMin = pColA->aabbWorld.vMin;
+    const _float3& aMax = pColA->aabbWorld.vMax;
+    const _float3& bMin = pColB->aabbWorld.vMin;
+    const _float3& bMax = pColB->aabbWorld.vMax;
+
+    const _float fOverlapX = min(aMax.x, bMax.x) - max(aMin.x, bMin.x);
+    if (fOverlapX <= 0.f)
+        return false;
+
+    const _float fOverlapY = min(aMax.y, bMax.y) - max(aMin.y, bMin.y);
+    if (fOverlapY <= 0.f)
+        return false;
+
+    const _float fOverlapZ = min(aMax.z, bMax.z) - max(aMin.z, bMin.z);
+    if (fOverlapZ <= 0.f)
+        return false;
+
+    const _vector vCenterA = Get_ColliderCenter(pColA);
+    const _vector vCenterB = Get_ColliderCenter(pColB);
+    const _vector vDelta = vCenterA - vCenterB;
+
+    _vector vResolveN = Math::Right_Vec();
+    _float fDepth = fOverlapX;
+
+    const _float fDx = Math::Get_X(vDelta);
+    const _float fDy = Math::Get_Y(vDelta);
+    const _float fDz = Math::Get_Z(vDelta);
+
+    if (fOverlapY < fDepth)
+    {
+        fDepth = fOverlapY;
+        vResolveN = (fDy >= 0.f) ? Math::Up_Vec() : -Math::Up_Vec();
+    }
+    else
+    {
+        vResolveN = (fDx >= 0.f) ? Math::Right_Vec() : -Math::Right_Vec();
+    }
+
+    if (fOverlapZ < fDepth)
+    {
+        fDepth = fOverlapZ;
+        vResolveN = (fDz >= 0.f) ? Math::Look_Vec() : -Math::Look_Vec();
+    }
+
+    const _vector vPoint = (vCenterA + vCenterB) * 0.5f;
+
+    pOut->pColA = pColA->pCol;
+    pOut->pColB = pColB->pCol;
+    Math::Store(pOut->vResolveN_A, vResolveN);
+    Math::Store(pOut->vPoint, vPoint);
+    pOut->fDepth = fDepth;
+
+    return true;
 }
 
 void CCollision_Detector::Register_DetectTable()
@@ -202,17 +403,17 @@ void CCollision_Detector::Register_DetectTable()
         [this](CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)->_bool { return Detect_SphereCollision(pOut, pColA, pColB); };
 
     m_DetectTable[To<size_t>(SHAPE::SPHERE)][To<size_t>(SHAPE::BOX)] =
-        [this](CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)->_bool { return false; /* NOT IMPLEMENTED */ };
+        [this](CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)->_bool { return Detect_BoxPlaneCollision(pOut, pColB, pColA); };
 
     m_DetectTable[To<size_t>(SHAPE::SPHERE)][To<size_t>(SHAPE::PLANE)] =
         [this](CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)->_bool { return Detect_SpherePlaneCollision(pOut, pColA, pColB); };
 
     /* BOX -> */
     m_DetectTable[To<size_t>(SHAPE::BOX)][To<size_t>(SHAPE::SPHERE)] =
-        [this](CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)->_bool { return false; /* NOT IMPLEMENTED */ };
+        [this](CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)->_bool { return Detect_BoxSphereCollision(pOut, pColA, pColB); };
 
     m_DetectTable[To<size_t>(SHAPE::BOX)][To<size_t>(SHAPE::BOX)] =
-        [this](CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)->_bool { return false; /* NOT IMPLEMENTED */ };
+        [this](CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)->_bool { return Detect_BoxCollision(pOut, pColA, pColB); };
 
     m_DetectTable[To<size_t>(SHAPE::BOX)][To<size_t>(SHAPE::PLANE)] =
         [this](CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)->_bool { return Detect_BoxPlaneCollision(pOut, pColA, pColB); };

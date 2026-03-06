@@ -65,7 +65,7 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             auto mr = pGO->Get_Component<CMeshRenderer>();
             auto* d = mr._Data();
             d->hMaterial = SYS_RESOURCE.Load_Material(default_mat);
-            d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_SPHERE);
+            d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_CUBE);
             d->layer = RENDER_LAYER::NONBLEND;
             d->flags = RF_NONE;
 
@@ -73,10 +73,51 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             auto tr1 = pGO->Get_Component<CTransform>();
             auto mr1 = pGO->Get_Component<CMeshRenderer>();
             auto cldr = pGO->Get_Component<CCollider>();
-            cldr.Set_Shape(SHAPE::SPHERE);
+            cldr.Set_Shape(SHAPE::BOX);
 
             tr1->vPosition = { j * 3.f, j * 3.f, j * 2.f};
         }
+
+        //for (int j = 0; j < 1; ++j)
+        //{
+        //    pGO = SYS_GAMEOBJECT.Create_GameObject();
+        //    pGO->Add_Component<CMeshRenderer>();
+        //    pGO->Add_Component<CCollider>();
+        //    auto mr = pGO->Get_Component<CMeshRenderer>();
+        //    auto* d = mr._Data();
+        //    d->hMaterial = SYS_RESOURCE.Load_Material(default_mat);
+        //    d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_SPHERE);
+        //    d->layer = RENDER_LAYER::NONBLEND;
+        //    d->flags = RF_NONE;
+
+
+        //    auto tr1 = pGO->Get_Component<CTransform>();
+        //    auto mr1 = pGO->Get_Component<CMeshRenderer>();
+        //    auto cldr = pGO->Get_Component<CCollider>();
+        //    cldr.Set_Shape(SHAPE::SPHERE);
+
+        //    tr1->vPosition = { 2 + j * 3.f, j * 3.f, j * 2.f};
+        //}
+        //for (int j = 0; j < 1; ++j)
+        //{
+        //    pGO = SYS_GAMEOBJECT.Create_GameObject();
+        //    pGO->Add_Component<CMeshRenderer>();
+        //    pGO->Add_Component<CCollider>();
+        //    auto mr = pGO->Get_Component<CMeshRenderer>();
+        //    auto* d = mr._Data();
+        //    d->hMaterial = SYS_RESOURCE.Load_Material(default_mat);
+        //    d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_RECT);
+        //    d->layer = RENDER_LAYER::NONBLEND;
+        //    d->flags = RF_NONE;
+
+
+        //    auto tr1 = pGO->Get_Component<CTransform>();
+        //    auto mr1 = pGO->Get_Component<CMeshRenderer>();
+        //    auto cldr = pGO->Get_Component<CCollider>();
+        //    cldr.Set_Shape(SHAPE::PLANE);
+
+        //    tr1->vPosition = { -2 + j * 3.f, j * 3.f, j * 2.f};
+        //}
 
         //{
         //    pUO = SYS_GAMEOBJECT.Create_GameObjectUI();

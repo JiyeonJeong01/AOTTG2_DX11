@@ -17,11 +17,6 @@ _float3 CCollider::Get_Offset() const
     return m_pData->vOffset;
 }
 
-const AABB& CCollider::Get_AABBWorld() const
-{
-    return m_pData->aabbLocal;
-}
-
 void CCollider::Set_Shape(SHAPE eShape)
 {
     if (m_pData->eShape != SHAPE::END)
@@ -37,7 +32,7 @@ void CCollider::Set_Shape(SHAPE eShape)
         break;
 
     case SHAPE::PLANE:
-        m_pData->plane.vNormalLocal = _float3{ 0.f, 1.f, 0.f };
+        m_pData->plane.vNormalLocal = _float3{ 0.f, 0.f, 1.f };
         m_pData->plane.fDistance = 0.f;
         m_pData->plane.bInfinite = true;
         break;

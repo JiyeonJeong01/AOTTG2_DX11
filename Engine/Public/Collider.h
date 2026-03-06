@@ -49,10 +49,6 @@ typedef struct ENGINE_DLL tagColliderData final
             _float2 vDimension;
         } plane;
     };
-
-    /* Broad-phase */
-    AABB                aabbLocal{};
-
 } COLLIDER_DATA;
 
 class ENGINE_DLL CCollider final : public CComponent_Proxy_Base<COLLIDER_DATA, CCollider, COMPONENT_TYPE::COLLIDER>
@@ -69,10 +65,6 @@ public:
 
     void Set_Offset(const _float3& vOffset);
     _float3 Get_Offset() const;
-
-    const AABB& Get_AABBWorld() const;
-    _float3 Get_CenterWorld() const;
-    _float Get_RadiusWorld() const;
 
 public:
     // shape
