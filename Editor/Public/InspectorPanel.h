@@ -59,11 +59,12 @@ private:
     void Draw_RectTransform();
     void Draw_MeshRenderer();
     void Draw_CanvasRenderer();
+    void Draw_Collider();
+    void Draw_Rigidbody();
     void Draw_Script();
     void Draw_AllScripts(COMPONENT_HANDLE hComponent);
     void Draw_UIImage();
     void Draw_UIButton();
-
 
     void Validate_Target();
 

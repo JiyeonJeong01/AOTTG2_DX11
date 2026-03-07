@@ -5,26 +5,34 @@
 #include "Asset_Registry.h"
 #include "LayerHelper.h"
 
-#include "Transform.h"
-#include "MeshRenderer.h"
-#include "Material.h"
-#include "RectTransform.h"
-#include "CanvasRenderer.h"
-#include "Script.h"
 #include "Component_System.h"
-#include "Editor_Util.h"
-#include "Script_Processor.h"
 #include "Resource_System.h"
 
+#include "Transform.h"
+#include "Rigidbody.h"
+#include "Collider.h"
 #include "UIImage.h"
 #include "UIButton.h"
+#include "MeshRenderer.h"
+#include "CanvasRenderer.h"
+#include "Script.h"
+#include "RectTransform.h"
 
+
+#include "Editor_Util.h"
+#include "Script_Processor.h"
+
+#include "Material.h"
 #include "UI_Processor.h"
 
 
-NS_BEGIN(Editor)
+namespace Engine
+{
+    class CRigidbody;
+}
 
-CInspectorPanel::CInspectorPanel(const std::string& strPanelName)
+NS_BEGIN(Editor)
+    CInspectorPanel::CInspectorPanel(const std::string& strPanelName)
     : CEditorPanel(strPanelName)
 {
 }
@@ -429,6 +437,86 @@ void CInspectorPanel::Draw_AddComponentPopup()
         return;
     if (false == bIsUI) /* ----------------------- Not UI--------------------------*/
     {
+        if (ImGui::BeginMenu("Collider"))
+        {
+            if (ImGui::MenuItem("Box"))
+            {
+                CCollider col = m_pTarget->Add_Component<CCollider>();
+                if (col.Is_Valid())
+                    col.Set_Shape(SHAPE::BOX);
+
+                ImGui::CloseCurrentPopup();
+            }
+
+            if (ImGui::MenuItem("Sphere"))
+            {
+                CCollider col = m_pTarget->Add_Component<CCollider>();
+                if (col.Is_Valid())
+                    col.Set_Shape(SHAPE::SPHERE);
+
+                ImGui::CloseCurrentPopup();
+            }
+
+            if (ImGui::MenuItem("Plane"))
+            {
+                CCollider col = m_pTarget->Add_Component<CCollider>();
+                if (col.Is_Valid())
+                    col.Set_Shape(SHAPE::PLANE);
+
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::MenuItem("Rigidbody"))
+        {
+            CCollider col = m_pTarget->Get_Component<CCollider>();
+            if (!col.Is_Valid())
+            {
+                ImGui::OpenPopup("RigidbodyNeedColliderPopup");
+            }
+            else
+            {
+                CRigidbody rb = m_pTarget->Add_Component<CRigidbody>();
+                if (rb.Is_Valid())
+                {
+                    RIGIDBODY_DATA* pBody = rb._Data();
+                    COLLIDER_DATA* pCol = col._Data();
+
+                    if (pBody && pCol)
+                    {
+                        pBody->bEnable = true;
+                        pBody->bGravity = true;
+
+                        pBody->eShape = pCol->eShape;
+                        pBody->eBodyType = BODY_TYPE::DYNAMIC;
+                        pBody->hCollider = col.Get_Handle();
+
+                        pBody->bDirtyMass = true;
+                        pBody->bDirtyInertia = true;
+                        pBody->bDirtyWorldInertia = true;
+
+                        pCol->hRigidbody = rb.Get_Handle();
+                    }
+                }
+
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
+        if (ImGui::BeginPopupModal("RigidbodyNeedColliderPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::TextUnformatted("Rigidbody requires a Collider component first.");
+            ImGui::Spacing();
+
+            if (ImGui::Button("OK", ImVec2(120.f, 0.f)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
         if (ImGui::MenuItem("MeshRenderer"))
         {
             m_pTarget->Add_Component<CMeshRenderer>();
@@ -493,6 +581,12 @@ void CInspectorPanel::Draw_ComponentByType(COMPONENT_TYPE eComType)
 {
     switch(eComType)
     {
+    case COMPONENT_TYPE::COLLIDER :
+        Draw_Collider();
+        break;
+    case COMPONENT_TYPE::RIGIDBODY :
+        Draw_Rigidbody();
+        break;
     case COMPONENT_TYPE::MESH_RENDERER :
         Draw_MeshRenderer();
         break;
@@ -850,6 +944,257 @@ void CInspectorPanel::Draw_CanvasRenderer()
 
     // if (bChanged)
     //     pData->bDirty = true;
+
+    ImGui::TreePop();
+}
+
+void CInspectorPanel::Draw_Collider()
+{
+    CCollider col = m_pTarget->Get_Component<CCollider>();
+    if (!col.Is_Valid())
+        return;
+
+    COLLIDER_DATA* pData = col._Data();
+    if (!pData)
+        return;
+
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    const ImGuiID idHeader = window->GetID("Collider_Header");
+    const ImGuiID idCheck = window->GetID("Collider_Enable");
+
+    ImGui::PushID(idHeader);
+
+    ImGui::AlignTextToFramePadding();
+
+    bool enabled = (pData->bEnable != 0);
+    if (ImGui::Checkbox("##Enable", &enabled))
+    {
+        pData->bEnable = enabled ? 1 : 0;
+        pData->bDirty = true;
+    }
+
+    ImGui::SameLine();
+
+    const ImGuiTreeNodeFlags flags =
+        ImGuiTreeNodeFlags_DefaultOpen |
+        ImGuiTreeNodeFlags_Framed |
+        ImGuiTreeNodeFlags_SpanAvailWidth |
+        ImGuiTreeNodeFlags_AllowOverlap;
+
+    const bool open = ImGui::TreeNodeEx("Collider", flags);
+
+    ImGui::PopID();
+
+    if (!open)
+        return;
+
+    bool bChanged = false;
+
+    if (pData->bEnable == 0)
+        ImGui::BeginDisabled();
+
+    ImGui::TextUnformatted("Body Type");
+    ImGui::SameLine();
+
+    const char* bodyTypeText = "Unknown";
+    switch (pData->eColType)
+    {
+    case BODY_TYPE::STATIC:    bodyTypeText = "Static"; break;
+    case BODY_TYPE::DYNAMIC:   bodyTypeText = "Dynamic"; break;
+    case BODY_TYPE::KINEMATIC: bodyTypeText = "Kinematic"; break;
+    default: break;
+    }
+    ImGui::TextUnformatted(bodyTypeText);
+
+    ImGui::TextUnformatted("Shape");
+    ImGui::SameLine();
+
+    const char* shapeText = "Unknown";
+    switch (pData->eShape)
+    {
+    case SHAPE::BOX:    shapeText = "Box"; break;
+    case SHAPE::SPHERE: shapeText = "Sphere"; break;
+    case SHAPE::PLANE:  shapeText = "Plane"; break;
+    default: break;
+    }
+    ImGui::TextUnformatted(shapeText);
+
+    float vScale[3] = { pData->vScale.x, pData->vScale.y, pData->vScale.z };
+    if (ImGui::DragFloat3("Scale", vScale, 0.01f, 0.001f, 0.f, "%.3f"))
+    {
+        if (vScale[0] < 0.001f) vScale[0] = 0.001f;
+        if (vScale[1] < 0.001f) vScale[1] = 0.001f;
+        if (vScale[2] < 0.001f) vScale[2] = 0.001f;
+
+        pData->vScale = { vScale[0], vScale[1], vScale[2] };
+        bChanged = true;
+    }
+
+    float vOffset[3] = { pData->vOffset.x, pData->vOffset.y, pData->vOffset.z };
+    if (ImGui::DragFloat3("Offset", vOffset, 0.01f, 0.f, 0.f, "%.3f"))
+    {
+        pData->vOffset = { vOffset[0], vOffset[1], vOffset[2] };
+        bChanged = true;
+    }
+
+    ImGui::TextUnformatted("On Collision");
+    ImGui::SameLine();
+    ImGui::TextUnformatted(pData->bOnCol ? "True" : "False");
+
+    if (pData->bEnable == 0)
+        ImGui::EndDisabled();
+
+    if (bChanged)
+        pData->bDirty = true;
+
+    ImGui::TreePop();
+}
+
+void CInspectorPanel::Draw_Rigidbody()
+{
+    CRigidbody rb = m_pTarget->Get_Component<CRigidbody>();
+    if (!rb.Is_Valid())
+        return;
+
+    RIGIDBODY_DATA* pData = rb._Data();
+    if (!pData)
+        return;
+
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    const ImGuiID idHeader = window->GetID("Rigidbody_Header");
+    const ImGuiID idCheck = window->GetID("Rigidbody_Enable");
+
+    ImGui::PushID(idHeader);
+
+    ImGui::AlignTextToFramePadding();
+
+    bool enabled = (pData->bEnable != 0);
+    if (ImGui::Checkbox("##Enable", &enabled))
+    {
+        pData->bEnable = enabled ? 1 : 0;
+    }
+
+    ImGui::SameLine();
+
+    const ImGuiTreeNodeFlags flags =
+        ImGuiTreeNodeFlags_DefaultOpen |
+        ImGuiTreeNodeFlags_Framed |
+        ImGuiTreeNodeFlags_SpanAvailWidth |
+        ImGuiTreeNodeFlags_AllowOverlap;
+
+    const bool open = ImGui::TreeNodeEx("Rigidbody", flags);
+
+    ImGui::PopID();
+
+    if (!open)
+        return;
+
+    bool bChanged = false;
+
+    if (pData->bEnable == 0)
+        ImGui::BeginDisabled();
+
+    ImGui::TextUnformatted("Body Type");
+    ImGui::SameLine();
+
+    const char* bodyTypeText = "Unknown";
+    switch (pData->eBodyType)
+    {
+    case BODY_TYPE::STATIC:    bodyTypeText = "Static"; break;
+    case BODY_TYPE::DYNAMIC:   bodyTypeText = "Dynamic"; break;
+    case BODY_TYPE::KINEMATIC: bodyTypeText = "Kinematic"; break;
+    default: break;
+    }
+    ImGui::TextUnformatted(bodyTypeText);
+
+    ImGui::TextUnformatted("Shape");
+    ImGui::SameLine();
+
+    const char* shapeText = "Unknown";
+    switch (pData->eShape)
+    {
+    case SHAPE::BOX:    shapeText = "Box"; break;
+    case SHAPE::SPHERE: shapeText = "Sphere"; break;
+    case SHAPE::PLANE:  shapeText = "Plane"; break;
+    default: break;
+    }
+    ImGui::TextUnformatted(shapeText);
+
+    bool gravity = (pData->bGravity != 0);
+    if (ImGui::Checkbox("Use Gravity", &gravity))
+    {
+        pData->bGravity = gravity ? 1 : 0;
+        bChanged = true;
+    }
+
+    float fMass = pData->fMass;
+    if (ImGui::DragFloat("Mass", &fMass, 0.01f, 0.001f, 100000.f, "%.3f"))
+    {
+        if (fMass < 0.001f)
+            fMass = 0.001f;
+
+        pData->fMass = fMass;
+        pData->bDirtyMass = true;
+        pData->bDirtyInertia = true;
+        pData->bDirtyWorldInertia = true;
+        bChanged = true;
+    }
+
+    float fDrag = pData->fDrag;
+    if (ImGui::DragFloat("Drag", &fDrag, 0.01f, 0.f, 1000.f, "%.3f"))
+    {
+        if (fDrag < 0.f)
+            fDrag = 0.f;
+
+        pData->fDrag = fDrag;
+        bChanged = true;
+    }
+
+    float fAngularDrag = pData->fAngularDrag;
+    if (ImGui::DragFloat("Angular Drag", &fAngularDrag, 0.01f, 0.f, 1000.f, "%.3f"))
+    {
+        if (fAngularDrag < 0.f)
+            fAngularDrag = 0.f;
+
+        pData->fAngularDrag = fAngularDrag;
+        bChanged = true;
+    }
+
+    float fRestitution = pData->fRestitution;
+    if (ImGui::DragFloat("Restitution", &fRestitution, 0.01f, 0.f, 1.f, "%.3f"))
+    {
+        if (fRestitution < 0.f) fRestitution = 0.f;
+        if (fRestitution > 1.f) fRestitution = 1.f;
+
+        pData->fRestitution = fRestitution;
+        bChanged = true;
+    }
+
+    float fFriction = pData->fFriction;
+    if (ImGui::DragFloat("Friction", &fFriction, 0.01f, 0.f, 10.f, "%.3f"))
+    {
+        if (fFriction < 0.f)
+            fFriction = 0.f;
+
+        pData->fFriction = fFriction;
+        bChanged = true;
+    }
+
+    if (pData->bEnable == 0)
+        ImGui::EndDisabled();
+
+    if (bChanged)
+    {
+        pData->bDirtyMass = true;
+        pData->bDirtyInertia = true;
+        pData->bDirtyWorldInertia = true;
+    }
 
     ImGui::TreePop();
 }
