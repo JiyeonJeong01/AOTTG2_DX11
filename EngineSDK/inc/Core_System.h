@@ -58,6 +58,9 @@ private:
     ID3D11DeviceContext*        m_pContext{};
     ID3D11ShaderResourceView*   m_pSceneSRV{};
 
+    _float                      m_fTimeAcc = 0.f;
+    const _float                m_FIXED_DT = 0.02f;
+
 private :
     void        Update_RuntimeEngine(_float fDT, CScene* pScene);
 

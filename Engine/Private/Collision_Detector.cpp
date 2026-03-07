@@ -87,7 +87,7 @@ void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_
     }
 }
 
-void CCollision_Detector::Process_NarrowPhase(const vector<COLLIDER_PAIR>& pairs)
+void CCollision_Detector::Process_NarrowPhase(const vector<COLLIDER_PAIR>& pairs, vector<CONTACT_DESC>& outContacts)
 {
     for (const auto& pair : pairs)
     {
@@ -110,8 +110,8 @@ void CCollision_Detector::Process_NarrowPhase(const vector<COLLIDER_PAIR>& pairs
         bOnCollision = fn(&tContact, pColA, pColB);
         if (bOnCollision)
         {
-            _DEBUG_INFO("On Collision");
             Fill_ContactInfo(tContact);
+            outContacts.push_back(tContact);
         }
     }
 }
@@ -403,7 +403,7 @@ void CCollision_Detector::Register_DetectTable()
         [this](CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)->_bool { return Detect_SphereCollision(pOut, pColA, pColB); };
 
     m_DetectTable[To<size_t>(SHAPE::SPHERE)][To<size_t>(SHAPE::BOX)] =
-        [this](CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)->_bool { return Detect_BoxPlaneCollision(pOut, pColB, pColA); };
+        [this](CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)->_bool { return Detect_BoxSphereCollision(pOut, pColB, pColA); };
 
     m_DetectTable[To<size_t>(SHAPE::SPHERE)][To<size_t>(SHAPE::PLANE)] =
         [this](CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB)->_bool { return Detect_SpherePlaneCollision(pOut, pColA, pColB); };

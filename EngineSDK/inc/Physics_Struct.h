@@ -2,10 +2,10 @@
 
 #include "Engine_Define.h"
 #include "Component_Struct.h"
+#include "Engine_Math.h"
 
 NS_BEGIN(Engine)
-
-struct tagColliderData;
+    struct tagColliderData;
 typedef struct tagColliderData COLLIDER_DATA;
 
 struct tagObjectHandle;
@@ -109,6 +109,13 @@ typedef struct PairKeyHash
         return (static_cast<size_t>(k.aKey) << 32) ^ k.bKey;
     }
 }PAIR_KEY_HASH;
+
+typedef struct tagAxisMask
+{
+    bool bX = false;
+    bool bY = false;
+    bool bZ = false;
+}AXIS_MASK;
 
 typedef struct tagSpringJoingInfo
 {

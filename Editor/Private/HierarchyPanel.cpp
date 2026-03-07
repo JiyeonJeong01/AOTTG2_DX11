@@ -354,13 +354,10 @@ void CHierarchyPanel::Draw_DropTarget()
                 switch (rec->eType)
                 {
                 case Engine::ASSET_TYPE::PROTOTYPE:
-                    _DEBUG_INFO("Prototype dropped");
                     break;
                     case Engine::ASSET_TYPE::TEXTURE:
-                    _DEBUG_INFO("Texture dropped");
                     break;
                 default:
-                    _DEBUG_INFO("Other asset dropped");
                     break;
                 }
             }

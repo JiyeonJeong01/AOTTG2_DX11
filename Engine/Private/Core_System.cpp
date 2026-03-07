@@ -118,7 +118,18 @@ void CCore_System::Update_Editor_Engine(_float fDT)
         SYS_COMPONENT.Update_Debug();
         return;
     case SCENE_STATE::PLAY :
-        Update_RuntimeEngine(fDT, pScene);
+        {
+            Update_RuntimeEngine(fDT, pScene);
+            Fixed_Update(m_FIXED_DT);
+
+            //m_fTimeAcc += fDT;
+            //if (m_fTimeAcc >= m_FIXED_DT)
+            //{
+            //    Fixed_Update(m_FIXED_DT);
+
+            //    m_fTimeAcc = 0.f;
+            //}
+        }
         return;
     }
 }
@@ -132,6 +143,15 @@ void CCore_System::Update_Game_Engine(_float fDT)
     SYS_INPUT.Update_System();
     SYS_RENDER.Priority_Update();
     Update_RuntimeEngine(fDT, pScene);
+
+    m_fTimeAcc += fDT;
+    if (m_fTimeAcc >= m_FIXED_DT)
+    {
+        Fixed_Update(m_FIXED_DT);
+
+        m_fTimeAcc = 0.f;
+    }
+
 }
 
 void CCore_System::Fixed_Update(_float fDT)

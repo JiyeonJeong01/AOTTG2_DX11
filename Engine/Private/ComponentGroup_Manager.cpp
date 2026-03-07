@@ -43,7 +43,6 @@ void CComponentGroup_Manager::Add_To_Group(uint32_t iGroupID, COMPONENT_HANDLE h
 {
 	/* Validation check for the provided Group ID. */
     IF_TRUE_RETURN_MSG_BREAK((iGroupID >= SCAST(uint32_t, m_Groups.size())), , "Invalid Group ID access in Add_To_Group.");
-    _DEBUG_INFO("Added to group. GroupID : [ %d ]", iGroupID);
 
 	m_Groups[iGroupID].tExtras.push_back(hNew);
 }

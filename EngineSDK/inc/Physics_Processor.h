@@ -3,10 +3,14 @@
 #include "Component_Pool.h"
 
 #include "Collider.h"
-
+#include "Rigidbody.h"
 
 NS_BEGIN(Engine)
 class CTransform_Processor;
+class CCollision_Detector;
+class CCollider_Proxy_Builder;
+class CRigidbody_Builder;
+class CSolver;
 
 class CPhysics_Processor :  public CComponent_Processor
 {
@@ -29,6 +33,9 @@ public:
     {
         if constexpr (std::is_same_v<TProxy, CCollider>) {
             return m_ColliderPool.Get_Proxy(hComponent);
+        }
+        if constexpr (std::is_same_v<TProxy, CRigidbody>) {
+            return m_RigidbodyPool.Get_Proxy(hComponent);
         }
 
         IF_TRUE_RETURN_MSG_BREAK(true, TProxy{}, "Invalid Proxy Type for this Pool");
@@ -61,21 +68,34 @@ private :
 
 private :
     HRESULT Initialize_From_Spec_Collider(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
+    HRESULT Initialize_From_Spec_Rigidbody(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
     HRESULT Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE h);
 
 public :
 
 private:
-    CTransform_Processor* m_pTransformProcessor{};
-    CComponent_Pool<CCollider>  m_ColliderPool;
+    CComponent_Pool<CCollider>          m_ColliderPool;
+    CComponent_Pool<CRigidbody>         m_RigidbodyPool;
+    std::vector<COLLIDER_PROXY_DATA>    m_AllColliders{}; /* Transient */
 
-    std::unique_ptr<class CCollision_Detector>      m_upCollision_Detector{};
-    std::unique_ptr<class CCollider_Proxy_Builder>   m_upCollider_Builder{};
+    CTransform_Processor*                       m_pTransformProcessor{};
+    std::unique_ptr<CCollision_Detector>        m_upCollision_Detector{};
+    std::unique_ptr<CCollider_Proxy_Builder>    m_upCollider_Builder{};
+    std::unique_ptr<CRigidbody_Builder>         m_upRigidbody_Builder{};
+    std::unique_ptr<CSolver>                    m_upSolver{};
 
-    std::vector<COLLIDER_PROXY_DATA> m_AllColliders{}; /* this tick */
+    const _float    m_fGravity = -9.81f;
+    const _float3   m_vGravity = { 0.f, m_fGravity, 0.f };
+
+private :
+    void    Accumulate_Forces();
+    void    Integrate_Forces(_float fDT);
+    void    Integrate_Velocities(_float fDT);
+    void    Process_Collision(vector<CONTACT_DESC>& outContacts);
 
 public :
     static std::unique_ptr<CPhysics_Processor> Create();
 };
+
 
 NS_END

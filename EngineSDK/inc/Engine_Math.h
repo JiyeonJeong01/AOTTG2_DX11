@@ -161,7 +161,7 @@ namespace Math
     }
 
     // Transpose (상수버퍼 업로드 규칙에 맞춰 사용)
-    inline _matrix TransposeM(_matrix m)
+    inline _matrix Transpose(_matrix m)
     {
         return XMMatrixTranspose(m);
     }
@@ -356,6 +356,26 @@ namespace Math
     inline _vector Cross(_fvector v1, _fvector v2)
     {
         return XMVector3Cross(v1, v2);
+    }
+    inline _bool Is_Zero(_fvector v)
+    {
+        return XMVector3Equal(v, XMVectorZero());
+    }
+
+    inline _bool Is_NearlyZero(_fvector v, _float fEpsilon = 0.0001f)
+    {
+        return XMVector3NearEqual(v, XMVectorZero(), XMVectorReplicate(fEpsilon));
+    }
+    inline _bool Is_Zero(const _float3& v)
+    {
+        return (v.x == 0.0f && v.y == 0.0f && v.z == 0.0f);
+    }
+
+    inline _bool Is_NearlyZero(const _float3& v, _float fEpsilon = 0.0001f)
+    {
+        return (std::abs(v.x) <= fEpsilon &&
+            std::abs(v.y) <= fEpsilon &&
+            std::abs(v.z) <= fEpsilon);
     }
 }
 

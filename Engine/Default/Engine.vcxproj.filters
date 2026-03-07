@@ -163,6 +163,15 @@
     <Filter Include="01. Utility\04. Component\02. Physics\Rigidbody">
       <UniqueIdentifier>{099c066c-9a75-4826-a395-5fcef36dad66}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\04. Component\02. Physics\Workers">
+      <UniqueIdentifier>{2bcf3cac-fca8-4836-be4e-7fb5fa2cf738}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\02. Physics\Workers\Collider">
+      <UniqueIdentifier>{3fbd95d7-2794-4ce0-bdf0-ab85a39921dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\02. Physics\Workers\Rigidbody">
+      <UniqueIdentifier>{7d3bbcb2-4fa0-424e-9b0f-d2168db8e5c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -426,14 +435,23 @@
     <ClInclude Include="..\Public\Collider.h">
       <Filter>01. Utility\04. Component\02. Physics\Collider</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Physics_Processor.h">
-      <Filter>01. Utility\04. Component\02. Physics\Collider</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Collision_Detector.h">
-      <Filter>01. Utility\04. Component\02. Physics\Collider</Filter>
+      <Filter>01. Utility\04. Component\02. Physics\Workers\Collider</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Collider_Proxy_Builder.h">
+      <Filter>01. Utility\04. Component\02. Physics\Workers\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Rigidbody.h">
+      <Filter>01. Utility\04. Component\02. Physics\Rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Physics_Processor.h">
       <Filter>01. Utility\04. Component\02. Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Rigidbody_Builder.h">
+      <Filter>01. Utility\04. Component\02. Physics\Workers\Rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Solver.h">
+      <Filter>01. Utility\04. Component\02. Physics\Workers\Rigidbody</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -584,14 +602,23 @@
     <ClCompile Include="..\Private\Collider.cpp">
       <Filter>01. Utility\04. Component\02. Physics\Collider</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Physics_Processor.cpp">
-      <Filter>01. Utility\04. Component\02. Physics\Collider</Filter>
+    <ClCompile Include="..\Private\Collider_Proxy_Builder.cpp">
+      <Filter>01. Utility\04. Component\02. Physics\Workers\Collider</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Collision_Detector.cpp">
-      <Filter>01. Utility\04. Component\02. Physics\Collider</Filter>
+      <Filter>01. Utility\04. Component\02. Physics\Workers\Collider</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Collider_Proxy_Builder.cpp">
+    <ClCompile Include="..\Private\Rigidbody.cpp">
+      <Filter>01. Utility\04. Component\02. Physics\Rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Physics_Processor.cpp">
       <Filter>01. Utility\04. Component\02. Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Rigidbody_Builder.cpp">
+      <Filter>01. Utility\04. Component\02. Physics\Workers\Rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Solver.cpp">
+      <Filter>01. Utility\04. Component\02. Physics\Workers\Rigidbody</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

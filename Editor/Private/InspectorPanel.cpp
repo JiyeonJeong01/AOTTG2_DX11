@@ -56,8 +56,6 @@ void CInspectorPanel::Set_Target(Engine::CGameObject* pObj)
     if (m_pTarget)
         m_nameBuffer.assign(m_pTarget->Get_Label());
 
-    _DEBUG_INFO("Changed target");
-
     m_bJustStartedNameEdit = false;
 
     m_selectedAsset = ASSET_SELECTION{};

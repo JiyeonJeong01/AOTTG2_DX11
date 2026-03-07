@@ -19,7 +19,7 @@ public :
     void    Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_DATA>& allColliders, _Out_ vector< COLLIDER_PAIR>& outPair);
 
     /* Narrow Phase */
-    void	Process_NarrowPhase(const vector<COLLIDER_PAIR>& pairs);
+    void	Process_NarrowPhase(const vector<COLLIDER_PAIR>& pairs, vector<CONTACT_DESC>& outContacts);
     _bool	Detect_SphereCollision(CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB);
     _bool	Detect_SpherePlaneCollision(CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB);
     _bool	Detect_BoxPlaneCollision(CONTACT_DESC* pOut, COLLIDER_PROXY_DATA* pColA, COLLIDER_PROXY_DATA* pColB);
@@ -32,7 +32,6 @@ public :
 private :
     void Register_DetectTable();
     void Fill_ContactInfo(CONTACT_DESC& outContact);
-    _bool Check_AABB_Overlap(const AABB& a, const AABB& b);
 
 private :
     std::array<std::array<DetectFunc, To<size_t>(SHAPE::END)>, To<size_t>(SHAPE::END)> m_DetectTable{};
@@ -41,9 +40,5 @@ public :
     static std::unique_ptr<CCollision_Detector> Create(CPhysics_Processor* pPhysics);
 
 };
-
-inline _bool CCollision_Detector::Check_AABB_Overlap(const AABB& a, const AABB& b)
-{
-}
 
 NS_END

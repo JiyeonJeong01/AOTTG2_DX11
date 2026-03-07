@@ -174,11 +174,14 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Model.h" />
     <ClInclude Include="..\Public\Physics_Processor.h" />
     <ClInclude Include="..\Public\Render_Context.h" />
+    <ClInclude Include="..\Public\Rigidbody.h" />
+    <ClInclude Include="..\Public\Rigidbody_Builder.h" />
     <ClInclude Include="..\Public\SceneChange_Event.h" />
     <ClInclude Include="..\Public\Script.h" />
     <ClInclude Include="..\Public\Script_Handler.h" />
     <ClInclude Include="..\Public\Script_Processor.h" />
     <ClInclude Include="..\Public\Script_Register.h" />
+    <ClInclude Include="..\Public\Solver.h" />
     <ClInclude Include="..\Public\Spec_Util.h" />
     <ClInclude Include="..\Public\UIButton.h" />
     <ClInclude Include="..\Public\UIImage.h" />
@@ -257,6 +260,9 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Collision_Detector.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
     <ClCompile Include="..\Private\Physics_Processor.cpp" />
+    <ClCompile Include="..\Private\Rigidbody.cpp" />
+    <ClCompile Include="..\Private\Rigidbody_Builder.cpp" />
+    <ClCompile Include="..\Private\Solver.cpp" />
     <ClCompile Include="Raycast.cpp" />
     <Text Include="..\Docs\Script_Doc.md">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

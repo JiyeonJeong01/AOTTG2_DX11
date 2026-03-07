@@ -17,6 +17,8 @@
 #include "BuiltIn_GUID.h"
 #include "Script_Registry.h"
 #include "Collider.h"
+#include "Rigidbody.h"
+#include "Input_System.h"
 
 
 namespace Engine
@@ -43,6 +45,10 @@ CMainApp::~CMainApp()
     SYS_CORE.DestroyInstance();
 }
 
+static CGameObject* pObject1 = nullptr;
+static CGameObject* pObject2 = nullptr;
+
+
 HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 {
     if (FAILED(SYS_CORE.Initialize_Engine(EngineDesc, &m_pDevice, &m_pContext)))
@@ -53,16 +59,18 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
     ASSET_GUID default_mat("B69F88A4-F574-48AC-BD74-8410EA2AA6BB");
 
     /* TEST : Create GameObject with various components */
-    Engine::CGameObject* pGO = nullptr;
-    Engine::CGameObject* pUO = nullptr;
+    //Engine::CGameObject* pGO = nullptr;
+    //Engine::CGameObject* pUO = nullptr;
     for (int i = 0; i < 1; ++i) {
 
-        for (int j = 0; j < 2; ++j)
+        for (int j = 0; j < 1; ++j)
         {
-            pGO = SYS_GAMEOBJECT.Create_GameObject();
-            pGO->Add_Component<CMeshRenderer>();
-            pGO->Add_Component<CCollider>();
-            auto mr = pGO->Get_Component<CMeshRenderer>();
+            pObject1 = SYS_GAMEOBJECT.Create_GameObject();
+            pObject1->Get_Component<CTransform>().Translate({ 0.f, 5.f, 0.f });
+
+            pObject1->Add_Component<CMeshRenderer>();
+            pObject1->Add_Component<CCollider>();
+            auto mr = pObject1->Get_Component<CMeshRenderer>();
             auto* d = mr._Data();
             d->hMaterial = SYS_RESOURCE.Load_Material(default_mat);
             d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_CUBE);
@@ -70,10 +78,13 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             d->flags = RF_NONE;
 
 
-            auto tr1 = pGO->Get_Component<CTransform>();
-            auto mr1 = pGO->Get_Component<CMeshRenderer>();
-            auto cldr = pGO->Get_Component<CCollider>();
+            auto tr1 = pObject1->Get_Component<CTransform>();
+            auto mr1 = pObject1->Get_Component<CMeshRenderer>();
+            auto cldr = pObject1->Get_Component<CCollider>();
             cldr.Set_Shape(SHAPE::BOX);
+
+            auto rb = pObject1->Add_Component<CRigidbody>();
+            rb.Set_BodyType(BODY_TYPE::DYNAMIC);
 
             tr1->vPosition = { j * 3.f, j * 3.f, j * 2.f};
         }
@@ -98,23 +109,26 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 
         //    tr1->vPosition = { 2 + j * 3.f, j * 3.f, j * 2.f};
         //}
-        //for (int j = 0; j < 1; ++j)
-        //{
-        //    pGO = SYS_GAMEOBJECT.Create_GameObject();
-        //    pGO->Add_Component<CMeshRenderer>();
-        //    pGO->Add_Component<CCollider>();
-        //    auto mr = pGO->Get_Component<CMeshRenderer>();
-        //    auto* d = mr._Data();
-        //    d->hMaterial = SYS_RESOURCE.Load_Material(default_mat);
-        //    d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_RECT);
-        //    d->layer = RENDER_LAYER::NONBLEND;
-        //    d->flags = RF_NONE;
+        for (int j = 0; j < 1; ++j)
+        {
+            pObject2 = SYS_GAMEOBJECT.Create_GameObject();
+            pObject2->Add_Component<CMeshRenderer>();
+            pObject2->Add_Component<CCollider>();
+            pObject2->Get_Component<CCollider>().Set_Shape(SHAPE::PLANE);
+            pObject2->Get_Component<CTransform>().Rotate({ 1.f, 0.f, 0.f }, 90.f);
+            auto rb = pObject2->Add_Component<CRigidbody>();
+            rb.Set_BodyType(BODY_TYPE::STATIC);
+            rb.Set_Gravity(false);
 
+            auto mr = pObject2->Get_Component<CMeshRenderer>();
+            auto* d = mr._Data();
+            d->hMaterial = SYS_RESOURCE.Load_Material(default_mat);
+            d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_RECT);
+            d->layer = RENDER_LAYER::NONBLEND;
+            d->flags = RF_NONE;
 
-        //    auto tr1 = pGO->Get_Component<CTransform>();
-        //    auto mr1 = pGO->Get_Component<CMeshRenderer>();
-        //    auto cldr = pGO->Get_Component<CCollider>();
-        //    cldr.Set_Shape(SHAPE::PLANE);
+        }
+
 
         //    tr1->vPosition = { -2 + j * 3.f, j * 3.f, j * 2.f};
         //}
@@ -168,33 +182,6 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 
 void CMainApp::Update(_float fDT, Engine::APP_MODE eMode)
 {
-    /* Priority_Update */
-
-    /* Update */
-
-    /* Late_Update */
-
-
-
-    /*  Test  */
-
-    if (GetAsyncKeyState('M') & 0x8000)
-    {
-        m_voidEvent.Invoke();
-    }
-    if (GetAsyncKeyState('N') & 0x8000)
-    {
-        m_intFloatEvent.Invoke(0, 2.0);
-    }
-    if (GetAsyncKeyState('B') & 0x8000)
-    {
-        m_intEvent.Invoke(10);
-    }
-    if (GetAsyncKeyState('A') & 0x8000)
-    {
-        //Engine::CGameObject* pObj = CPrototype_System::GetInstance().Clone(testGUID);
-    }
-
     switch (eMode)
     {
     case Engine::APP_MODE::EDITOR_EDIT :
@@ -205,11 +192,35 @@ void CMainApp::Update(_float fDT, Engine::APP_MODE eMode)
         break;
     }
 
+    //const _float fSpeed = 5.f;
+    //if (SYS_INPUT.Get_KeyDown('D'))
+    //{
+    //    pObject1->Get_Component<CRigidbody>().Add_Force({ fSpeed, 0.f, 0.f });
+    //}
+    //if (SYS_INPUT.Get_KeyDown('A'))
+    //{
+    //    pObject1->Get_Component<CRigidbody>().Add_Force({ -fSpeed, 0.f, 0.f });
+    //}
+    //if (SYS_INPUT.Get_KeyDown('W'))
+    //{
+    //    pObject1->Get_Component<CRigidbody>().Add_Force({ 0.f, fSpeed, 0.f });
+    //}
+    //if (SYS_INPUT.Get_KeyDown('S'))
+    //{
+    //    pObject1->Get_Component<CRigidbody>().Add_Force({  0.f, -fSpeed, 0.f });
+    //}
+    //if (SYS_INPUT.Get_KeyDown(VK_SPACE))
+    //{
+    //    pObject1->Get_Component<CRigidbody>().Add_Force({ 0.f, fSpeed * 100.f, 0.f });
+    //}
+
 }
 
 void CMainApp::Fixed_Update(_float fDT)
 {
-    /* Fixed_Update */
+
+
+
 }
 
 HRESULT CMainApp::Render()
