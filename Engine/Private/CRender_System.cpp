@@ -6,6 +6,8 @@
 #include "Event_System.h"
 #include "Resource_System.h"
 #include "WindowResize_Event.h"
+#include "Input_System.h"
+#include "Logger.h"
 
 // proxies
 #include "Transform_Processor.h"
@@ -228,11 +230,15 @@ void CRender_System::Execute_Draw_Canvas(const DRAW_CMD& tCmd)
     IF_NULL_RETURN_MSG_BREAK(pMat->pView, , "pView is nullptr.");
     IF_NULL_RETURN_MSG_BREAK(pMat->pProj, , "pProj is nullptr.");
 
+    D3D11_VIEWPORT vp{};
+    UINT n = 1;
+    m_pContext->RSGetViewports(&n, &vp);
+
     auto gUI = m_upRenderContext->Get_UI_Global();
 
     pMat->pWorld->SetMatrix(reinterpret_cast<const float*>(&matWorld));
-    pMat->pView->SetMatrix(reinterpret_cast<const float*>(&m_gUI.matView));
-    pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&m_gUI.matProj));
+    pMat->pView->SetMatrix(reinterpret_cast<const float*>(&gUI.matView));
+    pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&gUI.matProj));
 
     if (pMat->pColor && pMat->pColor->IsValid())
         pMat->pColor->SetFloatVector(reinterpret_cast<const float*>(&tCmd.canvas.vColor));

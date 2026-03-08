@@ -137,8 +137,6 @@ void CSolver::Solve_Impulse(CONTACT_DESC* pInfo)
 
     _float3 tmpvResolveN;
     Math::Store(tmpvResolveN, vResolveN);
-    LOG_INFO("vResolveN : %.2f, %.2f, %.2f", tmpvResolveN.x, tmpvResolveN.y, tmpvResolveN.z);
-    LOG_INFO("fJ : %.2f", fJ);
 
     if (!Math::Is_Zero(vResolveN * fJ))
     {

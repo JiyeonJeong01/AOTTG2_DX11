@@ -183,7 +183,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
     /* TODO NOTE WARN */
-    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    //SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
     return RegisterClassExW(&wcex);
 }
@@ -196,7 +196,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     Client::g_iWinSizeY = SCAST(_uint, GetSystemMetrics(SM_CYSCREEN));
 
     RECT rc = { 0, 0, SCAST(LONG, Client::g_iWinSizeX), SCAST(LONG, Client::g_iWinSizeY) };
-    DWORD dwStyle = WS_OVERLAPPEDWINDOW;
+    //DWORD dwStyle = WS_OVERLAPPEDWINDOW;
+    DWORD dwStyle = WS_POPUP;
     AdjustWindowRect(&rc, dwStyle, FALSE);
 
     HWND hWnd = CreateWindowW(szWindowClass, szTitle, dwStyle,

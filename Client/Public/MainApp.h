@@ -6,7 +6,7 @@
 
 #include "Event.h"
 #include "Component_Spec.h"
-
+#include "BUTTON_EVENT_DATA.h"
 /* ========================================== */
 
 NS_BEGIN(Engine)
@@ -45,10 +45,25 @@ public :
 private :
     _float4		vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };
 
+
+private :
+    void OnClickTest(BUTTON_EVENT_DATA& eData);
+    void OnHoverTest(BUTTON_EVENT_DATA& eData);
+
     /* ========================================== */
 
 public:
     static unique_ptr<CMainApp> Create(const ENGINE_DESC& EngineDesc);
 };
+
+inline void CMainApp::OnClickTest(BUTTON_EVENT_DATA& eData)
+{
+    LOG_INFO("on click");
+}
+
+inline void CMainApp::OnHoverTest(BUTTON_EVENT_DATA& eData)
+{
+    LOG_INFO("on hover");
+}
 
 NS_END

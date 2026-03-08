@@ -83,11 +83,6 @@ HRESULT CMeshBuilder::Create_Mesh(ID3D11Device* pDevice, const MESH_DESC& tDesc,
         outEntry.minAABB = { fMinX, fMinY, fMinZ };
         outEntry.maxAABB = { fMaxX, fMaxY, fMaxZ };
     }
-
-
-
-
-
     return S_OK;
 }
 

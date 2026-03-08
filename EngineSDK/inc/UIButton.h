@@ -1,12 +1,13 @@
 ﻿#pragma once
 #include "Engine_Define.h"
 #include "CComponent_Proxy_Base.h"
+#include "BUTTON_EVENT_DATA.h"
 
 NS_BEGIN(Engine)
 
 class CUI_Processor;
 
-typedef struct tagUIButtonData
+typedef ENGINE_DLL struct tagUIButtonData
 {
     OBJECT_HANDLE       hObject{};
     _bool               bEnable = false;
@@ -31,10 +32,13 @@ typedef struct tagUIButtonData
     RECT_F   pressedUV{};
 
     uint8_t  visualPriority = 10;
-    uint32_t onClickEventId = 0;
+
+    CEvent<BUTTON_EVENT_DATA&>   OnClick;
+    CEvent<BUTTON_EVENT_DATA&>   OnHover;
+
 } UI_BUTTON_DATA;
 
-class CUIButton final : public CComponent_Proxy_Base<UI_BUTTON_DATA, CUIButton, COMPONENT_TYPE::UI_BUTTON>
+class ENGINE_DLL CUIButton final : public CComponent_Proxy_Base<UI_BUTTON_DATA, CUIButton, COMPONENT_TYPE::UI_BUTTON>
 {
 public:
     using ProcessorType = CUI_Processor;
@@ -49,6 +53,9 @@ public:
     void Set_TargetCanvas(COMPONENT_HANDLE hCanvas);
     void Set_RectTransform(COMPONENT_HANDLE hRectTransform);
     void Set_Interactable(_bool bInteractable);
+
+    CEvent<BUTTON_EVENT_DATA&>& OnClick();
+    CEvent<BUTTON_EVENT_DATA&>& OnHover();
 };
 
 NS_END

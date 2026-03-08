@@ -105,10 +105,8 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec(COMPONENT_TY
             /* TODO 콜라이더 스펙 구현 이후 */
         }
         break;
-
-    default:
-        return nullptr;
     }
+    return nullptr;
 }
 
 void CPhysics_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable)

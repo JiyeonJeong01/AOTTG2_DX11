@@ -453,6 +453,9 @@
     <ClInclude Include="..\Public\Solver.h">
       <Filter>01. Utility\04. Component\02. Physics\Workers\Rigidbody</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BUTTON_EVENT_DATA.h">
+      <Filter>00. System\11. Event\Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">

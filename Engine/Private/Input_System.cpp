@@ -1,6 +1,7 @@
 ﻿#include "Input_System.h"
 
 #include "Engine_Log.h"
+#include "CRender_System.h"
 
 IMPLEMENT_SINGLETON(CInput_System)
 
@@ -54,11 +55,44 @@ void CInput_System::Update_System()
             m_bCurPress[i] = true;
     }
 
-    POINT pt;
-    GetCursorPos(&pt);
-    ScreenToClient(m_hWnd, &m_tMousePos);
+    POINT ptScreen{};
+    GetCursorPos(&ptScreen);
+
+    POINT ptClient = ptScreen;
+    ScreenToClient(m_hWnd, &ptClient);
+    memcpy(&m_tMousePos, &ptClient, sizeof(POINT));
+
+    /* SceneView 기준 게임 좌표 계산 */
+    m_tGameMousePos.x = -1;
+    m_tGameMousePos.y = -1;
+
+    const auto ui = SYS_RENDER.Get_UI_Global();
+
+    if (ui.tSceneView.vSize.x > 0.f && ui.tSceneView.vSize.y > 0.f)
+    {
+        const _float fLocalX = (_float)ptScreen.x - ui.tSceneView.vScreenPos.x;
+        const _float fLocalY = (_float)ptScreen.y - ui.tSceneView.vScreenPos.y;
+
+        if (fLocalX >= 0.f && fLocalY >= 0.f &&
+            fLocalX < ui.tSceneView.vSize.x && fLocalY < ui.tSceneView.vSize.y)
+        {
+            const _float fGameX = fLocalX * (ui.vViewport.x / ui.tSceneView.vSize.x);
+            const _float fGameY = fLocalY * (ui.vViewport.y / ui.tSceneView.vSize.y);
+
+            m_tGameMousePos.x = SCAST(LONG, fGameX);
+            m_tGameMousePos.y = SCAST(LONG, fGameY);
+        }
+    }
 
     m_pMouse->GetDeviceState(sizeof(m_tMouseState), &m_tMouseState);
+
+    if (Get_KeyDown('T'))
+    {
+        LOG_INFO("ptScreen : %ld, %ld", ptScreen.x, ptScreen.y);
+        LOG_INFO("ptClient : %ld, %ld", ptClient.x, ptClient.y);
+        LOG_INFO("ScenePos : %.1f, %.1f", ui.tSceneView.vScreenPos.x, ui.tSceneView.vScreenPos.y);
+        LOG_INFO("GameMouse: %ld, %ld", m_tGameMousePos.x, m_tGameMousePos.y);
+    }
 }
 
 _bool CInput_System::Get_Key(int iKey)
@@ -82,4 +116,9 @@ _bool CInput_System::Get_KeyUp(int iKey)
 const POINT& CInput_System::Get_MousePos() const
 {
     return m_tMousePos;
+}
+
+const POINT& CInput_System::Get_GameMousePos() const
+{
+    return m_tGameMousePos;
 }

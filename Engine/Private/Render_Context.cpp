@@ -151,8 +151,6 @@ std::unique_ptr<CRender_Context> CRender_Context::Create(_uint iWidth, _uint iHe
 
 void CRender_Context::On_Resize(EVENT_DATA& eData)
 {
-    __debugbreak(); // 누가 덮는지 콜스택으로 잡기
-
     assert(eData.eType == EVENT_TYPE::On_Window_Resize);
 
     auto& eResizeData = SCAST(RESIZE_EVENT_DATA&, eData);

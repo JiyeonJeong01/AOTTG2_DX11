@@ -599,6 +599,9 @@ void CInspectorPanel::Draw_ComponentByType(COMPONENT_TYPE eComType)
     case COMPONENT_TYPE::UI_IMAGE:
         Draw_UIImage();
         break;
+    case COMPONENT_TYPE::UI_BUTTON:
+        Draw_UIButton();
+        break;
     }
 }
 
@@ -1606,8 +1609,257 @@ void CInspectorPanel::Draw_UIImage()
 
     ImGui::TreePop();
 }
+
 void CInspectorPanel::Draw_UIButton()
 {
+    CUIButton btn = m_pTarget->Get_Component<CUIButton>();
+    if (!btn.Is_Valid())
+        return;
+
+    UI_BUTTON_DATA* pData = btn._Data();
+    if (!pData)
+        return;
+
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    ImGuiWindow* w = ImGui::GetCurrentWindow();
+    const ImGuiID idHeader = w->GetID("UIButton_Header");
+    ImGui::PushID(idHeader);
+
+    ImGui::AlignTextToFramePadding();
+
+    bool enabled = (pData->bEnable != 0);
+    if (ImGui::Checkbox("##Enable", &enabled))
+    {
+        pData->bEnable = enabled ? 1 : 0;
+    }
+
+    ImGui::SameLine();
+
+    const ImGuiTreeNodeFlags flags =
+        ImGuiTreeNodeFlags_DefaultOpen |
+        ImGuiTreeNodeFlags_Framed |
+        ImGuiTreeNodeFlags_SpanAvailWidth |
+        ImGuiTreeNodeFlags_AllowOverlap;
+
+    const bool open = ImGui::TreeNodeEx("UIButton", flags);
+
+    ImGui::PopID();
+
+    if (!open)
+        return;
+
+    if (pData->bEnable == 0)
+        ImGui::BeginDisabled();
+
+    ImGui::TextUnformatted("Owner Object");
+    ImGui::SameLine();
+    ImGui::Text("%u", pData->hObject.raw);
+
+    ImGui::TextUnformatted("RectTransform");
+    ImGui::SameLine();
+    ImGui::Text("%u", pData->hRectTransform);
+
+    ImGui::TextUnformatted("TargetCanvas");
+    ImGui::SameLine();
+    ImGui::Text("%u", pData->hTargetCanvas);
+
+    {
+        bool interactable = (pData->bInteractable != 0);
+        if (ImGui::Checkbox("Interactable", &interactable))
+        {
+            pData->bInteractable = interactable ? 1 : 0;
+        }
+    }
+
+    {
+        int state = static_cast<int>(pData->eState);
+        ImGui::InputInt("State", &state, 0, 0, ImGuiInputTextFlags_ReadOnly);
+    }
+
+    {
+        int pr = static_cast<int>(pData->visualPriority);
+        if (ImGui::DragInt("VisualPriority", &pr, 1.f, 0, 255))
+        {
+            if (pr < 0) pr = 0;
+            if (pr > 255) pr = 255;
+            pData->visualPriority = static_cast<uint8_t>(pr);
+        }
+    }
+
+    ImGui::SeparatorText("Color");
+
+    {
+        float c[4] = { pData->normal.x, pData->normal.y, pData->normal.z, pData->normal.w };
+        if (ImGui::ColorEdit4("Normal Color", c))
+        {
+            pData->normal = { c[0], c[1], c[2], c[3] };
+        }
+    }
+
+    {
+        float c[4] = { pData->hover.x, pData->hover.y, pData->hover.z, pData->hover.w };
+        if (ImGui::ColorEdit4("Hover Color", c))
+        {
+            pData->hover = { c[0], c[1], c[2], c[3] };
+        }
+    }
+
+    {
+        float c[4] = { pData->pressed.x, pData->pressed.y, pData->pressed.z, pData->pressed.w };
+        if (ImGui::ColorEdit4("Pressed Color", c))
+        {
+            pData->pressed = { c[0], c[1], c[2], c[3] };
+        }
+    }
+
+    {
+        float c[4] = { pData->disabled.x, pData->disabled.y, pData->disabled.z, pData->disabled.w };
+        if (ImGui::ColorEdit4("Disabled Color", c))
+        {
+            pData->disabled = { c[0], c[1], c[2], c[3] };
+        }
+    }
+
+    ImGui::SeparatorText("Texture / UV");
+
+    {
+        uint32_t hTex = pData->normalTex;
+
+        if (ImGui::InputScalar("Normal Texture", ImGuiDataType_U32, &hTex))
+        {
+            pData->normalTex = hTex;
+        }
+
+        Editor_Util::Draw_DropTarget_GUID_Typed(
+            "Normal Texture",
+            "ASSET_GUID",
+            ASSET_TYPE::TEXTURE,
+            [&](const ASSET_GUID& dropped)
+            {
+                const uint32_t newHandle = SYS_RESOURCE.Load_Texture(dropped);
+                if (newHandle != INVALID_HANDLE_UINT && newHandle != pData->normalTex)
+                {
+                    pData->normalTex = newHandle;
+                }
+            },
+            "Drop Normal Texture here"
+        );
+
+        float uv[4] = {
+            pData->normalUV.fLeft,
+            pData->normalUV.fTop,
+            pData->normalUV.fRight,
+            pData->normalUV.fBottom
+        };
+
+        if (ImGui::DragFloat4("Normal UV (L,T,R,B)", uv, 0.001f, 0.f, 1.f, "%.3f"))
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                if (uv[i] < 0.f) uv[i] = 0.f;
+                if (uv[i] > 1.f) uv[i] = 1.f;
+            }
+
+            pData->normalUV = { uv[0], uv[1], uv[2], uv[3] };
+        }
+    }
+
+    {
+        uint32_t hTex = pData->hoverTex;
+
+        if (ImGui::InputScalar("Hover Texture", ImGuiDataType_U32, &hTex))
+        {
+            pData->hoverTex = hTex;
+        }
+
+        Editor_Util::Draw_DropTarget_GUID_Typed(
+            "Hover Texture",
+            "ASSET_GUID",
+            ASSET_TYPE::TEXTURE,
+            [&](const ASSET_GUID& dropped)
+            {
+                const uint32_t newHandle = SYS_RESOURCE.Load_Texture(dropped);
+                if (newHandle != INVALID_HANDLE_UINT && newHandle != pData->hoverTex)
+                {
+                    pData->hoverTex = newHandle;
+                }
+            },
+            "Drop Hover Texture here"
+        );
+
+        float uv[4] = {
+            pData->hoverUV.fLeft,
+            pData->hoverUV.fTop,
+            pData->hoverUV.fRight,
+            pData->hoverUV.fBottom
+        };
+
+        if (ImGui::DragFloat4("Hover UV (L,T,R,B)", uv, 0.001f, 0.f, 1.f, "%.3f"))
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                if (uv[i] < 0.f) uv[i] = 0.f;
+                if (uv[i] > 1.f) uv[i] = 1.f;
+            }
+
+            pData->hoverUV = { uv[0], uv[1], uv[2], uv[3] };
+        }
+    }
+
+    {
+        uint32_t hTex = pData->pressedTex;
+
+        if (ImGui::InputScalar("Pressed Texture", ImGuiDataType_U32, &hTex))
+        {
+            pData->pressedTex = hTex;
+        }
+
+        Editor_Util::Draw_DropTarget_GUID_Typed(
+            "Pressed Texture",
+            "ASSET_GUID",
+            ASSET_TYPE::TEXTURE,
+            [&](const ASSET_GUID& dropped)
+            {
+                const uint32_t newHandle = SYS_RESOURCE.Load_Texture(dropped);
+                if (newHandle != INVALID_HANDLE_UINT && newHandle != pData->pressedTex)
+                {
+                    pData->pressedTex = newHandle;
+                }
+            },
+            "Drop Pressed Texture here"
+        );
+
+        float uv[4] = {
+            pData->pressedUV.fLeft,
+            pData->pressedUV.fTop,
+            pData->pressedUV.fRight,
+            pData->pressedUV.fBottom
+        };
+
+        if (ImGui::DragFloat4("Pressed UV (L,T,R,B)", uv, 0.001f, 0.f, 1.f, "%.3f"))
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                if (uv[i] < 0.f) uv[i] = 0.f;
+                if (uv[i] > 1.f) uv[i] = 1.f;
+            }
+
+            pData->pressedUV = { uv[0], uv[1], uv[2], uv[3] };
+        }
+    }
+
+    ImGui::SeparatorText("Event");
+
+    ImGui::Text("OnHover Listeners: %zu", pData->OnHover.Get_ListenerCount());
+    ImGui::Text("OnClick Listeners: %zu", pData->OnClick.Get_ListenerCount());
+
+    if (pData->bEnable == 0)
+        ImGui::EndDisabled();
+
+    ImGui::TreePop();
 }
 
 std::unique_ptr<CInspectorPanel> CInspectorPanel::Create(const std::string& strPanelName, CHierarchyPanel* pHierarcy, CProjectPanel* pProject)

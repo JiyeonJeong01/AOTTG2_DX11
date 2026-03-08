@@ -13,12 +13,14 @@
 #include "RectTransform.h"
 #include "Asset_Registry.h"
 #include "Script_Handler.h"
+#include "Input_System.h"
 
 #include "BuiltIn_GUID.h"
 #include "Script_Registry.h"
 #include "Collider.h"
 #include "Rigidbody.h"
-#include "Input_System.h"
+#include "UIButton.h"
+
 
 
 namespace Engine
@@ -47,6 +49,7 @@ CMainApp::~CMainApp()
 
 static CGameObject* pObject1 = nullptr;
 static CGameObject* pObject2 = nullptr;
+static CGameObject* pUI1 = nullptr;
 
 
 HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
@@ -133,16 +136,20 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
         //    tr1->vPosition = { -2 + j * 3.f, j * 3.f, j * 2.f};
         //}
 
-        //{
-        //    pUO = SYS_GAMEOBJECT.Create_GameObjectUI();
-        //    pUO->Add_Component<CCanvasRenderer>();
-        //    auto mr = pUO->Get_Component<CCanvasRenderer>();
-        //    auto* d = mr._Data();
-        //    d->hMaterial = SYS_RESOURCE.Load_Material(DefaultAssetGuid::MATERIAL_VTXTEX);
-        //    d->layer = RENDER_LAYER::NONBLEND;
-        //    d->flags = RF_NONE;
-        //    d->hTexture = SYS_RESOURCE.Load_Texture(tmp);
-        //}
+        {
+            pUI1 = SYS_GAMEOBJECT.Create_GameObjectUI();
+            pUI1->Add_Component<CCanvasRenderer>();
+            auto mr = pUI1->Get_Component<CCanvasRenderer>();
+            auto* d = mr._Data();
+            d->hMaterial = SYS_RESOURCE.Load_Material(DefaultAssetGuid::MATERIAL_VTXTEX);
+            d->layer = RENDER_LAYER::NONBLEND;
+            d->flags = RF_NONE;
+            d->hTexture = SYS_RESOURCE.Load_Texture(tmp);
+            auto btn = pUI1->Add_Component<CUIButton>();
+            btn.OnClick().Add_Listener<CMainApp>(&CMainApp::OnClickTest, this);
+            btn.OnHover().Add_Listener<CMainApp>(&CMainApp::OnHoverTest, this);
+
+        }
 
         //auto tr1 = pGO->Get_Component<CTransform>();
         //auto mr1 = pGO->Get_Component<CMeshRenderer>();

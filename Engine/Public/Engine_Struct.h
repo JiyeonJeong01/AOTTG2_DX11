@@ -80,11 +80,18 @@ namespace  Engine
         _bool operator!=(const tagObjectHandle& other) const { return raw != other.raw; }
     }OBJECT_HANDLE;
 
+    typedef struct tagUIViewportRect
+    {
+        _float2 vScreenPos{};
+        _float2 vSize{};
+    } UI_VIEWPORT_RECT;
+
     typedef struct tagUIGlobal
     {
         _float4x4 matView{};
         _float4x4 matProj{};
         _float2   vViewport{};
+        UI_VIEWPORT_RECT tSceneView{};
         tagUIGlobal()
         {
             XMStoreFloat4x4(&matView, XMMatrixIdentity());

@@ -13,39 +13,45 @@
 #include "Engine_Log.h"
 #include "Input_System.h"
 #include "Component_Spec.h"
+#include "magic_enum.hpp"
 
 NS_BEGIN(Engine)
-
-static inline _float4 Get_State_Color(const UI_BUTTON_DATA& bData)
+    namespace /* --- 내부 Utils --- */
 {
-    switch (bData.eState)
+    static inline _float4 Get_State_Color(const UI_BUTTON_DATA& bData)
     {
-    case UI_BTN_STATE::Normal:   return bData.normal;
-    case UI_BTN_STATE::Hover:    return bData.hover;
-    case UI_BTN_STATE::Pressed:  return bData.pressed;
-    case UI_BTN_STATE::Disabled: return bData.disabled;
-    default:                     return bData.normal;
+        /* 버튼 색 변화 */
+        switch (bData.eState)
+        {
+        case UI_BTN_STATE::Normal:   return bData.normal;
+        case UI_BTN_STATE::Hover:    return bData.hover;
+        case UI_BTN_STATE::Pressed:  return bData.pressed;
+        case UI_BTN_STATE::Disabled: return bData.disabled;
+        default:                     return bData.normal;
+        }
+    }
+
+    static inline void Get_State_Sprite(const UI_BUTTON_DATA& bData, uint32_t& outTex, RECT_F& outUV)
+    {
+        /* 버튼 텍스쳐 변화 */
+        switch (bData.eState)
+        {
+        case UI_BTN_STATE::Hover:
+            outTex = (bData.hoverTex != INVALID_HANDLE_UINT) ? bData.hoverTex : bData.normalTex;
+            outUV = (bData.hoverTex != INVALID_HANDLE_UINT) ? bData.hoverUV : bData.normalUV;
+            break;;
+        case UI_BTN_STATE::Pressed:
+            outTex = (bData.pressedTex != INVALID_HANDLE_UINT) ? bData.pressedTex : bData.normalTex;
+            outUV = (bData.pressedTex != INVALID_HANDLE_UINT) ? bData.pressedUV : bData.normalUV;
+            break;
+        default:
+            outTex = bData.normalTex;
+            outUV = bData.normalUV;
+            break;
+        }
     }
 }
 
-static inline void Get_State_Sprite(const UI_BUTTON_DATA& bData, uint32_t& outTex, RECT_F& outUV)
-{
-    switch (bData.eState)
-    {
-    case UI_BTN_STATE::Hover:
-        outTex = (bData.hoverTex != INVALID_HANDLE_UINT) ? bData.hoverTex : bData.normalTex;
-        outUV = (bData.hoverTex != INVALID_HANDLE_UINT) ? bData.hoverUV : bData.normalUV;
-        break;;
-    case UI_BTN_STATE::Pressed:
-        outTex = (bData.pressedTex != INVALID_HANDLE_UINT) ? bData.pressedTex : bData.normalTex;
-        outUV = (bData.pressedTex != INVALID_HANDLE_UINT) ? bData.pressedUV : bData.normalUV;
-        break;
-    default:
-        outTex = bData.normalTex;
-        outUV = bData.normalUV;
-        break;
-    }
-}
 
 CUI_Processor::CUI_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CComponent_Processor()
@@ -57,10 +63,13 @@ CUI_Processor::~CUI_Processor() = default;
 
 HRESULT CUI_Processor::Initialize()
 {
-    SYS_COMPONENT.Register_InitialSpecFactory<CUIButton, UI_BUTTON_SPEC>(COMPONENT_TYPE::UI_BUTTON);
-    SYS_COMPONENT.Register_InitialSpecFactory<CUIImage, UI_IMAGE_SPEC>(COMPONENT_TYPE::UI_IMAGE);
-    SYS_COMPONENT.Register_BuildSpecFacotry<CUIButton>(COMPONENT_TYPE::UI_BUTTON);
-    SYS_COMPONENT.Register_BuildSpecFacotry<CUIImage>(COMPONENT_TYPE::UI_IMAGE);
+    /* 팩토리 등록 */
+    {
+        SYS_COMPONENT.Register_InitialSpecFactory<CUIButton, UI_BUTTON_SPEC>(COMPONENT_TYPE::UI_BUTTON);
+        SYS_COMPONENT.Register_InitialSpecFactory<CUIImage, UI_IMAGE_SPEC>(COMPONENT_TYPE::UI_IMAGE);
+        SYS_COMPONENT.Register_BuildSpecFacotry<CUIButton>(COMPONENT_TYPE::UI_BUTTON);
+        SYS_COMPONENT.Register_BuildSpecFacotry<CUIImage>(COMPONENT_TYPE::UI_IMAGE);
+    }
 
     m_pRectTransformProcessor = SYS_COMPONENT.Bind_Processor<CRectTransform_Processor>();
     IF_NULL_RETURN_MSG_BREAK(m_pRectTransformProcessor, E_FAIL, "RectTransform processor bind failed");
@@ -176,7 +185,6 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CUI_Processor::Build_Spec(COMPONENT_TYPE eC
         spec.pressedUV = pData->pressedUV;
 
         spec.visualPriority = pData->visualPriority;
-        spec.onClickEventId = pData->onClickEventId;
 
         return std::make_unique<UI_BUTTON_SPEC>(spec);
     }
@@ -241,7 +249,7 @@ void CUI_Processor::Sync_Images_To_Canvas()
                 pData->dirty = false;
                 continue;
             }
-
+            /* 캔버스 렌더러가 참조 중인 텍스쳐 등 정보 변경 */
             pCR->hTexture = pData->hTexture;
             pCR->rcUV = pData->rcUV;
             pCR->vColor = pData->color;
@@ -275,8 +283,12 @@ void CUI_Processor::Update_Buttons(_float fDT)
 {
     UNREFERENCED_PARAMETER(fDT);
 
-    const POINT tMousePos = SYS_INPUT.Get_MousePos();
+    const POINT tMousePos = SYS_INPUT.Get_GameMousePos();
+    if (tMousePos.x < 0 || tMousePos.y < 0)
+        return;
     const _bool bMouseDown = SYS_INPUT.Get_KeyDown(VK_LBUTTON);
+    if (bMouseDown)
+        LOG_INFO("down");
     const _bool bMouseUp = SYS_INPUT.Get_KeyUp(VK_LBUTTON);
 
     const auto& ButtonPages = m_ButtonPool.GetPages();
@@ -293,7 +305,8 @@ void CUI_Processor::Update_Buttons(_float fDT)
             auto* pData = pPage->Get_Ptr(i);
             if (!pData || !pData->bEnable) continue;
 
-            if (!pData->bInteractable)
+            /* 상호작용이 꺼진 버튼 */
+            if (!pData->bInteractable) 
             {
                 if (pData->eState != UI_BTN_STATE::Disabled)
                 {
@@ -317,22 +330,31 @@ void CUI_Processor::Update_Buttons(_float fDT)
                 SCAST(LONG, (vPos.y + vSize.y * 0.5f))
             };
 
+            /* 마우스 오버 감지 */
             const _bool bHit = HitTest_Rect(rcBound, tMousePos);
 
-            UI_BTN_STATE eNext = pData->eState;
+            UI_BTN_STATE ePrev = pData->eState;
+            UI_BTN_STATE eNext = ePrev;
 
-            if (!bHit)
+            if (!bHit) /* 마우스 오버가 아닌 경우 */
             {
                 eNext = UI_BTN_STATE::Normal;
             }
-            else
+            else  /* 마우스 오버된 경우 */
             {
                 eNext = bMouseDown ? UI_BTN_STATE::Pressed : UI_BTN_STATE::Hover;
+                CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
 
-                if (bMouseUp && pData->eState == UI_BTN_STATE::Pressed)
+                if (ePrev == UI_BTN_STATE::Normal && eNext == UI_BTN_STATE::Hover && pObj) /* 오버 */
                 {
-                    // TODO: 이벤트 시스템 연결
-                    // SYS_EVENT.Enqueue(pData->onClickEventId, pData->hObject);
+                    BUTTON_EVENT_DATA onHover{ pObj };
+                    pData->OnHover.Invoke(onHover);
+                }
+                if (bMouseDown && eNext == UI_BTN_STATE::Pressed && pObj) /* 클릭 */
+                {
+                    BUTTON_EVENT_DATA onClick{ pObj };
+                    pData->OnClick.Invoke(onClick);
+                    eNext = UI_BTN_STATE::Hover;
                 }
             }
 
@@ -379,7 +401,6 @@ HRESULT CUI_Processor::Initialize_From_Spec_UIButton(COMPONENT_HANDLE hComponent
     pData->pressedUV = p->pressedUV;
 
     pData->visualPriority = p->visualPriority;
-    pData->onClickEventId = p->onClickEventId;
 
     pData->eState = UI_BTN_STATE::Normal;
 

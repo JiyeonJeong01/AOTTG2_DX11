@@ -132,18 +132,25 @@ void CScenePanel::Draw_Viewport()
         offset.y = (panelH - drawSize.y) * 0.5f;
     }
 
-    /* NOTE : 여기서 이미지 출력 */ 
+    /* NOTE : 여기서 이미지 출력 */
     ImVec2 cursor = ImGui::GetCursorPos();
     ImGui::SetCursorPos(ImVec2(cursor.x + offset.x, cursor.y + offset.y));
 
-    ImVec2 uv0 = ImVec2(0.f, 0.f); // ImVec2 uv0 = ImVec2(0.f, 1.f);
-    ImVec2 uv1 = ImVec2(1.f, 1.f); // ImVec2 uv1 = ImVec2(1.f, 0.f);
+    ImVec2 uv0 = ImVec2(0.f, 0.f);
+    ImVec2 uv1 = ImVec2(1.f, 1.f);
 
     ImGui::Image((ImTextureID)m_pSceneSRV, drawSize, uv0, uv1);
 
-    /* 뷰포트 rect 계산 */
+    /* 방금 그린 Scene 이미지의 실제 화면 rect */
     ImVec2 vpPos = ImGui::GetItemRectMin();
     ImVec2 vpSize = ImGui::GetItemRectSize();
+
+    /* UI 전역 정보 갱신 */
+    auto ui = SYS_RENDER.Contexts()->Get_UI_Global();
+    ui.tSceneView.vScreenPos = { vpPos.x, vpPos.y };
+    ui.tSceneView.vSize = { vpSize.x, vpSize.y };
+    ui.vViewport = { rtW, rtH };
+    SYS_RENDER.Contexts()->Set_UI_Global(ui);
 
     const _matrix matView =  Engine::Math::Load(SYS_RENDER.Contexts()->Get_View());
     const _matrix matProj = Engine::Math::Load(SYS_RENDER.Contexts()->Get_Proj());

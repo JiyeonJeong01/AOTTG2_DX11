@@ -15,6 +15,8 @@ HRESULT CCollider_Proxy_Builder::Initialize()
 {
     m_pTransform_Processor = SYS_COMPONENT.Bind_Processor<CTransform_Processor>();
     IF_NULL_RETURN_MSG_BREAK(m_pTransform_Processor, E_FAIL, "Can't bind transform processor");
+
+    return S_OK;
 }
 
 void CCollider_Proxy_Builder::Build_Collider_Proxy(COLLIDER_DATA* pData, COLLIDER_PROXY_DATA& outProxy)
