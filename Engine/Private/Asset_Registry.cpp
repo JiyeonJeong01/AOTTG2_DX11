@@ -341,6 +341,7 @@ std::filesystem::path CAsset_Registry::Get_Asset_Path(const ASSET_GUID& tGUID)
 void CAsset_Registry::Register_Builtin_Asset()
 {
     Register_Builtin_Inner(DEFAULT_ASSET_GUID::MESH_RECT, ASSET_TYPE::MESH);
+    Register_Builtin_Inner(DEFAULT_ASSET_GUID::MESH_RECT_NORTEX, ASSET_TYPE::MESH);
     Register_Builtin_Inner(DEFAULT_ASSET_GUID::MESH_CUBE, ASSET_TYPE::MESH);
     Register_Builtin_Inner(DEFAULT_ASSET_GUID::MESH_SPHERE, ASSET_TYPE::MESH);
 

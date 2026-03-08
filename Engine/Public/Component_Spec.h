@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Physics_Struct.h"
 #include "Spec_Util.h"
 
 NS_BEGIN(Engine)
@@ -28,65 +29,38 @@ typedef struct ENGINE_DLL tagTransformSpec final : public COMPONENT_SPEC_BASE
 
     _bool FromJson(const json& j) override
     {
-        if (j.contains("Type"))
+        if (!Read_SpecType(j, Get_Type()))
+            return false;
+
+        if (!Read_Vec3(j, "Position", vPosition)) return false;
+        if (!Read_Vec4(j, "Rotation", vRotationQuat)) return false;
+        if (!Read_Vec3(j, "Scale", vScale)) return false;
+
+        /* 안전한 읽기 */
         {
-            const auto t = j["Type"];
-            if (!t.is_number_unsigned())
-                return false;
+            /* scale 0 방지 */ 
+            const _float eps = 1e-6f;
+            if (fabs(vScale.x) < eps) vScale.x = 1.f;
+            if (fabs(vScale.y) < eps) vScale.y = 1.f;
+            if (fabs(vScale.z) < eps) vScale.z = 1.f;
 
-            const _uint type = t.get<_uint>();
-            if (type != SCAST(_uint, Get_Type()))
-                return false;
-        }
+            const _float len2 =
+                vRotationQuat.x * vRotationQuat.x +
+                vRotationQuat.y * vRotationQuat.y +
+                vRotationQuat.z * vRotationQuat.z +
+                vRotationQuat.w * vRotationQuat.w;
 
-        auto read_vec3 = [&](const char* key, _float3& out) -> bool
+            /* vRotationQuat 정규화 */
+            if (len2 < eps)
+                vRotationQuat = { 0,0,0,1 };
+            else
             {
-                if (!j.contains(key))
-                    return true;
-                const auto& a = j.at(key);
-                if (!a.is_array() || a.size() != 3) return false;
-                if (!a[0].is_number() || !a[1].is_number() || !a[2].is_number()) return false;
-
-                out = { a[0].get<_float>(), a[1].get<_float>(), a[2].get<_float>() };
-                return true;
-            };
-
-        auto read_quat = [&](const char* key, _float4& out) -> bool
-            {
-                if (!j.contains(key)) return true;
-                const auto& a = j.at(key);
-                if (!a.is_array() || a.size() != 4) return false;
-                for (int i = 0; i < 4; ++i) if (!a[i].is_number()) return false;
-
-                out = { a[0].get<_float>(), a[1].get<_float>(), a[2].get<_float>(), a[3].get<_float>() };
-                return true;
-            };
-
-        if (!read_vec3("Position", vPosition)) return false;
-        if (!read_quat("Rotation", vRotationQuat)) return false;
-        if (!read_vec3("Scale", vScale)) return false;
-
-        // scale 0 방지
-        const _float eps = 1e-6f;
-        if (fabs(vScale.x) < eps) vScale.x = 1.f;
-        if (fabs(vScale.y) < eps) vScale.y = 1.f;
-        if (fabs(vScale.z) < eps) vScale.z = 1.f;
-
-        const _float len2 =
-            vRotationQuat.x * vRotationQuat.x +
-            vRotationQuat.y * vRotationQuat.y +
-            vRotationQuat.z * vRotationQuat.z +
-            vRotationQuat.w * vRotationQuat.w;
-
-        if (len2 < eps)
-            vRotationQuat = { 0,0,0,1 };
-        else
-        {
-            const _float invLen = 1.f / sqrt(len2);
-            vRotationQuat.x *= invLen;
-            vRotationQuat.y *= invLen;
-            vRotationQuat.z *= invLen;
-            vRotationQuat.w *= invLen;
+                const _float invLen = 1.f / sqrtf(len2);
+                vRotationQuat.x *= invLen;
+                vRotationQuat.y *= invLen;
+                vRotationQuat.z *= invLen;
+                vRotationQuat.w *= invLen;
+            }
         }
 
         return true;
@@ -117,26 +91,13 @@ typedef struct ENGINE_DLL tagRectTransformSpec final : public COMPONENT_SPEC_BAS
 
     _bool FromJson(const json& j) override
     {
-        if (j.contains("Type")) {
-            const auto& t = j.at("Type");
-            if (!t.is_number_unsigned()) return false;
-            if (t.get<_uint>() != SCAST(_uint, Get_Type())) return false;
-        }
+        if (!Read_SpecType(j, Get_Type()))
+            return false;
 
-        auto read_vec2 = [&](const char* key, _float2& out) -> bool
-            {
-                if (!j.contains(key)) return true;
-                const auto& a = j.at(key);
-                if (!a.is_array() || a.size() != 2) return false;
-                if (!a[0].is_number() || !a[1].is_number()) return false;
-                out = { a[0].get<_float>(), a[1].get<_float>() };
-                return true;
-            };
+        if (!Read_Vec2(j, "PosPx", vPosPx)) return false;
+        if (!Read_Vec2(j, "SizePx", vSizePx)) return false;
 
-        if (!read_vec2("PosPx", vPosPx)) return false;
-        if (!read_vec2("SizePx", vSizePx)) return false;
-
-        // 사이즈 0/음수 방지
+        /* 사이즈 0/음수 방지 */ 
         const _float eps = 1e-3f;
         if (!(vSizePx.x > eps)) vSizePx.x = 100.f;
         if (!(vSizePx.y > eps)) vSizePx.y = 100.f;
@@ -169,117 +130,64 @@ typedef struct ENGINE_DLL tagCanvasRendererSpec final : public COMPONENT_SPEC_BA
         return std::make_unique<tagCanvasRendererSpec>(*this);
     }
 
-    void ToJson(json& j) const override {
+    void ToJson(json& j) const override
+    {
         j["Type"] = SCAST(_uint, Get_Type());
-
-        if (materialGUID.Is_Valid())
-            j["MaterialGUID"] = materialGUID.To_String_Utf8();
-        if (textureGUID.Is_Valid())
-            j["TextureGUID"] = textureGUID.To_String_Utf8();
-
-        // Color (Default: White)
-        if (vColor.x != 1.f || vColor.y != 1.f || vColor.z != 1.f || vColor.w != 1.f)
-            j["vColor"] = { vColor.x, vColor.y, vColor.z, vColor.w };
-
-        // UV (Default: 0,0,1,1)
-        if (rcUV.fLeft != 0.f || rcUV.fTop != 0.f || rcUV.fRight != 1.f || rcUV.fBottom != 1.f)
-            j["rcUV"] = { rcUV.fLeft, rcUV.fTop, rcUV.fRight, rcUV.fBottom };
-
-        // Clip (Default: 0,0,0,0)
-        if (rcClip.fLeft != 0.f || rcClip.fTop != 0.f || rcClip.fRight != 0.f || rcClip.fBottom != 0.f)
-            j["rcClip"] = { rcClip.fLeft, rcClip.fTop, rcClip.fRight, rcClip.fBottom };
-
-        if (flags != CF_NONE)
-            j["flags"] = flags;
-
-        if (layer != RENDER_LAYER::UI)
-            j["layer"] = SCAST(_uint, layer);
-
-        if (sortZ != 0.f)
-            j["sortZ"] = sortZ;
-
-        if (!bEnabled)
-            j["bEnabled"] = bEnabled;
+        j["MaterialGUID"] = materialGUID.To_String_Utf8();
+        j["TextureGUID"] = textureGUID.To_String_Utf8();
+        j["vColor"] = { vColor.x, vColor.y, vColor.z, vColor.w };
+        j["rcUV"] = { rcUV.fLeft, rcUV.fTop, rcUV.fRight, rcUV.fBottom };
+        j["rcClip"] = { rcClip.fLeft, rcClip.fTop, rcClip.fRight, rcClip.fBottom };
+        j["flags"] = flags;
+        j["layer"] = SCAST(_uint, layer);
+        j["sortZ"] = sortZ;
+        j["bEnabled"] = bEnabled;
     }
 
     _bool FromJson(const json& j) override
     {
-        if (j.contains("Type"))
-        {
-            const auto& t = j.at("Type");
-            if (!t.is_number_unsigned())
-                return false;
-            if (t.get<_uint>() != SCAST(_uint, Get_Type()))
-                return false;
-        }
+        if (!Read_SpecType(j, Get_Type()))
+            return false;
 
-        auto read_guid = [&](const char* key, ASSET_GUID& out) -> bool
-            {
-                if (!j.contains(key)) return true;
-                const auto& v = j.at(key);
-                if (!v.is_string()) return false;
-                return ASSET_GUID::Try_Utf8_To_GUID(v, out);
-            };
+        if (!Read_GUID(j, "MaterialGUID", materialGUID)) return false;
+        if (!Read_GUID(j, "TextureGUID", textureGUID)) return false;
 
-        auto read_vec4 = [&](const char* key, _float4& out) -> bool
-            {
-                if (!j.contains(key)) return true;
-                const auto& a = j.at(key);
-                if (!a.is_array() || a.size() != 4) return false;
-                for (int i = 0; i < 4; ++i) if (!a[i].is_number()) return false;
-                out = { a[0].get<_float>(), a[1].get<_float>(), a[2].get<_float>(), a[3].get<_float>() };
-                return true;
-            };
+        if (!Read_Vec4(j, "vColor", vColor)) return false;
+        if (!Read_RECTF(j, "rcUV", rcUV)) return false;
+        if (!Read_RECTF(j, "rcClip", rcClip)) return false;
 
-        auto read_rect4 = [&](const char* key, RECT_F& out) -> bool
-            {
-                _float4 v{};
-                if (!read_vec4(key, v)) return false;
-                if (!j.contains(key)) return true;
-                out = { v.x, v.y, v.z, v.w };
-                return true;
-            };
-
-        if (!read_guid("MaterialGUID", materialGUID)) return false;
-        if (!read_guid("TextureGUID", textureGUID)) return false;
-
-        if (!read_vec4("vColor", vColor)) return false;
-        if (!read_rect4("rcUV", rcUV)) return false;
-        if (!read_rect4("rcClip", rcClip)) return false;
-
-        if (j.contains("flags"))
+        if (!j.contains("flags")) return false;
         {
             const auto& v = j.at("flags");
             if (!v.is_number_unsigned()) return false;
             flags = v.get<uint32_t>();
         }
 
-        if (j.contains("layer"))
+        if (!j.contains("layer")) return false;
         {
             const auto& v = j.at("layer");
             if (!v.is_number_unsigned()) return false;
-            layer = (RENDER_LAYER)v.get<uint32_t>();
+            layer = SCAST(RENDER_LAYER, v.get<uint32_t>());
         }
 
-        if (j.contains("sortZ"))
+        if (!j.contains("sortZ")) return false;
         {
             const auto& v = j.at("sortZ");
             if (!v.is_number()) return false;
             sortZ = v.get<_float>();
         }
 
-        if (j.contains("bEnabled"))
+        if (!j.contains("bEnabled")) return false;
         {
             const auto& v = j.at("bEnabled");
             if (!v.is_boolean()) return false;
             bEnabled = v.get<_bool>();
         }
-        else
-        {
-            bEnabled = true;
-        }
 
-        auto clamp01 = [](_float x) -> _float { return x < 0.f ? 0.f : (x > 1.f ? 1.f : x); };
+        auto clamp01 = [](_float x) -> _float
+            {
+                return x < 0.f ? 0.f : (x > 1.f ? 1.f : x);
+            };
 
         vColor.x = clamp01(vColor.x);
         vColor.y = clamp01(vColor.y);
@@ -290,10 +198,11 @@ typedef struct ENGINE_DLL tagCanvasRendererSpec final : public COMPONENT_SPEC_BA
         rcUV.fTop = clamp01(rcUV.fTop);
         rcUV.fRight = clamp01(rcUV.fRight);
         rcUV.fBottom = clamp01(rcUV.fBottom);
-        if (rcUV.fLeft > rcUV.fRight)  std::swap(rcUV.fLeft, rcUV.fRight);
+
+        if (rcUV.fLeft > rcUV.fRight) std::swap(rcUV.fLeft, rcUV.fRight);
         if (rcUV.fTop > rcUV.fBottom) std::swap(rcUV.fTop, rcUV.fBottom);
 
-        sortZ = clamp01(sortZ);
+        sortZ = Clamp01(sortZ);
 
         return true;
     }
@@ -306,10 +215,8 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
 
     ASSET_GUID  meshGUID{};
     ASSET_GUID  materialGUID{};
-
     uint32_t    flags = RF_NONE;
     RENDER_LAYER layer = RENDER_LAYER::NONBLEND;
-
     _float      sortZ = 0.f;
     _bool       bEnabled = true;
 
@@ -321,97 +228,33 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
     void ToJson(json& j) const override
     {
         j["Type"] = SCAST(_uint, Get_Type());
-
-        if (meshGUID.Is_Valid())
-            j["MeshGUID"] = meshGUID.To_String_Utf8();
-        if (materialGUID.Is_Valid())
-            j["MaterialGUID"] = materialGUID.To_String_Utf8();
-
+        j["MeshGUID"] = meshGUID.To_String_Utf8();
+        j["MaterialGUID"] = materialGUID.To_String_Utf8();
         j["Flags"] = flags;
         j["Layer"] = SCAST(uint32_t, layer);
         j["SortZ"] = sortZ;
-
-        if (!bEnabled)
-            j["bEnabled"] = bEnabled;
+        j["bEnabled"] = bEnabled;
     }
 
     _bool FromJson(const json& j) override
     {
-        if (j.contains("Type"))
+        if (!Read_SpecType(j, Get_Type()))
+            return false;
+        if (!Read_GUID(j, "MeshGUID", meshGUID)) return false;
+        if (!Read_GUID(j, "MaterialGUID", materialGUID)) return false;
+        if (!Read_UInt(j, "Flags", flags))
+            return false;
         {
-            const auto& t = j.at("Type");
-            if (!t.is_number_unsigned())
+            uint32_t layerValue = 0;
+            if (!Read_UInt(j, "Layer", layerValue))
                 return false;
-            if (t.get<_uint>() != SCAST(_uint, Get_Type()))
-                return false;
+            layer = SCAST(RENDER_LAYER, layerValue);
         }
-
-        auto read_guid = [&](const char* key, ASSET_GUID& out) -> bool
-            {
-                if (!j.contains(key)) return true;
-                const auto& v = j.at(key);
-                if (!v.is_string()) return false;
-                return ASSET_GUID::Try_Utf8_To_GUID(v, out);
-            };
-
-        auto read_vec4 = [&](const char* key, _float4& out) -> bool
-            {
-                if (!j.contains(key)) return true;
-                const auto& a = j.at(key);
-                if (!a.is_array() || a.size() != 4) return false;
-                for (int i = 0; i < 4; ++i) if (!a[i].is_number()) return false;
-                out = { a[0].get<_float>(), a[1].get<_float>(), a[2].get<_float>(), a[3].get<_float>() };
-                return true;
-            };
-
-        auto read_rect4 = [&](const char* key, RECT_F& out) -> bool
-            {
-                _float4 v{};
-                if (!read_vec4(key, v)) return false;
-                if (!j.contains(key)) return true; 
-                out = { v.x, v.y, v.z, v.w };
-                return true;
-            };
-
-        if (!read_guid("MeshGUID", meshGUID)) return false; 
-        if (!read_guid("MaterialGUID", materialGUID)) return false;
-
-        if (j.contains("flags"))
-        {
-            const auto& v = j.at("flags");
-            if (!v.is_number_unsigned()) return false;
-            flags = v.get<uint32_t>();
-        }
-
-        if (j.contains("layer"))
-        {
-            const auto& v = j.at("layer");
-            if (!v.is_number_unsigned()) return false;
-            layer = (RENDER_LAYER)v.get<uint32_t>();
-        }
-
-        if (j.contains("sortZ"))
-        {
-            const auto& v = j.at("sortZ");
-            if (!v.is_number()) return false;
-            sortZ = v.get<_float>();
-        }
-
-        if (j.contains("bEnabled"))
-        {
-            const auto& v = j.at("bEnabled");
-            if (!v.is_boolean()) return false;
-            bEnabled = v.get<_bool>();
-        }
-        else
-        {
-            bEnabled = true;
-        }
-
-        auto clamp01 = [](_float x) -> _float { return x < 0.f ? 0.f : (x > 1.f ? 1.f : x); };
-
-        sortZ = clamp01(sortZ);
-
+        if (!Read_Float(j, "SortZ", sortZ))
+            return false;
+        if (!Read_Bool(j, "bEnabled", bEnabled))
+            return false;
+        sortZ = Clamp01(sortZ);
         return true;
     }
 } MESH_RENDERER_SPEC;
@@ -438,15 +281,15 @@ typedef struct tagScriptSpec final : public COMPONENT_SPEC_BASE
 
     _bool FromJson(const json& j) override
     {
-        try
-        {
-            if (j.contains("ScriptGuid"))
-                 ASSET_GUID::Try_Utf8_To_GUID(j["ScriptGuid"], scriptGuid);
-            if (j.contains("Enabled"))
-                bEnable = j["Enabled"];
-            return true;
-        }
-        catch (...) { return false; }
+        if (!Read_SpecType(j, Get_Type()))
+            return false;
+
+        if (!Read_GUID(j, "ScriptGuid", scriptGuid))
+            return false;
+        if (!Read_Bool(j, "Enabled", bEnable))
+            return false;
+
+        return true;
     }
 } SCRIPT_SPEC;
 
@@ -454,7 +297,7 @@ typedef struct ENGINE_DLL tagCameraSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::CAMERA)
 
-    _bool   bOrthographic = false;
+        _bool   bOrthographic = false;
     _float  fovy = 60.f;          /* degrees */
     _float  orthoSize = 5.f;
     _float  aspect = 16.f / 9.f;
@@ -485,22 +328,39 @@ typedef struct ENGINE_DLL tagCameraSpec final : public COMPONENT_SPEC_BASE
 
     _bool FromJson(const json& j) override
     {
-        try
-        {
-            if (j.contains("Ortho")) bOrthographic = j["Ortho"];
-            if (j.contains("Fovy")) fovy = j["Fovy"];
-            if (j.contains("OrthoSize")) orthoSize = j["OrthoSize"];
-            if (j.contains("Aspect")) aspect = j["Aspect"];
-            if (j.contains("Near")) zNear = j["Near"];
-            if (j.contains("Far")) zFar = j["Far"];
-            if (j.contains("LayerMask")) layerMask = j["LayerMask"];
-            if (j.contains("Enabled")) bEnabled = j["Enabled"];
-            return true;
-        }
-        catch (...)
-        {
+        if (!Read_SpecType(j, Get_Type()))
             return false;
+
+        if (!Read_Bool(j, "Ortho", bOrthographic))
+            return false;
+        if (!Read_Float(j, "Fovy", fovy))
+            return false;
+        if (!Read_Float(j, "OrthoSize", orthoSize))
+            return false;
+        if (!Read_Float(j, "Aspect", aspect))
+            return false;
+        if (!Read_Float(j, "Near", zNear))
+            return false;
+        if (!Read_Float(j, "Far", zFar))
+            return false;
+        if (!Read_UInt(j, "LayerMask", layerMask))
+            return false;
+
+        {
+            uint32_t iEnabled = 0;
+            if (!Read_UInt(j, "Enabled", iEnabled))
+                return false;
+
+            bEnabled = (iEnabled != 0) ? 1 : 0;
         }
+
+        if (!(fovy > 0.f))       fovy = 60.f;
+        if (!(orthoSize > 0.f))  orthoSize = 5.f;
+        if (!(aspect > 0.f))     aspect = 16.f / 9.f;
+        if (!(zNear > 0.f))      zNear = 0.1f;
+        if (!(zFar > zNear))     zFar = zNear + 1000.f;
+
+        return true;
     }
 } CAMERA_SPEC;
 
@@ -514,7 +374,7 @@ typedef struct ENGINE_DLL tagLightSpec final : public COMPONENT_SPEC_BASE
 
     _float4     vColor = { 1.f, 1.f, 1.f, 0.f };
     _float4     vDirection = { 0.f, -1.f, 0.f, 0.f };
-    _float4     vPosition{}; 
+    _float4     vPosition{};
     _float      fRange = 10.f;
     _float      spotAngle = 30.f;
 
@@ -535,13 +395,13 @@ typedef struct ENGINE_DLL tagLightSpec final : public COMPONENT_SPEC_BASE
         j["Type"] = SCAST(_uint, Get_Type());
 
         j["LightType"] = SCAST(_uint, type);
-        j["Enabled"] = bEnabled;
+        j["Enabled"] = SCAST(_uint, bEnabled);
         j["Range"] = fRange;
         j["SpotAngle"] = spotAngle;
 
         j["Color"] = { vColor.x, vColor.y, vColor.z, vColor.w };
-        j["Direction"] = { vDirection.x, vDirection.y, vDirection.z, 0.f };
-        j["Position"] = { vPosition.x, vPosition.y, vPosition.z, 1.f };
+        j["Direction"] = { vDirection.x, vDirection.y, vDirection.z, vDirection.w };
+        j["Position"] = { vPosition.x, vPosition.y, vPosition.z, vPosition.w };
 
         j["Diffuse"] = { vDiffuse.x, vDiffuse.y, vDiffuse.z, vDiffuse.w };
         j["Ambient"] = { vAmbient.x, vAmbient.y, vAmbient.z, vAmbient.w };
@@ -550,39 +410,71 @@ typedef struct ENGINE_DLL tagLightSpec final : public COMPONENT_SPEC_BASE
 
     _bool FromJson(const json& j) override
     {
-        try
-        {
-            if (j.contains("LightType")) type = SCAST(LIGHT_TYPE, (_uint)j["LightType"]);
-            if (j.contains("Enabled"))   bEnabled = j["Enabled"];
-            if (j.contains("Range"))     fRange = j["Range"];
-            if (j.contains("SpotAngle")) spotAngle = j["SpotAngle"];
-
-            auto read_vec4 = [&](const char* key, _float4& out)->_bool
-                {
-                    if (!j.contains(key) || !j[key].is_array() || j[key].size() < 4) return false;
-                    out = { j[key][0], j[key][1], j[key][2], j[key][3] };
-                    return true;
-                };
-
-            if (j.contains("Color") && j["Color"].is_array() && j["Color"].size() >= 4)
-                vColor = { j["Color"][0], j["Color"][1], j["Color"][2], j["Color"][3] };
-
-            if (j.contains("Direction") && j["Direction"].is_array() && j["Direction"].size() >= 3)
-                vDirection = { j["Direction"][0], j["Direction"][1], j["Direction"][2], 0.f };
-
-            if (j.contains("Position") && j["Position"].is_array() && j["Position"].size() >= 3)
-                vPosition = { j["Position"][0], j["Position"][1], j["Position"][2], 1.f };
-
-            if (!read_vec4("Diffuse", vDiffuse))  return false;
-            if (!read_vec4("Ambient", vAmbient))  return false;
-            if (!read_vec4("Specular", vSpecular)) return false;
-
-            return true;
-        }
-        catch (...)
-        {
+        if (!Read_SpecType(j, Get_Type()))
             return false;
+
+        {
+            uint32_t iType = 0;
+            if (!Read_UInt(j, "LightType", iType))
+                return false;
+            type = SCAST(LIGHT_TYPE, iType);
         }
+
+        {
+            uint32_t iEnabled = 0;
+            if (!Read_UInt(j, "Enabled", iEnabled))
+                return false;
+            bEnabled = (iEnabled != 0) ? 1 : 0;
+        }
+
+        if (!Read_Float(j, "Range", fRange))
+            return false;
+        if (!Read_Float(j, "SpotAngle", spotAngle))
+            return false;
+
+        if (!Read_Vec4(j, "Color", vColor))
+            return false;
+        if (!Read_Vec4(j, "Direction", vDirection))
+            return false;
+        if (!Read_Vec4(j, "Position", vPosition))
+            return false;
+
+        if (!Read_Vec4(j, "Diffuse", vDiffuse))
+            return false;
+        if (!Read_Vec4(j, "Ambient", vAmbient))
+            return false;
+        if (!Read_Vec4(j, "Specular", vSpecular))
+            return false;
+
+        vColor.x = Clamp01(vColor.x);
+        vColor.y = Clamp01(vColor.y);
+        vColor.z = Clamp01(vColor.z);
+        vColor.w = Clamp01(vColor.w);
+
+        vDiffuse.x = Clamp01(vDiffuse.x);
+        vDiffuse.y = Clamp01(vDiffuse.y);
+        vDiffuse.z = Clamp01(vDiffuse.z);
+        vDiffuse.w = Clamp01(vDiffuse.w);
+
+        vAmbient.x = Clamp01(vAmbient.x);
+        vAmbient.y = Clamp01(vAmbient.y);
+        vAmbient.z = Clamp01(vAmbient.z);
+        vAmbient.w = Clamp01(vAmbient.w);
+
+        vSpecular.x = Clamp01(vSpecular.x);
+        vSpecular.y = Clamp01(vSpecular.y);
+        vSpecular.z = Clamp01(vSpecular.z);
+        vSpecular.w = Clamp01(vSpecular.w);
+
+        if (!(fRange > 0.f))
+            fRange = 10.f;
+
+        if (!(spotAngle > 0.f))
+            spotAngle = 30.f;
+
+        dirty = true;
+
+        return true;
     }
 } LIGHT_SPEC;
 
@@ -590,7 +482,7 @@ typedef struct tagUIImageSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::UI_IMAGE)
 
-    RECT_F      rcUV{};
+        RECT_F      rcUV{};
     _float4     color{ 1,1,1,1 };
 
     ASSET_GUID  textureGuid{};
@@ -608,25 +500,48 @@ typedef struct tagUIImageSpec final : public COMPONENT_SPEC_BASE
     {
         j["Type"] = SCAST(_uint, Get_Type());
         j["Enabled"] = bEnable;
-
-        Guid_ToJson(j["TextureGuid"], textureGuid);
-        RectF_ToJson(j["UV"], rcUV);
-        Float4_ToJson(j["Color"], color);
-        j["VisualPriority"] = visualPriority;
+        j["TextureGuid"] = textureGuid.To_String_Utf8();
+        j["UV"] = { rcUV.fLeft, rcUV.fTop, rcUV.fRight, rcUV.fBottom };
+        j["Color"] = { color.x, color.y, color.z, color.w };
+        j["VisualPriority"] = SCAST(_uint, visualPriority);
     }
 
     _bool FromJson(const json& j) override
     {
-        try
+        if (!Read_SpecType(j, Get_Type()))
+            return false;
+        if (!Read_Bool(j, "Enabled", bEnable))
+            return false;
+        if (!Read_GUID(j, "TextureGuid", textureGuid))
+            return false;
+        if (!Read_RECTF(j, "UV", rcUV))
+            return false;
+        if (!Read_Vec4(j, "Color", color))
+            return false;
+
         {
-            if (j.contains("Enabled"))        bEnable = j["Enabled"];
-            if (j.contains("TextureGuid"))    Guid_FromJson(j["TextureGuid"], textureGuid);
-            if (j.contains("UV"))             RectF_FromJson(j["UV"], rcUV);
-            if (j.contains("Color"))          Float4_FromJson(j["Color"], color);
-            if (j.contains("VisualPriority")) visualPriority = j["VisualPriority"];
-            return true;
+            uint32_t iVisualPriority = 0;
+            if (!Read_UInt(j, "VisualPriority", iVisualPriority))
+                return false;
+
+            visualPriority = SCAST(uint8_t, iVisualPriority);
         }
-        catch (...) { return false; }
+
+        color.x = Clamp01(color.x);
+        color.y = Clamp01(color.y);
+        color.z = Clamp01(color.z);
+        color.w = Clamp01(color.w);
+
+        rcUV.fLeft = Clamp01(rcUV.fLeft);
+        rcUV.fTop = Clamp01(rcUV.fTop);
+        rcUV.fRight = Clamp01(rcUV.fRight);
+        rcUV.fBottom = Clamp01(rcUV.fBottom);
+
+        if (rcUV.fLeft > rcUV.fRight)
+            std::swap(rcUV.fLeft, rcUV.fRight);
+        if (rcUV.fTop > rcUV.fBottom)
+            std::swap(rcUV.fTop, rcUV.fBottom);
+        return true;
     }
 } UI_IMAGE_SPEC;
 
@@ -635,7 +550,7 @@ typedef struct tagUIButtonSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::UI_BUTTON)
 
-    _float4 normal{ 1,1,1,1 };
+        _float4 normal{ 1,1,1,1 };
     _float4 hover{ 1,1,1,1 };
     _float4 pressed{ 1,1,1,1 };
     _float4 disabled{ 1,1,1,1 };
@@ -664,57 +579,327 @@ typedef struct tagUIButtonSpec final : public COMPONENT_SPEC_BASE
         j["Enabled"] = bEnable;
         j["Interactable"] = bInteractable;
 
-        Float4_ToJson(j["NormalColor"], normal);
-        Float4_ToJson(j["HoverColor"], hover);
-        Float4_ToJson(j["PressedColor"], pressed);
-        Float4_ToJson(j["DisabledColor"], disabled);
+        j["NormalColor"] = { normal.x, normal.y, normal.z, normal.w };
+        j["HoverColor"] = { hover.x, hover.y, hover.z, hover.w };
+        j["PressedColor"] = { pressed.x, pressed.y, pressed.z, pressed.w };
+        j["DisabledColor"] = { disabled.x, disabled.y, disabled.z, disabled.w };
 
-        Guid_ToJson(j["NormalTexGuid"], normalTexGuid);  RectF_ToJson(j["NormalUV"], normalUV);
-        Guid_ToJson(j["HoverTexGuid"], hoverTexGuid);    RectF_ToJson(j["HoverUV"], hoverUV);
-        Guid_ToJson(j["PressedTexGuid"], pressedTexGuid); RectF_ToJson(j["PressedUV"], pressedUV);
+        j["NormalTexGuid"] = normalTexGuid.To_String_Utf8();
+        j["NormalUV"] = { normalUV.fLeft, normalUV.fTop, normalUV.fRight, normalUV.fBottom };
 
-        j["VisualPriority"] = visualPriority;
+        j["HoverTexGuid"] = hoverTexGuid.To_String_Utf8();
+        j["HoverUV"] = { hoverUV.fLeft, hoverUV.fTop, hoverUV.fRight, hoverUV.fBottom };
+
+        j["PressedTexGuid"] = pressedTexGuid.To_String_Utf8();
+        j["PressedUV"] = { pressedUV.fLeft, pressedUV.fTop, pressedUV.fRight, pressedUV.fBottom };
+
+        j["VisualPriority"] = SCAST(_uint, visualPriority);
         j["OnClickEventId"] = onClickEventId;
     }
 
     _bool FromJson(const json& j) override
     {
-        try
+        if (!Read_SpecType(j, Get_Type()))
+            return false;
+
+        if (!Read_Bool(j, "Enabled", bEnable))
+            return false;
+        if (!Read_Bool(j, "Interactable", bInteractable))
+            return false;
+
+        if (!Read_Vec4(j, "NormalColor", normal))
+            return false;
+        if (!Read_Vec4(j, "HoverColor", hover))
+            return false;
+        if (!Read_Vec4(j, "PressedColor", pressed))
+            return false;
+        if (!Read_Vec4(j, "DisabledColor", disabled))
+            return false;
+
+        if (!Read_GUID(j, "NormalTexGuid", normalTexGuid))
+            return false;
+        if (!Read_RECTF(j, "NormalUV", normalUV))
+            return false;
+
+        if (!Read_GUID(j, "HoverTexGuid", hoverTexGuid))
+            return false;
+        if (!Read_RECTF(j, "HoverUV", hoverUV))
+            return false;
+
+        if (!Read_GUID(j, "PressedTexGuid", pressedTexGuid))
+            return false;
+        if (!Read_RECTF(j, "PressedUV", pressedUV))
+            return false;
+
+        if (!Read_UInt(j, "OnClickEventId", onClickEventId))
+            return false;
+
         {
-            if (j.contains("Enabled"))        bEnable = j["Enabled"];
-            if (j.contains("Interactable"))   bInteractable = j["Interactable"];
+            uint32_t iVisualPriority = 0;
+            if (!Read_UInt(j, "VisualPriority", iVisualPriority))
+                return false;
 
-            if (j.contains("NormalColor"))    Float4_FromJson(j["NormalColor"], normal);
-            if (j.contains("HoverColor"))     Float4_FromJson(j["HoverColor"], hover);
-            if (j.contains("PressedColor"))   Float4_FromJson(j["PressedColor"], pressed);
-            if (j.contains("DisabledColor"))  Float4_FromJson(j["DisabledColor"], disabled);
+            if (iVisualPriority > 255u)
+                return false;
 
-            if (j.contains("NormalTexGuid"))  Guid_FromJson(j["NormalTexGuid"], normalTexGuid);
-            if (j.contains("NormalUV"))       RectF_FromJson(j["NormalUV"], normalUV);
-
-            if (j.contains("HoverTexGuid"))   Guid_FromJson(j["HoverTexGuid"], hoverTexGuid);
-            if (j.contains("HoverUV"))        RectF_FromJson(j["HoverUV"], hoverUV);
-
-            if (j.contains("PressedTexGuid")) Guid_FromJson(j["PressedTexGuid"], pressedTexGuid);
-            if (j.contains("PressedUV"))      RectF_FromJson(j["PressedUV"], pressedUV);
-
-            if (j.contains("VisualPriority")) visualPriority = j["VisualPriority"];
-            if (j.contains("OnClickEventId")) onClickEventId = j["OnClickEventId"];
-
-            return true;
+            visualPriority = SCAST(uint8_t, iVisualPriority);
         }
-        catch (...) { return false; }
+
+        Sanitize_Color(normal);
+        Sanitize_Color(hover);
+        Sanitize_Color(pressed);
+        Sanitize_Color(disabled);
+
+        Sanitize_UVRect(normalUV);
+        Sanitize_UVRect(hoverUV);
+        Sanitize_UVRect(pressedUV);
+
+        return true;
     }
 } UI_BUTTON_SPEC;
 
 
+typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
+{
+    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::COLLIDER)
 
+    _bool       bEnable = false;
+    BODY_TYPE   eColType{ BODY_TYPE::STATIC };
+    _bool       bOnCol{ false };
 
+    SHAPE       eShape{ SHAPE::END };
+    _float3     vOffset{ 0.f, 0.f, 0.f };
 
+    _float3     vHalfExtentsLocal{ 0.5f, 0.5f, 0.5f };      /* BOX */
+    _float      fRadiusLocal = 0.5f;                                /* SPHERE */
 
+    _float3     vNormalLocal{ 0.f, 1.f, 0.f };              /* PLANE */
+    _float      fDistance = 0.f;
+    _bool       bInfinite = true;
+    _float2     vDimension{ 1.f, 1.f };
 
+    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
+    {
+        return std::make_unique<tagColliderSpec>(*this);
+    }
 
+    void ToJson(json& j) const override
+    {
+        j["Type"] = SCAST(_uint, Get_Type());
+        j["Enabled"] = bEnable;
+        j["BodyType"] = SCAST(_uint, eColType);
+        j["OnCol"] = bOnCol;
+        j["Shape"] = SCAST(_uint, eShape);
+        j["Offset"] = { vOffset.x, vOffset.y, vOffset.z };
 
+        switch (eShape)
+        {
+        case SHAPE::BOX:
+            j["HalfExtentsLocal"] = { vHalfExtentsLocal.x, vHalfExtentsLocal.y, vHalfExtentsLocal.z };
+            break;
+
+        case SHAPE::SPHERE:
+            j["RadiusLocal"] = fRadiusLocal;
+            break;
+
+        case SHAPE::PLANE:
+            j["NormalLocal"] = { vNormalLocal.x, vNormalLocal.y, vNormalLocal.z };
+            j["Distance"] = fDistance;
+            j["Infinite"] = bInfinite;
+            j["Dimension"] = { vDimension.x, vDimension.y };
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    _bool FromJson(const json& j) override
+    {
+        if (!Read_SpecType(j, Get_Type()))
+            return false;
+
+        if (!Read_Bool(j, "Enabled", bEnable))
+            return false;
+
+        {
+            uint32_t iBodyType = 0;
+            if (!Read_UInt(j, "BodyType", iBodyType))
+                return false;
+            eColType = SCAST(BODY_TYPE, iBodyType);
+        }
+
+        if (!Read_Bool(j, "OnCol", bOnCol))
+            return false;
+
+        {
+            uint32_t iShape = 0;
+            if (!Read_UInt(j, "Shape", iShape))
+                return false;
+            eShape = SCAST(SHAPE, iShape);
+        }
+
+        if (!Read_Vec3(j, "Offset", vOffset))
+            return false;
+
+        switch (eShape)
+        {
+        case SHAPE::BOX:
+            if (!Read_Vec3(j, "HalfExtentsLocal", vHalfExtentsLocal))
+                return false;
+
+            if (!(vHalfExtentsLocal.x > 0.f)) vHalfExtentsLocal.x = 0.5f;
+            if (!(vHalfExtentsLocal.y > 0.f)) vHalfExtentsLocal.y = 0.5f;
+            if (!(vHalfExtentsLocal.z > 0.f)) vHalfExtentsLocal.z = 0.5f;
+            break;
+
+        case SHAPE::SPHERE:
+            if (!Read_Float(j, "RadiusLocal", fRadiusLocal))
+                return false;
+
+            if (!(fRadiusLocal > 0.f)) fRadiusLocal = 0.5f;
+            break;
+
+        case SHAPE::PLANE:
+            if (!Read_Vec3(j, "NormalLocal", vNormalLocal))
+                return false;
+            if (!Read_Float(j, "Distance", fDistance))
+                return false;
+            if (!Read_Bool(j, "Infinite", bInfinite))
+                return false;
+            if (!Read_Vec2(j, "Dimension", vDimension))
+                return false;
+
+            if (!(vDimension.x > 0.f)) vDimension.x = 1.f;
+            if (!(vDimension.y > 0.f)) vDimension.y = 1.f;
+            break;
+
+        default:
+            return false;
+        }
+
+        return true;
+    }
+} COLLIDER_SPEC;
+
+typedef struct ENGINE_DLL tagRigidbodySpec final : public COMPONENT_SPEC_BASE
+{
+    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::RIGIDBODY)
+
+    _bool       bEnable = true;
+    _bool       bGravity = true;
+    uint8_t     pad0[2] = {};
+
+    SHAPE       eShape = SHAPE::END;
+    BODY_TYPE   eBodyType = BODY_TYPE::STATIC;
+
+    _float      fMass = 1.f;
+    _float      fDrag = 0.f;
+    _float      fAngularDrag = 0.f;
+
+    _float      fRestitution = 0.f;
+    _float      fFriction = 1.f;
+
+    AXIS_MASK   tRotationLock{};
+    AXIS_MASK   tPositionLock{};
+
+    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
+    {
+        return std::make_unique<tagRigidbodySpec>(*this);
+    }
+
+    void ToJson(json& j) const override
+    {
+        j["Type"] = SCAST(_uint, Get_Type());
+        j["Enabled"] = bEnable;
+        j["Gravity"] = bGravity;
+        j["Shape"] = SCAST(_uint, eShape);
+        j["BodyType"] = SCAST(_uint, eBodyType);
+        j["Mass"] = fMass;
+        j["Drag"] = fDrag;
+        j["AngularDrag"] = fAngularDrag;
+        j["Restitution"] = fRestitution;
+        j["Friction"] = fFriction;
+
+        j["RotationLock"] = {
+            tRotationLock.bX,
+            tRotationLock.bY,
+            tRotationLock.bZ
+        };
+
+        j["PositionLock"] = {
+            tPositionLock.bX,
+            tPositionLock.bY,
+            tPositionLock.bZ
+        };
+    }
+
+    _bool FromJson(const json& j) override
+    {
+        if (!Read_SpecType(j, Get_Type()))
+            return false;
+
+        if (!Read_Bool(j, "Enabled", bEnable))
+            return false;
+
+        if (!Read_Bool(j, "Gravity", bGravity))
+            return false;
+
+        {
+            uint32_t iShape = 0;
+            if (!Read_UInt(j, "Shape", iShape))
+                return false;
+            eShape = SCAST(SHAPE, iShape);
+        }
+
+        {
+            uint32_t iBodyType = 0;
+            if (!Read_UInt(j, "BodyType", iBodyType))
+                return false;
+            eBodyType = SCAST(BODY_TYPE, iBodyType);
+        }
+
+        if (!Read_Float(j, "Mass", fMass))
+            return false;
+        if (!Read_Float(j, "Drag", fDrag))
+            return false;
+        if (!Read_Float(j, "AngularDrag", fAngularDrag))
+            return false;
+        if (!Read_Float(j, "Restitution", fRestitution))
+            return false;
+        if (!Read_Float(j, "Friction", fFriction))
+            return false;
+
+        {
+            _float3 vLock{};
+            if (!Read_Vec3(j, "RotationLock", vLock))
+                return false;
+
+            tRotationLock.bX = (vLock.x != 0.f);
+            tRotationLock.bY = (vLock.y != 0.f);
+            tRotationLock.bZ = (vLock.z != 0.f);
+        }
+
+        {
+            _float3 vLock{};
+            if (!Read_Vec3(j, "PositionLock", vLock))
+                return false;
+
+            tPositionLock.bX = (vLock.x != 0.f);
+            tPositionLock.bY = (vLock.y != 0.f);
+            tPositionLock.bZ = (vLock.z != 0.f);
+        }
+
+        if (fMass < 0.f)          fMass = 0.f;
+        if (fDrag < 0.f)          fDrag = 0.f;
+        if (fAngularDrag < 0.f)   fAngularDrag = 0.f;
+
+        fRestitution = Clamp01(fRestitution);
+        if (fFriction < 0.f)      fFriction = 0.f;
+
+        return true;
+    }
+} RIGIDBODY_SPEC;
 
 
 NS_END

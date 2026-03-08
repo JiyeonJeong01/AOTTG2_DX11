@@ -395,7 +395,7 @@ void CRender_System::Apply_Block_To_Shader(SHADER_ENTRY* pShader, const NAME_VAL
         ID3DX11EffectVariable* pVar = pShader->Get_VarCached(it.strName.c_str());
         if (!pVar)
         {
-            _DEBUG_ERROR_BREAK("EffectVariable is nullptr");
+            //_DEBUG_ERROR_BREAK("EffectVariable is nullptr");
             continue;
         }
 

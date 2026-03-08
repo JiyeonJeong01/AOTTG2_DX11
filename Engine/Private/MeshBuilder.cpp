@@ -125,6 +125,29 @@ HRESULT CMeshBuilder::Create_Rect_VtxTex(ID3D11Device* pDevice, MESH_ENTRY& outE
     return Create_Mesh(pDevice, d, outEntry);
 }
 
+HRESULT CMeshBuilder::Create_Rect_VtxNorTex(ID3D11Device* pDevice, MESH_ENTRY& outEntry)
+{
+    VTXNORTEX v[4]{};
+    v[0].vPosition = _float3(-0.5f, 0.f, 0.5f); v[0].vTexcoord = _float2(0.f, 0.f);
+    v[1].vPosition = _float3(0.5f, 0.f, 0.5f); v[1].vTexcoord = _float2(1.f, 0.f);
+    v[2].vPosition = _float3(0.5f, -0.f, -0.5f); v[2].vTexcoord = _float2(1.f, 1.f);
+    v[3].vPosition = _float3(-0.5f, -0.f, -0.5f); v[3].vTexcoord = _float2(0.f, 1.f);
+
+    uint16_t idx[6] = { 0,1,2, 0,2,3 };
+
+    MESH_DESC d{};
+    d.pVertices = v;
+    d.iVertexStride = sizeof(VTXNORTEX);
+    d.iVertexCnt = 4;
+
+    d.pIndices = idx;
+    d.iIndexCnt = 6;
+    d.eIndexFormat = DXGI_FORMAT_R16_UINT;
+    d.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+
+    return Create_Mesh(pDevice, d, outEntry);
+}
+
 HRESULT CMeshBuilder::Create_Cube_VtxCol(ID3D11Device* pDevice, MESH_ENTRY& outEntry)
 {
     VTXCOL v[8];

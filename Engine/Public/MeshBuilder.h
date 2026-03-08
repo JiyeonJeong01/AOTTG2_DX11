@@ -12,6 +12,7 @@ public :
     static HRESULT  Create_Mesh(ID3D11Device* pDevice, const MESH_DESC& tDesc, MESH_ENTRY& outEntry);
     static HRESULT  Create_Mesh_By_Geometry(ID3D11Device* pDevice, Geometry eGeometry, MESH_ENTRY& outEntry);
     static HRESULT  Create_Rect_VtxTex(ID3D11Device* pDevice, MESH_ENTRY& outEntry);
+    static HRESULT  Create_Rect_VtxNorTex(ID3D11Device* pDevice, MESH_ENTRY& outEntry);
     static HRESULT  Create_Cube_VtxCol(ID3D11Device* pDevice, MESH_ENTRY& outEntry);
     static HRESULT  Create_Sphere_VtxCol(ID3D11Device* pDevice, MESH_ENTRY& outEntry, _uint iStack = 5, _uint iSlice = 10, _float fRadius = 0.5f);
 

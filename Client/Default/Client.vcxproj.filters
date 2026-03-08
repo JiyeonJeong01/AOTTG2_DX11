@@ -14,6 +14,9 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{f79c4af5-90da-4703-a700-55ee7ad04026}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{31b12ced-c710-4770-96d8-31bf93eb319e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">

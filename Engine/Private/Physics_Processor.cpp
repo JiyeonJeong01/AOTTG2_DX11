@@ -3,6 +3,7 @@
 #include "Component_System.h"
 #include "Collision_Detector.h"
 #include "Collider_Proxy_Builder.h"
+#include "Component_Spec.h"
 #include "Rigidbody_Builder.h"
 #include "GameObject.h"
 #include "Solver.h"
@@ -144,16 +145,75 @@ void* CPhysics_Processor::Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE 
 
 HRESULT CPhysics_Processor::Initialize_From_Spec_Collider(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec)
 {
+    COLLIDER_DATA* pData = m_ColliderPool.Get_Data_By_Handle(h);
+    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Collider handle in Initialize_From_Spec_Collider");
+    _DEBUG_ENGINE_ASSERT_MSG(spec != nullptr, "spec is nullptr in Initialize_From_Spec_Collider");
+
+    const COLLIDER_SPEC* pSpec = SCAST(const COLLIDER_SPEC*, spec);
+
+    pData->bEnable = pSpec->bEnable;
+    pData->eColType = pSpec->eColType;
+    pData->bOnCol = pSpec->bOnCol;
+    pData->eShape = pSpec->eShape;
+    pData->vOffset = pSpec->vOffset;
+
+    switch (pSpec->eShape)
+    {
+    case SHAPE::BOX:
+        pData->box.vHalfExtentsLocal = pSpec->vHalfExtentsLocal;
+        break;
+
+    case SHAPE::SPHERE:
+        pData->sphere.fRadiusLocal = pSpec->fRadiusLocal;
+        break;
+
+    case SHAPE::PLANE:
+        pData->plane.vNormalLocal = pSpec->vNormalLocal;
+        pData->plane.fDistance = pSpec->fDistance;
+        pData->plane.bInfinite = pSpec->bInfinite;
+        pData->plane.vDimension = pSpec->vDimension;
+        break;
+
+    default:
+        _DEBUG_ENGINE_ASSERT_MSG(false, "Invalid collider shape in Initialize_From_Spec_Collider");
+        return E_FAIL;
+    }
+
+    pData->bDirty = true;
 
     return S_OK;
 }
 
 HRESULT CPhysics_Processor::Initialize_From_Spec_Rigidbody(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec)
 {
+    RIGIDBODY_DATA* pData = m_RigidbodyPool.Get_Data_By_Handle(h);
+    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Rigidbody handle in Initialize_From_Spec_Rigidbody");
+    _DEBUG_ENGINE_ASSERT_MSG(spec != nullptr, "spec is nullptr in Initialize_From_Spec_Rigidbody");
+
+    const RIGIDBODY_SPEC* pSpec = SCAST(const RIGIDBODY_SPEC*, spec);
+
+    pData->bEnable = pSpec->bEnable;
+    pData->bGravity = pSpec->bGravity;
+
+    pData->eShape = pSpec->eShape;
+    pData->eBodyType = pSpec->eBodyType;
+
+    pData->fMass = pSpec->fMass;
+    pData->fDrag = pSpec->fDrag;
+    pData->fAngularDrag = pSpec->fAngularDrag;
+    pData->fRestitution = pSpec->fRestitution;
+    pData->fFriction = pSpec->fFriction;
+
+    pData->tRotationLock = pSpec->tRotationLock;
+    pData->tPositionLock = pSpec->tPositionLock;
+
+    pData->bDirtyMass = true;
+    pData->bDirtyInertia = true;
+    pData->bDirtyWorldInertia = true;
+    pData->bInitialized = false;
 
     return S_OK;
 }
-
 
 HRESULT CPhysics_Processor::Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
 {

@@ -60,6 +60,7 @@ uint32_t CResource_System::Load_Texture(const ASSET_GUID& tGUID)
     IF_FAIL_RETURN_MSG_BREAK(hr, INVALID_HANDLE_UINT, "Texture create failed");
 
     TEXTURE_ENTRY entry{};
+    entry.tGUID = tGUID;
     entry.pSRV = std::move(srv);
 
     const uint32_t handle = (uint32_t)m_Textures.size();
@@ -107,6 +108,8 @@ uint32_t CResource_System::Load_Mesh(const ASSET_GUID& tGUID)
             hr = CMeshBuilder::Create_Rect_VtxTex(m_pDevice, entry);
         else if (tGUID == DEFAULT_ASSET_GUID::MESH_SPHERE)
             hr = CMeshBuilder::Create_Sphere_VtxCol(m_pDevice, entry);
+        else if (tGUID == DEFAULT_ASSET_GUID::MESH_RECT_NORTEX)
+            hr = CMeshBuilder::Create_Rect_VtxNorTex(m_pDevice, entry);
         else
             return INVALID_HANDLE_UINT;
     }
