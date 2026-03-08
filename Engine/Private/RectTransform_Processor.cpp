@@ -15,10 +15,15 @@ std::unique_ptr<CRectTransform_Processor> CRectTransform_Processor::Create()
 
 HRESULT CRectTransform_Processor::Initialize()
 {
-    SYS_COMPONENT.Register_InitialSpecFactory<CRectTransform, RECTTRANSFORM_SPEC>(COMPONENT_TYPE::RECT_TRANSFORM);
-    SYS_COMPONENT.Register_BuildSpecFacotry<CRectTransform>(COMPONENT_TYPE::RECT_TRANSFORM);
+    /* 팩토리 등록 */
+    {
+        SYS_COMPONENT.Register_InitialSpecFactory<CRectTransform, RECTTRANSFORM_SPEC>();
+        SYS_COMPONENT.Register_BuildSpecFacotry<CRectTransform>();
+    }
     return S_OK;
 }
+
+static RECTTRANSFORM_DATA* sivaroma = nullptr;
 
 void CRectTransform_Processor::Update(_float fDT)
 {
@@ -47,8 +52,12 @@ void CRectTransform_Processor::Update(_float fDT)
             pData->bDirty = false;
         }
     }
-}
 
+    { /*TODO ------------------------------------------------------------------------------------------------------------------- */
+        if (sivaroma && (sivaroma->vPosPx.x != 500.f && sivaroma->vPosPx.y != 500.f))
+            __debugbreak();
+    }/*TODO ------------------------------------------------------------------------------------------------------------------- */
+}
 
 void CRectTransform_Processor::LateUpdate(_float)
 {
@@ -70,7 +79,14 @@ HRESULT CRectTransform_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, 
 
     pData->vPosPx = SCAST(const RECTTRANSFORM_SPEC*, pSpec)->vPosPx;
     pData->vSizePx = SCAST(const RECTTRANSFORM_SPEC*, pSpec)->vSizePx;
+    pData->bDirty = false;
+
     Bake_World(pData);
+
+    { /*TODO ------------------------------------------------------------------------------------------------------------------- */
+        if (pData->vPosPx.x != 0.f && pData->vPosPx.y != 0.f)
+            sivaroma = pData;
+    }/*TODO ------------------------------------------------------------------------------------------------------------------- */
 
     return S_OK;
 }
@@ -92,7 +108,7 @@ CRectTransform_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE h
 
 inline void CRectTransform_Processor::Bake_World(RECTTRANSFORM_DATA* pData)
 {
-    const _matrix S = XMMatrixScaling(pData->vSizePx.x, pData->vSizePx.y, 1.f);
+    const _matrix S = XMMatrixScaling(pData->vSizePx.x, -pData->vSizePx.y, 1.f);
     const _matrix T = XMMatrixTranslation(pData->vPosPx.x, pData->vPosPx.y, 0.f);
 
     XMStoreFloat4x4(&pData->matWorld, S * T);

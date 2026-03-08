@@ -40,8 +40,10 @@ HRESULT CCanvasRenderer_Processor::Initialize()
     IF_FAIL_RETURN_MSG_BREAK(m_pDevice->CreateRasterizerState(&rd, m_rsScissor.GetAddressOf()), E_FAIL, "CCanvasRenderer_Processor initialize failed");
 
     /* 팩토리 등록 */
-    SYS_COMPONENT.Register_InitialSpecFactory<CCanvasRenderer, CANVAS_RENDERER_SPEC>(COMPONENT_TYPE::CANVAS_RENDERER);
-    SYS_COMPONENT.Register_BuildSpecFacotry<CCanvasRenderer>(COMPONENT_TYPE::CANVAS_RENDERER);
+    {
+        SYS_COMPONENT.Register_InitialSpecFactory<CCanvasRenderer, CANVAS_RENDERER_SPEC>();
+        SYS_COMPONENT.Register_BuildSpecFacotry<CCanvasRenderer>();
+    }
     return S_OK;
 }
 
@@ -95,7 +97,7 @@ HRESULT CCanvasRenderer_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType,
     _DEBUG_ENGINE_ASSERT_MSG(spec->Get_Type() == COMPONENT_TYPE::CANVAS_RENDERER, "Spec type mismatch: CANVAS_RENDERER expected");
 
     // Material
-    pData->hMaterial = SYS_RESOURCE.Load_Material_Temp(spec->materialGUID, 0);
+    pData->hMaterial = SYS_RESOURCE.Load_Material(spec->materialGUID);
 
     // Texture (optional)
     if (spec->textureGUID.Is_Valid())

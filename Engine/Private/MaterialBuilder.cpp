@@ -120,4 +120,59 @@ HRESULT CMaterialBuilder::Load_MaterialDesc(const std::filesystem::path& filePat
     return S_OK;
 }
 
+HRESULT CMaterialBuilder::Load_Default_UI(MATERIAL_ENTRY& outDesc)
+{
+    outDesc = MATERIAL_ENTRY{};
+
+    outDesc.tGUID = DEFAULT_ASSET_GUID::MATERIAL_UI_DEFAULT;
+    outDesc.shaderGUID = DEFAULT_ASSET_GUID::SHADER_VTXTEX;
+    outDesc.passIndex = 0;
+    outDesc.baseColor = {1.f, 1.f, 1.f, 1.f};
+    outDesc.baseMapGUID = DEFAULT_ASSET_GUID::TEXTURE_BASEMAP_DEFAULT;
+
+    outDesc.hShader = 0;
+    outDesc.hBaseMap = INVALID_HANDLE_UINT;
+
+    outDesc.pWorld = nullptr;
+    outDesc.pView = nullptr;
+    outDesc.pProj = nullptr;
+
+    outDesc.pMainTex = nullptr;
+    outDesc.pColor = nullptr;
+    outDesc.pUV = nullptr;
+    outDesc.pClip = nullptr;
+
+    outDesc.materialParams.params.clear();
+
+    return S_OK;
+
+}
+
+HRESULT CMaterialBuilder::Load_Default_VTXTEX(MATERIAL_ENTRY& outDesc)
+{
+    outDesc = MATERIAL_ENTRY{};
+
+    outDesc.tGUID = DEFAULT_ASSET_GUID::MATERIAL_VTXTEX;
+    outDesc.shaderGUID = DEFAULT_ASSET_GUID::SHADER_VTXTEX;
+    outDesc.passIndex = 0;
+    outDesc.baseColor = { 1.f, 1.f, 1.f, 1.f };
+    outDesc.baseMapGUID = DEFAULT_ASSET_GUID::TEXTURE_BASEMAP_DEFAULT;
+
+    outDesc.hShader = 0;
+    outDesc.hBaseMap = INVALID_HANDLE_UINT;
+
+    outDesc.pWorld = nullptr;
+    outDesc.pView = nullptr;
+    outDesc.pProj = nullptr;
+
+    outDesc.pMainTex = nullptr;
+    outDesc.pColor = nullptr;
+    outDesc.pUV = nullptr;
+    outDesc.pClip = nullptr;
+
+    outDesc.materialParams.params.clear();
+
+    return S_OK;
+}
+
 NS_END

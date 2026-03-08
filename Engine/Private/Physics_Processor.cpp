@@ -10,8 +10,14 @@
 
 HRESULT CPhysics_Processor::Initialize()
 {
-    //SYS_COMPONENT.Register_InitialSpecFactory<CTransform, colli>(COMPONENT_TYPE::TRANSFORM);
-    //SYS_COMPONENT.Register_BuildSpecFacotry<CTransform>(COMPONENT_TYPE::TRANSFORM);
+    /* 팩토리 등록 */
+    {
+        SYS_COMPONENT.Register_InitialSpecFactory<CCollider, COLLIDER_SPEC>();
+        SYS_COMPONENT.Register_BuildSpecFacotry<CCollider>();
+
+        SYS_COMPONENT.Register_InitialSpecFactory<CRigidbody, COLLIDER_SPEC>();
+        SYS_COMPONENT.Register_BuildSpecFacotry<CRigidbody>();
+    }
 
     m_pTransformProcessor = SYS_COMPONENT.Bind_Processor<CTransform_Processor>();
     IF_NULL_RETURN_MSG_BREAK(m_pTransformProcessor, E_FAIL, "Transform Processor bind failed");
@@ -73,8 +79,6 @@ void CPhysics_Processor::Remove_Component(COMPONENT_TYPE eComType, COMPONENT_HAN
         return Remove_Component_Inner<CCollider>(m_ColliderPool, hComponent);
     case COMPONENT_TYPE::RIGIDBODY:
         return Remove_Component_Inner<CRigidbody>(m_RigidbodyPool, hComponent);
-    default:
-        return ;
     }
 }
 
@@ -89,7 +93,6 @@ HRESULT CPhysics_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPON
     default:
         return E_FAIL;
     }
-    return S_OK;
 }
 
 std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
@@ -97,15 +100,9 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec(COMPONENT_TY
     switch (eComType)
     {
     case COMPONENT_TYPE::COLLIDER:
-        {
-            /* TODO 콜라이더 스펙 구현 이후 */
-        }
-        break;
+        return Build_Spec_Collider(hComponent);
     case COMPONENT_TYPE::RIGIDBODY:
-        {
-            /* TODO 콜라이더 스펙 구현 이후 */
-        }
-        break;
+        return Build_Spec_Rigidbody(hComponent);
     }
     return nullptr;
 }
@@ -213,6 +210,64 @@ HRESULT CPhysics_Processor::Initialize_From_Spec_Rigidbody(COMPONENT_HANDLE h, c
     pData->bInitialized = false;
 
     return S_OK;
+}
+
+std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec_Collider(COMPONENT_HANDLE hComponent)
+{
+    COLLIDER_DATA* pData = m_ColliderPool.Get_Data_By_Handle(hComponent);
+    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Collider handle in Build_Spec_Collider");
+
+    auto pSpec = std::make_unique<COLLIDER_SPEC>();
+
+    pSpec->bEnable = pData->bEnable;
+    pSpec->eColType = pData->eColType;
+    pSpec->bOnCol = pData->bOnCol;
+    pSpec->eShape = pData->eShape;
+    pSpec->vOffset = pData->vOffset;
+
+    switch (pData->eShape)
+    {
+    case SHAPE::BOX:
+        pSpec->vHalfExtentsLocal = pData->box.vHalfExtentsLocal;
+        return pSpec;
+
+    case SHAPE::SPHERE:
+        pSpec->fRadiusLocal = pData->sphere.fRadiusLocal;
+        return pSpec;
+
+    case SHAPE::PLANE:
+        pSpec->vNormalLocal = pData->plane.vNormalLocal;
+        pSpec->fDistance = pData->plane.fDistance;
+        pSpec->bInfinite = pData->plane.bInfinite;
+        pSpec->vDimension = pData->plane.vDimension;
+        return pSpec;
+    }
+
+    return nullptr;
+}
+
+std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec_Rigidbody(COMPONENT_HANDLE hComponent)
+{
+    RIGIDBODY_DATA* pData = m_RigidbodyPool.Get_Data_By_Handle(hComponent);
+    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Rigidbody handle in Build_Spec_Rigidbody");
+    auto pSpec = std::make_unique<RIGIDBODY_SPEC>();
+
+    pSpec->bEnable = pData->bEnable;
+    pSpec->bGravity = pData->bGravity;
+
+    pSpec->eShape = pData->eShape;
+    pSpec->eBodyType = pData->eBodyType;
+
+    pSpec->fMass = pData->fMass;
+    pSpec->fDrag = pData->fDrag;
+    pSpec->fAngularDrag = pData->fAngularDrag;
+    pSpec->fRestitution = pData->fRestitution;
+    pSpec->fFriction = pData->fFriction;
+
+    pSpec->tRotationLock = pData->tRotationLock;
+    pSpec->tPositionLock = pData->tPositionLock;
+
+    return pSpec;
 }
 
 HRESULT CPhysics_Processor::Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)

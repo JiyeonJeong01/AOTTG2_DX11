@@ -6,8 +6,11 @@
 
 HRESULT CTransform_Processor::Initialize()
 {
-    SYS_COMPONENT.Register_InitialSpecFactory<CTransform, TRANSFORM_SPEC>(COMPONENT_TYPE::TRANSFORM);
-    SYS_COMPONENT.Register_BuildSpecFacotry<CTransform>(COMPONENT_TYPE::TRANSFORM);
+    /* 팩토리 등록 */
+    {
+        SYS_COMPONENT.Register_InitialSpecFactory<CTransform, TRANSFORM_SPEC>();
+        SYS_COMPONENT.Register_BuildSpecFacotry<CTransform>();
+    }
 
     return S_OK;
 }

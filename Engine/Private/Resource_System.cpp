@@ -69,18 +69,6 @@ uint32_t CResource_System::Load_Texture(const ASSET_GUID& tGUID)
 
     return handle;
 }
-uint32_t CResource_System::Load_Material_Temp(const ASSET_GUID& materialGuidAsShaderGuid, uint16_t passIndex)
-{
-    const uint32_t hShader = Load_Shader(materialGuidAsShaderGuid);
-    if (hShader == INVALID_HANDLE_UINT) return INVALID_HANDLE_UINT;
-
-    MATERIAL_ENTRY e{};
-    e.tGUID = materialGuidAsShaderGuid;
-    e.hShader = hShader;
-    e.passIndex = passIndex;
-
-    return Load_Material(e); // 엔트리 버전
-}
 
 uint32_t CResource_System::Load_Mesh(const ASSET_GUID& tGUID)
 {
@@ -96,6 +84,8 @@ uint32_t CResource_System::Load_Mesh(const ASSET_GUID& tGUID)
     auto pRec = SYS_ASSET.Find(tGUID);
     if (!pRec || pRec->eType != ASSET_TYPE::MESH)
     {
+        if (pRec->eType == ASSET_TYPE::MODEL)
+            return Load_Model(tGUID);
         _DEBUG_ERROR_BREAK("such guid not exists");
         return INVALID_HANDLE_UINT;
     }
@@ -252,12 +242,32 @@ uint32_t CResource_System::Load_Material(const ASSET_GUID& tGUID)
     if (it != m_MaterialGUIDMap.end())
         return it->second;
 
-    std::filesystem::path matPath = SYS_ASSET.Get_Asset_Path(tGUID);
-    IF_TRUE_RETURN_MSG_BREAK(matPath.empty(), INVALID_HANDLE_UINT, "Load_Material failed: asset path empty.");
+    auto pRec = SYS_ASSET.Find(tGUID);
+    if (!pRec || pRec->eType != ASSET_TYPE::MATERIAL)
+    {
+        _DEBUG_ERROR_BREAK("such guid not exists");
+        return INVALID_HANDLE_UINT;
+    }
 
-    /* .mat 파일에서 데이터를 읽어온다. */
+    HRESULT hr{};
     MATERIAL_ENTRY desc{};
-    IF_FAIL_RETURN_MSG_BREAK(CMaterialBuilder::Load_MaterialDesc(matPath, desc), INVALID_HANDLE_UINT, "Load_Material failed: Load_MaterialDesc failed.");
+    if (pRec->eSrc == ASSET_SRC::BUILTIN)
+    {
+        if (tGUID == DEFAULT_ASSET_GUID::MATERIAL_UI_DEFAULT)
+            hr = CMaterialBuilder::Load_Default_UI(desc);
+        else if (tGUID == DEFAULT_ASSET_GUID::MATERIAL_VTXTEX)
+            hr = CMaterialBuilder::Load_Default_VTXTEX(desc);
+        else
+            return INVALID_HANDLE_UINT;
+    }
+    else
+    {
+        std::filesystem::path matPath = SYS_ASSET.Get_Asset_Path(tGUID);
+        IF_TRUE_RETURN_MSG_BREAK(matPath.empty(), INVALID_HANDLE_UINT, "Load_Material failed: asset path empty.");
+
+        /* .mat 파일에서 데이터를 읽어온다. */
+        IF_FAIL_RETURN_MSG_BREAK(CMaterialBuilder::Load_MaterialDesc(matPath, desc), INVALID_HANDLE_UINT, "Load_Material failed: Load_MaterialDesc failed.");
+    }
 
     desc.hShader = Load_Shader(desc.shaderGUID);
     IF_TRUE_RETURN_MSG_BREAK(desc.hShader == INVALID_HANDLE_UINT, INVALID_HANDLE_UINT, "Load_Material failed: invalid shader handle.");

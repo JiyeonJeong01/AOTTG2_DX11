@@ -21,8 +21,10 @@ HRESULT CMeshRenderer_Processor::Initialize()
     IF_NULL_RETURN_MSG_BREAK(m_pTransformProcessor, E_FAIL, "Transform Processor is nullptr");
 
     /* 팩토리 등록 */
-    SYS_COMPONENT.Register_InitialSpecFactory<CMeshRenderer, MESH_RENDERER_SPEC>(COMPONENT_TYPE::MESH_RENDERER);
-    SYS_COMPONENT.Register_BuildSpecFacotry<CMeshRenderer>(COMPONENT_TYPE::MESH_RENDERER);
+    {
+        SYS_COMPONENT.Register_InitialSpecFactory<CMeshRenderer, MESH_RENDERER_SPEC>();
+        SYS_COMPONENT.Register_BuildSpecFacotry<CMeshRenderer>();
+    }
 
     /* 프로페서에서 new 생성하는 객체는 직접 해제해준다. */
     m_Pool.Subscribe_OnDeallocate(&CMeshRenderer_Processor::Reset_Data_On_Deallocate, this);
@@ -72,7 +74,7 @@ HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, C
     _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid MeshRenderer handle in Initialize_From_Spec");
 
     pData->hMesh = SYS_RESOURCE.Load_Mesh(SCAST(const MESH_RENDERER_SPEC*, pSpec)->meshGUID);
-    pData->hMaterial = SYS_RESOURCE.Load_Material_Temp(SCAST(const MESH_RENDERER_SPEC*, pSpec)->materialGUID, 0);
+    pData->hMaterial = SYS_RESOURCE.Load_Material(SCAST(const MESH_RENDERER_SPEC*, pSpec)->materialGUID);
     pData->flags = SCAST(const MESH_RENDERER_SPEC*, pSpec)->flags;
     pData->layer = SCAST(const MESH_RENDERER_SPEC*, pSpec)->layer;
     pData->sortZ = SCAST(const MESH_RENDERER_SPEC*, pSpec)->sortZ;
@@ -89,7 +91,11 @@ CMeshRenderer_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hC
     IF_NULL_RETURN_MSG_BREAK(pData, nullptr, "Invalid MeshRenderer handle in Build_Spec");
 
     auto spec = std::make_unique<MESH_RENDERER_SPEC>();
-    spec->meshGUID = SYS_RESOURCE.Get_Mesh(pData->hMesh)->tGUID;
+    if (SYS_RESOURCE.Is_ModelHandle(pData->hMesh))
+        spec->meshGUID = SYS_RESOURCE.Get_Model(pData->hMesh)->tGUID;
+    else
+        spec->meshGUID = SYS_RESOURCE.Get_Mesh(pData->hMesh)->tGUID;
+
     spec->materialGUID = SYS_RESOURCE.Get_Material(pData->hMaterial)->tGUID;
     spec->flags = pData->flags;
     spec->layer = pData->layer;

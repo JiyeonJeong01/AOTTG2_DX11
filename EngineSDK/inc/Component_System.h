@@ -68,11 +68,11 @@ public :
 
     /* Register a callback for Initialize_From_Spec() */
     template <typename TProxy, typename TSpec>
-    void Register_InitialSpecFactory(COMPONENT_TYPE eComType);
+    void Register_InitialSpecFactory();
 
     /* Register a callback for Build_Spec_By_Type */
     template<typename TProxy>
-    void Register_BuildSpecFacotry(COMPONENT_TYPE eComType);
+    void Register_BuildSpecFacotry();
 
     template<typename TPRoc>
     TPRoc* Bind_Processor();

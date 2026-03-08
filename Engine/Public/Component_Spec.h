@@ -822,15 +822,15 @@ typedef struct ENGINE_DLL tagRigidbodySpec final : public COMPONENT_SPEC_BASE
         j["Friction"] = fFriction;
 
         j["RotationLock"] = {
-            tRotationLock.bX,
-            tRotationLock.bY,
-            tRotationLock.bZ
+            tRotationLock.bX ? 1.f : 0.f,
+            tRotationLock.bY ? 1.f : 0.f,
+            tRotationLock.bZ ? 1.f : 0.f
         };
 
         j["PositionLock"] = {
-            tPositionLock.bX,
-            tPositionLock.bY,
-            tPositionLock.bZ
+            tPositionLock.bX ? 1.f : 0.f,
+            tPositionLock.bY ? 1.f : 0.f,
+            tPositionLock.bZ ? 1.f : 0.f
         };
     }
 

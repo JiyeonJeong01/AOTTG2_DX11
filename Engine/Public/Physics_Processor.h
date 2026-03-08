@@ -69,6 +69,10 @@ private :
 private :
     HRESULT Initialize_From_Spec_Collider(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
     HRESULT Initialize_From_Spec_Rigidbody(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
+
+    std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec_Collider(COMPONENT_HANDLE hComponent);
+    std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec_Rigidbody(COMPONENT_HANDLE hComponent);
+
     HRESULT Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE h);
 
 public :

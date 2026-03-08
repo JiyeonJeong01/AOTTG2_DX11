@@ -62,7 +62,7 @@ HRESULT CGameObject_System::Initialize(uint32_t iMaxLayers, uint32_t iPoolSize)
     m_pLayerHelper = CLayerHelper::Create(iMaxLayers);
 
     /* Seperate UI */
-    m_pCanvas = Create_GameObjectUI(Layer::UI_LAYER, "Canvas");
+    // m_pCanvas = Create_GameObjectUI(Layer::UI_LAYER, "Canvas");
 
     return S_OK;
 }

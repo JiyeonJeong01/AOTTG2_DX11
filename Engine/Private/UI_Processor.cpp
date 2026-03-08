@@ -65,10 +65,10 @@ HRESULT CUI_Processor::Initialize()
 {
     /* 팩토리 등록 */
     {
-        SYS_COMPONENT.Register_InitialSpecFactory<CUIButton, UI_BUTTON_SPEC>(COMPONENT_TYPE::UI_BUTTON);
-        SYS_COMPONENT.Register_InitialSpecFactory<CUIImage, UI_IMAGE_SPEC>(COMPONENT_TYPE::UI_IMAGE);
-        SYS_COMPONENT.Register_BuildSpecFacotry<CUIButton>(COMPONENT_TYPE::UI_BUTTON);
-        SYS_COMPONENT.Register_BuildSpecFacotry<CUIImage>(COMPONENT_TYPE::UI_IMAGE);
+        SYS_COMPONENT.Register_InitialSpecFactory<CUIButton, UI_BUTTON_SPEC>();
+        SYS_COMPONENT.Register_InitialSpecFactory<CUIImage, UI_IMAGE_SPEC>();
+        SYS_COMPONENT.Register_BuildSpecFacotry<CUIButton>();
+        SYS_COMPONENT.Register_BuildSpecFacotry<CUIImage>();
     }
 
     m_pRectTransformProcessor = SYS_COMPONENT.Bind_Processor<CRectTransform_Processor>();
@@ -151,7 +151,8 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CUI_Processor::Build_Spec(COMPONENT_TYPE eC
         spec.bEnable = pData->bEnable;
 
         /* Handle -> GUID */
-        spec.textureGuid = SYS_RESOURCE.Get_Texture(pData->hTexture)->tGUID;
+        const TEXTURE_ENTRY* pTextureEntry = SYS_RESOURCE.Get_Texture(pData->hTexture);
+        spec.textureGuid = pTextureEntry ? pTextureEntry->tGUID : DEFAULT_ASSET_GUID::TEXTURE_UI_DEFAULT;
 
         spec.rcUV = pData->rcUV;
         spec.color = pData->color;
@@ -175,13 +176,17 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CUI_Processor::Build_Spec(COMPONENT_TYPE eC
         spec.disabled = pData->disabled;
 
         /* Handle -> GUID (저장) */
-        spec.normalTexGuid = SYS_RESOURCE.Get_Texture(pData->normalTex)->tGUID;
+        const TEXTURE_ENTRY* pEntry = nullptr;
+        pEntry = SYS_RESOURCE.Get_Texture(pData->normalTex);
+        spec.normalTexGuid = pEntry ? SYS_RESOURCE.Get_Texture(pData->normalTex)->tGUID : DEFAULT_ASSET_GUID::TEXTURE_UI_DEFAULT;
         spec.normalUV = pData->normalUV;
 
-        spec.hoverTexGuid = SYS_RESOURCE.Get_Texture(pData->hoverTex)->tGUID;
+        pEntry = SYS_RESOURCE.Get_Texture(pData->hoverTex);
+        spec.hoverTexGuid = pEntry ? pEntry->tGUID : DEFAULT_ASSET_GUID::TEXTURE_UI_DEFAULT;
         spec.hoverUV = pData->hoverUV;
 
-        spec.pressedTexGuid = SYS_RESOURCE.Get_Texture(pData->pressedTex)->tGUID;
+        pEntry = SYS_RESOURCE.Get_Texture(pData->pressedTex);
+        spec.pressedTexGuid = pEntry ? pEntry->tGUID : DEFAULT_ASSET_GUID::TEXTURE_UI_DEFAULT;
         spec.pressedUV = pData->pressedUV;
 
         spec.visualPriority = pData->visualPriority;

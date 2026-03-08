@@ -24,10 +24,9 @@ TProxy CComponent_System::Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE ha
 }
 
 template <typename TProxy, typename TSpec>
-void CComponent_System::Register_InitialSpecFactory(COMPONENT_TYPE eComType)
+void CComponent_System::Register_InitialSpecFactory()
 {
-    IF_TRUE_RETURN_MSG_BREAK(TProxy::ComponentType != eComType, , "Wrong component type input.");
-    const uint32_t iComIdx = COM_TO_INT(eComType);
+    const uint32_t iComIdx = COM_TO_INT(TProxy::ComponentType);
     _DEBUG_ENGINE_ASSERT_MSG((m_InitialSpecFactory[iComIdx] == nullptr), "Already registered type.");
 
     m_InitialSpecFactory[iComIdx] = +[](CComponent_System* pSys, COMPONENT_TYPE eInType, CGameObject* pObj, const COMPONENT_SPEC_BASE* pBase)
@@ -38,17 +37,16 @@ void CComponent_System::Register_InitialSpecFactory(COMPONENT_TYPE eComType)
             if (pBase)
             {
                 /* To Keep the lambda capture-free */
-                return pSys->Initialize_From_Spec(eInType, proxy.Get_Handle(), pBase);
+                return pSys->Initialize_From_Spec(TProxy::ComponentType, proxy.Get_Handle(), pBase);
             }
             return E_FAIL;
         };
 }
 
 template <typename TProxy>
-void CComponent_System::Register_BuildSpecFacotry(COMPONENT_TYPE eComType)
+void CComponent_System::Register_BuildSpecFacotry()
 {
-    IF_TRUE_RETURN_MSG_BREAK(TProxy::ComponentType != eComType, , "Wrong component type input.");
-    const uint32_t iComIdx = COM_TO_INT(eComType);
+    const uint32_t iComIdx = COM_TO_INT(TProxy::ComponentType);
     _DEBUG_ENGINE_ASSERT_MSG((m_BuildSpecFactory[iComIdx] == nullptr), "Already registered type.");
 
     m_BuildSpecFactory[iComIdx] = +[](CComponent_System* pSys, COMPONENT_TYPE eInType, COMPONENT_HANDLE hComponent)

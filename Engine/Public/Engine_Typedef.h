@@ -69,8 +69,10 @@ namespace Engine
 
         static constexpr uint64_t UNIQUE_MASK =
             Component::Component_Bit(COMPONENT_TYPE::TRANSFORM) |
+            Component::Component_Bit(COMPONENT_TYPE::RECT_TRANSFORM) |
             Component::Component_Bit(COMPONENT_TYPE::RIGIDBODY) |
-            Component::Component_Bit(COMPONENT_TYPE::MESH_RENDERER);
+            Component::Component_Bit(COMPONENT_TYPE::MESH_RENDERER) |
+            Component::Component_Bit(COMPONENT_TYPE::CANVAS_RENDERER);
 
         static inline _bool Is_Multi_Allowed(COMPONENT_TYPE eType)
         {

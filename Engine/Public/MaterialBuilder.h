@@ -11,6 +11,8 @@ public:
     static HRESULT Create(const SHADER_ENTRY& shader, uint16_t passIndex, MATERIAL_ENTRY& outMaterial);
     static HRESULT Save_Material(const MATERIAL_ENTRY& mat, const std::filesystem::path& filePath);
     static HRESULT Load_MaterialDesc(const std::filesystem::path& filePath, MATERIAL_ENTRY& outDesc);
+    static HRESULT Load_Default_UI(MATERIAL_ENTRY& outDesc);
+    static HRESULT Load_Default_VTXTEX(MATERIAL_ENTRY& outDesc);
 
 };
 

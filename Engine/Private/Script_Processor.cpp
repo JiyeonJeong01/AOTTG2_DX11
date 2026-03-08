@@ -6,8 +6,11 @@
 
 HRESULT CScript_Processor::Initialize()
 {
-    SYS_COMPONENT.Register_InitialSpecFactory<CScript, SCRIPT_DATA>(COMPONENT_TYPE::SCRIPT);
-    SYS_COMPONENT.Register_BuildSpecFacotry<CScript>(COMPONENT_TYPE::SCRIPT);
+    /* 팩토리 등록 */
+    {
+        SYS_COMPONENT.Register_InitialSpecFactory<CScript, SCRIPT_DATA>();
+        SYS_COMPONENT.Register_BuildSpecFacotry<CScript>();
+    }
 
     m_Pool.Subscribe_OnDeallocate(&CScript_Processor::Reset_Data_On_Deallocate, this);
 

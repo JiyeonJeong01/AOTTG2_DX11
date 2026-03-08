@@ -340,6 +340,8 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CPrototype_Handler::Create_Spec_By_Type(COM
     switch (eType)
     {
     case COMPONENT_TYPE::TRANSFORM: return std::make_unique<TRANSFORM_SPEC>();
+    case COMPONENT_TYPE::COLLIDER: return std::make_unique<COLLIDER_SPEC>();
+    case COMPONENT_TYPE::RIGIDBODY: return std::make_unique<RIGIDBODY_SPEC>();
     case COMPONENT_TYPE::RECT_TRANSFORM: return std::make_unique<RECTTRANSFORM_SPEC>();
     case COMPONENT_TYPE::CANVAS_RENDERER: return std::make_unique<CANVAS_RENDERER_SPEC>();
     case COMPONENT_TYPE::MESH_RENDERER: return std::make_unique<MESH_RENDERER_SPEC>();

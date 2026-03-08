@@ -70,7 +70,6 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
         {
             pObject1 = SYS_GAMEOBJECT.Create_GameObject();
             pObject1->Get_Component<CTransform>().Translate({ 0.f, 5.f, 0.f });
-
             pObject1->Add_Component<CMeshRenderer>();
             pObject1->Add_Component<CCollider>();
             auto mr = pObject1->Get_Component<CMeshRenderer>();
@@ -79,19 +78,14 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_CUBE);
             d->layer = RENDER_LAYER::NONBLEND;
             d->flags = RF_NONE;
-
-
             auto tr1 = pObject1->Get_Component<CTransform>();
             auto mr1 = pObject1->Get_Component<CMeshRenderer>();
             auto cldr = pObject1->Get_Component<CCollider>();
             cldr.Set_Shape(SHAPE::BOX);
-
             auto rb = pObject1->Add_Component<CRigidbody>();
             rb.Set_BodyType(BODY_TYPE::DYNAMIC);
-
             tr1->vPosition = { j * 3.f, j * 3.f, j * 2.f};
         }
-
         for (int j = 0; j < 1; ++j)
         {
             Engine::CGameObject* pGO = nullptr;
@@ -120,34 +114,32 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
             auto rb = pObject2->Add_Component<CRigidbody>();
             rb.Set_BodyType(BODY_TYPE::STATIC);
             rb.Set_Gravity(false);
-
             auto mr = pObject2->Get_Component<CMeshRenderer>();
             auto* d = mr._Data();
             d->hMaterial = SYS_RESOURCE.Load_Material(default_mat);
             d->hMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_RECT);
             d->layer = RENDER_LAYER::NONBLEND;
             d->flags = RF_NONE;
-
         }
 
 
         //    tr1->vPosition = { -2 + j * 3.f, j * 3.f, j * 2.f};
         //}
 
-        {
-            pUI1 = SYS_GAMEOBJECT.Create_GameObjectUI();
-            pUI1->Add_Component<CCanvasRenderer>();
-            auto mr = pUI1->Get_Component<CCanvasRenderer>();
-            auto* d = mr._Data();
-            d->hMaterial = SYS_RESOURCE.Load_Material(DefaultAssetGuid::MATERIAL_VTXTEX);
-            d->layer = RENDER_LAYER::NONBLEND;
-            d->flags = RF_NONE;
-            d->hTexture = SYS_RESOURCE.Load_Texture(tmp);
-            auto btn = pUI1->Add_Component<CUIButton>();
-            btn.OnClick().Add_Listener<CMainApp>(&CMainApp::OnClickTest, this);
-            btn.OnHover().Add_Listener<CMainApp>(&CMainApp::OnHoverTest, this);
+        //{
+        //    pUI1 = SYS_GAMEOBJECT.Create_GameObjectUI();
+        //    pUI1->Add_Component<CCanvasRenderer>();
+        //    auto mr = pUI1->Get_Component<CCanvasRenderer>();
+        //    auto* d = mr._Data();
+        //    d->hMaterial = SYS_RESOURCE.Load_Material(DefaultAssetGuid::MATERIAL_VTXTEX);
+        //    d->layer = RENDER_LAYER::NONBLEND;
+        //    d->flags = RF_NONE;
+        //    d->hTexture = SYS_RESOURCE.Load_Texture(tmp);
+        //    auto btn = pUI1->Add_Component<CUIButton>();
+        //    btn.OnClick().Add_Listener<CMainApp>(&CMainApp::OnClickTest, this);
+        //    btn.OnHover().Add_Listener<CMainApp>(&CMainApp::OnHoverTest, this);
 
-        }
+        //}
 
         //auto tr1 = pGO->Get_Component<CTransform>();
         //auto mr1 = pGO->Get_Component<CMeshRenderer>();

@@ -518,7 +518,7 @@ void CProjectPanel::Draw_Project_Context_Unified()
 
             if (ImGui::MenuItem("Scene"))
             {
-                const std::filesystem::path createFolder = Resolve_Create_Folder_By_Type_("Scene");
+                const std::filesystem::path createFolder = Resolve_Create_Folder_By_Type_("Scenes");
                 m_currentFolder = createFolder;
 
                 m_bListDirty = true;
