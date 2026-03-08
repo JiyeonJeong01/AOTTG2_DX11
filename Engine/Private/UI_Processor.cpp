@@ -258,6 +258,7 @@ void CUI_Processor::Sync_Images_To_Canvas()
             pCR->hTexture = pData->hTexture;
             pCR->rcUV = pData->rcUV;
             pCR->vColor = pData->color;
+            pCR->visualPriority = pData->visualPriority;
 
             pData->dirty = false;
         }
@@ -281,6 +282,7 @@ void CUI_Processor::Apply_ButtonVisual(const UI_BUTTON_DATA& tData)
     {
         pCR->hTexture = hTex;
         pCR->rcUV = rcUV;
+        pCR->visualPriority = tData.visualPriority;
     }
 }
 

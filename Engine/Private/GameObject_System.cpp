@@ -96,7 +96,11 @@ CGameObject* CGameObject_System::Create_Object_Inner(Layer::LAYER_ID iLayer, con
     data.Reset();
     data.bAllocated = data.bEnable = true;
     data.layer = iLayer;
-    data.tUUID = tUUID;
+
+    if (tUUID.Is_Valid())
+        data.tUUID = tUUID;
+    else
+        data.tUUID = INSTANCE_UUID::New();
 
     pWrapper->m_hSelf = OBJECT_HANDLE(idx, data.iVersion, iLayer == Layer::UI_LAYER ? true : false);
 

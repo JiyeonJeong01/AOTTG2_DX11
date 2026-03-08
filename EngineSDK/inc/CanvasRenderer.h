@@ -24,6 +24,9 @@ typedef struct ENGINE_DLL tagCanvasRendererData final
     RENDER_LAYER layer = RENDER_LAYER::UI;
 
     _float   sortZ = 0.f;
+    uint8_t             visualPriority = 0;
+    _bool               dirty = true;
+
 } CANVAS_RENDERER_DATA;
 
 class ENGINE_DLL CCanvasRenderer final

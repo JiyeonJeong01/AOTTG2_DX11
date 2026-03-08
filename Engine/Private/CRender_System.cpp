@@ -45,6 +45,8 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
     IF_NULL_RETURN_MSG_BREAK(m_pDevice, E_FAIL, "RenderSystem device is nullptr");
     IF_NULL_RETURN_MSG_BREAK(m_pContext, E_FAIL, "RenderSystem context is nullptr");
 
+    Create_RenderState();
+
     /* UI 메쉬 = VtxRect 준비 */
     m_hUIRectMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_RECT);
     IF_TRUE_RETURN_MSG_BREAK(m_hUIRectMesh == INVALID_HANDLE_UINT, E_FAIL, "UI rect mesh load failed");
@@ -88,6 +90,125 @@ void CRender_System::Priority_Update()
     m_gUI = m_upRenderContext->Get_UI_Global();
 }
 
+HRESULT CRender_System::Create_RenderState()
+{
+    if (!m_pDevice)
+        return E_FAIL;
+
+    HRESULT hr = S_OK;
+
+    /* -------------------------------------------------
+       BlendState : None
+    ------------------------------------------------- */
+    {
+        D3D11_BLEND_DESC desc{};
+        desc.AlphaToCoverageEnable = FALSE;
+        desc.IndependentBlendEnable = FALSE;
+
+        D3D11_RENDER_TARGET_BLEND_DESC& rt = desc.RenderTarget[0];
+        rt.BlendEnable = FALSE;                                     // 블렌딩 : off
+        rt.SrcBlend = D3D11_BLEND_ONE;                              // 새로 그려질 색상에 곱할 값 : 1
+        rt.DestBlend = D3D11_BLEND_ZERO;                            // 이미 그려진 색상에 곱할 값 : 0. 덮는다
+        rt.BlendOp = D3D11_BLEND_OP_ADD;                            // 두 색을 합치는 연산 : +
+        rt.SrcBlendAlpha = D3D11_BLEND_ONE;                         // 알파 채널에 대한 Src/Dst의 연산 방식
+        rt.DestBlendAlpha = D3D11_BLEND_ZERO;                       //  - 알파 값에 곱하여 최종 알파 값이 된다
+        rt.BlendOpAlpha = D3D11_BLEND_OP_ADD;                       // 알파 채널을 합치는 연산 방식 
+        rt.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;    // RGBA 중 어떤 채널을 기록할지 : 전부 
+
+        hr = m_pDevice->CreateBlendState(&desc, &m_pBlendState_None);
+        if (FAILED(hr))
+            return hr;
+    }
+
+    /* -------------------------------------------------
+       BlendState : Alpha ( 반투명 )
+    ------------------------------------------------- */
+    {
+        D3D11_BLEND_DESC desc{};
+        desc.AlphaToCoverageEnable = FALSE;
+        desc.IndependentBlendEnable = FALSE;
+
+        D3D11_RENDER_TARGET_BLEND_DESC& rt = desc.RenderTarget[0];
+        rt.BlendEnable = TRUE;
+        rt.SrcBlend = D3D11_BLEND_SRC_ALPHA;                            // FINAL COLOR = (SRC_COL * SRC_A) + (DST_COL * (1 - SRC_A))
+        rt.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+        rt.BlendOp = D3D11_BLEND_OP_ADD;
+        rt.SrcBlendAlpha = D3D11_BLEND_ONE;
+        rt.DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+        rt.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+        rt.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+        hr = m_pDevice->CreateBlendState(&desc, &m_pBlendState_Alpha);
+        if (FAILED(hr))
+            return hr;
+    }
+
+    /* -------------------------------------------------
+       DepthStencilState : Default
+    ------------------------------------------------- */
+    {
+        D3D11_DEPTH_STENCIL_DESC desc{};
+        desc.DepthEnable = TRUE;                                        // 깊이 테스트 ON.
+        desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;               // 현재 그린 픽셀의 깊이 값을 기록한다.
+        desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;                   // 새 픽셀의 깊이 <= 기존 버퍼의 깊이 일 때만 그린다.
+        desc.StencilEnable = FALSE;
+
+        hr = m_pDevice->CreateDepthStencilState(&desc, &m_pDepthState_Default);
+        if (FAILED(hr))
+            return hr;
+    }
+
+    /* -------------------------------------------------
+       DepthStencilState : ReadOnly
+    ------------------------------------------------- */
+    {
+        D3D11_DEPTH_STENCIL_DESC desc{};
+        desc.DepthEnable = TRUE;                                        // 깊이 테스트 ON
+        desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;              // 깊이 버퍼 내 기록은 하지 않는다 -> 직접 연산 필요
+        desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+        desc.StencilEnable = FALSE;
+
+        hr = m_pDevice->CreateDepthStencilState(&desc, &m_pDepthState_ReadOnly);
+        if (FAILED(hr))
+            return hr;
+    }
+
+    /* -------------------------------------------------
+       DepthStencilState : Disabled
+    ------------------------------------------------- */
+    {
+        D3D11_DEPTH_STENCIL_DESC desc{};
+        desc.DepthEnable = FALSE;
+        desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+        desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+        desc.StencilEnable = FALSE;
+
+        hr = m_pDevice->CreateDepthStencilState(&desc, &m_pDepthState_Disabled);
+        if (FAILED(hr))
+            return hr;
+    }
+
+    /* -------------------------------------------------
+       RasterizerState : Default
+    ------------------------------------------------- */
+    {
+        D3D11_RASTERIZER_DESC desc{};
+        desc.FillMode = D3D11_FILL_SOLID;
+        desc.CullMode = D3D11_CULL_BACK;
+        desc.FrontCounterClockwise = FALSE;
+        desc.DepthClipEnable = TRUE;
+        desc.ScissorEnable = FALSE;
+        desc.MultisampleEnable = FALSE;
+        desc.AntialiasedLineEnable = FALSE;
+
+        hr = m_pDevice->CreateRasterizerState(&desc, &m_pRasterizerState_Default);
+        if (FAILED(hr))
+            return hr;
+    }
+
+    return S_OK;
+}
+
 void CRender_System::Build_RenderQueue()
 {
     for (int i = 0; i < LAYER_TO_IDX(RENDER_LAYER::END); ++i)
@@ -119,7 +240,6 @@ void CRender_System::Build_RenderQueue()
     //            return a->sortKey < b->sortKey;
     //        });
     //}
-
     //{
     //    auto& q = m_LayerCmds[LAYER_TO_IDX(RENDER_LAYER::BLEND)];
     //    std::sort(q.begin(), q.end(), [](const DRAW_CMD* a, const DRAW_CMD* b)
@@ -127,21 +247,27 @@ void CRender_System::Build_RenderQueue()
     //            return a->sortKey > b->sortKey;
     //        });
     //}
-
-    //{
-    //    auto& q = m_LayerCmds[LAYER_TO_IDX(RENDER_LAYER::UI)];
-    //    std::sort(q.begin(), q.end(), [](const DRAW_CMD* a, const DRAW_CMD* b)
-    //        {
-    //            return a->canvas.sortZ < b->canvas.sortZ;
-    //        });
-    //}
+    {
+        auto& q = m_LayerCmds[LAYER_TO_IDX(RENDER_LAYER::UI)];
+        std::sort(q.begin(), q.end(), [](const DRAW_CMD* a, const DRAW_CMD* b)
+            {
+                return a->sortKey < b->sortKey;
+            });
+    }
 }
 
 void CRender_System::Execute_RenderQueue()
 {
+    Apply_Pass_State_Priority();
     Execute_Pass(RENDER_LAYER::PRIORITY);
+
+    Apply_Pass_State_NonBlend();
     Execute_Pass(RENDER_LAYER::NONBLEND);
+
+    Apply_Pass_State_Blend();
     Execute_Pass(RENDER_LAYER::BLEND);
+
+    Apply_Pass_State_UI();
     Execute_Pass(RENDER_LAYER::UI);
 }
 
@@ -433,5 +559,65 @@ void CRender_System::Apply_Block_To_Shader(SHADER_ENTRY* pShader, const NAME_VAL
             break;
         }
     }
+}
+
+void CRender_System::Apply_Pass_State_Priority()
+{
+    Bind_BlendState_None();
+    Bind_DepthState_Default();
+    Bind_RasterizerState_Default();
+}
+
+void CRender_System::Apply_Pass_State_NonBlend()
+{
+    Bind_BlendState_None();
+    Bind_DepthState_Default();
+    Bind_RasterizerState_Default();
+}
+
+void CRender_System::Apply_Pass_State_Blend()
+{
+    Bind_BlendState_Alpha();
+    Bind_DepthState_ReadOnly();
+    Bind_RasterizerState_Default();
+}
+
+void CRender_System::Apply_Pass_State_UI()
+{
+    Bind_BlendState_Alpha();
+    Bind_DepthState_Disabled();
+    Bind_RasterizerState_Default();
+}
+
+void CRender_System::Bind_BlendState_None()
+{
+    const FLOAT blendFactor[4] = { 0.f, 0.f, 0.f, 0.f };
+    m_pContext->OMSetBlendState(m_pBlendState_None, blendFactor, 0xffffffff);
+}
+
+void CRender_System::Bind_BlendState_Alpha()
+{
+    const FLOAT blendFactor[4] = { 0.f, 0.f, 0.f, 0.f };
+    m_pContext->OMSetBlendState(m_pBlendState_Alpha, blendFactor, 0xffffffff);
+}
+
+void CRender_System::Bind_DepthState_Default()
+{
+    m_pContext->OMSetDepthStencilState(m_pDepthState_Default, 0);
+}
+
+void CRender_System::Bind_DepthState_ReadOnly()
+{
+    m_pContext->OMSetDepthStencilState(m_pDepthState_ReadOnly, 0);
+}
+
+void CRender_System::Bind_DepthState_Disabled()
+{
+    m_pContext->OMSetDepthStencilState(m_pDepthState_Disabled, 0);
+}
+
+void CRender_System::Bind_RasterizerState_Default()
+{
+    m_pContext->RSSetState(m_pRasterizerState_Default);
 }
 

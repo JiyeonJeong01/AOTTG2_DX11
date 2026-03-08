@@ -26,7 +26,10 @@ public:
     static void         Apply_Block_To_Shader(SHADER_ENTRY* pShader, const NAME_VALUE_PARAM_BLOCK& blk);
 
 public:
-    const std::vector<DRAW_CMD>& Get_AllDrawCmds() const { return m_AllDrawCmds; }
+    const std::vector<DRAW_CMD>& Get_AllDrawCmds() const
+    {
+        return m_AllDrawCmds;
+    }
 
 private:
     /* COM 객체*/
@@ -34,6 +37,15 @@ private:
     ID3D11DeviceContext* m_pContext{};
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rsScissor;
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rsNoScissor;
+
+    ID3D11BlendState*                               m_pBlendState_None = nullptr;
+    ID3D11BlendState*                               m_pBlendState_Alpha = nullptr;
+
+    ID3D11DepthStencilState*                        m_pDepthState_Default = nullptr;
+    ID3D11DepthStencilState*                        m_pDepthState_ReadOnly = nullptr;
+    ID3D11DepthStencilState*                        m_pDepthState_Disabled = nullptr;
+
+    ID3D11RasterizerState* m_pRasterizerState_Default = nullptr;
 
     /* Render Context */
     std::unique_ptr<CRender_Context>        m_upRenderContext{};
@@ -54,6 +66,8 @@ private:
     _bool   bSubmittedThisFrame{};
 
 private:
+    HRESULT    Create_RenderState();
+
     void     Build_RenderQueue();
     void     Execute_RenderQueue();
     void     Execute_Pass(RENDER_LAYER layer);
@@ -62,6 +76,21 @@ private:
     void     Execute_Draw_Canvas(const DRAW_CMD& tCmd);
 
     void     Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, uint32_t hPerObjectParams, uint32_t iFirstIdx, uint32_t iNumIdx);
+
+
+    void    Apply_Pass_State_Priority();
+    void    Apply_Pass_State_NonBlend();
+    void    Apply_Pass_State_Blend();
+    void    Apply_Pass_State_UI();
+
+    void    Bind_BlendState_None();
+    void    Bind_BlendState_Alpha();
+
+    void    Bind_DepthState_Default();
+    void    Bind_DepthState_ReadOnly();
+    void    Bind_DepthState_Disabled();
+
+    void    Bind_RasterizerState_Default();
 
 };
 

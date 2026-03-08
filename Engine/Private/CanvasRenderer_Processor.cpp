@@ -82,6 +82,7 @@ void CCanvasRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
 
             DRAW_CMD tCmd = DRAW_CMD::Create_Canvas(pData->hMaterial, pData->hTexture, pData->hRectTransform, pData->flags, pData->sortZ, pData->rcUV, pData->vColor, pData->rcClip);
             tCmd.sortKey = Make_SortKey(*pData);
+            tCmd.eLayer = RENDER_LAYER::UI;
             outCmds.push_back(tCmd);
         }
     }
@@ -169,27 +170,25 @@ uint64_t CCanvasRenderer_Processor::Make_SortKey(const CANVAS_RENDERER_DATA& tDa
 {
     uint64_t key = 0;
 
-    // layer (4bit)
     const uint64_t layer = (uint64_t)((uint8_t)tData.layer & 0xF);
 
-    // z (16bit quantize)
     _float z = tData.sortZ;
     if (z < 0.f) z = 0.f;
     if (z > 1.f) z = 1.f;
     const uint64_t zq = (uint64_t)(z * 65535.f + 0.5f);
 
-    // material / texture는 하위 일부 비트만 사용
-    const uint64_t material = (uint64_t)(tData.hMaterial & 0xFFFFF); // 20bit
-    const uint64_t texture = (uint64_t)(tData.hTexture & 0xFFFFF); // 20bit
+    const uint64_t priority = (uint64_t)(tData.visualPriority & 0xFF);
+    const uint64_t material = (uint64_t)(tData.hMaterial & 0xFFFFF);
+    const uint64_t texture = (uint64_t)(tData.hTexture & 0xFFFFF);
 
-    key |= (layer << 60);
-    key |= (zq << 44);
-    key |= (material << 24);
-    key |= (texture << 4);
+    key |= (layer << 60);        // 4bit
+    key |= (zq << 44);           // 16bit
+    key |= (priority << 36);     // 8bit
+    key |= (material << 16);     // 20bit
+    key |= (texture >> 4);       // 남는 비트 맞춤용 예시
 
     return key;
 }
-
 std::unique_ptr<CCanvasRenderer_Processor> CCanvasRenderer_Processor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CRectTransform_Processor* pProcessor)
 {
     auto pInstance = std::make_unique<CCanvasRenderer_Processor>(pDevice, pContext, pProcessor);
