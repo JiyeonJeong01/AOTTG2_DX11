@@ -23,10 +23,13 @@ public:
 
     void Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable) override;
 
-
+public:
     /* 각 컴포넌트에 필요한 로직들 */
     _bool   Try_Get_Guid_By_TypeID(TypeID typeId, ASSET_GUID& out) const;
     HRESULT Rebind_ScriptGuid(COMPONENT_HANDLE hScript, const ASSET_GUID& guid);
+
+    IScript* Get_Script_Instance(COMPONENT_HANDLE hScript);
+
 private :
     CScript_Handler* m_pScript_Handler{ };
     typedef struct tagTickCall

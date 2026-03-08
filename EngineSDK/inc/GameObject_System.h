@@ -52,6 +52,13 @@ public :
 
     HRESULT             Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& outSpecs);
 
+public:
+    OBJECT_HANDLE Find_Handle_By_UUID(const INSTANCE_UUID& tUUID) const;
+    void Register_UUID_Handle(const INSTANCE_UUID& tUUID, OBJECT_HANDLE hObject);
+    void Unregister_UUID_Handle(const INSTANCE_UUID& tUUID);
+
+private:
+
     /* --- Helpers ---*/
 public :
     CLayerHelper& Layers() const;
@@ -70,6 +77,8 @@ private :
     std::vector<uint32_t>                       m_pendingDestroys;
 
     CGameObject*                                m_pCanvas{};
+
+    std::unordered_map<INSTANCE_UUID, OBJECT_HANDLE, INSTANCE_UUID_HASHER> m_mapUUIDToHandle;
 
 
 private:

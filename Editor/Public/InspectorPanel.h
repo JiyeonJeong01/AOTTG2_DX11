@@ -5,6 +5,7 @@
 NS_BEGIN(Engine)
 class CGameObject;
 class CScript_Processor;
+class IScript;
 NS_END
 
 NS_BEGIN(Editor)
@@ -63,6 +64,7 @@ private:
     void Draw_Rigidbody();
     void Draw_Script();
     void Draw_AllScripts(COMPONENT_HANDLE hComponent);
+    void Draw_ScriptFields(class Engine::IScript* pScript);
     void Draw_UIImage();
     void Draw_UIButton();
 

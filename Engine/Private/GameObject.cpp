@@ -238,6 +238,12 @@ Layer::LAYER_ID CGameObject::Get_Layer() const
     return tData.layer;
 }
 
+const INSTANCE_UUID& CGameObject::Get_UUID() const
+{
+    const GAMEOBJECT_DATA& tData = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
+    return tData.tUUID;
+}
+
 const ASSET_GUID& CGameObject::Get_ProtoGUID() const
 {
     return SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).tProtoGUID;

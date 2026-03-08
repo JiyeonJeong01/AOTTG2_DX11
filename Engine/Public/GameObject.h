@@ -53,6 +53,7 @@ public:
 
     Layer::LAYER_ID             Get_Layer() const;
 
+    const INSTANCE_UUID&        Get_UUID() const;
     const ASSET_GUID&           Get_ProtoGUID() const;
     void                        Set_ProtoGUID(const ASSET_GUID& tGUID);
 

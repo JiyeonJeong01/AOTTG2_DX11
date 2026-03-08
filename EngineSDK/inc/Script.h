@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CComponent_Proxy_Base.h"
+#include "ScriptField_Reflection.h"
 
 NS_BEGIN(Engine)
 using TypeID = uint32_t;
@@ -77,13 +78,27 @@ public:
     virtual void Late_Update(void* pCtx, _float fDT) { (void)pCtx; (void)fDT; }
 
 public :
+    virtual const SCRIPT_REFLECTION_INFO* Get_Reflection_Info() const
+    {
+        return nullptr;
+    }
+
     void Set_Owner(OBJECT_HANDLE hObject)
     {
         m_hObject = hObject;
     }
 
+public  :
+    void Save_Exposed_Fields(json& j) const;
+    _bool Load_Exposed_Fields(const json& j);
+    void Resolve_Exposed_ObjectRefs();
+
 protected :
     OBJECT_HANDLE m_hObject{};
+
+protected :
+    void* Get_Field_Ptr(const SCRIPT_FIELD_DESC& tDesc);
+    const void* Get_Field_Ptr(const SCRIPT_FIELD_DESC& tDesc) const;
 };
 
 

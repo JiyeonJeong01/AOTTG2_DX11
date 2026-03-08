@@ -5,10 +5,27 @@
 #include "Script.h"
 
 
-NS_BEGIN(Client)
-
-class CHello : public IScript
+namespace Engine
 {
+    class CGameObject;
+}
+
+NS_BEGIN(Client)
+    class CHello : public IScript
+{
+public :
+    _int                m_iSpeed = 0;
+    _float3             m_vDir = { 0.f, 0.f, 0.f };
+    SCRIPT_OBJECT_REF   m_rObject{};
+
+public :
+    SCRIPT_FIELDS_BEGIN(CHello)
+        SCRIPT_FIELD_INT(m_iSpeed)
+        SCRIPT_FIELD_FLOAT3(m_vDir)
+        SCRIPT_FIELD_OBJECT_REF(m_rObject)
+    SCRIPT_FIELDS_END(CHello)
+
+
 public:
     void Awake(void* pCtx) override;
     void Start(void* pCtx) override;
@@ -19,6 +36,7 @@ public:
 
 private :
     CTransform m_Trnasform;
+    CGameObject* m_pTarget = nullptr;
 
 private :
     void Move(_float fDT);

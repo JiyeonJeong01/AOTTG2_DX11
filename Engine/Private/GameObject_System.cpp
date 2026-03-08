@@ -553,6 +553,34 @@ HRESULT CGameObject_System::Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& out
     return S_OK;
 }
 
+OBJECT_HANDLE CGameObject_System::Find_Handle_By_UUID(const INSTANCE_UUID& tUUID) const
+{
+    auto iter = m_mapUUIDToHandle.find(tUUID);
+    if (iter == m_mapUUIDToHandle.end())
+        return OBJECT_HANDLE{};
+
+    return iter->second;
+}
+
+void CGameObject_System::Register_UUID_Handle(const INSTANCE_UUID& tUUID, OBJECT_HANDLE hObject)
+{
+    if (tUUID == INSTANCE_UUID{})
+        return;
+
+    if (false == hObject.Is_Valid())
+        return;
+
+    m_mapUUIDToHandle[tUUID] = hObject;
+}
+
+void CGameObject_System::Unregister_UUID_Handle(const INSTANCE_UUID& tUUID)
+{
+    if (tUUID == INSTANCE_UUID{})
+        return;
+
+    m_mapUUIDToHandle.erase(tUUID);
+}
+
 
 CLayerHelper& CGameObject_System::Layers() const
 {

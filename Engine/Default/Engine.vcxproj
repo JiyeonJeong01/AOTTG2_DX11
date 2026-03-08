@@ -178,6 +178,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Rigidbody_Builder.h" />
     <ClInclude Include="..\Public\SceneChange_Event.h" />
     <ClInclude Include="..\Public\Script.h" />
+    <ClInclude Include="..\Public\ScriptField_Reflection.h" />
     <ClInclude Include="..\Public\Script_Handler.h" />
     <ClInclude Include="..\Public\Script_Processor.h" />
     <ClInclude Include="..\Public\Script_Register.h" />
@@ -263,6 +264,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Physics_Processor.cpp" />
     <ClCompile Include="..\Private\Rigidbody.cpp" />
     <ClCompile Include="..\Private\Rigidbody_Builder.cpp" />
+    <ClCompile Include="..\Private\Script.cpp" />
     <ClCompile Include="..\Private\Solver.cpp" />
     <ClCompile Include="Raycast.cpp" />
     <Text Include="..\Docs\Script_Doc.md">

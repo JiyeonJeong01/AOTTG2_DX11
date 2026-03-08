@@ -224,6 +224,18 @@ _bool CScript_Processor::Try_Get_Guid_By_TypeID(TypeID typeId, ASSET_GUID& out) 
     return out.Is_Valid();
 }
 
+IScript* CScript_Processor::Get_Script_Instance(COMPONENT_HANDLE hScript)
+{
+    SCRIPT_DATA* pData = m_Pool.Get_Data_By_Handle(hScript);
+    if (nullptr == pData)
+        return nullptr;
+
+    if (nullptr == pData->pState)
+        return nullptr;
+
+    return reinterpret_cast<IScript*>(pData->pState);
+}
+
 /* Initialzie_Componet_Spec 에서 바로 Spec으로 값 세팅 가능하게 데이터를 초기값으로 세팅/정리한다.
  * Script 컴포넌트의 경우 추가 이후 반드시 재빌드가 필요하고 그 때 Initialzie_Componet_Spec을 통해 적절한 데이터를 받아야 한다. */
 void CScript_Processor::Initialize_Component_Data(COMPONENT_HANDLE hComponent)

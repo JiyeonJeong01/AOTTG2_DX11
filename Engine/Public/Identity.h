@@ -165,6 +165,21 @@ typedef struct tagInstanceUUID
     }
 }INSTANCE_UUID;
 
+typedef struct tagInstanceUuidHasher
+{
+    size_t operator()(const INSTANCE_UUID& g) const noexcept
+    {
+        /* Treat 128-bit GUID as two 64-bit integers for hashing */ 
+        const uint64_t* p = reinterpret_cast<const uint64_t*>(&g.value);
+        uint64_t a = p[0];
+        uint64_t b = p[1];
+
+        /* Mix the bits to create a unique hash (similar to boost::hash_combine) */
+        a ^= b + 0x9e3779b97f4a7c15ull + (a << 6) + (a >> 2);
+        return SCAST(size_t, a);
+    }
+}INSTANCE_UUID_HASHER;
+
 typedef struct tagAssetGuidHasher
 {
     size_t operator()(const ASSET_GUID& g) const noexcept
@@ -179,21 +194,6 @@ typedef struct tagAssetGuidHasher
         return SCAST(size_t, a);
     }
 }ASSET_GUID_HASHER;
-
-typedef struct tagInstanceUuidHasher
-{
-    size_t operator()(const INSTANCE_UUID& i) const noexcept
-    {
-        /* Treat 128-bit GUID as two 64-bit integers for hashing */ 
-        const uint64_t* p = reinterpret_cast<const uint64_t*>(&i.value);
-        uint64_t a = p[0];
-        uint64_t b = p[1];
-
-        /* Mix the bits to create a unique hash (similar to boost::hash_combine) */
-        a ^= b + 0x9e3779b97f4a7c15ull + (a << 6) + (a >> 2);
-        return SCAST(size_t, a);
-    }
-}INSTANCE_UUID_HASHER;
 
 typedef struct ENGINE_DLL tagAssetRecord
 {

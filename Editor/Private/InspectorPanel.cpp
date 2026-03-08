@@ -1457,11 +1457,139 @@ void CInspectorPanel::Draw_AllScripts(COMPONENT_HANDLE hComponent)
 
     if (bHasBind)
         ImGui::EndDisabled();
+    if (bHasBind)
+    {
+        Engine::IScript* pScript = m_pScript_Processor->Get_Script_Instance(sc.Get_Handle());
+        if (pScript)
+        {
+            Draw_ScriptFields(pScript);
+        }
+        else
+        {
+            ImGui::TextDisabled("Script instance is not ready.");
+        }
+    }
 
     ImGui::TreePop();
     ImGui::PopID(); // PushID(hComponent)
 }
 
+void CInspectorPanel::Draw_ScriptFields(Engine::IScript* pScript)
+{
+    if (nullptr == pScript)
+        return;
+
+    const SCRIPT_REFLECTION_INFO* pInfo = pScript->Get_Reflection_Info();
+    if (nullptr == pInfo)
+        return;
+
+    if (false == ImGui::CollapsingHeader("Exposed Fields", ImGuiTreeNodeFlags_DefaultOpen))
+        return;
+
+    for (const SCRIPT_FIELD_DESC& tDesc : pInfo->vecFields)
+    {
+        void* pField = reinterpret_cast<void*>(reinterpret_cast<char*>(pScript) + tDesc.iOffset);
+        if (nullptr == pField)
+            continue;
+
+        ImGui::PushID(tDesc.strName.c_str());
+
+        switch (tDesc.eType)
+        {
+        case SCRIPT_FIELD_TYPE::INT:
+        {
+            int* pValue = reinterpret_cast<int*>(pField);
+            ImGui::InputInt(tDesc.strName.c_str(), pValue);
+            break;
+        }
+
+        case SCRIPT_FIELD_TYPE::FLOAT:
+        {
+            float* pValue = reinterpret_cast<float*>(pField);
+            ImGui::InputFloat(tDesc.strName.c_str(), pValue);
+            break;
+        }
+
+        case SCRIPT_FIELD_TYPE::FLOAT2:
+        {
+            _float2* pValue = reinterpret_cast<_float2*>(pField);
+            ImGui::InputFloat2(tDesc.strName.c_str(), &pValue->x);
+            break;
+        }
+
+        case SCRIPT_FIELD_TYPE::FLOAT3:
+        {
+            _float3* pValue = reinterpret_cast<_float3*>(pField);
+            ImGui::InputFloat3(tDesc.strName.c_str(), &pValue->x);
+            break;
+        }
+
+        case SCRIPT_FIELD_TYPE::FLOAT4:
+        {
+            _float4* pValue = reinterpret_cast<_float4*>(pField);
+            ImGui::InputFloat4(tDesc.strName.c_str(), &pValue->x);
+            break;
+        }
+
+        case SCRIPT_FIELD_TYPE::OBJECT_REF:
+        {
+            SCRIPT_OBJECT_REF* pValue = reinterpret_cast<SCRIPT_OBJECT_REF*>(pField);
+
+            std::string strButtonText = tDesc.strName;
+            strButtonText += " : ";
+
+            if (pValue->hObject.Is_Valid())
+            {
+                CGameObject* pObject = SYS_GAMEOBJECT.Get_Wrapper(pValue->hObject);
+                if (pObject)
+                    strButtonText += pObject->Get_Label();
+                else
+                    strButtonText += "<Invalid Handle>";
+            }
+            else if (pValue->tUUID != INSTANCE_UUID{})
+            {
+                strButtonText += "<Missing Object>";
+            }
+            else
+            {
+                strButtonText += "<None>";
+            }
+
+            ImGui::Button(strButtonText.c_str(), ImVec2(-1.f, 0.f));
+
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* p = ImGui::AcceptDragDropPayload("HIERARCHY_GO_PTR"))
+                {
+                    Engine::CGameObject* pDropped = *(Engine::CGameObject**)p->Data;
+                    if (pDropped)
+                    {
+                        pValue->hObject = pDropped->Get_Handle();
+                        pValue->tUUID = pDropped->Get_UUID();
+                    }
+                }
+                ImGui::EndDragDropTarget();
+            }
+
+            if (ImGui::BeginPopupContextItem("ObjectRefContext"))
+            {
+                if (ImGui::MenuItem("Clear"))
+                {
+                    pValue->Clear();
+                }
+                ImGui::EndPopup();
+            }
+
+            break;
+        }
+
+        default:
+            break;
+        }
+
+        ImGui::PopID();
+    }
+}
 void CInspectorPanel::Draw_UIImage()
 {
     CUIImage img = m_pTarget->Get_Component<CUIImage>();

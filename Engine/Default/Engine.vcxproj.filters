@@ -456,6 +456,9 @@
     <ClInclude Include="..\Public\BUTTON_EVENT_DATA.h">
       <Filter>00. System\11. Event\Events</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\ScriptField_Reflection.h">
+      <Filter>01. Utility\04. Component\03. Script</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -622,6 +625,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Solver.cpp">
       <Filter>01. Utility\04. Component\02. Physics\Workers\Rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Script.cpp">
+      <Filter>01. Utility\04. Component\03. Script</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
