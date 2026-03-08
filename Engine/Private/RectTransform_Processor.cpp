@@ -52,11 +52,6 @@ void CRectTransform_Processor::Update(_float fDT)
             pData->bDirty = false;
         }
     }
-
-    { /*TODO ------------------------------------------------------------------------------------------------------------------- */
-        if (sivaroma && (sivaroma->vPosPx.x != 500.f && sivaroma->vPosPx.y != 500.f))
-            __debugbreak();
-    }/*TODO ------------------------------------------------------------------------------------------------------------------- */
 }
 
 void CRectTransform_Processor::LateUpdate(_float)
@@ -82,11 +77,6 @@ HRESULT CRectTransform_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, 
     pData->bDirty = false;
 
     Bake_World(pData);
-
-    { /*TODO ------------------------------------------------------------------------------------------------------------------- */
-        if (pData->vPosPx.x != 0.f && pData->vPosPx.y != 0.f)
-            sivaroma = pData;
-    }/*TODO ------------------------------------------------------------------------------------------------------------------- */
 
     return S_OK;
 }

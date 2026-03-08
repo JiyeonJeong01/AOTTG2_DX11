@@ -96,7 +96,7 @@ private :
     void    Integrate_Forces(_float fDT);
     void    Integrate_Velocities(_float fDT);
     void    Process_Collision(vector<CONTACT_DESC>& outContacts);
-
+    void    Reset_Kinematic_Velocities();
 public :
     static std::unique_ptr<CPhysics_Processor> Create();
 };

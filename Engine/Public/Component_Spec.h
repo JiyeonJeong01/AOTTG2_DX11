@@ -664,7 +664,6 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::COLLIDER)
 
     _bool       bEnable = false;
-    BODY_TYPE   eColType{ BODY_TYPE::STATIC };
     _bool       bOnCol{ false };
 
     SHAPE       eShape{ SHAPE::END };
@@ -687,7 +686,6 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
     {
         j["Type"] = SCAST(_uint, Get_Type());
         j["Enabled"] = bEnable;
-        j["BodyType"] = SCAST(_uint, eColType);
         j["OnCol"] = bOnCol;
         j["Shape"] = SCAST(_uint, eShape);
         j["Offset"] = { vOffset.x, vOffset.y, vOffset.z };
@@ -721,13 +719,6 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
 
         if (!Read_Bool(j, "Enabled", bEnable))
             return false;
-
-        {
-            uint32_t iBodyType = 0;
-            if (!Read_UInt(j, "BodyType", iBodyType))
-                return false;
-            eColType = SCAST(BODY_TYPE, iBodyType);
-        }
 
         if (!Read_Bool(j, "OnCol", bOnCol))
             return false;
@@ -791,7 +782,7 @@ typedef struct ENGINE_DLL tagRigidbodySpec final : public COMPONENT_SPEC_BASE
     uint8_t     pad0[2] = {};
 
     SHAPE       eShape = SHAPE::END;
-    BODY_TYPE   eBodyType = BODY_TYPE::STATIC;
+    BODY_TYPE   eBodyType = BODY_TYPE::DYNAMIC;
 
     _float      fMass = 1.f;
     _float      fDrag = 0.f;

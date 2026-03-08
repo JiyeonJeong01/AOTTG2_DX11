@@ -18,11 +18,6 @@ namespace
         mat = Math::Identity();
     }
 
-    inline _bool Is_Static_Body(const RIGIDBODY_DATA* pData)
-    {
-        return (pData->eBodyType == BODY_TYPE::STATIC);
-    }
-
     inline _bool Is_Dynamic_Body(const RIGIDBODY_DATA* pData)
     {
         return (pData->eBodyType == BODY_TYPE::DYNAMIC);

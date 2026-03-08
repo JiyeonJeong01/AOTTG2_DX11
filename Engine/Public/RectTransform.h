@@ -10,7 +10,7 @@ typedef struct ENGINE_DLL tagRectTransformData final
     _bool               bEnable = false;
 
     // --- Input (authoring) ---
-    _float2 vPosPx{ 0.f, 0.f };      // UI X,Y (px) from top-left
+    _float2 vPosPx{ 960.f, 540.f };      // UI X,Y (px) from top-left
     _float2 vSizePx{ 100.f, 100.f }; // UI W,H (px)
 
     // --- Cache ---

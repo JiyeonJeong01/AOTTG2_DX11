@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Component_Processor_Impl.h"
-#include "RectTransform.h"   // 너가 만든 Proxy/Data 헤더
+#include "RectTransform.h"
 NS_BEGIN(Engine)
 
 class ENGINE_DLL CRectTransform_Processor final

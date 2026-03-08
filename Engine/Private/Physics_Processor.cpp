@@ -15,7 +15,7 @@ HRESULT CPhysics_Processor::Initialize()
         SYS_COMPONENT.Register_InitialSpecFactory<CCollider, COLLIDER_SPEC>();
         SYS_COMPONENT.Register_BuildSpecFacotry<CCollider>();
 
-        SYS_COMPONENT.Register_InitialSpecFactory<CRigidbody, COLLIDER_SPEC>();
+        SYS_COMPONENT.Register_InitialSpecFactory<CRigidbody, RIGIDBODY_SPEC>();
         SYS_COMPONENT.Register_BuildSpecFacotry<CRigidbody>();
     }
 
@@ -52,6 +52,9 @@ void CPhysics_Processor::Fixed_Update(_float fDT)
     for (_uint i = 0; i < 1; ++i)
         for (auto& contact : outContacts)
             m_upSolver->Solve_Contacts(&contact);
+
+    /* kinematic 해당 프레임 속도 초기화 */
+    Reset_Kinematic_Velocities();
 }
 
 void CPhysics_Processor::Render()
@@ -149,7 +152,6 @@ HRESULT CPhysics_Processor::Initialize_From_Spec_Collider(COMPONENT_HANDLE h, co
     const COLLIDER_SPEC* pSpec = SCAST(const COLLIDER_SPEC*, spec);
 
     pData->bEnable = pSpec->bEnable;
-    pData->eColType = pSpec->eColType;
     pData->bOnCol = pSpec->bOnCol;
     pData->eShape = pSpec->eShape;
     pData->vOffset = pSpec->vOffset;
@@ -220,7 +222,6 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec_Collider(COM
     auto pSpec = std::make_unique<COLLIDER_SPEC>();
 
     pSpec->bEnable = pData->bEnable;
-    pSpec->eColType = pData->eColType;
     pSpec->bOnCol = pData->bOnCol;
     pSpec->eShape = pData->eShape;
     pSpec->vOffset = pData->vOffset;
@@ -547,6 +548,34 @@ void CPhysics_Processor::Process_Collision(vector<CONTACT_DESC>& outContacts)
     m_upCollision_Detector->Generate_BroadPhase_Pairs(m_AllColliders, outPair);
 
     m_upCollision_Detector->Process_NarrowPhase(outPair, outContacts);
+}
+
+void CPhysics_Processor::Reset_Kinematic_Velocities()
+{
+    const auto& rigidbodyPages = m_RigidbodyPool.GetPages();
+
+    for (const auto& upPage : rigidbodyPages)
+    {
+        auto* pPage = upPage.get();
+        if (!pPage)
+            continue;
+
+        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        {
+            if (!pPage->Is_Allocated(i))
+                continue;
+
+            RIGIDBODY_DATA* pData = pPage->Get_Ptr(i);
+            if (!pData || !pData->bEnable)
+                continue;
+
+            if (pData->eBodyType != BODY_TYPE::KINEMATIC)
+                continue;
+
+            pData->vLinearVel = Math::Zero3();
+            pData->vAngularVel = Math::Zero3();
+        }
+    }
 }
 
 std::unique_ptr<CPhysics_Processor> CPhysics_Processor::Create()

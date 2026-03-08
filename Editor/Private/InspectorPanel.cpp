@@ -999,19 +999,6 @@ void CInspectorPanel::Draw_Collider()
     if (pData->bEnable == 0)
         ImGui::BeginDisabled();
 
-    ImGui::TextUnformatted("Body Type");
-    ImGui::SameLine();
-
-    const char* bodyTypeText = "Unknown";
-    switch (pData->eColType)
-    {
-    case BODY_TYPE::STATIC:    bodyTypeText = "Static"; break;
-    case BODY_TYPE::DYNAMIC:   bodyTypeText = "Dynamic"; break;
-    case BODY_TYPE::KINEMATIC: bodyTypeText = "Kinematic"; break;
-    default: break;
-    }
-    ImGui::TextUnformatted(bodyTypeText);
-
     ImGui::TextUnformatted("Shape");
     ImGui::SameLine();
 
@@ -1109,7 +1096,6 @@ void CInspectorPanel::Draw_Rigidbody()
     const char* bodyTypeText = "Unknown";
     switch (pData->eBodyType)
     {
-    case BODY_TYPE::STATIC:    bodyTypeText = "Static"; break;
     case BODY_TYPE::DYNAMIC:   bodyTypeText = "Dynamic"; break;
     case BODY_TYPE::KINEMATIC: bodyTypeText = "Kinematic"; break;
     default: break;

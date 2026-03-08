@@ -318,6 +318,9 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\UI_Processor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Docs\Physics_Doc.md">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="..\Docs\Scene_Doc.md">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>

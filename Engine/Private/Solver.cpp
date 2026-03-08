@@ -50,8 +50,9 @@ void CSolver::Solve_Impulse(CONTACT_DESC* pInfo)
     Try_Get_Rigidbody_And_Transform(pInfo->pColA, &rigidbodyA, &transformA, &pBodyA);
     Try_Get_Rigidbody_And_Transform(pInfo->pColB, &rigidbodyB, &transformB, &pBodyB);
 
-    /* 둘 다 rigidbody가 없으면 물리 solve 불가 */
-    if (pBodyA == nullptr && pBodyB == nullptr)
+    /* 최소 한 쪽이 dynamic이어야 물리 solve 가능 */
+    if ((pBodyA == nullptr || pBodyA->eBodyType != BODY_TYPE::DYNAMIC) &&
+        (pBodyB == nullptr || pBodyB->eBodyType != BODY_TYPE::DYNAMIC))
         return;
 
     const _float3 vPoint = pInfo->vPoint;
@@ -208,19 +209,14 @@ void CSolver::Solve_Impulse(CONTACT_DESC* pInfo)
 
 void CSolver::Solve_Penetration(CONTACT_DESC* pInfo)
 {
-    if (pInfo == nullptr)
-        return;
-
-    if (pInfo->pColA == nullptr || pInfo->pColB == nullptr)
+    if (pInfo == nullptr || pInfo->pColA == nullptr || pInfo->pColB == nullptr)
         return;
 
     if (pInfo->fDepth <= 0.f)
         return;
 
-    CRigidbody rigidbodyA;
-    CRigidbody rigidbodyB;
-    CTransform transformA;
-    CTransform transformB;
+    CRigidbody rigidbodyA, rigidbodyB;
+    CTransform transformA, transformB;
 
     RIGIDBODY_DATA* pBodyA = nullptr;
     RIGIDBODY_DATA* pBodyB = nullptr;
@@ -228,24 +224,22 @@ void CSolver::Solve_Penetration(CONTACT_DESC* pInfo)
     Try_Get_Rigidbody_And_Transform(pInfo->pColA, &rigidbodyA, &transformA, &pBodyA);
     Try_Get_Rigidbody_And_Transform(pInfo->pColB, &rigidbodyB, &transformB, &pBodyB);
 
-    const _float fInvA = Get_InvMass(pBodyA);
-    const _float fInvB = Get_InvMass(pBodyB);
+    const _float fMoveWeightA = (pBodyA == nullptr) ? 0.f : 1.f;
+    const _float fMoveWeightB = (pBodyB == nullptr) ? 0.f : 1.f;
 
-    const _float fTotalInv = fInvA + fInvB;
-    if (fTotalInv <= 0.f)
+    const _float fTotalWeight = fMoveWeightA + fMoveWeightB;
+    if (fTotalWeight <= 0.f)
         return;
 
-    const _float fMoveA = pInfo->fDepth * (fInvA / fTotalInv);
-    const _float fMoveB = pInfo->fDepth * (fInvB / fTotalInv);
+    const _float fMoveA = pInfo->fDepth * (fMoveWeightA / fTotalWeight);
+    const _float fMoveB = pInfo->fDepth * (fMoveWeightB / fTotalWeight);
 
-    /* TODO : vResolveN_A를 penetration normal처럼 사용하고 있다. 
-       TODO : 현재는 A를 B에서 분리하는 방향을 규약으로 동작하지만,
-       TODO : 추후 NarrowPhase가 진짜 contact normal을 제공하면 그 값으로 통일하는 게 더 안전하다. */
+    /* TODO : vResolveN_A를 penetration normal처럼 사용하고 있다.
+     * TODO : 현재는 A를 B에서 분리하는 방향을 규약으로 동작하지만,
+     * TODO : 추후 NarrowPhase가 진짜 contact normal을 제공하면 그 값으로 통일하는 게 더 안전하다. */
     const _vector vResolveN = Math::Load(pInfo->vResolveN_A);
 
-
-    /* TODO : object origin == COM == collider center 인 경우에만 안전하다 확인 필요 */
-    if (fInvA > 0.f && transformA.Is_Valid())
+    if (fMoveWeightA > 0.f && transformA.Is_Valid())
     {
         transformA.Translate(vResolveN * fMoveA, SPACE::WORLD);
 
@@ -260,7 +254,7 @@ void CSolver::Solve_Penetration(CONTACT_DESC* pInfo)
         }
     }
 
-    if (fInvB > 0.f && transformB.Is_Valid())
+    if (fMoveWeightB > 0.f && transformB.Is_Valid())
     {
         transformB.Translate(vResolveN * (-fMoveB), SPACE::WORLD);
 
@@ -355,9 +349,6 @@ _bool CSolver::Is_Separating(CONTACT_DESC* pInfo)
 _float3 CSolver::Calc_PointVelocity(RIGIDBODY_DATA* pBody, const _float3& vPoint)
 {
     if (pBody == nullptr)
-        return Math::Zero3();
-
-    if (pBody->eBodyType == BODY_TYPE::STATIC)
         return Math::Zero3();
 
     const _vector vPointVec = Math::Load(vPoint);

@@ -21,10 +21,11 @@ HRESULT CCollider_Proxy_Builder::Initialize()
 
 void CCollider_Proxy_Builder::Build_Collider_Proxy(COLLIDER_DATA* pData, COLLIDER_PROXY_DATA& outProxy)
 {
+    outProxy = {};
+
     TRANSFORM_DATA* pTr = m_pTransform_Processor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, pData->hTransform)._Data();
     IF_NULL_RETURN_MSG_BREAK(pTr, , "Can't build proxy; pTr is nullptr");
 
-    outProxy = {};
     outProxy.pCol = pData;
     Math::Store(outProxy.vCenterWorld, Get_ColliderCenter_World(pData, pTr));
 

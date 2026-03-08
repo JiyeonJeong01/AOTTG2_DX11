@@ -1,6 +1,7 @@
 ﻿#include "Rigidbody.h"
 #include "GameObject.h"
 #include "Transform.h"
+#include "Core_System.h"
 
 void CRigidbody::Set_Shape(SHAPE eShape)
 {
@@ -35,7 +36,7 @@ void CRigidbody::Set_BodyType(BODY_TYPE eBodyType)
 BODY_TYPE CRigidbody::Get_BodyType() const
 {
     if (!m_pData)
-        return BODY_TYPE::STATIC;
+        return BODY_TYPE::KINEMATIC;
 
     return m_pData->eBodyType;
 }
@@ -242,10 +243,6 @@ void CRigidbody::Translate(const _float3& vDeltaPos)
     if (!m_pData || !Find_Transform())
         return;
 
-    /* STATIC BODY는 절대 움직이지 않는다 */
-    if (m_pData->eBodyType == BODY_TYPE::STATIC)
-        return;
-
     const _vector vPosition = Math::Load(m_pTrData->vPosition);
     const _vector vDelta = Math::Load(vDeltaPos);
     Math::Store(m_pTrData->vPosition, vPosition + vDelta);
@@ -253,6 +250,13 @@ void CRigidbody::Translate(const _float3& vDeltaPos)
     const _vector vCOM = Math::Load(m_pData->vCOM);
     Math::Store(m_pData->vCOM, vCOM + vDelta);
     Math::Store(m_pData->vWorldCOM, Math::Load(m_pTrData->vPosition));
+
+    const _float fDT = SYS_CORE.Get_FrameDT();
+
+    if (fDT > 0.f)
+        Math::Store(m_pData->vLinearVel, vDelta / fDT);
+    else
+        m_pData->vLinearVel = Math::Zero3();
 
     m_pData->bDirtyWorldInertia = true;
 }

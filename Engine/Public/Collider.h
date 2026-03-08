@@ -14,7 +14,6 @@ typedef struct ENGINE_DLL tagColliderData final
     COMPONENT_HANDLE    hTransform{ INVALID_HANDLE };
     COMPONENT_HANDLE    hRigidbody{ INVALID_HANDLE };
 
-    BODY_TYPE           eColType{ BODY_TYPE::STATIC };
     _bool               bOnCol{ false };
 
     SHAPE               eShape{ SHAPE::END };

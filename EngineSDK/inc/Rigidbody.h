@@ -21,7 +21,7 @@ typedef struct tagRigidbodyData final
     COMPONENT_HANDLE hCollider = INVALID_HANDLE;
 
     SHAPE           eShape = SHAPE::END;
-    BODY_TYPE       eBodyType = BODY_TYPE::STATIC;
+    BODY_TYPE       eBodyType = BODY_TYPE::DYNAMIC;
 
     _float          fMass = 1.f;
     _float          fInvMass = 0.f;

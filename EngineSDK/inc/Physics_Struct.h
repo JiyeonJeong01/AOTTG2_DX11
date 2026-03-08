@@ -5,7 +5,8 @@
 #include "Engine_Math.h"
 
 NS_BEGIN(Engine)
-    struct tagColliderData;
+
+struct tagColliderData;
 typedef struct tagColliderData COLLIDER_DATA;
 
 struct tagObjectHandle;
@@ -61,7 +62,7 @@ typedef struct tagColPair
 typedef struct tagCollision
 {
     OBJECT_HANDLE       hObject{};			// 충돌 당한 오브젝트
-    COLLIDER_DATA*      pCounterCollider{};      // 충돌 당한 오브젝트의 콜라이더
+    COLLIDER_DATA*      pCounterCollider{}; // 충돌 당한 오브젝트의 콜라이더
 
     _float3			vPoint;
 }COLLISION_DESC;

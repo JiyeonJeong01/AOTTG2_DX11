@@ -37,8 +37,8 @@ namespace Engine
     enum class PARAM_TYPE : uint8_t         { FLOAT, FLOAT4, FLOAT4X4, TEXTURE_HANDLE };
 
     /* --- Physics --- */
-	enum class SHAPE : uint8_t      { BOX, SPHERE, PLANE, CAPSULE, END };
-	enum class BODY_TYPE : uint8_t          { STATIC, KINEMATIC, DYNAMIC, END };
+	enum class SHAPE : uint8_t              { BOX, SPHERE, PLANE, CAPSULE, END };
+	enum class BODY_TYPE : uint8_t          { DYNAMIC, KINEMATIC, END };
 
     /* --- UI --- */
 	enum class UI_TYPE : uint8_t            { BUTTON, IMAGE, PANEL, SLOT, END };
