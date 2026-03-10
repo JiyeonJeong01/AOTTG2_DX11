@@ -11,6 +11,7 @@
 #include "Transform.h"
 #include "Rigidbody.h"
 #include "Collider.h"
+#include "SpringJoint.h"
 #include "UIImage.h"
 #include "UIButton.h"
 #include "MeshRenderer.h"
@@ -505,6 +506,20 @@ void CInspectorPanel::Draw_AddComponentPopup()
             }
         }
 
+        if (ImGui::MenuItem("SpringJoint"))
+        {
+            CRigidbody col = m_pTarget->Get_Component<CRigidbody>();
+            if (!col.Is_Valid())
+            {
+                LOG_WARN("SpringJoint must have CRigidbody.");
+            }
+            else
+            {
+                CSpringJoint sj = m_pTarget->Add_Component<CSpringJoint>();
+                ImGui::CloseCurrentPopup();
+            }
+        }
+
         if (ImGui::BeginPopupModal("RigidbodyNeedColliderPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::TextUnformatted("Rigidbody requires a Collider component first.");
@@ -586,6 +601,9 @@ void CInspectorPanel::Draw_ComponentByType(COMPONENT_TYPE eComType)
         break;
     case COMPONENT_TYPE::RIGIDBODY :
         Draw_Rigidbody();
+        break;
+    case COMPONENT_TYPE::SPRING_JOINT :
+        Draw_SpringJoint();
         break;
     case COMPONENT_TYPE::MESH_RENDERER :
         Draw_MeshRenderer();
@@ -1093,14 +1111,36 @@ void CInspectorPanel::Draw_Rigidbody()
     ImGui::TextUnformatted("Body Type");
     ImGui::SameLine();
 
-    const char* bodyTypeText = "Unknown";
+    const char* bodyTypeItems[] =
+    {
+        "Dynamic",
+        "Kinematic"
+    };
+
+    int currentBodyType = 0;
     switch (pData->eBodyType)
     {
-    case BODY_TYPE::DYNAMIC:   bodyTypeText = "Dynamic"; break;
-    case BODY_TYPE::KINEMATIC: bodyTypeText = "Kinematic"; break;
-    default: break;
+    case BODY_TYPE::DYNAMIC:   currentBodyType = 0; break;
+    case BODY_TYPE::KINEMATIC: currentBodyType = 1; break;
+    default:                   currentBodyType = 0; break;
     }
-    ImGui::TextUnformatted(bodyTypeText);
+
+    ImGui::SetNextItemWidth(140.f);
+    if (ImGui::Combo("##BodyType", &currentBodyType, bodyTypeItems, IM_ARRAYSIZE(bodyTypeItems)))
+    {
+        switch (currentBodyType)
+        {
+        case 0:
+            pData->eBodyType = BODY_TYPE::DYNAMIC;
+            break;
+
+        case 1:
+            pData->eBodyType = BODY_TYPE::KINEMATIC;
+            break;
+        }
+
+        pData->bDirtyMass = true;
+    }
 
     ImGui::TextUnformatted("Shape");
     ImGui::SameLine();
@@ -1175,6 +1215,28 @@ void CInspectorPanel::Draw_Rigidbody()
         bChanged = true;
     }
 
+    ImGui::Separator();
+
+    ImGui::Text("Linear Vel   : (%.2f, %.2f, %.2f)",
+        pData->vLinearVel.x,
+        pData->vLinearVel.y,
+        pData->vLinearVel.z);
+
+    ImGui::Text("Angular Vel  : (%.2f, %.2f, %.2f)",
+        pData->vAngularVel.x,
+        pData->vAngularVel.y,
+        pData->vAngularVel.z);
+
+    ImGui::Text("Force Accum  : (%.2f, %.2f, %.2f)",
+        pData->vForceAccum.x,
+        pData->vForceAccum.y,
+        pData->vForceAccum.z);
+
+    ImGui::Text("Torque Accum : (%.2f, %.2f, %.2f)",
+        pData->vTorqueAccum.x,
+        pData->vTorqueAccum.y,
+        pData->vTorqueAccum.z);
+
     if (pData->bEnable == 0)
         ImGui::EndDisabled();
 
@@ -1184,6 +1246,184 @@ void CInspectorPanel::Draw_Rigidbody()
         pData->bDirtyInertia = true;
         pData->bDirtyWorldInertia = true;
     }
+
+    ImGui::TreePop();
+}
+
+void CInspectorPanel::Draw_SpringJoint()
+{
+    CSpringJoint springJoint = m_pTarget->Get_Component<CSpringJoint>();
+    if (!springJoint.Is_Valid())
+        return;
+
+    SPRING_JOINT_DATA* pData = springJoint._Data();
+    if (!pData)
+        return;
+
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    const ImGuiID idHeader = window->GetID("SpringJoint_Header");
+    const ImGuiID idCheck = window->GetID("SpringJoint_Enable");
+
+    ImGui::PushID(idHeader);
+
+    ImGui::AlignTextToFramePadding();
+
+    bool enabled = (pData->bEnable != 0);
+    if (ImGui::Checkbox("##Enable", &enabled))
+    {
+        pData->bEnable = enabled ? 1 : 0;
+    }
+
+    ImGui::SameLine();
+
+    const ImGuiTreeNodeFlags flags =
+        ImGuiTreeNodeFlags_DefaultOpen |
+        ImGuiTreeNodeFlags_Framed |
+        ImGuiTreeNodeFlags_SpanAvailWidth |
+        ImGuiTreeNodeFlags_AllowOverlap;
+
+    const bool open = ImGui::TreeNodeEx("SpringJoint", flags);
+
+    ImGui::PopID();
+
+    if (!open)
+        return;
+
+    if (pData->bEnable == 0)
+        ImGui::BeginDisabled();
+
+    bool bChanged = false;
+
+    bool bUseSpring = (pData->bUseSpring != 0);
+    if (ImGui::Checkbox("Use Spring", &bUseSpring))
+    {
+        pData->bUseSpring = bUseSpring ? 1 : 0;
+        bChanged = true;
+    }
+
+    _float3 vAnchor = pData->vAnchor;
+    if (ImGui::DragFloat3("Anchor", &vAnchor.x, 0.1f, -100000.f, 100000.f, "%.2f"))
+    {
+        pData->vAnchor = vAnchor;
+        bChanged = true;
+    }
+
+    float fSpring = pData->fSpring;
+    if (ImGui::DragFloat("Spring", &fSpring, 0.1f, 0.f, 100000.f, "%.3f"))
+    {
+        if (fSpring < 0.f)
+            fSpring = 0.f;
+
+        pData->fSpring = fSpring;
+        bChanged = true;
+    }
+
+    float fDamper = pData->fDamper;
+    if (ImGui::DragFloat("Damper", &fDamper, 0.1f, 0.f, 100000.f, "%.3f"))
+    {
+        if (fDamper < 0.f)
+            fDamper = 0.f;
+
+        pData->fDamper = fDamper;
+        bChanged = true;
+    }
+
+    float fRestLength = pData->fRestLength;
+    if (ImGui::DragFloat("Rest Length", &fRestLength, 0.01f, 0.f, 100000.f, "%.3f"))
+    {
+        if (fRestLength < 0.f)
+            fRestLength = 0.f;
+
+        pData->fRestLength = fRestLength;
+        bChanged = true;
+    }
+
+    bool bUseMinLength = (pData->bUseMinLength != 0);
+    if (ImGui::Checkbox("Use Min Length", &bUseMinLength))
+    {
+        pData->bUseMinLength = bUseMinLength ? 1 : 0;
+        bChanged = true;
+    }
+
+    if (pData->bUseMinLength)
+    {
+        float fMinLength = pData->fMinLength;
+        if (ImGui::DragFloat("Min Length", &fMinLength, 0.01f, 0.f, 100000.f, "%.3f"))
+        {
+            if (fMinLength < 0.f)
+                fMinLength = 0.f;
+
+            pData->fMinLength = fMinLength;
+            bChanged = true;
+        }
+    }
+
+    bool bUseMaxLength = (pData->bUseMaxLength != 0);
+    if (ImGui::Checkbox("Use Max Length", &bUseMaxLength))
+    {
+        pData->bUseMaxLength = bUseMaxLength ? 1 : 0;
+        bChanged = true;
+    }
+
+    if (pData->bUseMaxLength)
+    {
+        float fMaxLength = pData->fMaxLength;
+        if (ImGui::DragFloat("Max Length", &fMaxLength, 0.01f, 0.f, 100000.f, "%.3f"))
+        {
+            if (fMaxLength < 0.f)
+                fMaxLength = 0.f;
+
+            pData->fMaxLength = fMaxLength;
+            bChanged = true;
+        }
+    }
+
+    ImGui::Separator();
+
+    const bool bConnected = (pData->hRigidbody != INVALID_HANDLE);
+    ImGui::Text("Rigidbody : %s", bConnected ? "Connected" : "None");
+
+    ImGui::Text("Anchor    : (%.2f, %.2f, %.2f)",
+        pData->vAnchor.x,
+        pData->vAnchor.y,
+        pData->vAnchor.z);
+
+    if (bConnected)
+    {
+        CRigidbody rb = m_pTarget->Get_Component<CRigidbody>();
+        if (rb.Is_Valid())
+        {
+            RIGIDBODY_DATA* pRbData = rb._Data();
+            if (pRbData)
+            {
+                ImGui::Text("Linear Vel: (%.2f, %.2f, %.2f)",
+                    pRbData->vLinearVel.x,
+                    pRbData->vLinearVel.y,
+                    pRbData->vLinearVel.z);
+            }
+        }
+    }
+
+    if (bChanged)
+    {
+        if (pData->fSpring < 0.f)     pData->fSpring = 0.f;
+        if (pData->fDamper < 0.f)     pData->fDamper = 0.f;
+        if (pData->fRestLength < 0.f) pData->fRestLength = 0.f;
+        if (pData->fMinLength < 0.f)  pData->fMinLength = 0.f;
+        if (pData->fMaxLength < 0.f)  pData->fMaxLength = 0.f;
+
+        if (pData->bUseMinLength && pData->fMinLength > pData->fRestLength && pData->fRestLength > 0.f)
+            pData->fMinLength = pData->fRestLength;
+
+        if (pData->bUseMaxLength && pData->fMaxLength < pData->fRestLength)
+            pData->fMaxLength = pData->fRestLength;
+    }
+
+    if (pData->bEnable == 0)
+        ImGui::EndDisabled();
 
     ImGui::TreePop();
 }

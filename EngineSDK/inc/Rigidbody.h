@@ -18,6 +18,7 @@ typedef struct tagRigidbodyData final
     _bool           bGravity = true;
     uint8_t         pad0[2] = {};
 
+    COMPONENT_HANDLE hTransform = INVALID_HANDLE;
     COMPONENT_HANDLE hCollider = INVALID_HANDLE;
 
     SHAPE           eShape = SHAPE::END;

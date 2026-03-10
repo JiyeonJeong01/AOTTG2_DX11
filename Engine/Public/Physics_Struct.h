@@ -118,10 +118,4 @@ typedef struct tagAxisMask
     bool bZ = false;
 }AXIS_MASK;
 
-typedef struct tagSpringJoingInfo
-{
-
-}SPRINGJOINT_DESC;
-
-
 NS_END

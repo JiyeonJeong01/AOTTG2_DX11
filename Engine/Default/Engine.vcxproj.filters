@@ -172,6 +172,9 @@
     <Filter Include="01. Utility\04. Component\02. Physics\Workers\Rigidbody">
       <UniqueIdentifier>{7d3bbcb2-4fa0-424e-9b0f-d2168db8e5c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\04. Component\02. Physics\SpringJoint">
+      <UniqueIdentifier>{8c4490a1-ee23-4aca-b6bb-aa9a1e53dcd5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -459,6 +462,9 @@
     <ClInclude Include="..\Public\ScriptField_Reflection.h">
       <Filter>01. Utility\04. Component\03. Script</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SpringJoint.h">
+      <Filter>01. Utility\04. Component\02. Physics\SpringJoint</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -628,6 +634,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Script.cpp">
       <Filter>01. Utility\04. Component\03. Script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SpringJoint.cpp">
+      <Filter>01. Utility\04. Component\02. Physics\SpringJoint</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

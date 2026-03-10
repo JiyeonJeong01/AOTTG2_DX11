@@ -1,6 +1,8 @@
 ﻿#include "Physics_Processor.h"
+
 #include "Transform_Processor.h"
 #include "Component_System.h"
+
 #include "Collision_Detector.h"
 #include "Collider_Proxy_Builder.h"
 #include "Component_Spec.h"
@@ -17,6 +19,9 @@ HRESULT CPhysics_Processor::Initialize()
 
         SYS_COMPONENT.Register_InitialSpecFactory<CRigidbody, RIGIDBODY_SPEC>();
         SYS_COMPONENT.Register_BuildSpecFacotry<CRigidbody>();
+
+        SYS_COMPONENT.Register_InitialSpecFactory<CSpringJoint, SPRING_JOINT_SPEC>();
+        SYS_COMPONENT.Register_BuildSpecFacotry<CSpringJoint>();
     }
 
     m_pTransformProcessor = SYS_COMPONENT.Bind_Processor<CTransform_Processor>();
@@ -37,9 +42,12 @@ void CPhysics_Processor::LateUpdate(_float fDT)
 
 void CPhysics_Processor::Fixed_Update(_float fDT)
 {
-    /* 외력 적용하기 */
+    /* spring joint */
+    Process_SpringJoints(fDT);
+
     Accumulate_Forces();
-    Integrate_Forces( fDT);
+    Integrate_Forces(fDT);
+    Apply_Damping(fDT);
 
     /* 적분 적용하기 */
     Integrate_Velocities(fDT);
@@ -61,310 +69,75 @@ void CPhysics_Processor::Render()
 {
 }
 
-COMPONENT_HANDLE CPhysics_Processor::Create_Component_Data(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject)
+void CPhysics_Processor::Process_SpringJoints(_float fDT)
 {
-    switch (eComType)
-    {
-    case COMPONENT_TYPE::COLLIDER:
-        return Create_Component_Data_Inner<CCollider>(m_ColliderPool, hObject);
-    case COMPONENT_TYPE::RIGIDBODY:
-        return Create_Component_Data_Inner<CRigidbody>(m_RigidbodyPool, hObject);
-    default:
-        return COMPONENT_HANDLE{};
-    }
-}
+    UNREFERENCED_PARAMETER(fDT);
 
-void CPhysics_Processor::Remove_Component(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
-{
-    switch (eComType)
-    {
-    case COMPONENT_TYPE::COLLIDER:
-        return Remove_Component_Inner<CCollider>(m_ColliderPool, hComponent);
-    case COMPONENT_TYPE::RIGIDBODY:
-        return Remove_Component_Inner<CRigidbody>(m_RigidbodyPool, hComponent);
-    }
-}
+    const auto& springJointPages = m_SpringJointPool.GetPages();
 
-HRESULT CPhysics_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pSpec)
-{
-    switch (eComType)
+    for (const auto& upPage : springJointPages)
     {
-    case COMPONENT_TYPE::COLLIDER:
-        return Initialize_From_Spec_Collider(hComponent, pSpec);
-    case COMPONENT_TYPE::RIGIDBODY:
-        return Initialize_From_Spec_Rigidbody(hComponent, pSpec);
-    default:
-        return E_FAIL;
-    }
-}
+        auto* pPage = upPage.get();
+        if (!pPage)
+            continue;
 
-std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
-{
-    switch (eComType)
-    {
-    case COMPONENT_TYPE::COLLIDER:
-        return Build_Spec_Collider(hComponent);
-    case COMPONENT_TYPE::RIGIDBODY:
-        return Build_Spec_Rigidbody(hComponent);
-    }
-    return nullptr;
-}
-
-void CPhysics_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable)
-{
-    switch (eComType)
-    {
-    case COMPONENT_TYPE::COLLIDER:
+        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
         {
-        COLLIDER_DATA* pData = m_ColliderPool.Get_Data_By_Handle(hComponent);
-        pData->bEnable = bEnable;
-        return;
+            if (!pPage->Is_Allocated(i))
+                continue;
+
+            SPRING_JOINT_DATA* pData = pPage->Get_Ptr(i);
+            if (!pData || !pData->bEnable || !pData->bUseSpring)
+                continue;
+            CRigidbody rigidbody = m_RigidbodyPool.Get_Proxy(pData->hRigidbody);
+            if (!rigidbody.Is_Valid())
+                continue;
+            if (false == rigidbody->bEnable|| rigidbody->eBodyType != BODY_TYPE::DYNAMIC)
+                continue;
+
+            TRANSFORM_DATA* pTrData = m_pTransformProcessor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, rigidbody->hTransform)._Data();
+            if (!pTrData)
+                continue;
+
+            const _vector vPos = Math::Load(pTrData->vPosition);
+            const _vector vAnchor = Math::Load(pData->vAnchor);
+
+            const _vector vDir = vPos - vAnchor;
+            const _float fDist = Math::Get_X(XMVector3Length(vDir));
+
+            if (fDist <= 1e-4f)
+                continue;
+
+            _float fTargetLength = pData->fRestLength;
+
+            if (pData->bUseMinLength && fTargetLength < pData->fMinLength)
+                fTargetLength = pData->fMinLength;
+
+            if (pData->bUseMaxLength && fTargetLength > pData->fMaxLength)
+                fTargetLength = pData->fMaxLength;
+
+            /* 로프처럼 늘어났을 때만 힘을 준다 */
+            const _float fX = fDist - fTargetLength;
+            if (fX <= 0.f)
+                continue;
+
+            const _vector vN = XMVector3Normalize(vDir);
+            const _vector vLinearVel = Math::Load(rigidbody->vLinearVel);
+
+            /* 앵커 방향 축에서의 속도 성분 */
+            const _float fV = XMVectorGetX(XMVector3Dot(vLinearVel, vN));
+
+            /* F = -k x - c v */
+            const _float fForceMag = (-pData->fSpring * fX) - (pData->fDamper * fV);
+            _vector vForce = vN * fForceMag;
+
+            /* 로프 상승 보정 유지 */
+            _float3 vForce3{};
+            Math::Store(vForce3, vForce);
+            vForce3.y *= 1.5f;
+
+            rigidbody.Add_Force(vForce3);
         }
-    case COMPONENT_TYPE::RIGIDBODY:
-        {
-        RIGIDBODY_DATA* pData = m_RigidbodyPool.Get_Data_By_Handle(hComponent);
-        pData->bEnable = bEnable;
-        return;
-        }
-    default:
-        break;
-    }
-
-    _DEBUG_WARN("CUI_Processor::Remove_Component - unsupported component type");
-}
-
-void* CPhysics_Processor::Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) noexcept
-{
-    switch (eComType)
-    {
-    case COMPONENT_TYPE::COLLIDER:  return m_ColliderPool.Get_Data_By_Handle(hComponent);
-    case COMPONENT_TYPE::RIGIDBODY:  return m_RigidbodyPool.Get_Data_By_Handle(hComponent);
-    default: return nullptr;
-    }
-}
-
-HRESULT CPhysics_Processor::Initialize_From_Spec_Collider(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec)
-{
-    COLLIDER_DATA* pData = m_ColliderPool.Get_Data_By_Handle(h);
-    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Collider handle in Initialize_From_Spec_Collider");
-    _DEBUG_ENGINE_ASSERT_MSG(spec != nullptr, "spec is nullptr in Initialize_From_Spec_Collider");
-
-    const COLLIDER_SPEC* pSpec = SCAST(const COLLIDER_SPEC*, spec);
-
-    pData->bEnable = pSpec->bEnable;
-    pData->bOnCol = pSpec->bOnCol;
-    pData->eShape = pSpec->eShape;
-    pData->vOffset = pSpec->vOffset;
-
-    switch (pSpec->eShape)
-    {
-    case SHAPE::BOX:
-        pData->box.vHalfExtentsLocal = pSpec->vHalfExtentsLocal;
-        break;
-
-    case SHAPE::SPHERE:
-        pData->sphere.fRadiusLocal = pSpec->fRadiusLocal;
-        break;
-
-    case SHAPE::PLANE:
-        pData->plane.vNormalLocal = pSpec->vNormalLocal;
-        pData->plane.fDistance = pSpec->fDistance;
-        pData->plane.bInfinite = pSpec->bInfinite;
-        pData->plane.vDimension = pSpec->vDimension;
-        break;
-
-    default:
-        _DEBUG_ENGINE_ASSERT_MSG(false, "Invalid collider shape in Initialize_From_Spec_Collider");
-        return E_FAIL;
-    }
-
-    pData->bDirty = true;
-
-    return S_OK;
-}
-
-HRESULT CPhysics_Processor::Initialize_From_Spec_Rigidbody(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec)
-{
-    RIGIDBODY_DATA* pData = m_RigidbodyPool.Get_Data_By_Handle(h);
-    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Rigidbody handle in Initialize_From_Spec_Rigidbody");
-    _DEBUG_ENGINE_ASSERT_MSG(spec != nullptr, "spec is nullptr in Initialize_From_Spec_Rigidbody");
-
-    const RIGIDBODY_SPEC* pSpec = SCAST(const RIGIDBODY_SPEC*, spec);
-
-    pData->bEnable = pSpec->bEnable;
-    pData->bGravity = pSpec->bGravity;
-
-    pData->eShape = pSpec->eShape;
-    pData->eBodyType = pSpec->eBodyType;
-
-    pData->fMass = pSpec->fMass;
-    pData->fDrag = pSpec->fDrag;
-    pData->fAngularDrag = pSpec->fAngularDrag;
-    pData->fRestitution = pSpec->fRestitution;
-    pData->fFriction = pSpec->fFriction;
-
-    pData->tRotationLock = pSpec->tRotationLock;
-    pData->tPositionLock = pSpec->tPositionLock;
-
-    pData->bDirtyMass = true;
-    pData->bDirtyInertia = true;
-    pData->bDirtyWorldInertia = true;
-    pData->bInitialized = false;
-
-    return S_OK;
-}
-
-std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec_Collider(COMPONENT_HANDLE hComponent)
-{
-    COLLIDER_DATA* pData = m_ColliderPool.Get_Data_By_Handle(hComponent);
-    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Collider handle in Build_Spec_Collider");
-
-    auto pSpec = std::make_unique<COLLIDER_SPEC>();
-
-    pSpec->bEnable = pData->bEnable;
-    pSpec->bOnCol = pData->bOnCol;
-    pSpec->eShape = pData->eShape;
-    pSpec->vOffset = pData->vOffset;
-
-    switch (pData->eShape)
-    {
-    case SHAPE::BOX:
-        pSpec->vHalfExtentsLocal = pData->box.vHalfExtentsLocal;
-        return pSpec;
-
-    case SHAPE::SPHERE:
-        pSpec->fRadiusLocal = pData->sphere.fRadiusLocal;
-        return pSpec;
-
-    case SHAPE::PLANE:
-        pSpec->vNormalLocal = pData->plane.vNormalLocal;
-        pSpec->fDistance = pData->plane.fDistance;
-        pSpec->bInfinite = pData->plane.bInfinite;
-        pSpec->vDimension = pData->plane.vDimension;
-        return pSpec;
-    }
-
-    return nullptr;
-}
-
-std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec_Rigidbody(COMPONENT_HANDLE hComponent)
-{
-    RIGIDBODY_DATA* pData = m_RigidbodyPool.Get_Data_By_Handle(hComponent);
-    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Rigidbody handle in Build_Spec_Rigidbody");
-    auto pSpec = std::make_unique<RIGIDBODY_SPEC>();
-
-    pSpec->bEnable = pData->bEnable;
-    pSpec->bGravity = pData->bGravity;
-
-    pSpec->eShape = pData->eShape;
-    pSpec->eBodyType = pData->eBodyType;
-
-    pSpec->fMass = pData->fMass;
-    pSpec->fDrag = pData->fDrag;
-    pSpec->fAngularDrag = pData->fAngularDrag;
-    pSpec->fRestitution = pData->fRestitution;
-    pSpec->fFriction = pData->fFriction;
-
-    pSpec->tRotationLock = pData->tRotationLock;
-    pSpec->tPositionLock = pData->tPositionLock;
-
-    return pSpec;
-}
-
-HRESULT CPhysics_Processor::Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
-{
-    switch (eComType)
-    {
-    case COMPONENT_TYPE::COLLIDER:
-    {
-        COLLIDER_DATA* pData = m_ColliderPool.Get_Data_By_Handle(hComponent);
-        IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "Can't find data.");
-
-        /* Transform 핸들을 캐싱한다. */
-        CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
-        IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "Can't find pObj.");
-
-        CTransform transform = pObj->Get_Component<CTransform>();
-        IF_TRUE_RETURN_MSG_BREAK(!transform.Is_Valid(), E_FAIL, "Transform is invalid.");
-
-        TRANSFORM_DATA* pTr = transform._Data();
-        IF_NULL_RETURN_MSG_BREAK(pTr, E_FAIL, "Transform data is nullptr");
-
-        /* 값 채우기 */
-        pData->hTransform = transform.Get_Handle();
-        pData->hRigidbody = {}; /* TODO : 로직 생각해보기 */
-        pData->vPoint = pTr->vPosition;
-        pData->vScale = pTr->vScale;
-
-        pData->bDirty = true;
-        return S_OK;
-    }
-    case COMPONENT_TYPE::RIGIDBODY:
-    {
-        RIGIDBODY_DATA* pData = m_RigidbodyPool.Get_Data_By_Handle(hComponent);
-        IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "Can't find rigidbody data.");
-
-        CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
-        IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "Can't find pObj.");
-
-        CTransform transform = pObj->Get_Component<CTransform>();
-        IF_TRUE_RETURN_MSG_BREAK(!transform.Is_Valid(), E_FAIL, "Transform is invalid.");
-
-        TRANSFORM_DATA* pTr = transform._Data();
-        IF_NULL_RETURN_MSG_BREAK(pTr, E_FAIL, "Transform data is nullptr.");
-
-        /* Rigidbody는 반드시 Collider가 있어야 한다. */
-        CCollider collider = pObj->Get_Component<CCollider>();
-        if (!collider.Is_Valid())
-        {
-            collider = pObj->Add_Component<CCollider>();
-            /* NOTE : SHAPE는 즉시 설정해줘야 하는데, 설정하지 않았다면 기본값 BOX 로 들어가게 된다. 변경 불가 */
-            collider.Set_Shape(SHAPE::BOX);
-            IF_TRUE_RETURN_MSG_BREAK(!collider.Is_Valid(), E_FAIL, "Failed to add collider for rigidbody.");
-        }
-
-        COLLIDER_DATA* pColData = collider._Data();
-        IF_NULL_RETURN_MSG_BREAK(pColData, E_FAIL, "Collider data is nullptr.");
-
-        /* Rigidbody <-> Collider 연결 */
-        pData->hCollider = collider.Get_Handle();
-        pColData->hRigidbody = hComponent;
-
-        /* Rigidbody는 Collider의 shape를 따른다. */
-        pData->eShape = pColData->eShape;
-
-        /* 현재 기준 COM은 Transform Position과 동일하게 둔다. (추후 변경 가능) */
-        pData->vCOM = pTr->vPosition;
-        pData->vWorldCOM = pTr->vPosition;
-
-        /* 계산값/임시값 초기화 */
-        pData->fInvMass = 0.f;
-
-        pData->vDimension = _float3{ 0.f, 0.f, 0.f };
-        pData->vDimensionCenter = _float3{ 0.f, 0.f, 0.f };
-
-        pData->vForceAccum = _float3{ 0.f, 0.f, 0.f }; /* 매 프레임 초기화 */
-        pData->vTorqueAccum = _float3{ 0.f, 0.f, 0.f };
-
-        pData->matInertiaTensor = Math::Identity();
-        pData->matInvInertiaTensor = Math::Identity();
-        pData->matWorldInertiaTensor = Math::Identity();
-        pData->matWorldInvInertiaTensor = Math::Identity();
-
-        /* 최초 계산이 필요하도록 dirty 설정 */
-        pData->bDirtyMass = true;
-        pData->bDirtyInertia = true;
-        pData->bDirtyWorldInertia = true;
-        pData->bInitialized = true;
-
-        /* Collider도 다시 계산되도록 표시 */
-        pColData->bDirty = true;
-
-        IF_FAIL_RETURN_MSG_BREAK(m_upRigidbody_Builder->Rebuild(pData), E_FAIL, "Failed to rebuild rigidbody.");
-
-        return S_OK;
-    }
-    default: return E_FAIL;
     }
 }
 
@@ -459,9 +232,10 @@ void CPhysics_Processor::Integrate_Forces(_float fDT)
     }
 }
 
-void CPhysics_Processor::Integrate_Velocities(_float fDT)
+void CPhysics_Processor::Apply_Damping(_float fDT)
 {
     const auto& rigidbodyPages = m_RigidbodyPool.GetPages();
+    constexpr _float fDampEps = 1e-4f;
 
     for (const auto& upPage : rigidbodyPages)
     {
@@ -481,14 +255,54 @@ void CPhysics_Processor::Integrate_Velocities(_float fDT)
             if (pData->eBodyType != BODY_TYPE::DYNAMIC)
                 continue;
 
-            CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
-            if (!pObj)
+            /* Linear damping */
+            if (pData->fDrag > 0.f)
+            {
+                const _vector vLinearVel = Math::Load(pData->vLinearVel);
+                const _vector vDampedLinearVel = vLinearVel - (vLinearVel * pData->fDrag * fDT);
+
+                if (XMVectorGetX(XMVector3LengthSq(vDampedLinearVel)) < (fDampEps * fDampEps))
+                    pData->vLinearVel = Math::Zero3();
+                else
+                    Math::Store(pData->vLinearVel, vDampedLinearVel);
+            }
+
+            /* Angular damping */
+            if (pData->fAngularDrag > 0.f)
+            {
+                const _vector vAngularVel = Math::Load(pData->vAngularVel);
+                const _vector vDampedAngularVel = vAngularVel - (vAngularVel * pData->fAngularDrag * fDT);
+
+                if (XMVectorGetX(XMVector3LengthSq(vDampedAngularVel)) < (fDampEps * fDampEps))
+                    pData->vAngularVel = Math::Zero3();
+                else
+                    Math::Store(pData->vAngularVel, vDampedAngularVel);
+            }
+        }
+    }
+}
+
+
+void CPhysics_Processor::Integrate_Velocities(_float fDT)
+{
+    const auto& rigidbodyPages = m_RigidbodyPool.GetPages();
+
+    for (const auto& upPage : rigidbodyPages)
+    {
+        auto* pPage = upPage.get();
+        if (!pPage)
+            continue;
+
+        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        {
+            if (!pPage->Is_Allocated(i))
                 continue;
 
-            CTransform transform = pObj->Get_Component<CTransform>();
-            if (!transform.Is_Valid())
+            RIGIDBODY_DATA* pData = pPage->Get_Ptr(i);
+            if (!pData || !pData->bEnable || pData->eBodyType != BODY_TYPE::DYNAMIC)
                 continue;
 
+            CTransform transform = m_pTransformProcessor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, pData->hTransform);
             TRANSFORM_DATA* pTrData = transform._Data();
             if (!pTrData)
                 continue;
@@ -575,6 +389,424 @@ void CPhysics_Processor::Reset_Kinematic_Velocities()
             pData->vLinearVel = Math::Zero3();
             pData->vAngularVel = Math::Zero3();
         }
+    }
+}
+
+COMPONENT_HANDLE CPhysics_Processor::Create_Component_Data(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject)
+{
+    switch (eComType)
+    {
+    case COMPONENT_TYPE::COLLIDER:
+        return Create_Component_Data_Inner<CCollider>(m_ColliderPool, hObject);
+    case COMPONENT_TYPE::RIGIDBODY:
+        return Create_Component_Data_Inner<CRigidbody>(m_RigidbodyPool, hObject);
+    case COMPONENT_TYPE::SPRING_JOINT:
+        return Create_Component_Data_Inner<CSpringJoint>(m_SpringJointPool, hObject);
+    default:
+        return COMPONENT_HANDLE{};
+    }
+}
+
+void CPhysics_Processor::Remove_Component(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
+{
+    switch (eComType)
+    {
+    case COMPONENT_TYPE::COLLIDER:
+        return Remove_Component_Inner<CCollider>(m_ColliderPool, hComponent);
+    case COMPONENT_TYPE::RIGIDBODY:
+        return Remove_Component_Inner<CRigidbody>(m_RigidbodyPool, hComponent);
+    case COMPONENT_TYPE::SPRING_JOINT:
+        return Remove_Component_Inner<CSpringJoint>(m_SpringJointPool, hComponent);
+    }
+}
+
+HRESULT CPhysics_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pSpec)
+{
+    switch (eComType)
+    {
+    case COMPONENT_TYPE::COLLIDER:
+        return Initialize_From_Spec_Collider(hComponent, pSpec);
+    case COMPONENT_TYPE::RIGIDBODY:
+        return Initialize_From_Spec_Rigidbody(hComponent, pSpec);
+    case COMPONENT_TYPE::SPRING_JOINT:
+        return Initialize_From_Spec_SpringJoint(hComponent, pSpec);
+    default:
+        return E_FAIL;
+    }
+}
+
+std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
+{
+    switch (eComType)
+    {
+    case COMPONENT_TYPE::COLLIDER:
+        return Build_Spec_Collider(hComponent);
+    case COMPONENT_TYPE::RIGIDBODY:
+        return Build_Spec_Rigidbody(hComponent);
+    case COMPONENT_TYPE::SPRING_JOINT:
+        return Build_Spec_SpringJoint(hComponent);
+    }
+    return nullptr;
+}
+
+void CPhysics_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable)
+{
+    switch (eComType)
+    {
+    case COMPONENT_TYPE::COLLIDER:
+    {
+        COLLIDER_DATA* pData = m_ColliderPool.Get_Data_By_Handle(hComponent);
+        pData->bEnable = bEnable;
+        return;
+    }
+    case COMPONENT_TYPE::RIGIDBODY:
+    {
+        RIGIDBODY_DATA* pData = m_RigidbodyPool.Get_Data_By_Handle(hComponent);
+        pData->bEnable = bEnable;
+        return;
+    }
+    case COMPONENT_TYPE::SPRING_JOINT:
+    {
+        SPRING_JOINT_DATA* pData = m_SpringJointPool.Get_Data_By_Handle(hComponent);
+        pData->bEnable = bEnable;
+        return;
+    }
+    default:
+        break;
+    }
+
+    _DEBUG_WARN("CPhysics_Processor::Remove_Component - unsupported component type");
+}
+
+void* CPhysics_Processor::Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) noexcept
+{
+    switch (eComType)
+    {
+    case COMPONENT_TYPE::COLLIDER:  return m_ColliderPool.Get_Data_By_Handle(hComponent);
+    case COMPONENT_TYPE::RIGIDBODY:  return m_RigidbodyPool.Get_Data_By_Handle(hComponent);
+    case COMPONENT_TYPE::SPRING_JOINT:  return m_SpringJointPool.Get_Data_By_Handle(hComponent);
+    default: return nullptr;
+    }
+}
+
+HRESULT CPhysics_Processor::Initialize_From_Spec_Collider(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec)
+{
+    COLLIDER_DATA* pData = m_ColliderPool.Get_Data_By_Handle(h);
+    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Collider handle in Initialize_From_Spec_Collider");
+    _DEBUG_ENGINE_ASSERT_MSG(spec != nullptr, "spec is nullptr in Initialize_From_Spec_Collider");
+
+    const COLLIDER_SPEC* pSpec = SCAST(const COLLIDER_SPEC*, spec);
+
+    pData->bEnable = pSpec->bEnable;
+    pData->bOnCol = pSpec->bOnCol;
+    pData->eShape = pSpec->eShape;
+    pData->vOffset = pSpec->vOffset;
+
+    switch (pSpec->eShape)
+    {
+    case SHAPE::BOX:
+        pData->box.vHalfExtentsLocal = pSpec->vHalfExtentsLocal;
+        break;
+
+    case SHAPE::SPHERE:
+        pData->sphere.fRadiusLocal = pSpec->fRadiusLocal;
+        break;
+
+    case SHAPE::PLANE:
+        pData->plane.vNormalLocal = pSpec->vNormalLocal;
+        pData->plane.fDistance = pSpec->fDistance;
+        pData->plane.bInfinite = pSpec->bInfinite;
+        pData->plane.vDimension = pSpec->vDimension;
+        break;
+
+    default:
+        _DEBUG_ENGINE_ASSERT_MSG(false, "Invalid collider shape in Initialize_From_Spec_Collider");
+        return E_FAIL;
+    }
+
+    pData->bDirty = true;
+
+    return S_OK;
+}
+
+HRESULT CPhysics_Processor::Initialize_From_Spec_Rigidbody(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec)
+{
+    RIGIDBODY_DATA* pData = m_RigidbodyPool.Get_Data_By_Handle(h);
+    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Rigidbody handle in Initialize_From_Spec_Rigidbody");
+    _DEBUG_ENGINE_ASSERT_MSG(spec != nullptr, "spec is nullptr in Initialize_From_Spec_Rigidbody");
+
+    const RIGIDBODY_SPEC* pSpec = SCAST(const RIGIDBODY_SPEC*, spec);
+
+    pData->bEnable = pSpec->bEnable;
+    pData->bGravity = pSpec->bGravity;
+
+    pData->eShape = pSpec->eShape;
+    pData->eBodyType = pSpec->eBodyType;
+
+    pData->fMass = pSpec->fMass;
+    pData->fDrag = pSpec->fDrag;
+    pData->fAngularDrag = pSpec->fAngularDrag;
+    pData->fRestitution = pSpec->fRestitution;
+    pData->fFriction = pSpec->fFriction;
+
+    pData->tRotationLock = pSpec->tRotationLock;
+    pData->tPositionLock = pSpec->tPositionLock;
+
+    pData->bDirtyMass = true;
+    pData->bDirtyInertia = true;
+    pData->bDirtyWorldInertia = true;
+    pData->bInitialized = false;
+
+    return S_OK;
+}
+
+HRESULT CPhysics_Processor::Initialize_From_Spec_SpringJoint(COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* spec)
+{
+    const SPRING_JOINT_SPEC* pSpec = To<const SPRING_JOINT_SPEC*>(spec);
+    IF_NULL_RETURN_MSG_BREAK(pSpec, E_FAIL, "pSpec is nullptr");
+
+    SPRING_JOINT_DATA* pData = m_SpringJointPool.Get_Data_By_Handle(hComponent);
+    IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "pData is nullptr");
+
+    /* 저장한 값 채우기 */
+    pData->bEnable = pSpec->bEnable;
+    pData->bUseSpring = pSpec->bUseSpring;
+    pData->vAnchor = pSpec->vAnchor;
+    pData->fSpring = pSpec->fSpring;
+    pData->fDamper = pSpec->fDamper;
+    pData->fRestLength = pSpec->fRestLength;
+    pData->fMinLength = pSpec->fMinLength;
+    pData->fMaxLength = pSpec->fMaxLength;
+    pData->bUseMinLength = pSpec->bUseMinLength;
+    pData->bUseMaxLength = pSpec->bUseMaxLength;
+
+    /* 런타임 연결값은 spec에서 복원하지 않는다 */
+    pData->hRigidbody = INVALID_HANDLE;
+
+    CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
+    if (pObj)
+    {
+        CRigidbody rigidbody = pObj->Get_Component<CRigidbody>();
+        if (rigidbody.Is_Valid())
+            pData->hRigidbody = rigidbody.Get_Handle();
+    }
+
+    return S_OK;
+}
+
+std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec_Collider(COMPONENT_HANDLE hComponent)
+{
+    COLLIDER_DATA* pData = m_ColliderPool.Get_Data_By_Handle(hComponent);
+    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Collider handle in Build_Spec_Collider");
+
+    auto pSpec = std::make_unique<COLLIDER_SPEC>();
+
+    pSpec->bEnable = pData->bEnable;
+    pSpec->bOnCol = pData->bOnCol;
+    pSpec->eShape = pData->eShape;
+    pSpec->vOffset = pData->vOffset;
+
+    switch (pData->eShape)
+    {
+    case SHAPE::BOX:
+        pSpec->vHalfExtentsLocal = pData->box.vHalfExtentsLocal;
+        return pSpec;
+
+    case SHAPE::SPHERE:
+        pSpec->fRadiusLocal = pData->sphere.fRadiusLocal;
+        return pSpec;
+
+    case SHAPE::PLANE:
+        pSpec->vNormalLocal = pData->plane.vNormalLocal;
+        pSpec->fDistance = pData->plane.fDistance;
+        pSpec->bInfinite = pData->plane.bInfinite;
+        pSpec->vDimension = pData->plane.vDimension;
+        return pSpec;
+    }
+
+    return nullptr;
+}
+
+std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec_Rigidbody(COMPONENT_HANDLE hComponent)
+{
+    RIGIDBODY_DATA* pData = m_RigidbodyPool.Get_Data_By_Handle(hComponent);
+    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid Rigidbody handle in Build_Spec_Rigidbody");
+    auto pSpec = std::make_unique<RIGIDBODY_SPEC>();
+
+    pSpec->bEnable = pData->bEnable;
+    pSpec->bGravity = pData->bGravity;
+
+    pSpec->eShape = pData->eShape;
+    pSpec->eBodyType = pData->eBodyType;
+
+    pSpec->fMass = pData->fMass;
+    pSpec->fDrag = pData->fDrag;
+    pSpec->fAngularDrag = pData->fAngularDrag;
+    pSpec->fRestitution = pData->fRestitution;
+    pSpec->fFriction = pData->fFriction;
+
+    pSpec->tRotationLock = pData->tRotationLock;
+    pSpec->tPositionLock = pData->tPositionLock;
+
+    return pSpec;
+}
+
+std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec_SpringJoint(COMPONENT_HANDLE hComponent)
+{
+    SPRING_JOINT_DATA* pData = m_SpringJointPool.Get_Data_By_Handle(hComponent);
+    IF_NULL_RETURN_MSG_BREAK(pData, nullptr, "pData is nullptr");
+
+    auto pSpec = std::make_unique<SPRING_JOINT_SPEC>();
+
+    pSpec->bEnable = pData->bEnable;
+    pSpec->bUseSpring = pData->bUseSpring;
+
+    pSpec->vAnchor = pData->vAnchor;
+
+    pSpec->fSpring = pData->fSpring;
+    pSpec->fDamper = pData->fDamper;
+    pSpec->fRestLength = pData->fRestLength;
+
+    pSpec->fMinLength = pData->fMinLength;
+    pSpec->fMaxLength = pData->fMaxLength;
+
+    pSpec->bUseMinLength = pData->bUseMinLength;
+    pSpec->bUseMaxLength = pData->bUseMaxLength;
+
+    return pSpec;
+}
+
+HRESULT CPhysics_Processor::Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
+{
+    switch (eComType)
+    {
+    case COMPONENT_TYPE::COLLIDER:
+    {
+        COLLIDER_DATA* pData = m_ColliderPool.Get_Data_By_Handle(hComponent);
+        IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "Can't find data.");
+
+        /* Transform 핸들을 캐싱한다. */
+        CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
+        IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "Can't find pObj.");
+
+        CTransform transform = pObj->Get_Component<CTransform>();
+        IF_TRUE_RETURN_MSG_BREAK(!transform.Is_Valid(), E_FAIL, "Transform is invalid.");
+
+        TRANSFORM_DATA* pTr = transform._Data();
+        IF_NULL_RETURN_MSG_BREAK(pTr, E_FAIL, "Transform data is nullptr");
+
+        /* 값 채우기 */
+        pData->hTransform = transform.Get_Handle();
+        pData->hRigidbody = {}; /* TODO : 로직 생각해보기 */
+        pData->vPoint = pTr->vPosition;
+        pData->vScale = pTr->vScale;
+
+        pData->bDirty = true;
+        return S_OK;
+    }
+    case COMPONENT_TYPE::RIGIDBODY:
+    {
+        RIGIDBODY_DATA* pData = m_RigidbodyPool.Get_Data_By_Handle(hComponent);
+        IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "Can't find rigidbody data.");
+
+        CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
+        IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "Can't find pObj.");
+
+        CTransform transform = pObj->Get_Component<CTransform>();
+        IF_TRUE_RETURN_MSG_BREAK(!transform.Is_Valid(), E_FAIL, "Transform is invalid.");
+
+        TRANSFORM_DATA* pTr = transform._Data();
+        IF_NULL_RETURN_MSG_BREAK(pTr, E_FAIL, "Transform data is nullptr.");
+
+        /* Rigidbody는 반드시 Collider가 있어야 한다. */
+        CCollider collider = pObj->Get_Component<CCollider>();
+        if (!collider.Is_Valid())
+        {
+            collider = pObj->Add_Component<CCollider>();
+            /* NOTE : SHAPE는 즉시 설정해줘야 하는데, 설정하지 않았다면 기본값 BOX 로 들어가게 된다. 변경 불가 */
+            collider.Set_Shape(SHAPE::BOX);
+            IF_TRUE_RETURN_MSG_BREAK(!collider.Is_Valid(), E_FAIL, "Failed to add collider for rigidbody.");
+        }
+
+        COLLIDER_DATA* pColData = collider._Data();
+        IF_NULL_RETURN_MSG_BREAK(pColData, E_FAIL, "Collider data is nullptr.");
+
+        /* Rigidbody <-> Collider 연결 */
+        pData->hCollider = collider.Get_Handle();
+        pData->hTransform = pColData->hTransform;
+        pColData->hRigidbody = hComponent;
+
+        /* Rigidbody는 Collider의 shape를 따른다. */
+        pData->eShape = pColData->eShape;
+
+        /* 현재 기준 COM은 Transform Position과 동일하게 둔다. (추후 변경 가능) */
+        pData->vCOM = pTr->vPosition;
+        pData->vWorldCOM = pTr->vPosition;
+
+        /* 계산값/임시값 초기화 */
+        pData->fInvMass = 0.f;
+
+        pData->vDimension = _float3{ 0.f, 0.f, 0.f };
+        pData->vDimensionCenter = _float3{ 0.f, 0.f, 0.f };
+
+        pData->vForceAccum = _float3{ 0.f, 0.f, 0.f }; /* 매 프레임 초기화 */
+        pData->vTorqueAccum = _float3{ 0.f, 0.f, 0.f };
+
+        pData->matInertiaTensor = Math::Identity();
+        pData->matInvInertiaTensor = Math::Identity();
+        pData->matWorldInertiaTensor = Math::Identity();
+        pData->matWorldInvInertiaTensor = Math::Identity();
+
+        /* 최초 계산이 필요하도록 dirty 설정 */
+        pData->bDirtyMass = true;
+        pData->bDirtyInertia = true;
+        pData->bDirtyWorldInertia = true;
+        pData->bInitialized = true;
+
+        /* Collider도 다시 계산되도록 표시 */
+        pColData->bDirty = true;
+
+        IF_FAIL_RETURN_MSG_BREAK(m_upRigidbody_Builder->Rebuild(pData), E_FAIL, "Failed to rebuild rigidbody.");
+
+        return S_OK;
+    }
+    case COMPONENT_TYPE::SPRING_JOINT:
+    {
+        SPRING_JOINT_DATA* pData = m_SpringJointPool.Get_Data_By_Handle(hComponent);
+        IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "Can't find spring joint data.");
+
+        CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
+        IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "Can't find pObj.");
+
+        CRigidbody rigidbody = pObj->Get_Component<CRigidbody>();
+        if (!rigidbody.Is_Valid())
+        {
+            rigidbody = pObj->Add_Component<CRigidbody>();
+            IF_TRUE_RETURN_MSG_BREAK(!rigidbody.Is_Valid(), E_FAIL, "Failed to add rigidbody for spring joint.");
+        }
+
+        RIGIDBODY_DATA* pRbData = rigidbody._Data();
+        IF_NULL_RETURN_MSG_BREAK(pRbData, E_FAIL, "Rigidbody data is nullptr.");
+
+        /* SpringJoint <-> Rigidbody 연결 */
+        pData->hRigidbody = rigidbody.Get_Handle();
+
+        /* 보정 */
+        if (pData->fSpring < 0.f) pData->fSpring = 0.f;
+        if (pData->fDamper < 0.f) pData->fDamper = 0.f;
+        if (pData->fRestLength < 0.f) pData->fRestLength = 0.f;
+        if (pData->fMinLength < 0.f) pData->fMinLength = 0.f;
+        if (pData->fMaxLength < 0.f) pData->fMaxLength = 0.f;
+
+        if (pData->bUseMinLength && pData->fMinLength > pData->fRestLength && pData->fRestLength > 0.f)
+            pData->fMinLength = pData->fRestLength;
+
+        if (pData->bUseMaxLength && pData->fMaxLength < pData->fRestLength)
+            pData->fMaxLength = pData->fRestLength;
+
+        return S_OK;
+    }
+    default: return E_FAIL;
     }
 }
 

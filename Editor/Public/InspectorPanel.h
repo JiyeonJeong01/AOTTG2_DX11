@@ -62,6 +62,7 @@ private:
     void Draw_CanvasRenderer();
     void Draw_Collider();
     void Draw_Rigidbody();
+    void Draw_SpringJoint();
     void Draw_Script();
     void Draw_AllScripts(COMPONENT_HANDLE hComponent);
     void Draw_ScriptFields(class Engine::IScript* pScript);

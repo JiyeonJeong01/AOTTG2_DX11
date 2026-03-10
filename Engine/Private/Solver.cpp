@@ -157,7 +157,7 @@ void CSolver::Solve_Impulse(CONTACT_DESC* pInfo)
 
     _float3 vJFriction = Math::Zero3();
 
-    if (!Math::Is_NearlyZero(vVelTangentRaw3))
+    if (!Math::Is_Zero(vVelTangentRaw3))
     {
         const _vector vVelTangent = Math::Normalize(vVel_TangentRaw);
         const _float fNumeratorT = Math::Get_X(Math::Dot(vVelRel, vVelTangent));

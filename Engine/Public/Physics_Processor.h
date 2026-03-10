@@ -4,6 +4,7 @@
 
 #include "Collider.h"
 #include "Rigidbody.h"
+#include "SpringJoint.h"
 
 NS_BEGIN(Engine)
 class CTransform_Processor;
@@ -37,6 +38,9 @@ public:
         if constexpr (std::is_same_v<TProxy, CRigidbody>) {
             return m_RigidbodyPool.Get_Proxy(hComponent);
         }
+        if constexpr (std::is_same_v<TProxy, CSpringJoint>) {
+            return m_SpringJointPool.Get_Proxy(hComponent);
+        }
 
         IF_TRUE_RETURN_MSG_BREAK(true, TProxy{}, "Invalid Proxy Type for this Pool");
     }
@@ -67,11 +71,13 @@ private :
     }
 
 private :
-    HRESULT Initialize_From_Spec_Collider(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
-    HRESULT Initialize_From_Spec_Rigidbody(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
+    HRESULT Initialize_From_Spec_Collider(COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* spec);
+    HRESULT Initialize_From_Spec_Rigidbody(COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* spec);
+    HRESULT Initialize_From_Spec_SpringJoint(COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* spec);
 
     std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec_Collider(COMPONENT_HANDLE hComponent);
     std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec_Rigidbody(COMPONENT_HANDLE hComponent);
+    std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec_SpringJoint(COMPONENT_HANDLE hComponent);
 
     HRESULT Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE h);
 
@@ -80,6 +86,7 @@ public :
 private:
     CComponent_Pool<CCollider>          m_ColliderPool;
     CComponent_Pool<CRigidbody>         m_RigidbodyPool;
+    CComponent_Pool<CSpringJoint>       m_SpringJointPool;
     std::vector<COLLIDER_PROXY_DATA>    m_AllColliders{}; /* Transient */
 
     CTransform_Processor*                       m_pTransformProcessor{};
@@ -92,8 +99,12 @@ private:
     const _float3   m_vGravity = { 0.f, m_fGravity, 0.f };
 
 private :
+    void    Process_SpringJoints(_float fDT);
+
+private :
     void    Accumulate_Forces();
     void    Integrate_Forces(_float fDT);
+    void    Apply_Damping(_float fDT);
     void    Integrate_Velocities(_float fDT);
     void    Process_Collision(vector<CONTACT_DESC>& outContacts);
     void    Reset_Kinematic_Velocities();

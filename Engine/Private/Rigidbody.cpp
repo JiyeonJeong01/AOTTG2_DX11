@@ -238,7 +238,7 @@ AXIS_MASK CRigidbody::Get_PositionLock() const
     return m_pData->tPositionLock;
 }
 
-void CRigidbody::Translate(const _float3& vDeltaPos)
+void CRigidbody::Translate(const _float3& vDeltaPos) /* for kinematic body */
 {
     if (!m_pData || !Find_Transform())
         return;
@@ -250,6 +250,8 @@ void CRigidbody::Translate(const _float3& vDeltaPos)
     const _vector vCOM = Math::Load(m_pData->vCOM);
     Math::Store(m_pData->vCOM, vCOM + vDelta);
     Math::Store(m_pData->vWorldCOM, Math::Load(m_pTrData->vPosition));
+
+    m_pTrData->bDirty = true;
 
     const _float fDT = SYS_CORE.Get_FrameDT();
 

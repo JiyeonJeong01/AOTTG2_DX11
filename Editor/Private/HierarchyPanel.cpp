@@ -291,24 +291,9 @@ void CHierarchyPanel::Draw_Object_Tree()
     }
 
     Draw_Root_List();
+
     ImGui::Dummy(ImGui::GetContentRegionAvail());
 
-    if (ImGui::BeginDragDropTarget())
-    {
-        if (const ImGuiPayload* p = ImGui::AcceptDragDropPayload("ASSET_GUID"))
-        {
-            const Engine::ASSET_GUID* pGUID = (const Engine::ASSET_GUID*)p->Data;
-            auto pRecord = SYS_ASSET.Find(*pGUID);
-
-            if (pRecord && pRecord->eType == Engine::ASSET_TYPE::PROTOTYPE)
-            {
-                SYS_GAMEOBJECT.Instantiate(*pGUID,
-                    Engine::Layer::DEFAULT_LAYER,
-                    pRecord->path.stem().string() + "_Proto");
-            }
-        }
-        ImGui::EndDragDropTarget();
-    }
 
     ImGui::EndChild();
 }
@@ -354,6 +339,17 @@ void CHierarchyPanel::Draw_DropTarget()
                 switch (rec->eType)
                 {
                 case Engine::ASSET_TYPE::PROTOTYPE:
+                    {
+                    const Engine::ASSET_GUID* pGUID = (const Engine::ASSET_GUID*)p->Data;
+                    auto pRecord = SYS_ASSET.Find(*pGUID);
+
+                    if (pRecord && pRecord->eType == Engine::ASSET_TYPE::PROTOTYPE)
+                    {
+                        SYS_GAMEOBJECT.Instantiate(*pGUID,
+                            Engine::Layer::DEFAULT_LAYER,
+                            pRecord->path.stem().string() + "_Proto");
+                    }
+                    }
                     break;
                     case Engine::ASSET_TYPE::TEXTURE:
                     break;

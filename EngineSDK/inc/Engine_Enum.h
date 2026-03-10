@@ -8,12 +8,12 @@ namespace Engine
 	enum class LAYER_TYPE		{ NONE, BACKGROUND, PLAYER, FLOOR, PARTICLE, MAX = 16, };
 
     /* ------ Component ------ */
-    enum class COMPONENT_TYPE : uint8_t {   TRANSFORM, COLLIDER, RIGIDBODY, SCRIPT, MESH_RENDERER, ANIMATOR, CAMERA, LIGHT, AUDIO_LISTENER, AUDIO_SOURCE,
+    enum class COMPONENT_TYPE : uint8_t {   TRANSFORM, COLLIDER, RIGIDBODY, SPRING_JOINT, SCRIPT, MESH_RENDERER, ANIMATOR, CAMERA, LIGHT, AUDIO_LISTENER, AUDIO_SOURCE,
                                             RECT_TRANSFORM, CANVAS_RENDERER, UI_IMAGE, UI_BUTTON, UI_TEXT, END };
     enum class PROCESSOR_ID : uint8_t
     {
         TRANSFORM,             // CTransform
-        PHYSICS,               // Collider / Rigidbody
+        PHYSICS,               // Collider / Rigidbody / SpringJoint
         SCRIPT,                // Script
         MESH_RENDERER,         // MeshRenderer
         ANIMATION,             // Animator

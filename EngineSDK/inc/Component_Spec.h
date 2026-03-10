@@ -893,4 +893,85 @@ typedef struct ENGINE_DLL tagRigidbodySpec final : public COMPONENT_SPEC_BASE
 } RIGIDBODY_SPEC;
 
 
+typedef struct ENGINE_DLL tagSpringJointSpec final : public COMPONENT_SPEC_BASE
+{
+    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::SPRING_JOINT)
+
+    _bool       bEnable = true;
+    _bool       bUseSpring = false;
+    uint8_t     pad0[2] = {};
+
+    _float3     vAnchor{ 0.f, 0.f, 0.f };
+
+    _float      fSpring = 0.f;
+    _float      fDamper = 0.f;
+    _float      fRestLength = 0.f;
+
+    _float      fMinLength = 0.f;
+    _float      fMaxLength = 0.f;
+
+    _bool       bUseMinLength = false;
+    _bool       bUseMaxLength = false;
+    uint8_t     pad1[2] = {};
+
+    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
+    {
+        return std::make_unique<tagSpringJointSpec>(*this);
+    }
+
+    void ToJson(json& j) const override
+    {
+        j["Type"] = SCAST(_uint, Get_Type());
+        j["Enabled"] = bEnable;
+        j["UseSpring"] = bUseSpring;
+        j["Anchor"] = { vAnchor.x, vAnchor.y,  vAnchor.z };
+        j["Spring"] = fSpring;
+        j["Damper"] = fDamper;
+        j["RestLength"] = fRestLength;
+        j["MinLength"] = fMinLength;
+        j["MaxLength"] = fMaxLength;
+        j["UseMinLength"] = bUseMinLength;
+        j["UseMaxLength"] = bUseMaxLength;
+    }
+
+    _bool FromJson(const json& j) override
+    {
+        if (!Read_SpecType(j, Get_Type()))
+            return false;
+        if (!Read_Bool(j, "Enabled", bEnable))
+            return false;
+        if (!Read_Bool(j, "UseSpring", bUseSpring))
+            return false;
+        if (!Read_Vec3(j, "Anchor", vAnchor))
+            return false;
+        if (!Read_Float(j, "Spring", fSpring))
+            return false;
+        if (!Read_Float(j, "Damper", fDamper))
+            return false;
+        if (!Read_Float(j, "RestLength", fRestLength))
+            return false;
+        if (!Read_Float(j, "MinLength", fMinLength))
+            return false;
+        if (!Read_Float(j, "MaxLength", fMaxLength))
+            return false;
+        if (!Read_Bool(j, "UseMinLength", bUseMinLength))
+            return false;
+        if (!Read_Bool(j, "UseMaxLength", bUseMaxLength))
+            return false;
+
+        if (fSpring < 0.f)        fSpring = 0.f;
+        if (fDamper < 0.f)        fDamper = 0.f;
+        if (fRestLength < 0.f)    fRestLength = 0.f;
+        if (fMinLength < 0.f)     fMinLength = 0.f;
+        if (fMaxLength < 0.f)     fMaxLength = 0.f;
+
+        if (bUseMinLength && fMinLength > fRestLength && fRestLength > 0.f)
+            fMinLength = fRestLength;
+        if (bUseMaxLength && fMaxLength < fRestLength)
+            fMaxLength = fRestLength;
+
+        return true;
+    }
+} SPRING_JOINT_SPEC;
+
 NS_END

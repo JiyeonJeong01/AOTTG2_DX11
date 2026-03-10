@@ -184,6 +184,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Script_Register.h" />
     <ClInclude Include="..\Public\Solver.h" />
     <ClInclude Include="..\Public\Spec_Util.h" />
+    <ClInclude Include="..\Public\SpringJoint.h" />
     <ClInclude Include="..\Public\UIButton.h" />
     <ClInclude Include="..\Public\UIImage.h" />
     <ClInclude Include="..\Public\UI_Processor.h" />
@@ -266,6 +267,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Rigidbody_Builder.cpp" />
     <ClCompile Include="..\Private\Script.cpp" />
     <ClCompile Include="..\Private\Solver.cpp" />
+    <ClCompile Include="..\Private\SpringJoint.cpp" />
     <ClCompile Include="Raycast.cpp" />
     <Text Include="..\Docs\Script_Doc.md">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
