@@ -173,6 +173,7 @@ HRESULT CCore_System::Draw()
     //    pScene->Render();
 
     SYS_RENDER.Render();
+    SYS_COMPONENT.Render();
 
     return S_OK;
 }

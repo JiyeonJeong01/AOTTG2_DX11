@@ -22,17 +22,21 @@ typedef struct tagAABB
 typedef struct ENGINE_DLL tagColliderProxyData final
 {
     COLLIDER_DATA*  pCol = nullptr;
-    _float3         vCenterWorld{};
+    _float3         vCenterWorld{};                 /* 월드 기준 충돌 중심점
+                                                        - BOX    : 박스 중심
+                                                        - SPHERE : 구 중심
+                                                        - PLANE  : 평면 중심점
+                                                        보통 transform + offset 반영 결과 */
 
     union
     {
-        struct { _float3 vHalfExtentsWorld; } box;
+        struct { _float3 vHalfExtentsWorld; } box;  /* scale 반영된 월드 반쪽 크기 */
 
-        struct { _float  fRadiusWorld; } sphere;
+        struct { _float  fRadiusWorld; } sphere;    /* scale 반영된 월드 반지름 */
 
         struct {
-            _float3 vNormalWorld;
-            _float  fDistanceWorld;
+            _float3 vNormalWorld;                   /* 월드 공간 기준 평면 법선. 실제 signed distance 계산에 사용 */
+            _float  fDistanceWorld;                 /* 월드 plane equation 값 */
             _bool   bInfinite;
             _float2 vDimension;
             _float3 vAxisUWorld;

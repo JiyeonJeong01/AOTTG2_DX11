@@ -178,7 +178,24 @@ _bool CCollision_Detector::Detect_SpherePlaneCollision(CONTACT_DESC* pOut, COLLI
 
     if (!pColB->plane.bInfinite)
     {
-        // TODO : finite plane 영역 판정 필요
+        /* 충돌 지점을 평면의 로컬 좌표계(U, V축)로 투영하여, 평면의 실제 크기(가로/세로) 안에 들어오는지 체크한다. */
+
+        /* 평면 중심에서 충돌점까지의 상대 거리 계산 */
+        const _vector vPlaneCenter = Math::Load(pColB->vCenterWorld);
+        const _vector vAxisU = Math::Load(pColB->plane.vAxisUWorld);
+        const _vector vAxisV = Math::Load(pColB->plane.vAxisVWorld);
+        const _vector vToPoint = vPlanePoint - vPlaneCenter;
+
+        /* 내적(Dot)을 이용해 가로(U) 및 세로(V)축으로의 투영 거리 산출 */
+        const _float fU = Math::Get_X(Math::Dot(vToPoint, vAxisU));
+        const _float fV = Math::Get_X(Math::Dot(vToPoint, vAxisV));
+
+        /* 투영된 거리가 평면의 가로/세로 범위 밖이라면 충돌 제외 */
+        const _float fHalfW = pColB->plane.vDimension.x * 0.5f;
+        const _float fHalfH = pColB->plane.vDimension.y * 0.5f;
+
+        if (fabsf(fU) > fHalfW || fabsf(fV) > fHalfH)
+            return false;
     }
 
     pOut->pColA = pColA->pCol;
@@ -222,7 +239,24 @@ _bool CCollision_Detector::Detect_BoxPlaneCollision(CONTACT_DESC* pOut, COLLIDER
 
     if (!pColB->plane.bInfinite)
     {
-        // TODO : finite plane 영역 판정 필요
+        /* 충돌 지점을 평면의 로컬 좌표계(U, V축)로 투영하여, 평면의 실제 크기(가로/세로) 안에 들어오는지 체크한다. */
+
+        /* 평면 중심에서 충돌점까지의 상대 거리 계산 */
+        const _vector vPlaneCenter = Math::Load(pColB->vCenterWorld);
+        const _vector vAxisU = Math::Load(pColB->plane.vAxisUWorld);
+        const _vector vAxisV = Math::Load(pColB->plane.vAxisVWorld);
+        const _vector vToPoint = vPlanePoint - vPlaneCenter;
+
+        /* 내적(Dot)을 이용해 가로(U) 및 세로(V)축으로의 투영 거리 산출 */
+        const _float fU = Math::Get_X(Math::Dot(vToPoint, vAxisU));
+        const _float fV = Math::Get_X(Math::Dot(vToPoint, vAxisV));
+
+        /* 투영된 거리가 평면의 가로/세로 범위 밖이라면 충돌 제외 */
+        const _float fHalfW = pColB->plane.vDimension.x * 0.5f;
+        const _float fHalfH = pColB->plane.vDimension.y * 0.5f;
+
+        if (fabsf(fU) > fHalfW || fabsf(fV) > fHalfH)
+            return false;
     }
 
     pOut->pColA = pColA->pCol;

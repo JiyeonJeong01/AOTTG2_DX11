@@ -1030,21 +1030,16 @@ void CInspectorPanel::Draw_Collider()
     }
     ImGui::TextUnformatted(shapeText);
 
-    float vScale[3] = { pData->vScale.x, pData->vScale.y, pData->vScale.z };
-    if (ImGui::DragFloat3("Scale", vScale, 0.01f, 0.001f, 0.f, "%.3f"))
-    {
-        if (vScale[0] < 0.001f) vScale[0] = 0.001f;
-        if (vScale[1] < 0.001f) vScale[1] = 0.001f;
-        if (vScale[2] < 0.001f) vScale[2] = 0.001f;
-
-        pData->vScale = { vScale[0], vScale[1], vScale[2] };
-        bChanged = true;
-    }
-
     float vOffset[3] = { pData->vOffset.x, pData->vOffset.y, pData->vOffset.z };
     if (ImGui::DragFloat3("Offset", vOffset, 0.01f, 0.f, 0.f, "%.3f"))
     {
         pData->vOffset = { vOffset[0], vOffset[1], vOffset[2] };
+        bChanged = true;
+    }
+
+    if (ImGui::DragFloat3("Rotation Offset", &pData->vRotationOffset.x, 0.1f))
+    {
+        pData->bDirty = true;
         bChanged = true;
     }
 
@@ -1054,6 +1049,76 @@ void CInspectorPanel::Draw_Collider()
 
     if (pData->bEnable == 0)
         ImGui::EndDisabled();
+
+    switch (pData->eShape)
+    {
+    case SHAPE::BOX:
+    {
+        float vHalfExtents[3] =
+        {
+            pData->box.vHalfExtentsLocal.x,
+            pData->box.vHalfExtentsLocal.y,
+            pData->box.vHalfExtentsLocal.z
+        };
+
+        if (ImGui::DragFloat3("Half Extents", vHalfExtents, 0.01f, 0.001f, 0.f, "%.3f"))
+        {
+            if (vHalfExtents[0] < 0.001f) vHalfExtents[0] = 0.001f;
+            if (vHalfExtents[1] < 0.001f) vHalfExtents[1] = 0.001f;
+            if (vHalfExtents[2] < 0.001f) vHalfExtents[2] = 0.001f;
+
+            pData->box.vHalfExtentsLocal = { vHalfExtents[0], vHalfExtents[1], vHalfExtents[2] };
+            bChanged = true;
+        }
+        break;
+    }
+
+    case SHAPE::SPHERE:
+    {
+        float fRadius = pData->sphere.fRadiusLocal;
+        if (ImGui::DragFloat("Radius", &fRadius, 0.01f, 0.001f, 0.f, "%.3f"))
+        {
+            if (fRadius < 0.001f)
+                fRadius = 0.001f;
+
+            pData->sphere.fRadiusLocal = fRadius;
+            bChanged = true;
+        }
+        break;
+    }
+
+    case SHAPE::PLANE:
+    {
+        bool bInfinite = (pData->plane.bInfinite != 0);
+        if (ImGui::Checkbox("Infinite", &bInfinite))
+        {
+            pData->plane.bInfinite = bInfinite ? 1 : 0;
+            bChanged = true;
+        }
+
+        if (!bInfinite)
+        {
+            float vDimension[2] =
+            {
+                pData->plane.vDimension.x,
+                pData->plane.vDimension.y
+            };
+
+            if (ImGui::DragFloat2("Dimension", vDimension, 0.01f, 0.001f, 0.f, "%.3f"))
+            {
+                if (vDimension[0] < 0.001f) vDimension[0] = 0.001f;
+                if (vDimension[1] < 0.001f) vDimension[1] = 0.001f;
+
+                pData->plane.vDimension = { vDimension[0], vDimension[1] };
+                bChanged = true;
+            }
+        }
+        break;
+    }
+
+    default:
+        break;
+    }
 
     if (bChanged)
         pData->bDirty = true;
@@ -1154,6 +1219,59 @@ void CInspectorPanel::Draw_Rigidbody()
     default: break;
     }
     ImGui::TextUnformatted(shapeText);
+
+    ImGui::SeparatorText("Constraints");
+    ImGui::TextUnformatted("Position Lock");
+
+    bool lockPosX = (pData->tPositionLock.bX != 0);
+    if (ImGui::Checkbox("X##Pos", &lockPosX))
+    {
+        pData->tPositionLock.bX = lockPosX ? 1 : 0;
+        bChanged = true;
+    }
+    ImGui::SameLine();
+
+    bool lockPosY = (pData->tPositionLock.bY != 0);
+    if (ImGui::Checkbox("Y##Pos", &lockPosY))
+    {
+        pData->tPositionLock.bY = lockPosY ? 1 : 0;
+        bChanged = true;
+    }
+    ImGui::SameLine();
+
+    bool lockPosZ = (pData->tPositionLock.bZ != 0);
+    if (ImGui::Checkbox("Z##Pos", &lockPosZ))
+    {
+        pData->tPositionLock.bZ = lockPosZ ? 1 : 0;
+        bChanged = true;
+    }
+
+    ImGui::TextUnformatted("Rotation Lock");
+
+    bool lockRotX = (pData->tRotationLock.bX != 0);
+    if (ImGui::Checkbox("X##Rot", &lockRotX))
+    {
+        pData->tRotationLock.bX = lockRotX ? 1 : 0;
+        bChanged = true;
+    }
+    ImGui::SameLine();
+
+    bool lockRotY = (pData->tRotationLock.bY != 0);
+    if (ImGui::Checkbox("Y##Rot", &lockRotY))
+    {
+        pData->tRotationLock.bY = lockRotY ? 1 : 0;
+        bChanged = true;
+    }
+    ImGui::SameLine();
+
+    bool lockRotZ = (pData->tRotationLock.bZ != 0);
+    if (ImGui::Checkbox("Z##Rot", &lockRotZ))
+    {
+        pData->tRotationLock.bZ = lockRotZ ? 1 : 0;
+        bChanged = true;
+    }
+
+    ImGui::Separator();
 
     bool gravity = (pData->bGravity != 0);
     if (ImGui::Checkbox("Use Gravity", &gravity))

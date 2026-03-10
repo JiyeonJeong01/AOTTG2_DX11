@@ -34,9 +34,6 @@
     <Filter Include="01. Utility\03. Object">
       <UniqueIdentifier>{e634beb8-0c06-4693-99f6-fdfdbb81a53e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. Utility\98. Interface">
-      <UniqueIdentifier>{a2a79021-a7f6-46cf-b6b3-097e376eb440}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Utility\04. Component">
       <UniqueIdentifier>{e1f17606-11db-4431-82ad-fec3d52777ed}</UniqueIdentifier>
     </Filter>
@@ -174,6 +171,9 @@
     </Filter>
     <Filter Include="01. Utility\04. Component\02. Physics\SpringJoint">
       <UniqueIdentifier>{8c4490a1-ee23-4aca-b6bb-aa9a1e53dcd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\98. Debug">
+      <UniqueIdentifier>{a2a79021-a7f6-46cf-b6b3-097e376eb440}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -465,6 +465,12 @@
     <ClInclude Include="..\Public\SpringJoint.h">
       <Filter>01. Utility\04. Component\02. Physics\SpringJoint</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Debug_Renderer.h">
+      <Filter>01. Utility\98. Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DebugDraw.h">
+      <Filter>01. Utility\98. Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -638,6 +644,12 @@
     <ClCompile Include="..\Private\SpringJoint.cpp">
       <Filter>01. Utility\04. Component\02. Physics\SpringJoint</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Debug_Renderer.cpp">
+      <Filter>01. Utility\98. Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DebugDraw.cpp">
+      <Filter>01. Utility\98. Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Public\Component_System.inl">
@@ -646,19 +658,17 @@
     <None Include="..\Public\GameObject.inl">
       <Filter>01. Utility\03. Object\GameObject</Filter>
     </None>
-    <None Include="..\Docs\Scene_Doc.md">
+    <None Include="..\..\Docs\Engine\AssetRegistry_Doc.md">
       <Filter>100. Docementation</Filter>
     </None>
-    <None Include="..\Docs\AssetRegistry_Doc.md">
+    <None Include="..\..\Docs\Engine\Physics_Doc.md">
       <Filter>100. Docementation</Filter>
     </None>
-    <None Include="..\Docs\Physics_Doc.md">
+    <None Include="..\..\Docs\Engine\Scene_Doc.md">
       <Filter>100. Docementation</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\Docs\Script_Doc.md">
+    <None Include="..\..\Docs\Engine\Script_Doc.md">
       <Filter>100. Docementation</Filter>
-    </Text>
+    </None>
   </ItemGroup>
 </Project>

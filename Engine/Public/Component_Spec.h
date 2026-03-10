@@ -668,12 +668,12 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
 
     SHAPE       eShape{ SHAPE::END };
     _float3     vOffset{ 0.f, 0.f, 0.f };
+    _float3     vRotationOffset{ 0.f, 0.f, 0.f };
 
     _float3     vHalfExtentsLocal{ 0.5f, 0.5f, 0.5f };      /* BOX */
     _float      fRadiusLocal = 0.5f;                                /* SPHERE */
 
     _float3     vNormalLocal{ 0.f, 1.f, 0.f };              /* PLANE */
-    _float      fDistance = 0.f;
     _bool       bInfinite = true;
     _float2     vDimension{ 1.f, 1.f };
 
@@ -689,6 +689,7 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
         j["OnCol"] = bOnCol;
         j["Shape"] = SCAST(_uint, eShape);
         j["Offset"] = { vOffset.x, vOffset.y, vOffset.z };
+        j["RotationOffset"] = { vRotationOffset.x, vRotationOffset.y, vRotationOffset.z };
 
         switch (eShape)
         {
@@ -702,7 +703,6 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
 
         case SHAPE::PLANE:
             j["NormalLocal"] = { vNormalLocal.x, vNormalLocal.y, vNormalLocal.z };
-            j["Distance"] = fDistance;
             j["Infinite"] = bInfinite;
             j["Dimension"] = { vDimension.x, vDimension.y };
             break;
@@ -732,6 +732,8 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
 
         if (!Read_Vec3(j, "Offset", vOffset))
             return false;
+        if (!Read_Vec3(j, "RotationOffset", vRotationOffset))
+            return false;
 
         switch (eShape)
         {
@@ -753,8 +755,6 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
 
         case SHAPE::PLANE:
             if (!Read_Vec3(j, "NormalLocal", vNormalLocal))
-                return false;
-            if (!Read_Float(j, "Distance", fDistance))
                 return false;
             if (!Read_Bool(j, "Infinite", bInfinite))
                 return false;

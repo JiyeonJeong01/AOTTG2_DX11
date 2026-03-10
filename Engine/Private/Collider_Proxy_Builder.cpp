@@ -94,9 +94,13 @@ void CCollider_Proxy_Builder::Build_Plane_Proxy(COLLIDER_DATA* pCol, TRANSFORM_D
     outProxy.plane.vDimension = pCol->plane.vDimension;
 
     const _vector vLocalN = Math::Load(pCol->plane.vNormalLocal);
-    const _vector vRotQ = Math::Load(pTr->vRotationQuat);
 
-    const _vector vWorldN = Math::Normalize(Math::Rotate(vLocalN, vRotQ));
+    const _vector vTrRotQ = Math::Load(pTr->vRotationQuat);
+    const _vector vColRotQ = Math::Load(Math::EulerDegToQuaternion(pCol->vRotationOffset));
+
+    const _vector vFinalRotQ = Math::Normalize(XMQuaternionMultiply(vTrRotQ, vColRotQ));
+    const _vector vWorldN = Math::Normalize(Math::Rotate(vLocalN, vFinalRotQ));
+
     Math::Store(outProxy.plane.vNormalWorld, vWorldN);
 
     outProxy.plane.fDistanceWorld = -Math::Get_X(Math::Dot(vWorldN, vCenter));

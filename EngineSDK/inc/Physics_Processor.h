@@ -12,12 +12,13 @@ class CCollision_Detector;
 class CCollider_Proxy_Builder;
 class CRigidbody_Builder;
 class CSolver;
+class CDebug_Renderer;
 
 class CPhysics_Processor :  public CComponent_Processor
 {
     DEF_PROCESSOR_ID(PROCESSOR_ID::PHYSICS)
 public:
-    HRESULT Initialize() override;
+    HRESULT Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     void    LateUpdate(_float fDT) override;
     void    Fixed_Update(_float fDT);
     void    Render();
@@ -94,6 +95,7 @@ private:
     std::unique_ptr<CCollider_Proxy_Builder>    m_upCollider_Builder{};
     std::unique_ptr<CRigidbody_Builder>         m_upRigidbody_Builder{};
     std::unique_ptr<CSolver>                    m_upSolver{};
+    std::unique_ptr<CDebug_Renderer>            m_upDebugRenderer{};
 
     const _float    m_fGravity = -9.81f;
     const _float3   m_vGravity = { 0.f, m_fGravity, 0.f };
@@ -108,8 +110,12 @@ private :
     void    Integrate_Velocities(_float fDT);
     void    Process_Collision(vector<CONTACT_DESC>& outContacts);
     void    Reset_Kinematic_Velocities();
+
+    void    Apply_RotationLock(RIGIDBODY_DATA& data);
+    void    Apply_PositionLock(RIGIDBODY_DATA& data);
+
 public :
-    static std::unique_ptr<CPhysics_Processor> Create();
+    static std::unique_ptr<CPhysics_Processor> Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 };
 
 

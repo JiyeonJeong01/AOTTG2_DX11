@@ -6,12 +6,16 @@
 #include "Collision_Detector.h"
 #include "Collider_Proxy_Builder.h"
 #include "Component_Spec.h"
+#include "Debug_Renderer.h"
 #include "Rigidbody_Builder.h"
 #include "GameObject.h"
 #include "Solver.h"
 
-HRESULT CPhysics_Processor::Initialize()
+HRESULT CPhysics_Processor::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
+    m_pDevice = pDevice;
+    m_pContext = pContext;
+
     /* 팩토리 등록 */
     {
         SYS_COMPONENT.Register_InitialSpecFactory<CCollider, COLLIDER_SPEC>();
@@ -31,6 +35,7 @@ HRESULT CPhysics_Processor::Initialize()
     m_upCollider_Builder = CCollider_Proxy_Builder::Create();
     m_upRigidbody_Builder = CRigidbody_Builder::Create();
     m_upSolver = CSolver::Create();
+    m_upDebugRenderer = CDebug_Renderer::Create(m_pDevice, m_pContext);
 
     return S_OK;
 }
@@ -42,6 +47,8 @@ void CPhysics_Processor::LateUpdate(_float fDT)
 
 void CPhysics_Processor::Fixed_Update(_float fDT)
 {
+    m_AllColliders.clear();
+
     /* spring joint */
     Process_SpringJoints(fDT);
 
@@ -67,6 +74,20 @@ void CPhysics_Processor::Fixed_Update(_float fDT)
 
 void CPhysics_Processor::Render()
 {
+    m_upDebugRenderer->Begin();
+
+    for (const auto& tProxy : m_AllColliders)
+    {
+        if (tProxy.pCol == nullptr)
+            continue;
+
+        if (!tProxy.pCol->bEnable)
+            continue;
+
+        m_upDebugRenderer->Draw_Collider(tProxy);
+    }
+
+    m_upDebugRenderer->End();
 }
 
 void CPhysics_Processor::Process_SpringJoints(_float fDT)
@@ -221,9 +242,9 @@ void CPhysics_Processor::Integrate_Forces(_float fDT)
                 Math::Store(pData->vAngularVel, vAngularVel + vDeltaW * fDT);
             }
 
-            /* TODO : Lock 적용 */
-            /* TODO : ApplyPositionLock(*pData); */
-            /* TODO : ApplyRotationLock(*pData); */
+            /* Lock 적용 */
+            Apply_PositionLock(*pData);
+            Apply_RotationLock(*pData);
 
             /* accum 값은 해당 프레임에만 적용된다. */
             pData->vForceAccum = _float3{ 0.f, 0.f, 0.f };
@@ -392,6 +413,20 @@ void CPhysics_Processor::Reset_Kinematic_Velocities()
     }
 }
 
+void CPhysics_Processor::Apply_RotationLock(RIGIDBODY_DATA& data)
+{
+    if (data.tRotationLock.bX) data.vAngularVel.x = 0.f;
+    if (data.tRotationLock.bY) data.vAngularVel.y = 0.f;
+    if (data.tRotationLock.bZ) data.vAngularVel.z = 0.f;
+}
+
+void CPhysics_Processor::Apply_PositionLock(RIGIDBODY_DATA& data)
+{
+    if (data.tPositionLock.bX) data.vLinearVel.x = 0.f;
+    if (data.tPositionLock.bY) data.vLinearVel.y = 0.f;
+    if (data.tPositionLock.bZ) data.vLinearVel.z = 0.f;
+}
+
 COMPONENT_HANDLE CPhysics_Processor::Create_Component_Data(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject)
 {
     switch (eComType)
@@ -501,6 +536,7 @@ HRESULT CPhysics_Processor::Initialize_From_Spec_Collider(COMPONENT_HANDLE h, co
     pData->bOnCol = pSpec->bOnCol;
     pData->eShape = pSpec->eShape;
     pData->vOffset = pSpec->vOffset;
+    pData->vRotationOffset = pSpec->vRotationOffset;
 
     switch (pSpec->eShape)
     {
@@ -514,7 +550,6 @@ HRESULT CPhysics_Processor::Initialize_From_Spec_Collider(COMPONENT_HANDLE h, co
 
     case SHAPE::PLANE:
         pData->plane.vNormalLocal = pSpec->vNormalLocal;
-        pData->plane.fDistance = pSpec->fDistance;
         pData->plane.bInfinite = pSpec->bInfinite;
         pData->plane.vDimension = pSpec->vDimension;
         break;
@@ -605,6 +640,7 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec_Collider(COM
     pSpec->bOnCol = pData->bOnCol;
     pSpec->eShape = pData->eShape;
     pSpec->vOffset = pData->vOffset;
+    pSpec->vRotationOffset = pData->vRotationOffset;
 
     switch (pData->eShape)
     {
@@ -618,7 +654,6 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec_Collider(COM
 
     case SHAPE::PLANE:
         pSpec->vNormalLocal = pData->plane.vNormalLocal;
-        pSpec->fDistance = pData->plane.fDistance;
         pSpec->bInfinite = pData->plane.bInfinite;
         pSpec->vDimension = pData->plane.vDimension;
         return pSpec;
@@ -698,8 +733,6 @@ HRESULT CPhysics_Processor::Initialize_Component_Data(COMPONENT_TYPE eComType, C
         /* 값 채우기 */
         pData->hTransform = transform.Get_Handle();
         pData->hRigidbody = {}; /* TODO : 로직 생각해보기 */
-        pData->vPoint = pTr->vPosition;
-        pData->vScale = pTr->vScale;
 
         pData->bDirty = true;
         return S_OK;
@@ -810,10 +843,10 @@ HRESULT CPhysics_Processor::Initialize_Component_Data(COMPONENT_TYPE eComType, C
     }
 }
 
-std::unique_ptr<CPhysics_Processor> CPhysics_Processor::Create()
+std::unique_ptr<CPhysics_Processor> CPhysics_Processor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     auto pInstance = std::make_unique<CPhysics_Processor>();
 
-    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "Create instance failed");
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(pDevice, pContext), nullptr, "Create instance failed");
     return pInstance;
 }

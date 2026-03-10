@@ -33,7 +33,6 @@ void CCollider::Set_Shape(SHAPE eShape)
 
     case SHAPE::PLANE:
         m_pData->plane.vNormalLocal = _float3{ 0.f, 0.f, 1.f };
-        m_pData->plane.fDistance = 0.f;
         m_pData->plane.bInfinite = true;
         break;
 
