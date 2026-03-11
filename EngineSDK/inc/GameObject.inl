@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "GameObject.h"
 #include "Component_System.h"
+#include "Script_Processor.h"
 
 template <typename TProxy>
 TProxy CGameObject::Add_Component()
@@ -127,4 +128,43 @@ std::vector<TProxy> CGameObject::Get_Components()
 
         return components;
     }
+}
+
+template <typename TScript>
+TScript* CGameObject::Get_Script()
+{
+    std::vector<CScript> scripts = Get_Components<CScript>();
+
+    for (auto& sc : scripts)
+    {
+        CScript_Processor* pScriptProcessor = SYS_COMPONENT.Bind_Processor<CScript_Processor>();
+        IF_NULL_RETURN_MSG_BREAK(pScriptProcessor, nullptr, "pScriptProcessor can't bind");
+        IScript* pScript = pScriptProcessor->Get_Script_Instance(sc.Get_Handle());
+        TScript* pTypedScript = dynamic_cast<TScript*>(pScript);
+        if (pTypedScript)
+            return pTypedScript;
+    }
+
+    return nullptr;
+}
+
+template <typename TScript>
+TScript* CGameObject::Get_Script_InChildren()
+{
+    TScript* pScript = Get_Script<TScript>();
+    if (pScript)
+        return pScript;
+
+    const auto& children = Get_Children();
+    for (auto* pChild : children)
+    {
+        if (!pChild)
+            continue;
+
+        pScript = pChild->Get_Script_InChildren<TScript>();
+        if (pScript)
+            return pScript;
+    }
+
+    return nullptr;
 }

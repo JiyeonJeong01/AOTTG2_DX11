@@ -32,7 +32,7 @@ public:
                                     CGameObject* pParent = nullptr);
 
     void            Destroy_Object(CGameObject* pObj);
-    void            Destroy_All_SceneObjects() {  /* TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */ };
+    void            Destroy_All_SceneObjects();
     void            Flush_PendingDestroy();
 
     void            Set_Enable(CGameObject* pObj, _bool bEnable);

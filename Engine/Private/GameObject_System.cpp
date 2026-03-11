@@ -224,6 +224,23 @@ void CGameObject_System::Destroy_Object(CGameObject* pObj)
     data.bEnable = false;
 }
 
+void CGameObject_System::Destroy_All_SceneObjects()
+{
+    const size_t iSize = m_wrapperPool.size();
+
+    for (size_t i = 1; i < iSize; ++i) /* 0은 dummy */
+    {
+        CGameObject* pObj = m_wrapperPool[i].get();
+        if (pObj == nullptr)
+            continue;
+
+        if (!pObj->Is_Valid())
+            continue;
+
+        Destroy_Object(pObj);
+    }
+}
+
 void CGameObject_System::Set_Layer(CGameObject* pObj, Layer::LAYER_ID iNewLayer)
 {
     IF_NULL_RETURN_MSG_BREAK(pObj, , "Destroy_Object failed : pObj is nullptr");

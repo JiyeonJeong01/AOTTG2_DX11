@@ -85,14 +85,6 @@ void CInput_System::Update_System()
     }
 
     m_pMouse->GetDeviceState(sizeof(m_tMouseState), &m_tMouseState);
-
-    if (Get_KeyDown('T'))
-    {
-        LOG_INFO("ptScreen : %ld, %ld", ptScreen.x, ptScreen.y);
-        LOG_INFO("ptClient : %ld, %ld", ptClient.x, ptClient.y);
-        LOG_INFO("ScenePos : %.1f, %.1f", ui.tSceneView.vScreenPos.x, ui.tSceneView.vScreenPos.y);
-        LOG_INFO("GameMouse: %ld, %ld", m_tGameMousePos.x, m_tGameMousePos.y);
-    }
 }
 
 _bool CInput_System::Get_Key(int iKey)

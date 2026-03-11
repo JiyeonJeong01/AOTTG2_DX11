@@ -451,7 +451,11 @@ void CHierarchyPanel::Draw_Node_Recursive(Engine::CGameObject* pObj, int /*iDept
     _bool bOpened = ImGui::TreeNodeEx(strLabel.c_str(), flags);
 
     /* Handle click */
-    if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+    bool bHovered = ImGui::IsItemHovered();
+    bool bMouseReleased = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
+    bool bDragging = ImGui::IsMouseDragging(ImGuiMouseButton_Left);
+
+    if (bHovered && bMouseReleased && !bDragging)
         Handle_Node_Click(pObj);
 
     /* Handle double click to rename */

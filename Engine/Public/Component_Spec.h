@@ -141,7 +141,7 @@ typedef struct ENGINE_DLL tagCanvasRendererSpec final : public COMPONENT_SPEC_BA
         j["flags"] = flags;
         j["layer"] = SCAST(_uint, layer);
         j["sortZ"] = sortZ;
-        j["bEnabled"] = bEnabled;
+        j["Enabled"] = bEnabled;
     }
 
     _bool FromJson(const json& j) override
@@ -177,9 +177,9 @@ typedef struct ENGINE_DLL tagCanvasRendererSpec final : public COMPONENT_SPEC_BA
             sortZ = v.get<_float>();
         }
 
-        if (!j.contains("bEnabled")) return false;
+        if (!j.contains("Enabled")) return false;
         {
-            const auto& v = j.at("bEnabled");
+            const auto& v = j.at("Enabled");
             if (!v.is_boolean()) return false;
             bEnabled = v.get<_bool>();
         }
@@ -218,7 +218,7 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
     uint32_t    flags = RF_NONE;
     RENDER_LAYER layer = RENDER_LAYER::NONBLEND;
     _float      sortZ = 0.f;
-    _bool       bEnabled = true;
+    _bool       bEnable = true;
 
     std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
     {
@@ -233,15 +233,17 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
         j["Flags"] = flags;
         j["Layer"] = SCAST(uint32_t, layer);
         j["SortZ"] = sortZ;
-        j["bEnabled"] = bEnabled;
+        j["Enabled"] = bEnable;
     }
 
     _bool FromJson(const json& j) override
     {
         if (!Read_SpecType(j, Get_Type()))
             return false;
-        if (!Read_GUID(j, "MeshGUID", meshGUID)) return false;
-        if (!Read_GUID(j, "MaterialGUID", materialGUID)) return false;
+        if (!Read_GUID(j, "MeshGUID", meshGUID))
+            return false;
+        if (!Read_GUID(j, "MaterialGUID", materialGUID))
+            return false;
         if (!Read_UInt(j, "Flags", flags))
             return false;
         {
@@ -252,7 +254,7 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
         }
         if (!Read_Float(j, "SortZ", sortZ))
             return false;
-        if (!Read_Bool(j, "bEnabled", bEnabled))
+        if (!Read_Bool(j, "Enabled", bEnable))
             return false;
         sortZ = Clamp01(sortZ);
         return true;
@@ -297,7 +299,7 @@ typedef struct ENGINE_DLL tagCameraSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::CAMERA)
 
-        _bool   bOrthographic = false;
+    _bool   bOrthographic = false;
     _float  fovy = 60.f;          /* degrees */
     _float  orthoSize = 5.f;
     _float  aspect = 16.f / 9.f;
@@ -367,8 +369,6 @@ typedef struct ENGINE_DLL tagCameraSpec final : public COMPONENT_SPEC_BASE
 typedef struct ENGINE_DLL tagLightSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::LIGHT)
-
-        OBJECT_HANDLE hObject{};
 
     LIGHT_TYPE type = LIGHT_TYPE::DIRECTIONAL;
 
@@ -482,7 +482,7 @@ typedef struct tagUIImageSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::UI_IMAGE)
 
-        RECT_F      rcUV{};
+    RECT_F      rcUV{};
     _float4     color{ 1,1,1,1 };
 
     ASSET_GUID  textureGuid{};
@@ -550,7 +550,7 @@ typedef struct tagUIButtonSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::UI_BUTTON)
 
-        _float4 normal{ 1,1,1,1 };
+    _float4 normal{ 1,1,1,1 };
     _float4 hover{ 1,1,1,1 };
     _float4 pressed{ 1,1,1,1 };
     _float4 disabled{ 1,1,1,1 };

@@ -42,6 +42,8 @@ public:
     _matrix             Get_WorldXM() const;          
     _vector             Get_StateXM(STATE eState) const;
 
+    void                Set_Position(_fvector vPosition);
+
     _float3             Get_Rotation_Euler() const;
     void                Set_Rotation_Euler(_float3 vEulerDegree);
     _float4             Get_Rotation_Quaternion() const;

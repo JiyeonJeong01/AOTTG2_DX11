@@ -1,6 +1,7 @@
 ﻿#include "Transform.h"
 #include "Engine_MathDX.h"
 #include "Engine_Log.h"
+#include "Engine_Math.h"
 
 void CTransform::Translate(_fvector vWorldDir, SPACE eSpace)
 {
@@ -170,6 +171,12 @@ _vector CTransform::Get_StateXM(STATE eState) const
     IF_NULL_RETURN_MSG_BREAK(m_pData, {}, "m_pData is nullptr.");
 
     return MathDX::Load(reinterpret_cast<const _float4*>(&m_pData->matWorld.m[SCAST(_uint, eState)][0]));
+}
+
+void CTransform::Set_Position(_fvector vPosition)
+{
+    Math::Store(m_pData->vPosition, vPosition);
+    m_pData->bDirty = true;
 }
 
 _float3 CTransform::Get_Scale() const

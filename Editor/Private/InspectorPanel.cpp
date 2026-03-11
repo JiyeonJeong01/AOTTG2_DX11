@@ -1,4 +1,5 @@
-﻿#include "InspectorPanel.h"
+﻿#pragma region HEADER
+#include "InspectorPanel.h"
 #include "HierarchyPanel.h"
 #include "GameObject.h"
 #include "Engine_Log.h"
@@ -12,13 +13,14 @@
 #include "Rigidbody.h"
 #include "Collider.h"
 #include "SpringJoint.h"
-#include "UIImage.h"
-#include "UIButton.h"
 #include "MeshRenderer.h"
-#include "CanvasRenderer.h"
 #include "Script.h"
 #include "RectTransform.h"
+#include "Camera.h"
 
+#include "UIImage.h"
+#include "UIButton.h"
+#include "CanvasRenderer.h"
 
 #include "Editor_Util.h"
 #include "Script_Processor.h"
@@ -26,11 +28,7 @@
 #include "Material.h"
 #include "UI_Processor.h"
 
-
-namespace Engine
-{
-    class CRigidbody;
-}
+#pragma endregion
 
 NS_BEGIN(Editor)
     CInspectorPanel::CInspectorPanel(const std::string& strPanelName)
@@ -532,9 +530,16 @@ void CInspectorPanel::Draw_AddComponentPopup()
 
             ImGui::EndPopup();
         }
+
         if (ImGui::MenuItem("MeshRenderer"))
         {
             m_pTarget->Add_Component<CMeshRenderer>();
+            ImGui::CloseCurrentPopup();
+        }
+
+        if (ImGui::MenuItem("Camera"))
+        {
+            m_pTarget->Add_Component<CCamera>();
             ImGui::CloseCurrentPopup();
         }
     }
@@ -607,6 +612,9 @@ void CInspectorPanel::Draw_ComponentByType(COMPONENT_TYPE eComType)
         break;
     case COMPONENT_TYPE::MESH_RENDERER :
         Draw_MeshRenderer();
+        break;
+    case COMPONENT_TYPE::CAMERA :
+        Draw_Camera();
         break;
     case COMPONENT_TYPE::CANVAS_RENDERER:
         Draw_CanvasRenderer();
@@ -1546,6 +1554,164 @@ void CInspectorPanel::Draw_SpringJoint()
     ImGui::TreePop();
 }
 
+void CInspectorPanel::Draw_Camera()
+{
+    CCamera camera = m_pTarget->Get_Component<CCamera>();
+    if (!camera.Is_Valid())
+        return;
+
+    CAMERA_DATA* pData = camera._Data();
+    if (!pData)
+        return;
+
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    const ImGuiID idHeader = window->GetID("Camera_Header");
+    const ImGuiID idCheck = window->GetID("Camera_Enable");
+
+    ImGui::PushID(idHeader);
+
+    ImGui::AlignTextToFramePadding();
+
+    bool enabled = (pData->bEnable != 0);
+    if (ImGui::Checkbox("##Enable", &enabled))
+    {
+        pData->bEnable = enabled ? 1 : 0;
+        pData->dirty = true;
+    }
+
+    ImGui::SameLine();
+
+    const ImGuiTreeNodeFlags flags =
+        ImGuiTreeNodeFlags_DefaultOpen |
+        ImGuiTreeNodeFlags_Framed |
+        ImGuiTreeNodeFlags_SpanAvailWidth |
+        ImGuiTreeNodeFlags_AllowOverlap;
+
+    const bool open = ImGui::TreeNodeEx("Camera", flags);
+
+    ImGui::PopID();
+
+    if (!open)  return;
+
+    if (pData->bEnable == 0) ImGui::BeginDisabled();
+
+    bool bChanged = false;
+
+    bool bOrthographic = (pData->bOrthographic != 0);
+    if (ImGui::Checkbox("Orthographic", &bOrthographic))
+    {
+        pData->bOrthographic = bOrthographic ? 1 : 0;
+        bChanged = true;
+    }
+
+    float fAspect = pData->fAspect;
+    if (ImGui::DragFloat("Aspect", &fAspect, 0.001f, 0.001f, 100.f, "%.3f"))
+    {
+        if (fAspect < 0.001f)
+            fAspect = 0.001f;
+
+        pData->fAspect = fAspect;
+        bChanged = true;
+    }
+
+    float fNear = pData->fNear;
+    if (ImGui::DragFloat("Near", &fNear, 0.01f, 0.001f, 100000.f, "%.3f"))
+    {
+        if (fNear < 0.001f)
+            fNear = 0.001f;
+
+        pData->fNear = fNear;
+        bChanged = true;
+    }
+
+    float fFar = pData->fFar;
+    if (ImGui::DragFloat("Far", &fFar, 0.1f, 0.001f, 1000000.f, "%.3f"))
+    {
+        if (fFar < 0.001f)
+            fFar = 0.001f;
+
+        pData->fFar = fFar;
+        bChanged = true;
+    }
+
+    if (pData->bOrthographic)
+    {
+        float fOrthoSize = pData->fOrthoSize;
+        if (ImGui::DragFloat("Ortho Size", &fOrthoSize, 0.01f, 0.001f, 100000.f, "%.3f"))
+        {
+            if (fOrthoSize < 0.001f)
+                fOrthoSize = 0.001f;
+
+            pData->fOrthoSize = fOrthoSize;
+            bChanged = true;
+        }
+    }
+    else
+    {
+        float fFovy = pData->fFovy;
+        if (ImGui::DragFloat("FOV Y", &fFovy, 0.1f, 1.f, 179.f, "%.3f"))
+        {
+            if (fFovy < 1.f)
+                fFovy = 1.f;
+            if (fFovy > 179.f)
+                fFovy = 179.f;
+
+            pData->fFovy = fFovy;
+            bChanged = true;
+        }
+    }
+
+    ImGui::Separator();
+
+    uint32_t layerMask = pData->layerMask;
+    int layerMaskInt = SCAST(int, layerMask);
+    if (ImGui::InputInt("Layer Mask", &layerMaskInt))
+    {
+        pData->layerMask = SCAST(uint32_t, layerMaskInt);
+        bChanged = true;
+    }
+
+    int iPriority = (int)pData->iPriority;
+    if (ImGui::InputInt("Render Priority", &iPriority))
+    {
+        pData->iPriority = (uint8_t)iPriority;
+        bChanged = true;
+    }
+
+    if (bChanged)
+    {
+        if (pData->fAspect < 0.001f)
+            pData->fAspect = 0.001f;
+
+        if (pData->fNear < 0.001f)
+            pData->fNear = 0.001f;
+
+        if (pData->fFar < 0.001f)
+            pData->fFar = 0.001f;
+
+        if (pData->fFar < pData->fNear)
+            pData->fFar = pData->fNear + 0.001f;
+
+        if (pData->fOrthoSize < 0.001f)
+            pData->fOrthoSize = 0.001f;
+
+        if (pData->fFovy < 1.f)
+            pData->fFovy = 1.f;
+        if (pData->fFovy > 179.f)
+            pData->fFovy = 179.f;
+
+        pData->dirty = true;
+    }
+
+    if (pData->bEnable == 0)
+        ImGui::EndDisabled();
+
+    ImGui::TreePop();
+}
+
 void CInspectorPanel::Draw_Script()
 {
     if (!m_pTarget)
@@ -1948,6 +2114,7 @@ void CInspectorPanel::Draw_ScriptFields(Engine::IScript* pScript)
         ImGui::PopID();
     }
 }
+
 void CInspectorPanel::Draw_UIImage()
 {
     CUIImage img = m_pTarget->Get_Component<CUIImage>();

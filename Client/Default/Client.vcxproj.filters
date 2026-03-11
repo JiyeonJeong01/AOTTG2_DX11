@@ -17,13 +17,31 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{31b12ced-c710-4770-96d8-31bf93eb319e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{73892fe4-c0ef-47a5-b98a-3b455a80c7bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player\PlayerStateMachine">
+      <UniqueIdentifier>{bfa61ad5-dce1-46a1-9fe6-d2cb97fa1ed8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{f01b4453-0278-4a42-9173-98b98989d634}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\State">
+      <UniqueIdentifier>{9396ee1b-2171-4493-889b-836bd7f3ca33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player\PlayerState">
+      <UniqueIdentifier>{60556078-2539-4cd3-b604-cb15d3fe44cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player\PlayerController">
+      <UniqueIdentifier>{f281a2f8-24d2-4c75-9f96-039dc5ddc96d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{3667b0b7-bc15-40e2-a1c3-c08e79de2444}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
       <Filter>MainApp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Client_Define.h">
-      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Tester.h">
       <Filter>Test</Filter>
@@ -45,6 +63,45 @@
     </ClInclude>
     <ClInclude Include="..\Public\Hello.h">
       <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerStateMachine.h">
+      <Filter>Player\PlayerStateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\StateMachine.h">
+      <Filter>Common\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\State.h">
+      <Filter>Common\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState.h">
+      <Filter>Player\PlayerState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Grounded.h">
+      <Filter>Player\PlayerState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Airborne.h">
+      <Filter>Player\PlayerState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player_Struct.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Client_Define.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player_InputController.h">
+      <Filter>Player\PlayerController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CameraController.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MainMenu_Controller.h">
+      <Filter>MainApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Easing_Function.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +128,36 @@
     </ClCompile>
     <ClCompile Include="..\Private\Hello.cpp">
       <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Player.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerStateMachine.cpp">
+      <Filter>Player\PlayerStateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\StateMachine.cpp">
+      <Filter>Common\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\State.cpp">
+      <Filter>Common\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState.cpp">
+      <Filter>Player\PlayerState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Grounded.cpp">
+      <Filter>Player\PlayerState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Airborne.cpp">
+      <Filter>Player\PlayerState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Player_InputController.cpp">
+      <Filter>Player\PlayerController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CameraController.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MainMenu_Controller.cpp">
+      <Filter>MainApp</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

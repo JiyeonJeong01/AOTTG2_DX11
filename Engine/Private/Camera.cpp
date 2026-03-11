@@ -1,11 +1,11 @@
 ﻿#include "Camera.h"
 
-void CCamera::Set_Enabled(_bool bEnable)
+void CCamera::Set_Priority(uint8_t iPriority)
 {
     if (nullptr == m_pData)
         return;
 
-    m_pData->bEnabled = bEnable ? 1 : 0;
+    m_pData->iPriority = iPriority; 
     m_pData->dirty = true;
 }
 

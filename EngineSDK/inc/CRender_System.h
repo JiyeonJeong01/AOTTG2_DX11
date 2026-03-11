@@ -60,10 +60,10 @@ private:
     vector<DRAW_CMD>        m_AllDrawCmds;
     std::array<std::vector<DRAW_CMD*>, SCAST(size_t, RENDER_LAYER::END)> m_LayerCmds;
 
-    class CTransform_Processor* m_pTransform_Processor{};
+    class CTransform_Processor*     m_pTransform_Processor{};
     class CRectTransform_Processor* m_pRectTransform_Processor{};
 
-    _bool   bSubmittedThisFrame{};
+    _bool   bSubmittedThisFrame{}; /* 프레임당 하나의 카메라의 submit만 받는다. */
 
 private:
     HRESULT    Create_RenderState();

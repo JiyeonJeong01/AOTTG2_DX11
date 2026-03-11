@@ -30,6 +30,12 @@ public:
     template <typename TProxy>
     std::vector<TProxy> Get_Components();
 
+    template <typename TScript>
+    TScript* Get_Script();
+
+    template <typename TScript>
+    TScript* Get_Script_InChildren();
+
     void                Remove_Components(COMPONENT_TYPE eComType);
     void                Remove_All_Components();
 

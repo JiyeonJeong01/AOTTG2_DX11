@@ -3,6 +3,8 @@
 #include "Transform_Processor.h"
 #include "Engine_Math.h"
 
+#include "Input_System.h"
+
 CCollider_Proxy_Builder::CCollider_Proxy_Builder()
 {
 }
@@ -98,10 +100,20 @@ void CCollider_Proxy_Builder::Build_Plane_Proxy(COLLIDER_DATA* pCol, TRANSFORM_D
     const _vector vTrRotQ = Math::Load(pTr->vRotationQuat);
     const _vector vColRotQ = Math::Load(Math::EulerDegToQuaternion(pCol->vRotationOffset));
 
-    const _vector vFinalRotQ = Math::Normalize(XMQuaternionMultiply(vTrRotQ, vColRotQ));
+    const _vector vFinalRotQ = Math::Normalize(XMQuaternionMultiply(vColRotQ, vTrRotQ));
     const _vector vWorldN = Math::Normalize(Math::Rotate(vLocalN, vFinalRotQ));
 
     Math::Store(outProxy.plane.vNormalWorld, vWorldN);
+
+    { /*  TODO ================================================================== */
+
+        if (SYS_INPUT.Get_KeyDown('T'))
+        {
+            LOG_INFO("%.2f, %.2f, %.2f", outProxy.plane.vNormalWorld.x, outProxy.plane.vNormalWorld.y, outProxy.plane.vNormalWorld.z );
+        }
+
+
+    } /*  TODO ================================================================== */
 
     outProxy.plane.fDistanceWorld = -Math::Get_X(Math::Dot(vWorldN, vCenter));
     if (outProxy.plane.bInfinite)

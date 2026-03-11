@@ -4,6 +4,7 @@
 
 #include "Transform_Processor.h"
 #include "Physics_Processor.h"
+#include "Environment_Processor.h"
 #include "MeshRenderer_Processor.h"
 #include "RectTransform_Processor.h"
 #include "CanvasRenderer_Processor.h"
@@ -37,6 +38,8 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
         = CPhysics_Processor::Create(m_pDevice, m_pContext);
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)]
         = CMeshRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CTransform_Processor*, m_pComProcessors[COM_TO_PID(COMPONENT_TYPE::TRANSFORM)].get()));
+    m_pComProcessors[PID_TO_INT(PROCESSOR_ID::ENVIRONMENT)]
+        = CEnvironment_Processor::Create();
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::RECT_TRANSFORM)]
         = CRectTransform_Processor::Create();
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)]

@@ -15,3 +15,5 @@ namespace Client
 }
 
 #include "Engine_SDK.h"
+
+using namespace Client;

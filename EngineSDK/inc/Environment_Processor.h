@@ -7,9 +7,18 @@
 
 NS_BEGIN(Engine)
 
+class CTransform_Processor;
+typedef struct tagTransformData TRANSFORM_DATA;
+
 class ENGINE_DLL CEnvironment_Processor final : public CComponent_Processor
 {
     DEF_PROCESSOR_ID(PROCESSOR_ID::ENVIRONMENT)
+
+
+private :
+    _matrix Calculate_ViewMatrix(TRANSFORM_DATA* pCamreaTr);
+    _matrix Calculate_ProjMatrix(CAMERA_DATA* pData);
+
 public:
     CEnvironment_Processor();
     ~CEnvironment_Processor() override;
@@ -47,6 +56,10 @@ private:
         COMPONENT_HANDLE hComponent = pool.Allocate();
         auto pData = pool.Get_Data_By_Handle(hComponent);
         pData->hObject = hObject;
+
+        if (FAILED(Initialize_Component_Data(TProxy::ComponentType, hComponent)))
+            return INVALID_HANDLE;
+
         return hComponent;
     }
 
@@ -63,18 +76,24 @@ private:
     }
 
 private:
+    CComponent_Pool<CCamera>    m_CameraPool;
+    CComponent_Pool<CLight>     m_LightPool;
+
+    CTransform_Processor*       m_pTransformProcessor{};
+
+private:
+    HRESULT Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent);
+
     HRESULT Initialize_From_Spec_Camera(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
     HRESULT Initialize_From_Spec_Light(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
 
     std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec_Camera(COMPONENT_HANDLE h);
     std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec_Light(COMPONENT_HANDLE h);
 
-private:
-    CComponent_Pool<CCamera> m_CameraPool;
-    CComponent_Pool<CLight> m_LightPool;
-
 public:
     static std::unique_ptr<CEnvironment_Processor> Create();
 };
+
+
 
 NS_END

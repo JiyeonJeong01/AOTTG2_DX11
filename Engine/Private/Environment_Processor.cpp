@@ -1,27 +1,133 @@
 ﻿// Environment_System.cpp
 #include "Environment_Processor.h"
+
+#include "Component_System.h"
+#include "CRender_System.h"
+
 #include "Engine_Log.h"
 #include "Component_Spec.h"
+#include "Transform_Processor.h"
 
 NS_BEGIN(Engine)
 
-CEnvironment_Processor::CEnvironment_Processor() = default;
 
+CEnvironment_Processor::CEnvironment_Processor() = default;
 CEnvironment_Processor::~CEnvironment_Processor() = default;
 
 std::unique_ptr<CEnvironment_Processor> CEnvironment_Processor::Create()
 {
-    return std::make_unique<CEnvironment_Processor>();
+    auto pInstance = std::make_unique<CEnvironment_Processor>();
+    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "Create Instance failed");
+
+    return pInstance;
+}
+
+_matrix CEnvironment_Processor::Calculate_ViewMatrix(TRANSFORM_DATA* pCameraTr)
+{
+    _vector vEye = Math::Load(pCameraTr->vPosition);
+
+    _vector vForward;
+    memcpy(&vForward, &pCameraTr->matWorld.m[2][0], sizeof(_float4));
+    vForward = XMVector3Normalize(vForward);
+
+    _vector vUp;
+    memcpy(&vUp, &pCameraTr->matWorld.m[1][0], sizeof(_float4));
+    vUp = XMVector3Normalize(vUp);
+
+    _vector vAt = vEye + vForward;
+
+    _matrix matView = XMMatrixLookAtLH(vEye, vAt, vUp);
+    return matView;
+}
+
+_matrix CEnvironment_Processor::Calculate_ProjMatrix(CAMERA_DATA* pData)
+{
+    if (!pData)
+        return XMMatrixIdentity();
+
+    const _float fAspect = (pData->fAspect > 0.001f) ? pData->fAspect : 0.001f;
+    const _float fNear = (pData->fNear > 0.001f) ? pData->fNear : 0.001f;
+    const _float fFar = (pData->fFar > fNear) ? pData->fFar : (fNear + 0.001f);
+
+    if (pData->bOrthographic)
+    {
+        const _float fOrthoSize = (pData->fOrthoSize > 0.001f) ? pData->fOrthoSize : 0.001f;
+        const _float fWidth = fOrthoSize * 2.f * fAspect;
+        const _float fHeight = fOrthoSize * 2.f;
+
+        return XMMatrixOrthographicLH(fWidth, fHeight, fNear, fFar);
+    }
+
+    _float fFovy = pData->fFovy;
+    if (fFovy < 1.f)
+        fFovy = 1.f;
+    if (fFovy > 179.f)
+        fFovy = 179.f;
+
+    return XMMatrixPerspectiveFovLH(XMConvertToRadians(fFovy), fAspect, fNear, fFar);
 }
 
 HRESULT CEnvironment_Processor::Initialize()
 {
+    /* --- Register Factory --- */
+    {
+        SYS_COMPONENT.Register_InitialSpecFactory<CCamera, CAMERA_SPEC>();
+        SYS_COMPONENT.Register_BuildSpecFacotry<CCamera>();
+
+        //SYS_COMPONENT.Register_InitialSpecFactory<CLight, LIGHT_SPEC>();
+        //SYS_COMPONENT.Register_BuildSpecFacotry<CLight>();
+    }
+
+    m_pTransformProcessor = SYS_COMPONENT.Bind_Processor<CTransform_Processor>();
+    IF_NULL_RETURN_MSG_BREAK(m_pTransformProcessor, E_FAIL, "transform processor is nullptr");
+
     return S_OK;
 }
 
 void CEnvironment_Processor::Update(_float)
 {
-    /* 필요시 카메라, 빛 update 로직  넣기 */
+    CAMERA_DATA* pPriorityCamera = nullptr;
+    TRANSFORM_DATA* pCameraTr = nullptr;
+    uint8_t iPriority = 0;
+
+    const auto& pages = m_CameraPool.GetPages();
+    for (const auto& upPage : pages)
+    {
+        auto* pPage = upPage.get();
+        if (!pPage)
+            continue;
+        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        {
+            if (!pPage->Is_Allocated(i))
+                continue;
+
+            CAMERA_DATA* pData = pPage->Get_Ptr(i);
+            if (!pData || !pData->bEnable)
+                continue;
+
+            TRANSFORM_DATA* pTrData = m_pTransformProcessor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, pData->hTransform)._Data();
+            if (!pTrData)
+                continue;
+
+            if (pPriorityCamera == nullptr || iPriority < pData->iPriority) /* 최소 하나 보장, 우선순위가 큰 카메라 선택 */
+            {
+                iPriority = pData->iPriority;
+                pPriorityCamera = pData;
+                pCameraTr = pTrData;
+            }
+        }
+    }
+
+    if (pPriorityCamera && pCameraTr)
+    {
+        /* view 설정 */
+
+        _matrix matView  = Calculate_ViewMatrix(pCameraTr);
+        _matrix matProj = Calculate_ProjMatrix(pPriorityCamera);
+
+        SYS_RENDER.Submit_Camera(matView, matProj);
+    }
+
 }
 
 void CEnvironment_Processor::LateUpdate(_float)
@@ -131,6 +237,32 @@ void* CEnvironment_Processor::Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HAN
     }
 }
 
+HRESULT CEnvironment_Processor::Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
+{
+    switch (eComType)
+    {
+    case COMPONENT_TYPE::CAMERA :
+        {
+            CAMERA_DATA* pData = m_CameraPool.Get_Data_By_Handle(hComponent);
+            IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "pData is nullptr");
+
+            CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
+            IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "pObj is nullptr");
+
+            CTransform tr = pObj->Get_Component<CTransform>();
+            IF_TRUE_RETURN_MSG_BREAK(!tr.Is_Valid(), E_FAIL, "tr is not valid");
+
+            pData->hTransform = tr.Get_Handle();
+
+            return S_OK;
+        }
+    case COMPONENT_TYPE::LIGHT:
+        return S_OK;
+    }
+
+    return E_FAIL;
+}
+
 HRESULT CEnvironment_Processor::Initialize_From_Spec_Camera(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec)
 {
     const auto* p = SCAST(const CAMERA_SPEC*, spec);
@@ -146,7 +278,7 @@ HRESULT CEnvironment_Processor::Initialize_From_Spec_Camera(COMPONENT_HANDLE h, 
     d->fNear = p->zNear;
     d->fFar = p->zFar;
     d->layerMask = p->layerMask;
-    d->bEnabled = p->bEnabled;
+    d->iPriority = p->bEnabled;
     d->dirty = true;
 
     return S_OK;
@@ -158,8 +290,6 @@ HRESULT CEnvironment_Processor::Initialize_From_Spec_Light(COMPONENT_HANDLE h, c
 
     auto* d = m_LightPool.Get_Data_By_Handle(h);
     IF_NULL_RETURN_MSG_BREAK(d, E_FAIL, "Light handle invalid.");
-
-    d->hObject = p->hObject;
 
     d->type = p->type;
     d->vColor = p->vColor;
@@ -193,7 +323,7 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CEnvironment_Processor::Build_Spec_Camera(C
     up->zFar = d->fFar;
 
     up->layerMask = d->layerMask;
-    up->bEnabled = d->bEnabled;
+    up->bEnabled = d->iPriority;
 
     return up;
 }
@@ -204,8 +334,6 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CEnvironment_Processor::Build_Spec_Light(CO
     IF_NULL_RETURN_MSG_BREAK(d, nullptr, "Light handle invalid.");
 
     auto up = std::make_unique<LIGHT_SPEC>();
-
-    up->hObject = d->hObject;
 
     up->type = d->type;
     up->vColor = d->vColor;
