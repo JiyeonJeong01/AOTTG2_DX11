@@ -8,6 +8,7 @@
 #include "Scene.h"
 #include "Asset_Registry.h"
 #include "SceneChange_Event.h"
+#include "Script_Processor.h"
 
 NS_BEGIN(Engine)
 
@@ -169,6 +170,17 @@ _bool CScene_Handler::Load_NextScene(const std::filesystem::path& path, const AS
     IF_FAIL_RETURN_MSG_BREAK(LoadScene_Runtime(specs), false, "LoadScene_Runtime failed");
 
     return true;
+}
+
+_bool CScene_Handler::Restart()
+{
+    if (nullptr == m_pCurrentScene)
+        return false;
+
+    HRESULT hr = Change_Scene(m_pCurrentScene->Get_GUID(), APP_MODE::EDITOR_EDIT);
+
+    if (hr == E_FAIL) return false;
+    else return true;
 }
 
 _bool CScene_Handler::Save_SceneFile(const std::vector<SCENE_OBJECT_SPEC>& objects, const std::filesystem::path& path)
@@ -339,7 +351,9 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CScene_Handler::Create_Spec_By_Type(COMPONE
 HRESULT CScene_Handler::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& tSpecs)
 {
     std::unordered_map<INSTANCE_UUID, CGameObject*, INSTANCE_UUID_HASHER> objectMap;
+    std::vector<CGameObject*> stagingObjects;
     objectMap.reserve(tSpecs.size());
+    stagingObjects.reserve(tSpecs.size());
 
     /* 오브젝트 생성 */
     for (const auto& spec : tSpecs)
@@ -358,9 +372,14 @@ HRESULT CScene_Handler::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& 
         pObj->Set_ProtoGUID(spec.protoGuid);
 
         auto [it, inserted] = objectMap.emplace(spec.uuid, pObj);
+        stagingObjects.push_back(pObj);
+
+        SYS_GAMEOBJECT.Register_UUID_Handle(spec.uuid, pObj->Get_Handle());
+
         //IF_TRUE_RETURN_MSG_BREAK(!inserted, E_FAIL, "Duplicated UUID");
     }
 
+    /* 저장한 UUID로 부모 <-> 자식 런타임 게임오브젝트 간 연결 */
     for (const auto& spec : tSpecs)
     {
         if (!spec.parent.Is_Valid())
@@ -373,6 +392,27 @@ HRESULT CScene_Handler::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& 
         IF_TRUE_RETURN_MSG_BREAK(itParent == objectMap.end(), E_FAIL, "Parent UUID not found.");
 
         itChild->second->Set_Parent(itParent->second);
+    }
+
+    /* 스크립트 컴포넌트가 저장한 UUID <-> 런타임 게임오브젝트 간 연결 */
+
+    CScript_Processor* pScriptProcessor = SYS_COMPONENT.Bind_Processor<CScript_Processor>();
+    IF_NULL_RETURN_MSG_BREAK(pScriptProcessor, E_FAIL, "can't bind with script processor");
+
+    for (auto pObj : stagingObjects)
+    {
+        if ((pObj->Get_ComponentMask() & Component::To_Bit(COMPONENT_TYPE::SCRIPT)) == 0)
+            continue;
+
+        auto scripts = pObj->Get_Components<CScript>();
+        for (auto sc : scripts)
+        {
+            IScript* pScript = pScriptProcessor->Get_Script_Instance(sc.Get_Handle());
+            if (!pScript)
+                continue;
+            pScript->Resolve_Exposed_ObjectRefs();
+        }
+
     }
 
     return S_OK;

@@ -11,22 +11,23 @@ NS_BEGIN(Client)
 class CMainMenu_Controller : public IScript
 {
 public:
-    _float              m_fBtnEffectScale = 1.2f;
+    _float              m_fBtnEffectScale = 1.8f;                               /* 마우스 오버 시 버튼 스케일 목표 */
     SCRIPT_OBJECT_REF   m_refBtns[3];
     SCRIPT_OBJECT_REF   m_refImgBackground;
     SCRIPT_OBJECT_REF   m_refImgPanel;
+                                                                                /* p : parallax */
+    _float              m_fBackgroundParallaxStrength = 2.0f;                   /* strength : p를 얼마나 크게 반영할지 정하는 배수 */
+    _float              m_fPanelParallaxStrength = 0.45f;                       
+    _float              m_fParallaxDeltaScale = 0.25f;                          /* 마우스 이동 delta를 p 목표 값으로 변화하는 민감도 */
+    _float              m_fParallaxReturnSharpness = 3.5f;                      /* p 목표값이 원점으로 되돌아가는 속도 */
+    _float              m_fParallaxFollowSharpness = 8.0f;                      /* 실제 출력 값이 목표 p를 따라가는 속도 */
 
-    _float              m_fBackgroundParallaxStrength = 1.0f;
-    _float              m_fPanelParallaxStrength = 0.45f;
-    _float              m_fParallaxDeltaScale = 0.035f;
-    _float              m_fParallaxReturnSharpness = 4.5f;
-    _float              m_fParallaxFollowSharpness = 10.0f;
-
-    _float              m_fBtnScaleSharpness = 14.0f;
+    _float              m_fBtnScaleSharpness = 3.0f;
     _float              m_fBtnPopExtra = 0.08f;
 
-    _float2 m_vBackgroundMoveBound = _float2(100.f, 100.f);
-    _float2 m_vPanelMoveBound = _float2(40.f, 20.f);
+    _float2             m_vBackgroundMoveBound = _float2(800, 500.f);
+    _float2             m_vPanelMoveBound = _float2(500.f, 200.f);
+    _bool               m_bCached = false;
 
 public:
     SCRIPT_FIELDS_BEGIN(CMainMenu_Controller)

@@ -94,7 +94,6 @@ void CHierarchyPanel::Set_Selection_Single(Engine::CGameObject* pObj)
     if (pObj)
         m_selection.push_back(pObj);
     m_pLastClicked = pObj;
-
     Notify_Selection_Changed();
 }
 
@@ -460,7 +459,10 @@ void CHierarchyPanel::Draw_Node_Recursive(Engine::CGameObject* pObj, int /*iDept
 
     /* Handle double click to rename */
     if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-        Begin_Rename(pObj);
+    {
+        Handle_Node_Click(pObj);
+        SYS_EDITOR.Focus_Object(pObj);
+    }
 
     /* Handle right-click to display menu */
         if (ImGui::BeginPopupContextItem(("##HierarchyNodeCtx" + std::to_string((uintptr_t)pObj)).c_str()))

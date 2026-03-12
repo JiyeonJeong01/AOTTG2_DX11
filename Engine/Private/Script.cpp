@@ -123,7 +123,6 @@ _bool IScript::Load_Exposed_Fields(const json& j)
         }
     }
 
-    Resolve_Exposed_ObjectRefs();
     return true;
 }
 

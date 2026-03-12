@@ -19,35 +19,12 @@ void CMainMenu_Controller::Awake(void* pCtx)
 
     m_vParallaxTarget = _float2(0.f, 0.f);
     m_vParallaxCurrent = _float2(0.f, 0.f);
+    m_bCached = false;
 }
 
 void CMainMenu_Controller::Start(void* pCtx)
 {
-    //UNREFERENCED_PARAMETER(pCtx);
-
-    //CGameObject* pBtn0 = SYS_GAMEOBJECT.Get_Wrapper(m_refBtns[0].hObject);
-    //m_Btns[0] = pBtn0->Get_Component<CUIButton>();
-    //m_BtnRTs[0] = pBtn0->Get_Component<CRectTransform>();
-
-    //CGameObject* pBg = SYS_GAMEOBJECT.Get_Wrapper(m_refImgBackground.hObject);
-    //m_ImgBackground = pBg->Get_Component<CUIImage>();
-    //m_RTBackground = pBg->Get_Component<CRectTransform>();
-
-    //CGameObject* pPanel = SYS_GAMEOBJECT.Get_Wrapper(m_refImgPanel.hObject);
-    //m_ImgPanel = pPanel->Get_Component<CUIImage>();
-    //m_RTPanel = pPanel->Get_Component<CRectTransform>();
-
-    ///* 버튼 hover 이벤트 등록 */
-    //if (m_Btns[0].Is_Valid())
-    //    m_Btns[0].OnHover().Add_Listener<CMainMenu_Controller>(&CMainMenu_Controller::On_Hover_Btn0, this);
-
-    //if (m_Btns[1].Is_Valid())
-    //    m_Btns[1].OnHover().Add_Listener<CMainMenu_Controller>(&CMainMenu_Controller::On_Hover_Btn1, this);
-
-    //if (m_Btns[2].Is_Valid())
-    //    m_Btns[2].OnHover().Add_Listener<CMainMenu_Controller>(&CMainMenu_Controller::On_Hover_Btn2, this);
-
-    //Cache_Base_UI_State();
+    UNREFERENCED_PARAMETER(pCtx);
 }
 
 void CMainMenu_Controller::Priority_Update(void* pCtx, _float fDT)
@@ -55,35 +32,56 @@ void CMainMenu_Controller::Priority_Update(void* pCtx, _float fDT)
     UNREFERENCED_PARAMETER(pCtx);
     UNREFERENCED_PARAMETER(fDT);
 
+    if (m_bCached)
+        return;
+
+    if (!m_refBtns[0].Is_Valid() || !m_refBtns[1].Is_Valid() || !m_refBtns[2].Is_Valid())
+        return;
+
+    if (!m_refImgBackground.Is_Valid() || !m_refImgPanel.Is_Valid())
+        return;
+
+    CGameObject* pBtn0 = SYS_GAMEOBJECT.Get_Wrapper(m_refBtns[0].hObject);
+    CGameObject* pBtn1 = SYS_GAMEOBJECT.Get_Wrapper(m_refBtns[1].hObject);
+    CGameObject* pBtn2 = SYS_GAMEOBJECT.Get_Wrapper(m_refBtns[2].hObject);
+    CGameObject* pBg = SYS_GAMEOBJECT.Get_Wrapper(m_refImgBackground.hObject);
+    CGameObject* pPanel = SYS_GAMEOBJECT.Get_Wrapper(m_refImgPanel.hObject);
+
+    if (!pBtn0 || !pBtn1 || !pBtn2 || !pBg || !pPanel)
+        return;
+
+    m_Btns[0] = pBtn0->Get_Component<CUIButton>();
+    m_BtnRTs[0] = pBtn0->Get_Component<CRectTransform>();
+
+    m_Btns[1] = pBtn1->Get_Component<CUIButton>();
+    m_BtnRTs[1] = pBtn1->Get_Component<CRectTransform>();
+
+    m_Btns[2] = pBtn2->Get_Component<CUIButton>();
+    m_BtnRTs[2] = pBtn2->Get_Component<CRectTransform>();
+
+    m_ImgBackground = pBg->Get_Component<CUIImage>();
+    m_RTBackground = pBg->Get_Component<CRectTransform>();
+
+    m_ImgPanel = pPanel->Get_Component<CUIImage>();
+    m_RTPanel = pPanel->Get_Component<CRectTransform>();
+
     if (!m_Btns[0].Is_Valid() || !m_Btns[1].Is_Valid() || !m_Btns[2].Is_Valid())
-    {
-        if (!m_refBtns[0].Is_Valid() || !m_refBtns[1].Is_Valid() || !m_refBtns[2].Is_Valid())
-            return;
+        return;
 
-        CGameObject* pBtn0 = SYS_GAMEOBJECT.Get_Wrapper(m_refBtns[0].hObject);
-        m_Btns[0] = pBtn0->Get_Component<CUIButton>();
-        m_BtnRTs[0] = pBtn0->Get_Component<CRectTransform>();
+    if (!m_BtnRTs[0].Is_Valid() || !m_BtnRTs[1].Is_Valid() || !m_BtnRTs[2].Is_Valid())
+        return;
 
-        CGameObject* pBg = SYS_GAMEOBJECT.Get_Wrapper(m_refImgBackground.hObject);
-        m_ImgBackground = pBg->Get_Component<CUIImage>();
-        m_RTBackground = pBg->Get_Component<CRectTransform>();
+    if (m_Btns[0].Is_Valid())
+        m_Btns[0].OnHover().Add_Listener<CMainMenu_Controller>(&CMainMenu_Controller::On_Hover_Btn0, this);
 
-        CGameObject* pPanel = SYS_GAMEOBJECT.Get_Wrapper(m_refImgPanel.hObject);
-        m_ImgPanel = pPanel->Get_Component<CUIImage>();
-        m_RTPanel = pPanel->Get_Component<CRectTransform>();
+    if (m_Btns[1].Is_Valid())
+        m_Btns[1].OnHover().Add_Listener<CMainMenu_Controller>(&CMainMenu_Controller::On_Hover_Btn1, this);
 
-        /* 버튼 hover 이벤트 등록 */
-        if (m_Btns[0].Is_Valid())
-            m_Btns[0].OnHover().Add_Listener<CMainMenu_Controller>(&CMainMenu_Controller::On_Hover_Btn0, this);
+    if (m_Btns[2].Is_Valid())
+        m_Btns[2].OnHover().Add_Listener<CMainMenu_Controller>(&CMainMenu_Controller::On_Hover_Btn2, this);
 
-        if (m_Btns[1].Is_Valid())
-            m_Btns[1].OnHover().Add_Listener<CMainMenu_Controller>(&CMainMenu_Controller::On_Hover_Btn1, this);
-
-        if (m_Btns[2].Is_Valid())
-            m_Btns[2].OnHover().Add_Listener<CMainMenu_Controller>(&CMainMenu_Controller::On_Hover_Btn2, this);
-
-        Cache_Base_UI_State();
-    }
+    Cache_Base_UI_State();
+    m_bCached = true;
 }
 
 void CMainMenu_Controller::Update(void* pCtx, _float fDT)
@@ -110,16 +108,19 @@ void CMainMenu_Controller::Late_Update(void* pCtx, _float fDT)
 
 void CMainMenu_Controller::On_Hover_Btn0(Engine::BUTTON_EVENT_DATA& eData)
 {
+    UNREFERENCED_PARAMETER(eData);
     Set_BtnHover(0, true);
 }
 
 void CMainMenu_Controller::On_Hover_Btn1(Engine::BUTTON_EVENT_DATA& eData)
 {
+    UNREFERENCED_PARAMETER(eData);
     Set_BtnHover(1, true);
 }
 
 void CMainMenu_Controller::On_Hover_Btn2(Engine::BUTTON_EVENT_DATA& eData)
 {
+    UNREFERENCED_PARAMETER(eData);
     Set_BtnHover(2, true);
 }
 
@@ -131,7 +132,7 @@ void CMainMenu_Controller::Set_BtnHover(_uint iIndex, _bool bHover)
     m_bBtnHover[iIndex] = bHover;
 
     if (bHover)
-        m_fBtnTargetScale[iIndex] = m_fBtnEffectScale + m_fBtnPopExtra;
+        m_fBtnTargetScale[iIndex] = m_fBtnEffectScale;
     else
         m_fBtnTargetScale[iIndex] = 1.f;
 }
@@ -147,12 +148,9 @@ void CMainMenu_Controller::On_Mouse_Move()
     if (iMove = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::HORIZONTAL))
         vDelta.x = To<_float>(iMove);
 
-    /* delta를 바로 누적해서 위치에 더하면 끝없이 떠밀려가므로,
-     * 목표 오프셋에만 살짝 반영하고, 이후 Update_Parallax에서 복귀/감쇠 */
     m_vParallaxTarget.x += vDelta.x * m_fParallaxDeltaScale;
     m_vParallaxTarget.y += vDelta.y * m_fParallaxDeltaScale;
 
-    /* 너무 멀리 가지 않도록 소프트 클램프 */
     const _float fMaxX = 40.f;
     const _float fMaxY = 24.f;
 
@@ -182,7 +180,6 @@ void CMainMenu_Controller::Cache_Base_UI_State()
 
 void CMainMenu_Controller::Update_Parallax(_float fDT)
 {
-    /* 목표 오프셋은 서서히 원점으로 복귀 */
     m_vParallaxTarget = CEasingFunction::DampedLerp(
         m_vParallaxTarget,
         _float2(0.f, 0.f),
@@ -190,7 +187,6 @@ void CMainMenu_Controller::Update_Parallax(_float fDT)
         fDT
     );
 
-    /* 실제 출력 오프셋은 좀 더 빠르게 목표를 추적 */
     m_vParallaxCurrent = CEasingFunction::DampedLerp(
         m_vParallaxCurrent,
         m_vParallaxTarget,
@@ -246,20 +242,28 @@ void CMainMenu_Controller::Update_Button_Animations(_float fDT)
         if (!m_BtnRTs[i].Is_Valid())
             continue;
 
-        _float fTargetScale = m_fBtnTargetScale[i];
+        _float fTargetScale = 1.f;
 
-        /* hover 들어온 순간 살짝 더 크게 먹인 뒤, 실제 시각 scale은 base scale 쪽으로 자연스럽게 정착 */
         if (m_bBtnHover[i])
             fTargetScale = m_fBtnEffectScale;
 
+        m_fBtnTargetScale[i] = fTargetScale;
+
         m_fBtnCurScale[i] = CEasingFunction::DampedLerp(
             m_fBtnCurScale[i],
-            fTargetScale,
+            m_fBtnTargetScale[i],
             m_fBtnScaleSharpness,
             fDT
         );
+
+        const _float2 vBaseSize = m_vBaseBtnSize[i];
+        const _float fScale = m_fBtnCurScale[i];
+
+        m_BtnRTs[i].Set_SizePx(
+            vBaseSize.x * fScale,
+            vBaseSize.y * fScale
+        );
     }
 }
-
 
 NS_END

@@ -292,6 +292,11 @@ void CCore_System::Set_CurrentScene(std::unique_ptr<CScene> pScene)
     m_pScene_Handler->Set_CurrentScene(std::move(pScene));
 }
 
+_bool CCore_System::Restart()
+{
+    return m_pScene_Handler->Restart();
+}
+
 void CCore_System::Update_RuntimeEngine(_float fDT, CScene* pScene)
 {
     /* 씬 업데이트 : 씬의 데이터, 씬 상태(PLAY, STOP 등), 씬 이벤트 등 처리 */

@@ -31,6 +31,7 @@ public:
 
     _bool   Save_CurrentScene(const std::filesystem::path& path);
     _bool   Load_NextScene(const std::filesystem::path& path, const ASSET_GUID& tGUID);
+    _bool   Restart();
 private:
     /* SCENE_OBJECT_SPEC -> JSON */
     _bool    Save_SceneFile(const std::vector<SCENE_OBJECT_SPEC>& objects, const std::filesystem::path& path);

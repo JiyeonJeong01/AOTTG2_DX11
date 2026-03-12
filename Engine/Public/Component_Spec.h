@@ -265,9 +265,11 @@ typedef struct tagScriptSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::SCRIPT)
 
-    ASSET_GUID      scriptGuid{};     // 스크립트 타입(또는 스크립트 에셋) GUID
+    ASSET_GUID      scriptGuid{};           /* .script의 GUID */
     _bool           bEnable = true;
     uint8_t         pad[3] = {};
+
+    json            exposedFields;          /* Script 변수 저장 */
 
     std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
     {
@@ -279,6 +281,8 @@ typedef struct tagScriptSpec final : public COMPONENT_SPEC_BASE
         j["Type"] = SCAST(_uint, Get_Type());
         j["ScriptGuid"] = scriptGuid.To_String_Utf8();
         j["Enabled"] = bEnable;
+        if (false == exposedFields.is_null() && false == exposedFields.empty())
+            j["ExposedFields"] = exposedFields;
     }
 
     _bool FromJson(const json& j) override
@@ -290,6 +294,10 @@ typedef struct tagScriptSpec final : public COMPONENT_SPEC_BASE
             return false;
         if (!Read_Bool(j, "Enabled", bEnable))
             return false;
+        if (j.contains("ExposedFields"))
+            exposedFields = j["ExposedFields"];
+        else
+            exposedFields = json::object();
 
         return true;
     }

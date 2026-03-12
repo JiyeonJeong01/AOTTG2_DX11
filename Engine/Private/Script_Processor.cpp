@@ -91,23 +91,21 @@ HRESULT CScript_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONE
     auto* pData = m_Pool.Get_Data_By_Handle(hComponent);
     IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "Script data is nullptr.");
 
-    const auto* spec = SCAST(const SCRIPT_SPEC*, pSpec);
+    const auto* spec = To<const SCRIPT_SPEC*>(pSpec);
 
     TypeID iTypeID = Find_Or_Create(spec->scriptGuid); /* 해당 TypeId 없다면 새 슬롯 생성 */
-
-    /* vtable은 빌드 전이면 없을 수 있음: 이 경우 실패하지 말고 바인딩만 유지 */
-    const SCRIPT_VTABLE* pVt = SYS_ASSET.Scripts().Find(spec->scriptGuid);
-    if (!pVt)
-    {
-        m_Types[iTypeID].vt = SCRIPT_VTABLE{};
-        return S_OK;
-    }
-
-
     if (m_Types.size() <= iTypeID)
         m_Types.resize((size_t)iTypeID + 1);
 
-    m_Types[iTypeID].vt = *pVt; /* 슬롯에 넣기 */
+    /* vtable은 빌드 전이면 없을 수 있음: 이 경우 실패하지 말고 GUID 바인딩만 유지한다.
+     * 유지하지 않는 경우, 직렬화 시 GUID 가 invalid 하여 컴포넌트로 추가된 스크립트를 인식할 수 없게 된다.*/
+    const SCRIPT_VTABLE* pVt = SYS_ASSET.Scripts().Find(spec->scriptGuid);
+
+    /* 슬롯에 vt 넣기 */
+    if (!pVt)
+        m_Types[iTypeID].vt = SCRIPT_VTABLE{};
+    else 
+        m_Types[iTypeID].vt = *pVt;
 
     pData->iTypeID = iTypeID;
     pData->bEnable = spec->bEnable;
@@ -116,6 +114,10 @@ HRESULT CScript_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONE
         pData->iFlags = 0;
 
     Create_State_If_Needed(hComponent, pData);
+
+    IScript* pScriptInstance = Get_Script_Instance(hComponent);
+    if (pScriptInstance && false == spec->exposedFields.is_null() && false == spec->exposedFields.empty())
+        pScriptInstance->Load_Exposed_Fields(spec->exposedFields);
 
     return S_OK;
 }
@@ -132,13 +134,24 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CScript_Processor::Build_Spec(COMPONENT_TYP
     for (const auto& it : m_GuidToTypeID)
     {
         if (it.second == pData->iTypeID)
+        {
             tGUID = it.first;
+            break;
+        }
     }
 
     auto out = std::make_unique<SCRIPT_SPEC>();
 
     out->scriptGuid = tGUID;
     out->bEnable = pData->bEnable;
+
+    IScript* pScriptInstance = Get_Script_Instance(hComponent);
+    if (pScriptInstance)
+    {
+        json jExposed = json::object();
+        pScriptInstance->Save_Exposed_Fields(jExposed);
+        out->exposedFields = std::move(jExposed);
+    }
 
     return out;
 }

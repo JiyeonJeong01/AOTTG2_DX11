@@ -440,38 +440,47 @@ void CMainPanel::Draw_Toolbar()
 
     /* Play / Pause / Step */
     {
-        ImGui::BeginDisabled(m_bPlaying);
-        if (ImGui::Button("Play", ImVec2(button_size, 26)))
+        if (!m_bPlaying)
         {
-            if (!m_bSceneStarted)
+            if (ImGui::Button("Play", ImVec2(button_size, 35)))
             {
-                SYS_EDITOR.Play();
+                if (!m_bSceneStarted)
+                {
+                    SYS_EDITOR.Play();
+                }
+                m_bPlaying = true;
             }
-            m_bPlaying = true;
         }
-        ImGui::EndDisabled();
+        else
+        {
+            if (ImGui::Button("Pause", ImVec2(button_size, 35)))
+            {
+                if (m_pCurScene)
+                {
+                    m_bPlaying = false;
+                    SYS_EDITOR.Pause();
+                }
+            }
+        }
 
         ImGui::SameLine();
 
-        ImGui::BeginDisabled(!m_bPlaying);
-        if (ImGui::Button("Pause", ImVec2(button_size, 26)))
-        {
-            if (m_pCurScene)
-            {
-                m_bPlaying = false;
-                SYS_EDITOR.Pause();
-            }
-        }
-        ImGui::EndDisabled();
-
-        ImGui::SameLine();
-
         ImGui::BeginDisabled(m_bPlaying);
-        if (ImGui::Button("Step", ImVec2(button_size, 26)))
+        if (ImGui::Button("Step", ImVec2(button_size, 35)))
         {
             SYS_EDITOR.Step(SYS_CORE.Compute_FrameDT());
         }
         ImGui::EndDisabled();
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Reload", ImVec2(button_size, 35)))
+        {
+            m_bPlaying = false;
+            SYS_EDITOR.Pause();
+            SYS_CORE.Restart();
+        }
+        ImGui::SameLine();
     }
 
     ImGui::EndChild();

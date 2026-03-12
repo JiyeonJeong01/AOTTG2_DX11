@@ -15,6 +15,7 @@
 #include "Mesh.h"
 #include "GameObject_System.h"
 #include "Engine_Math.h"
+#include "Render_Context.h"
 
 IMPLEMENT_SINGLETON(CEditor_System)
 
@@ -136,6 +137,8 @@ void CEditor_System::Pause()
 {
     IF_NULL_RETURN_MSG_BREAK(m_pCurScene, , "m_pCurScene is nullptr");
     m_pCurScene->Set_State(SCENE_STATE::PAUSE);
+    
+    Swap_SceneViewCamera();
 }
 
 void CEditor_System::Step(_float fDT)
@@ -165,42 +168,45 @@ void CEditor_System::Toggle_SceneViewCamera(_bool bToggle)
     m_bScencViewCam = bToggle;
 }
 
-void CEditor_System::Apply_SceneView_From_View16(const float* view16)
+void CEditor_System::Focus_Object(CGameObject* pObj)
 {
-    if (!view16)
+    if (!pObj || pObj->Get_Handle().Is_UI())
         return;
 
-    /* view16 -> _matrix */
-    _float4x4 v{};
-    for (int r = 0; r < 4; ++r)
-        for (int c = 0; c < 4; ++c)
-            v.m[r][c] = view16[r * 4 + c];
+    CTransform tr = pObj->Get_Component<CTransform>();
 
-    const _matrix matView = Math::Load(v);
+    _float3 vTargetPos = tr->vPosition;
 
-    const _matrix matCamWorld = XMMatrixInverse(nullptr, matView);
+    const _matrix matRot = Math::Load(Math::RotationRollPitchYaw(m_fPitch, m_fYaw, 0.f));
+    const _float3 vForward = Engine::Math::TransformNormal(_float3{ 0.f, 0.f, 1.f }, matRot);
 
-    _float4x4 camW{};
-    Math::Store(camW, matCamWorld);
+    const _float fFocusDistance = 5.f;
 
-    m_vCamPos = _float3{ camW._41, camW._42, camW._43 };
-    const _float3 vForward = Engine::Math::TransformNormal(_float3{ 0.f, 0.f, 1.f }, matCamWorld);
+    m_vCamPos.x = vTargetPos.x - vForward.x * fFocusDistance;
+    m_vCamPos.y = vTargetPos.y - vForward.y * fFocusDistance;
+    m_vCamPos.z = vTargetPos.z - vForward.z * fFocusDistance;
 
-    /* yaw/pitch 재계산 */ 
-    const float fx = vForward.x;
-    const float fy = vForward.y;
-    const float fz = vForward.z;
+    m_vCamVel = { 0.f, 0.f, 0.f };
+}
 
-    m_fYaw = atan2f(fx, fz);
+void CEditor_System::Swap_SceneViewCamera()
+{
+    m_matCamView = SYS_RENDER.Contexts()->Get_View();
+    m_matCamProj = SYS_RENDER.Contexts()->Get_Proj();
+    m_vCamPos = SYS_RENDER.Contexts()->Get_CamPosition();
 
-    const float lenXZ = sqrtf(fx * fx + fz * fz);
-    m_fPitch = atan2f(fy, (lenXZ < 1e-6f ? 1e-6f : lenXZ));
+    const auto& matViewInv = SYS_RENDER.Contexts()->Get_ViewInv();
 
-    const _float limit = 1.55334306f;
-    if (m_fPitch > limit) m_fPitch = limit;
-    if (m_fPitch < -limit) m_fPitch = -limit;
+    _float3 vLook = {};
+    memcpy(&vLook, &matViewInv.m[To<size_t>(STATE::LOOK)][0], sizeof(_float3));
 
-    m_vCamVel = _float3{ 0.f, 0.f, 0.f };
+    m_fYaw = atan2f(vLook.x, vLook.z);
+    const _float fLenXZ = sqrtf(vLook.x * vLook.x + vLook.z * vLook.z);
+    m_fPitch = atan2f(vLook.y, fLenXZ);
+
+    m_vCamVel = { 0.f, 0.f, 0.f };
+
+    m_bScencViewCam = true;
 }
 
 /* Editor 마우스 피킹은 Ray <-> AABB */
@@ -292,46 +298,118 @@ void CEditor_System::Pick_SceneView(_uint px, _uint py, _uint vpW, _uint vpH)
 	COMPONENT_HANDLE bestTransform = INVALID_HANDLE;
 	uint32_t bestMesh = 0;
 
-	for (const auto& cmd : cmds)
-	{
-		if (cmd.kind != DRAW_TYPE::MESH)
-			continue;
+    for (const auto& cmd : cmds)
+    {
+        if (cmd.kind != DRAW_TYPE::MESH)
+            continue;
 
-		const COMPONENT_HANDLE hTr = cmd.mesh.hTransform;
-		if (hTr == INVALID_HANDLE)
-			continue;
+        const COMPONENT_HANDLE hTr = cmd.mesh.hTransform;
+        if (hTr == INVALID_HANDLE)
+            continue;
 
-		/* 월드 행렬 */
-		const auto tr = m_pTransform_Processor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, hTr);
-		if (!tr.Is_Valid())
-			continue;
-		const _matrix matWorld = Engine::Math::Load(tr->matWorld);
+        const auto tr = m_pTransform_Processor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, hTr);
+        if (!tr.Is_Valid())
+            continue;
 
-		/* 로컬 AABB 얻기 : MESH_ENTRY의 min, max 이용 */
-		_float3 localMin{}, localMax{};
-		const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(cmd.mesh.hMesh);
-		if (!pMesh)
-			continue;
+        const _matrix matWorld = Engine::Math::Load(tr->matWorld);
+        const _matrix invWorld = Engine::Math::Matrix_Inverse(matWorld);
 
-		pMesh->Get_Mesh_LocalAABB(localMin, localMax);
+        const _float3 localRayOrigin = Engine::Math::TransformCoord(rayOrigin, invWorld);
 
-		/* 월드 AABB로 변환 */
-		_float3 worldMin{}, worldMax{};
-		Transform_AABB_World(localMin, localMax, matWorld, worldMin, worldMax);
+        _float3 localRayDir = Engine::Math::TransformNormal(rayDir, invWorld);
+        localRayDir = Engine::Math::Normalize(localRayDir);
 
-		/* 레이-AABB */
-		float tHit = 0.f;
-		if (!Ray_AABB(rayOrigin, rayDir, worldMin, worldMax, &tHit))
-			continue;
+        if (SYS_RESOURCE.Is_ModelHandle(cmd.mesh.hMesh))
+        {
+            const MODEL_ENTRY* pModel = SYS_RESOURCE.Get_Model(cmd.mesh.hMesh);
+            if (!pModel)
+                continue;
 
+            const size_t iNumMeshes = pModel->parts.size();
+            for (size_t i = 0; i < iNumMeshes; ++i)
+            {
+                const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(pModel->parts[i].hMesh);
+                if (!pMesh)
+                    continue;
 
-		if (tHit < bestT)
-		{
-			bestT = tHit;
-			bestTransform = hTr;
-			bestMesh = cmd.mesh.hMesh;
-		}
-	}
+                _float3 localMin{}, localMax{};
+                pMesh->Get_Mesh_LocalAABB(localMin, localMax);
+
+                float tHit = 0.f;
+                if (!Ray_AABB(localRayOrigin, localRayDir, localMin, localMax, &tHit))
+                    continue;
+
+                const _float3 localHit =
+                {
+                    localRayOrigin.x + localRayDir.x * tHit,
+                    localRayOrigin.y + localRayDir.y * tHit,
+                    localRayOrigin.z + localRayDir.z * tHit
+                };
+
+                const _float3 worldHit = Engine::Math::TransformCoord(localHit, matWorld);
+
+                const _float3 vToHit =
+                {
+                    worldHit.x - rayOrigin.x,
+                    worldHit.y - rayOrigin.y,
+                    worldHit.z - rayOrigin.z
+                };
+
+                const _float worldT =
+                    sqrtf(vToHit.x * vToHit.x +
+                        vToHit.y * vToHit.y +
+                        vToHit.z * vToHit.z);
+
+                if (worldT < bestT)
+                {
+                    bestT = worldT;
+                    bestTransform = hTr;
+                    bestMesh = cmd.mesh.hMesh;
+                }
+            }
+        }
+        else
+        {
+            const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(cmd.mesh.hMesh);
+            if (!pMesh)
+                continue;
+
+            _float3 localMin{}, localMax{};
+            pMesh->Get_Mesh_LocalAABB(localMin, localMax);
+
+            float tHit = 0.f;
+            if (!Ray_AABB(localRayOrigin, localRayDir, localMin, localMax, &tHit))
+                continue;
+
+            const _float3 localHit =
+            {
+                localRayOrigin.x + localRayDir.x * tHit,
+                localRayOrigin.y + localRayDir.y * tHit,
+                localRayOrigin.z + localRayDir.z * tHit
+            };
+
+            const _float3 worldHit = Engine::Math::TransformCoord(localHit, matWorld);
+
+            const _float3 vToHit =
+            {
+                worldHit.x - rayOrigin.x,
+                worldHit.y - rayOrigin.y,
+                worldHit.z - rayOrigin.z
+            };
+
+            const _float worldT =
+                sqrtf(vToHit.x * vToHit.x +
+                    vToHit.y * vToHit.y +
+                    vToHit.z * vToHit.z);
+
+            if (worldT < bestT)
+            {
+                bestT = worldT;
+                bestTransform = hTr;
+                bestMesh = cmd.mesh.hMesh;
+            }
+        }
+    }
 
     if (bestTransform != INVALID_HANDLE)
 	{

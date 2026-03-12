@@ -391,9 +391,9 @@ void CInspectorPanel::Draw_RequiredComponent()
         return;
     Component::COMPONENT_MASK mask = m_pTarget->Get_ComponentMask();
 
-    if ((m_pTarget->Get_ComponentMask() & Component::Component_Bit(COMPONENT_TYPE::TRANSFORM)) != 0)
+    if ((m_pTarget->Get_ComponentMask() & Component::To_Bit(COMPONENT_TYPE::TRANSFORM)) != 0)
         Draw_Transform();
-    else if ((m_pTarget->Get_ComponentMask() & Component::Component_Bit(COMPONENT_TYPE::RECT_TRANSFORM)) != 0)
+    else if ((m_pTarget->Get_ComponentMask() & Component::To_Bit(COMPONENT_TYPE::RECT_TRANSFORM)) != 0)
         Draw_RectTransform();
 }
 
@@ -420,7 +420,7 @@ void CInspectorPanel::Draw_CurrentComponents()
 
     for (uint32_t i = 0; i < SCAST(uint32_t, COMPONENT_MAX); ++i)
     {
-        if ((mask & Component::Component_Bit((COMPONENT_TYPE)i)) == 0)
+        if ((mask & Component::To_Bit((COMPONENT_TYPE)i)) == 0)
             continue;
 
         COMPONENT_TYPE eType = (COMPONENT_TYPE)i;

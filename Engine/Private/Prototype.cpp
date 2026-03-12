@@ -42,7 +42,7 @@ HRESULT CPrototype::Assemble(const ASSET_GUID& tGUID, PROTOTYPE_SPEC&& tSpec)
         }
 
         if (hasValid)
-            m_componentMask |= Component::Component_Bit(INT_TO_COM(i));
+            m_componentMask |= Component::To_Bit(INT_TO_COM(i));
     }
 
     m_tGUID = tGUID;
@@ -140,7 +140,7 @@ HRESULT CPrototype::Clone_Children(CGameObject* pParent) const
                 }
 
                 if (hasValid)
-                    childMask |= Component::Component_Bit(INT_TO_COM(i));
+                    childMask |= Component::To_Bit(INT_TO_COM(i));
             }
 
             pChild->Set_ComponentMask(childMask);

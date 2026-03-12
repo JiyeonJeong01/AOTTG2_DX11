@@ -26,7 +26,7 @@ public:
     }
     _bool Has(COMPONENT_TYPE t) const noexcept
     {
-        return (m_componentMask & Component::Component_Bit(t)) != 0;
+        return (m_componentMask & Component::To_Bit(t)) != 0;
     }
 
     HRESULT Assemble(const ASSET_GUID& tGUID, PROTOTYPE_SPEC&& tSpec);

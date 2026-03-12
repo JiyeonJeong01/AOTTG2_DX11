@@ -204,7 +204,7 @@ void CGameObject::Set_Enable(_bool bActive)
     {
         const COMPONENT_TYPE eType = INT_TO_COM(j);
 
-        if ((mask & Component::Component_Bit(eType)) == 0)
+        if ((mask & Component::To_Bit(eType)) == 0)
             continue;
 
         vector<COMPONENT_HANDLE> hComponents;
@@ -263,7 +263,12 @@ CGameObject* CGameObject::Clone()
 
     const GAMEOBJECT_DATA& srcObjData = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
 
-    CGameObject* pClone = SYS_GAMEOBJECT.Create_GameObject(srcObjData.layer, cloneName, Get_Parent());
+    CGameObject* pClone = nullptr;
+    if (false == m_hSelf.Is_UI())
+        pClone = SYS_GAMEOBJECT.Create_GameObject(srcObjData.layer, cloneName, Get_Parent());
+    else
+        pClone = SYS_GAMEOBJECT.Create_GameObjectUI(srcObjData.layer, cloneName, Get_Parent());
+
     IF_NULL_RETURN_MSG_BREAK(pClone, nullptr, "Create GameObject failed");
 
     GAMEOBJECT_DATA& dstObjData = SYS_GAMEOBJECT.Access_Data_Raw(pClone->Get_Handle());
@@ -276,7 +281,7 @@ CGameObject* CGameObject::Clone()
     for (_uint j = 0; j < COMPONENT_MAX; ++j)
     {
         const COMPONENT_TYPE eComType = INT_TO_COM(j);
-        if ((srcMask & Component::Component_Bit(eComType)) == 0)
+        if ((srcMask & Component::To_Bit(eComType)) == 0)
             continue;
 
         std::vector<COMPONENT_HANDLE> srcComps;

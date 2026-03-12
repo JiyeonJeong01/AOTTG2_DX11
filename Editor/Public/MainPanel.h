@@ -55,6 +55,7 @@ private:
     _bool m_bSceneDirty = false;
     _bool m_bBuiltLayer = false;
     _bool m_bShowExitPopup = false;
+    _bool m_bStop = true;
 
     class Engine::CScene* m_pCurScene = nullptr;
 

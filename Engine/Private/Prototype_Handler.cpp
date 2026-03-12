@@ -126,7 +126,7 @@ void CPrototype_Handler::Build_PrototypeSpec_From_Object(CGameObject* pObj, PROT
     Component::COMPONENT_MASK mask = pObj->Get_ComponentMask();
     for (_uint i = 0; i < COMPONENT_MAX; ++i)
     {
-        if ((mask & Component::Component_Bit(INT_TO_COM(i))) == 0)
+        if ((mask & Component::To_Bit(INT_TO_COM(i))) == 0)
             continue;
 
         vector<COMPONENT_HANDLE> hComponents;

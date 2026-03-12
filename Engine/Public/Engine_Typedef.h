@@ -62,21 +62,21 @@ namespace Engine
 
         using COMPONENT_MASK = uint32_t;
 
-        constexpr COMPONENT_MASK Component_Bit(COMPONENT_TYPE t) noexcept
+        constexpr COMPONENT_MASK To_Bit(COMPONENT_TYPE t) noexcept
         {
             return 1u << SCAST(uint32_t, t);
         }
 
         static constexpr uint64_t UNIQUE_MASK =
-            Component::Component_Bit(COMPONENT_TYPE::TRANSFORM) |
-            Component::Component_Bit(COMPONENT_TYPE::RECT_TRANSFORM) |
-            Component::Component_Bit(COMPONENT_TYPE::RIGIDBODY) |
-            Component::Component_Bit(COMPONENT_TYPE::MESH_RENDERER) |
-            Component::Component_Bit(COMPONENT_TYPE::CANVAS_RENDERER);
+            Component::To_Bit(COMPONENT_TYPE::TRANSFORM) |
+            Component::To_Bit(COMPONENT_TYPE::RECT_TRANSFORM) |
+            Component::To_Bit(COMPONENT_TYPE::RIGIDBODY) |
+            Component::To_Bit(COMPONENT_TYPE::MESH_RENDERER) |
+            Component::To_Bit(COMPONENT_TYPE::CANVAS_RENDERER);
 
         static inline _bool Is_Multi_Allowed(COMPONENT_TYPE eType)
         {
-            return (Component::UNIQUE_MASK & Component::Component_Bit(eType)) == 0;
+            return (Component::UNIQUE_MASK & Component::To_Bit(eType)) == 0;
         }
 
     }

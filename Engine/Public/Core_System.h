@@ -48,6 +48,7 @@ public: /* For.Scene_Handler */
     HRESULT Save_CurrentScene(const std::filesystem::path& path);
     CScene* Get_CurrentScene();
     void    Set_CurrentScene(std::unique_ptr<CScene> pScene);
+    _bool   Restart();
 
 private:
 	std::unique_ptr<CGraphic_Device>		m_pGraphic_Device{ };

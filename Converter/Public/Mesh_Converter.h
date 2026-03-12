@@ -121,14 +121,14 @@ static _bool Convert_Model(const aiScene* scene, CONVERTED_MODEL& out)
 static const aiScene* LoadScene_Assimp(Assimp::Importer& importer, const std::filesystem::path& fbxPath, uint32_t iFlag = 0)
 {
     const uint32_t flags =
-        aiProcess_ConvertToLeftHanded |
-        aiProcessPreset_TargetRealtime_Fast |
-        aiProcess_Triangulate |
-        aiProcess_JoinIdenticalVertices |
-        aiProcess_GenNormals |
-        aiProcess_CalcTangentSpace;
+        aiProcess_ConvertToLeftHanded |             /* 왼손 좌표계 기준으로 변경 */
+        aiProcessPreset_TargetRealtime_Fast |       /* 빠른 실시간 렌더링 용도 프리셋 */
+        aiProcess_Triangulate |                     /* 모든 폴리곤 Triangle */
+        aiProcess_JoinIdenticalVertices |           /* 중복 정점 줄여 최적화 */
+        aiProcess_GenNormals |                      /* 노멀이 없다면 자동 노멀 생성 */
+        aiProcess_CalcTangentSpace;                 /* 탄젠트/비탄젠트 계산  */
 
-    return importer.ReadFile(fbxPath.string(), flags);
+    return importer.ReadFile(fbxPath.string(), flags | iFlag);
 }
 
 static std::string Generate_GUID_String()

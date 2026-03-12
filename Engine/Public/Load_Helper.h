@@ -24,6 +24,20 @@ inline _bool Load_Mesh_Header(ID3D11Device* pDevice, const std::filesystem::path
     ifs.read((char*)vertices.data(), sizeof(VTXMESH) * hdr.vertexCount);
     ifs.read((char*)indices.data(), sizeof(uint32_t) * hdr.indexCount);
 
+    _float3 vMin = { FLT_MAX, FLT_MAX, FLT_MAX };
+    _float3 vMax = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+    for (const auto& vtx : vertices)
+    {
+        vMin.x = min(vMin.x, vtx.vPosition.x);
+        vMin.y = min(vMin.y, vtx.vPosition.y);
+        vMin.z = min(vMin.z, vtx.vPosition.z);
+
+        vMax.x = max(vMax.x, vtx.vPosition.x);
+        vMax.y = max(vMax.y, vtx.vPosition.y);
+        vMax.z = max(vMax.z, vtx.vPosition.z);
+    }
+
     /* 버텍스 버퍼 생성 */
     D3D11_BUFFER_DESC vbDesc{};
     vbDesc.ByteWidth = sizeof(VTXMESH) * hdr.vertexCount;
@@ -31,6 +45,7 @@ inline _bool Load_Mesh_Header(ID3D11Device* pDevice, const std::filesystem::path
     vbDesc.StructureByteStride = sizeof(VTXMESH);
     vbDesc.CPUAccessFlags = 0;
     vbDesc.MiscFlags = 0;
+    vbDesc.Usage = D3D11_USAGE_DEFAULT;
 
     D3D11_SUBRESOURCE_DATA vbData;
     vbData.pSysMem = vertices.data();
@@ -65,6 +80,9 @@ inline _bool Load_Mesh_Header(ID3D11Device* pDevice, const std::filesystem::path
     outEntry.iVertexStride = sizeof(VTXMESH);
     outEntry.eIndexFormat = DXGI_FORMAT_R32_UINT; /* 32비트 기준 */
     outEntry.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+
+    outEntry.minAABB = vMin;
+    outEntry.maxAABB = vMax;
 
     return true;
 }

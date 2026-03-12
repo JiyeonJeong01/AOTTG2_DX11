@@ -34,7 +34,9 @@ public:
     void Submit_SceneViewCamera();
     void Update_SceneView_State(_float fWidth, _float fHeight);
     void Toggle_SceneViewCamera(_bool bToggle);
-    void Apply_SceneView_From_View16(const float* view16);
+    void Focus_Object(CGameObject* pObj);
+    void Swap_SceneViewCamera();
+
 
 private: /* SceneView Camera */
     void Build_SceneView_Matrices();

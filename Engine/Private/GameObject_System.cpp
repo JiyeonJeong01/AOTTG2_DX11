@@ -476,7 +476,7 @@ void CGameObject_System::Set_Enable(CGameObject* pObj, _bool bEnable)
     for (_uint j = 0; j < COMPONENT_MAX; ++j)
     {
         const COMPONENT_TYPE eType = INT_TO_COM(j);
-        if ((mask & Component::Component_Bit(eType)) == 0)
+        if ((mask & Component::To_Bit(eType)) == 0)
             continue;
 
         vector<COMPONENT_HANDLE> hComponents;
@@ -544,7 +544,7 @@ HRESULT CGameObject_System::Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& out
 
         for (_uint j = 0; j < COMPONENT_MAX; ++j)
         {
-            if ((mask & Component::Component_Bit(INT_TO_COM(j))) == 0)
+            if ((mask & Component::To_Bit(INT_TO_COM(j))) == 0)
                 continue;
 
             vector<COMPONENT_HANDLE> hComponents;
@@ -562,7 +562,7 @@ HRESULT CGameObject_System::Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& out
 
             /* 마스킹 */
             if (!vSlot.empty())
-                spec.hasMask |= Component::Component_Bit(INT_TO_COM(j));
+                spec.hasMask |= Component::To_Bit(INT_TO_COM(j));
         }
 
         outSpecs.emplace_back(std::move(spec));
