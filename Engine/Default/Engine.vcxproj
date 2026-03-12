@@ -127,6 +127,7 @@
       <Command>xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Client\Bin\"
 xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Game\Bin\"
 xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Editor\Bin\"
+xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Converter\Bin\"
 xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.lib" "$(SolutionDir)EngineSDK\lib\"
 xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Command>
     </PostBuildEvent>
@@ -268,6 +269,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Script.cpp" />
     <ClCompile Include="..\Private\Solver.cpp" />
     <ClCompile Include="..\Private\SpringJoint.cpp" />
+    <ClCompile Include="..\Public\Identity.cpp" />
     <ClCompile Include="Raycast.cpp" />
     <ClCompile Include="..\Private\Asset_Registry.cpp" />
     <ClCompile Include="..\Private\Base.cpp" />

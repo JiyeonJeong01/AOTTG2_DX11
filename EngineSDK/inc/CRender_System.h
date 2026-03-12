@@ -55,6 +55,8 @@ private:
     UI_GLOBAL               m_gUI{};
 
     uint32_t                m_hUIRectMesh{};
+    uint32_t                m_hDefaultBaseMap{};
+    uint32_t                m_hDefaultNormalMap{};
 
     /* Draw Calls */
     vector<DRAW_CMD>        m_AllDrawCmds;

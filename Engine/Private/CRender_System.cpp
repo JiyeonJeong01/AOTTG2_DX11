@@ -1,4 +1,5 @@
-﻿// Render_System.cpp
+﻿#pragma region HEADER
+// Render_System.cpp
 #include "CRender_System.h"
 
 #include "Component_System.h"
@@ -20,6 +21,7 @@
 #include "Mesh.h"
 #include "Render_Context.h"
 #include "Texture.h"
+#pragma endregion
 
 IMPLEMENT_SINGLETON(CRender_System)
 
@@ -50,6 +52,12 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
     /* UI 메쉬 = VtxRect 준비 */
     m_hUIRectMesh = SYS_RESOURCE.Load_Mesh(DEFAULT_ASSET_GUID::MESH_RECT);
     IF_TRUE_RETURN_MSG_BREAK(m_hUIRectMesh == INVALID_HANDLE_UINT, E_FAIL, "UI rect mesh load failed");
+
+    /* 머테리얼 기본 텍스쳐 핸들 준비 */
+    m_hDefaultBaseMap = SYS_RESOURCE.Load_Texture(DEFAULT_ASSET_GUID::TEXTURE_BASEMAP_DEFAULT);
+    IF_TRUE_RETURN_MSG_BREAK(m_hDefaultBaseMap == INVALID_HANDLE_UINT, E_FAIL, "DefaultBaseMap load failed");
+    m_hDefaultNormalMap = SYS_RESOURCE.Load_Texture(DEFAULT_ASSET_GUID::TEXTURE_NORMALMAP_DEFAULT);
+    IF_TRUE_RETURN_MSG_BREAK(m_hDefaultNormalMap == INVALID_HANDLE_UINT, E_FAIL, "DefaultNormalMap load failed");
 
     /* 랜더 관련 장치 세팅  */
     {
@@ -366,16 +374,10 @@ void CRender_System::Execute_Draw_Canvas(const DRAW_CMD& tCmd)
     pMat->pView->SetMatrix(reinterpret_cast<const float*>(&gUI.matView));
     pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&gUI.matProj));
 
-    if (pMat->pColor && pMat->pColor->IsValid())
-        pMat->pColor->SetFloatVector(reinterpret_cast<const float*>(&tCmd.canvas.vColor));
+    if (pMat->pBaseColor && pMat->pBaseColor->IsValid())
+        pMat->pBaseColor->SetFloatVector(reinterpret_cast<const float*>(&tCmd.canvas.vColor));
 
-    if (pMat->pUV && pMat->pUV->IsValid())
-    {
-        _float4 uv4 = { tCmd.canvas.rcUV.fLeft, tCmd.canvas.rcUV.fTop, tCmd.canvas.rcUV.fRight, tCmd.canvas.rcUV.fBottom };
-        pMat->pUV->SetFloatVector(reinterpret_cast<const float*>(&uv4));
-    }
-
-    if (pMat->pMainTex && pMat->pMainTex->IsValid())
+    if (pMat->pBaseMap && pMat->pBaseMap->IsValid())
     {
         ID3D11ShaderResourceView* srv = nullptr;
         if (tCmd.canvas.hTexture != INVALID_HANDLE_UINT)
@@ -383,7 +385,7 @@ void CRender_System::Execute_Draw_Canvas(const DRAW_CMD& tCmd)
             const TEXTURE_ENTRY* tex = SYS_RESOURCE.Get_Texture(tCmd.canvas.hTexture);
             srv = (tex && tex->Is_Valid()) ? tex->SRV() : nullptr;
         }
-        pMat->pMainTex->SetResource(srv);
+        pMat->pBaseMap->SetResource(srv);
     }
 
     const _bool bClip = (tCmd.canvas.flags & CF_CLIP_RECT) != 0;
@@ -459,7 +461,34 @@ void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial,
     pMat->pView->SetMatrix(reinterpret_cast<const float*>(&m_matView));     /* TODO : 렌더링 최적화 !! 프레임 당 한 번으로 수정 */
     pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&m_matProj));     /* TODO : 렌더링 최적화 !! 프레임 당 한 번으로 수정 */
 
-    /* 재질은 머테리얼이 담당 */
+    if (pMat->pBaseColor)
+        pMat->pBaseColor->SetFloatVector(reinterpret_cast<const float*>(&pMat->baseColor));
+
+    if (pMat->pShininess)
+        pMat->pShininess->SetFloat(pMat->fShininess);
+
+    if (pMat->pBaseMap)
+    {
+        const TEXTURE_ENTRY* pTex = SYS_RESOURCE.Get_Texture(pMat->hBaseMap);
+        ID3D11ShaderResourceView* pBaseSRV = nullptr;
+        if (!pTex || !pTex->Is_Valid())
+            pBaseSRV = SYS_RESOURCE.Get_Texture(m_hDefaultBaseMap)->pSRV.Get(); /* 흰 이미지로 설정 */
+        else
+            pBaseSRV = pTex->SRV(); /* 지정된 baseMap으로 설정 */
+        pMat->pBaseMap->SetResource(pBaseSRV);
+    }
+
+    if (pMat->pNormalMap)
+    {
+        const TEXTURE_ENTRY* pTex = SYS_RESOURCE.Get_Texture(pMat->hNormalMap);
+        ID3D11ShaderResourceView* pNormalSRV = nullptr;
+        if (!pTex || !pTex->Is_Valid())
+            pNormalSRV = SYS_RESOURCE.Get_Texture(m_hDefaultNormalMap)->pSRV.Get(); /* flat normal 설정 */
+        else
+            pNormalSRV = pTex->SRV(); /* 지정된 baseMap으로 설정 */
+        pMat->pNormalMap->SetResource(pNormalSRV);
+    }
+
     Apply_Block_To_Shader(pShader, pMat->materialParams);
 
     /* 사용자가 정의한 셰이더 변수 적용 */
@@ -469,7 +498,6 @@ void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial,
         if (pBlk)
             Apply_Block_To_Shader(pShader, pBlk->block);
     }
-
 
     ID3D11InputLayout* pIL = pShader->pPasses[passIndex].pInputLayout.Get();
     m_pContext->IASetInputLayout(pIL);

@@ -132,32 +132,35 @@ std::string CCreate_Asset_Helper::Make_Unique_File_Stem_Impl(const std::filesyst
     return baseStem + " (9999)";
 }
 
-void CCreate_Asset_Helper::Build_Material_Entry(const ASSET_GUID& materialGUID,
+void CCreate_Asset_Helper::Build_Material_Entry(MATERIAL_ENTRY& outMaterial,
+    const ASSET_GUID& materialGUID,
     const ASSET_GUID& shaderGUID,
     const ASSET_GUID& baseMapGUID,
+    const ASSET_GUID& normalMapGUID,
     const _float4& baseColor,
-    MATERIAL_ENTRY& outMaterial)
+    const _float fShininess,
+    const _uint iPassIndex/* = 0 */)
 {
     outMaterial = MATERIAL_ENTRY{};
 
     outMaterial.tGUID = materialGUID;
     outMaterial.shaderGUID = shaderGUID;
-    outMaterial.passIndex = 0;
+    outMaterial.passIndex = iPassIndex;
 
     outMaterial.baseColor = baseColor;
     outMaterial.baseMapGUID = baseMapGUID;
 
+    outMaterial.normalMapGUID = normalMapGUID;
+
+    outMaterial.fShininess = fShininess;
+
     outMaterial.hShader = INVALID_HANDLE_UINT;
     outMaterial.hBaseMap = INVALID_HANDLE_UINT;
+    outMaterial.hNormalMap = INVALID_HANDLE_UINT;
 
     outMaterial.pWorld = nullptr;
     outMaterial.pView = nullptr;
     outMaterial.pProj = nullptr;
-
-    outMaterial.pMainTex = nullptr;
-    outMaterial.pColor = nullptr;
-    outMaterial.pUV = nullptr;
-    outMaterial.pClip = nullptr;
 
     outMaterial.materialParams.params.clear();
 }
@@ -166,10 +169,13 @@ _bool CCreate_Asset_Helper::Write_Material_Asset_File(const std::filesystem::pat
     const ASSET_GUID& materialGUID,
     const ASSET_GUID& shaderGUID,
     const ASSET_GUID& baseMapGUID,
-    const _float4& baseColor)
+    const ASSET_GUID& normalMapGUID,
+    const _float4& baseColor,
+    const _float fShininess,
+    _uint iPassIndex /* = 0 */)
 {
     MATERIAL_ENTRY material{};
-    Build_Material_Entry(materialGUID, shaderGUID, baseMapGUID, baseColor, material);
+    Build_Material_Entry(material, materialGUID, shaderGUID, baseMapGUID, normalMapGUID, baseColor, fShininess, iPassIndex);
 
     if (FAILED(CMaterialBuilder::Save_Material(material, savePath)))
         return false;

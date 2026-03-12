@@ -16,6 +16,8 @@ typedef struct tagConvertedModelPart
 {
     std::string     strName;
     CONVERTED_MESH  mesh;
+    uint32_t        iMaterialIndex = 0;
+
 } CONVERTED_MODEL_PART;
 
 typedef struct tagConvertedModel
@@ -27,6 +29,7 @@ typedef struct tagSavedModelPartInfo
 {
     std::string strName;
     std::string strMeshGUID;
+    std::string strMaterialGUID;
 }SAVED_MODEL_PART_INFO;
 
 typedef struct tagModelPartDesc

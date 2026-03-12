@@ -429,9 +429,6 @@
     <ClInclude Include="..\Public\GameInstance.h">
       <Filter>00. System\99. GameInstance</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Spec_Util.h">
-      <Filter>01. Utility\04. Component\98. Spec</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Model.h">
       <Filter>01. Utility\05. Resource\05. Model</Filter>
     </ClInclude>
@@ -470,6 +467,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\DebugDraw.h">
       <Filter>01. Utility\98. Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Spec_Util.h">
+      <Filter>01. Utility\04. Component\07. RectTransform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -649,6 +649,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\DebugDraw.cpp">
       <Filter>01. Utility\98. Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\Identity.cpp">
+      <Filter>00. System\05. Resource\Asset</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

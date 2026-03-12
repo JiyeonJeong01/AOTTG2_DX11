@@ -5,13 +5,9 @@
 #include "Script_Register.h"
 
 #include "CameraController.h"
-#include "FirstScene.h"
 #include "Hello.h"
 #include "MainMenu_Controller.h"
 #include "Player.h"
-#include "PrototypeTest.h"
-#include "CScript_Test.h"
-#include "Test_ComponentEnable.h"
 
 NS_BEGIN(Client)
 void Register_AllScripts()
@@ -20,10 +16,6 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\CameraController.script");
         handler.Register_VTable(guid, ScriptBinder<CCameraController>::Build());
-    }
-    {
-        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\FirstScene.script");
-        handler.Register_VTable(guid, ScriptBinder<CFirstScene>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Hello.script");
@@ -36,18 +28,6 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Player.script");
         handler.Register_VTable(guid, ScriptBinder<CPlayer>::Build());
-    }
-    {
-        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\PrototypeTest.script");
-        handler.Register_VTable(guid, ScriptBinder<CPrototypeTest>::Build());
-    }
-    {
-        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\CScript_Test.script");
-        handler.Register_VTable(guid, ScriptBinder<CScript_Test>::Build());
-    }
-    {
-        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Test_ComponentEnable.script");
-        handler.Register_VTable(guid, ScriptBinder<CTest_ComponentEnable>::Build());
     }
 }
 NS_END

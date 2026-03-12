@@ -32,12 +32,11 @@ public:
 
     uint32_t Load_Material_Temp(const ASSET_GUID& materialGuidAsShaderGuid, uint16_t passIndex);
 
-
-    const MESH_ENTRY*           Get_Mesh(uint32_t handle) const;
-    const MODEL_ENTRY*          Get_Model(uint32_t handle) const;
-    MATERIAL_ENTRY*             Get_Material(uint32_t handle);
-    SHADER_ENTRY*               Get_Shader(uint32_t handle);
-    const TEXTURE_ENTRY*        Get_Texture(uint32_t handle) const;
+    MESH_ENTRY*           Get_Mesh(uint32_t handle);
+    MODEL_ENTRY*          Get_Model(uint32_t handle);
+    MATERIAL_ENTRY*       Get_Material(uint32_t handle);
+    SHADER_ENTRY*         Get_Shader(uint32_t handle);
+    TEXTURE_ENTRY*        Get_Texture(uint32_t handle);
 
 public:
     uint32_t Alloc_PerObjectParamBlock();

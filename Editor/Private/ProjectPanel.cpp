@@ -930,7 +930,10 @@ void CProjectPanel::Try_Open_Material_On_DoublieClick(const LIST_ASSET& tAsset)
     /* 정상적으로 찾은 경우 보일 값 채우기 */
     m_createMaterialShaderGUID = pEntry->shaderGUID;
     m_createMaterialBaseMapGUID = pEntry->baseMapGUID;
+    m_createMaterialNormalMapGUID = pEntry->normalMapGUID;
     m_createMaterialBaseColor = pEntry->baseColor;
+    m_createMaterialShininess = pEntry->fShininess;
+    m_createMaterialPassIndex = pEntry->passIndex;
     m_createMaterialNameBuffer = Editor_Util::To_UTF8(matPath.stem());
 
     m_bEditMaterialPopup = true;
@@ -1074,12 +1077,12 @@ void CProjectPanel::Draw_Create_Material_Popup()
 {
     if (!m_bOpenCreateMaterialPopup)
         return;
+
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
     if (ImGui::Begin("Create Material", &m_bOpenCreateMaterialPopup, ImGuiWindowFlags_AlwaysAutoResize))
     {
-
         ImGui::SetNextItemWidth(360.f);
         ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
         _bool bSubmit = ImGui::InputText("##MaterialName", &m_createMaterialNameBuffer, flags);
@@ -1128,8 +1131,45 @@ void CProjectPanel::Draw_Create_Material_Popup()
 
         ImGui::Spacing();
 
+        {
+            std::filesystem::path normalMapPath = SYS_ASSET.Get_Asset_Path(m_createMaterialNormalMapGUID);
+            std::string strNormalMapName = normalMapPath.empty() ? std::string("<None>") : Editor_Util::To_UTF8(normalMapPath.filename());
+
+            ImGui::Text("NormalMap");
+            ImGui::TextDisabled("%s", strNormalMapName.c_str());
+
+            Editor_Util::Draw_DropTarget_GUID_Typed(
+                "NormalMap",
+                "ASSET_GUID",
+                ASSET_TYPE::TEXTURE,
+                [&](const ASSET_GUID& dropped)
+                {
+                    m_createMaterialNormalMapGUID = dropped;
+                },
+                "Drop Normal Texture here"
+            );
+        }
+
+        ImGui::Spacing();
+
         ImGui::Text("BaseColor");
         ImGui::ColorEdit4("##MaterialBaseColor", &m_createMaterialBaseColor.x);
+
+        ImGui::Spacing();
+
+        ImGui::Text("Shininess");
+        ImGui::SetNextItemWidth(160.f);
+        ImGui::DragFloat("##MaterialShininess", &m_createMaterialShininess, 0.1f, 0.f, 512.f, "%.2f");
+
+        ImGui::Spacing();
+
+        {
+            int iPassIndex = SCAST(int, m_createMaterialPassIndex);
+            ImGui::Text("PassIndex");
+            ImGui::SetNextItemWidth(160.f);
+            if (ImGui::DragInt("##MaterialPassIndex", &iPassIndex, 1.f, 0, 255))
+                m_createMaterialPassIndex = SCAST(_uint, iPassIndex);
+        }
 
         ImGui::Spacing();
 
@@ -1145,9 +1185,15 @@ void CProjectPanel::Draw_Create_Material_Popup()
 
                 if (!targetPath.empty())
                 {
-                    /* 편집 시 덮어쓰기 저장 */
-                    if (CCreate_Asset_Helper::Write_Material_Asset_File(targetPath, m_editMaterialGUID, m_createMaterialShaderGUID,
-                        m_createMaterialBaseMapGUID, m_createMaterialBaseColor))
+                    if (CCreate_Asset_Helper::Write_Material_Asset_File(
+                        targetPath,
+                        m_editMaterialGUID,
+                        m_createMaterialShaderGUID,
+                        m_createMaterialBaseMapGUID,
+                        m_createMaterialNormalMapGUID,
+                        m_createMaterialBaseColor,
+                        m_createMaterialShininess,
+                        m_createMaterialPassIndex))
                     {
                         m_bListDirty = true;
                         m_bTreeDirty = true;
@@ -1155,16 +1201,29 @@ void CProjectPanel::Draw_Create_Material_Popup()
                         Set_Selection(targetPath);
                         Notify_Selection_Changed();
 
-                        auto* pMat = SYS_RESOURCE.Get_Material(SYS_RESOURCE.Load_Material(m_editMaterialGUID));
-                        pMat->baseMapGUID = m_createMaterialBaseMapGUID;
-                        pMat->hBaseMap = SYS_RESOURCE.Load_Texture(m_createMaterialBaseMapGUID);
-                        pMat->baseColor = m_createMaterialBaseColor;
+                        auto hMaterial = SYS_RESOURCE.Load_Material(m_editMaterialGUID);
+                        auto* pMat = SYS_RESOURCE.Get_Material(hMaterial);
+                        if (pMat)
+                        {
+                            pMat->shaderGUID = m_createMaterialShaderGUID;
+                            pMat->hShader = SYS_RESOURCE.Load_Shader(m_createMaterialShaderGUID);
+
+                            pMat->baseMapGUID = m_createMaterialBaseMapGUID;
+                            pMat->hBaseMap = SYS_RESOURCE.Load_Texture(m_createMaterialBaseMapGUID);
+
+                            pMat->normalMapGUID = m_createMaterialNormalMapGUID;
+                            pMat->hNormalMap = SYS_RESOURCE.Load_Texture(m_createMaterialNormalMapGUID);
+
+                            pMat->baseColor = m_createMaterialBaseColor;
+                            pMat->fShininess = m_createMaterialShininess;
+                            pMat->passIndex = m_createMaterialPassIndex;
+                        }
 
                         SYS_ASSET.Register_File_Asset(targetPath, ASSET_TYPE::MATERIAL, m_editMaterialGUID);
                     }
                 }
             }
-            else /* ----------------- Create -----------------*/
+            else /* ----------------- Create ----------------- */
             {
                 std::filesystem::path createdPath;
                 if (!m_createMaterialNameBuffer.empty())
@@ -1182,11 +1241,14 @@ void CProjectPanel::Draw_Create_Material_Popup()
                 }
             }
 
-            /* ----------------- Common ----------------- */
             m_createMaterialNameBuffer.clear();
             m_createMaterialShaderGUID = DEFAULT_ASSET_GUID::SHADER_VTXTEX;
             m_createMaterialBaseMapGUID = DEFAULT_ASSET_GUID::TEXTURE_BASEMAP_DEFAULT;
+            m_createMaterialNormalMapGUID = DEFAULT_ASSET_GUID::TEXTURE_NORMALMAP_DEFAULT;
             m_createMaterialBaseColor = _float4{ 1.f, 1.f, 1.f, 1.f };
+            m_createMaterialShininess = 32.f;
+            m_createMaterialPassIndex = 0;
+
             m_bEditMaterialPopup = false;
             m_editMaterialGUID = ASSET_GUID{};
             m_bOpenCreateMaterialPopup = false;
@@ -1200,8 +1262,13 @@ void CProjectPanel::Draw_Create_Material_Popup()
             m_createMaterialNameBuffer.clear();
             m_createMaterialShaderGUID = DEFAULT_ASSET_GUID::SHADER_VTXTEX;
             m_createMaterialBaseMapGUID = DEFAULT_ASSET_GUID::TEXTURE_BASEMAP_DEFAULT;
+            m_createMaterialNormalMapGUID = DEFAULT_ASSET_GUID::TEXTURE_NORMALMAP_DEFAULT;
             m_createMaterialBaseColor = _float4{ 1.f, 1.f, 1.f, 1.f };
+            m_createMaterialShininess = 32.f;
+            m_createMaterialPassIndex = 0;
 
+            m_bEditMaterialPopup = false;
+            m_editMaterialGUID = ASSET_GUID{};
             m_bOpenCreateMaterialPopup = false;
             ImGui::CloseCurrentPopup();
         }
@@ -1227,7 +1294,10 @@ _bool CProjectPanel::Create_Material_By_Name(const std::string& baseStem, std::f
         materialGUID,
         m_createMaterialShaderGUID,
         m_createMaterialBaseMapGUID,
-        m_createMaterialBaseColor))
+        m_createMaterialNormalMapGUID,
+        m_createMaterialBaseColor,
+        m_createMaterialShininess,
+        m_createMaterialPassIndex))
     {
         return false;
     }

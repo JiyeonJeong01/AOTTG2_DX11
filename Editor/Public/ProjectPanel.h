@@ -155,6 +155,10 @@ private:
         _bool       m_bEditMaterialPopup = false;
         ASSET_GUID  m_editMaterialGUID{};
 
+        _float              m_createMaterialShininess = 32.f;
+        _uint               m_createMaterialPassIndex = 0;
+        ASSET_GUID          m_createMaterialNormalMapGUID = DEFAULT_ASSET_GUID::TEXTURE_NORMALMAP_DEFAULT;
+
 
 private:
     static uint64_t Get_Stable_Id_From_Path(const std::filesystem::path& p);

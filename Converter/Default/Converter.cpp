@@ -1,9 +1,13 @@
 ﻿#include "Mesh_Converter.h"
 
+#pragma comment(lib, "Engine.lib")
+
 int main()
 {
     std::filesystem::path fbxPath = L"../../Converter/Bin/FBXs";
-    std::filesystem::path meshPath = Engine::ProjectConfig::PATH + Engine::ProjectConfig::MESH;
+    std::filesystem::path modelPath = Engine::ProjectConfig::PATH + Engine::ProjectConfig::MESH;
+    std::filesystem::path matPath = Engine::ProjectConfig::PATH + Engine::ProjectConfig::MATERIAL;
+    std::filesystem::path textureRoot = Engine::ProjectConfig::PATH + Engine::ProjectConfig::TEXTURE;
 
     if (!std::filesystem::exists(fbxPath))
     {
@@ -11,11 +15,8 @@ int main()
         return 1;
     }
 
-    /* 이미 만들어진 .mesh 목록 빌드 */
-    std::unordered_set<std::wstring> existing = Build_ExistingModelStemSet(meshPath);
+    std::unordered_set<std::wstring> existing = Build_ExistingModelStemSet(modelPath);
 
-
-    /* /FBXs/ 폴더의 중복되지 않는 .fbx만 추출 */
     std::error_code ec;
     if (!std::filesystem::exists(fbxPath, ec))
     {
@@ -28,8 +29,10 @@ int main()
 
     for (auto& it : std::filesystem::recursive_directory_iterator(fbxPath, ec))
     {
-        if (ec) break;
-        if (!it.is_regular_file(ec)) continue;
+        if (ec)
+            break;
+        if (!it.is_regular_file(ec))
+            continue;
 
         const std::filesystem::path inPath = it.path();
         if (inPath.extension() != L".fbx")
@@ -43,15 +46,24 @@ int main()
             continue;
         }
 
-        std::filesystem::path outPath = meshPath / (stem + L".model");
-        outPath.make_preferred();
+        std::filesystem::path outMeshPath = modelPath / (stem + L".model");
+        outMeshPath.make_preferred();
+        std::filesystem::path outMeshMeta = modelPath / (stem + L".model.meta");
+        outMeshMeta.make_preferred();
 
-        std::filesystem::path outMeta = meshPath / (stem + L".model.meta");
-        outMeta.make_preferred();
+        std::filesystem::path outMatPath = matPath / (stem + L".mat");
+        outMatPath.make_preferred();
 
-        _bool bOK = Converter::Convert(const_cast<std::filesystem::path&>(inPath),
-            outPath,
-            outMeta);
+        std::filesystem::path fbxFile = inPath;
+        std::filesystem::path texRoot = textureRoot;
+
+        _bool bOK = Converter::Convert(
+            fbxFile,
+            texRoot,
+            outMeshPath,
+            outMatPath,
+            outMeshMeta);
+
         if (!bOK)
         {
             std::cout << "Convert failed: " << inPath.string() << "\n";
@@ -61,7 +73,7 @@ int main()
         existing.insert(stem);
         ++convertedCount;
 
-        std::cout << "Converted: " << inPath.string() << " -> " << outPath.string() << "\n";
+        std::cout << "Converted: " << inPath.string() << " -> " << outMeshPath.string() << "\n";
     }
 
     std::cout << "Done. converted=" << convertedCount << " skipped=" << skippedCount << "\n";

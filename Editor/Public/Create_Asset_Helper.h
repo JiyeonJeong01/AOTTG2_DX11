@@ -39,17 +39,23 @@ public: /* ---------- Script ---------- */
         const std::filesystem::path& cppPath);
 
 public:
-    static void Build_Material_Entry(const ASSET_GUID& materialGUID,
+    static void Build_Material_Entry(MATERIAL_ENTRY& outMaterial,
+        const ASSET_GUID& materialGUID,
         const ASSET_GUID& shaderGUID,
         const ASSET_GUID& baseMapGUID,
+        const ASSET_GUID& normalMapGUID,
         const _float4& baseColor,
-        MATERIAL_ENTRY& outMaterial);
+        const _float fShininess,
+        const _uint iPassIndex = 0);
 
     static _bool Write_Material_Asset_File(const std::filesystem::path& savePath,
         const ASSET_GUID& materialGUID,
         const ASSET_GUID& shaderGUID,
         const ASSET_GUID& baseMapGUID,
-        const _float4& baseColor);
+        const ASSET_GUID& normalMapGUID,
+        const _float4& baseColor,
+        const _float fShininess,
+        _uint iPassIndex);
 
     static std::string Make_Unique_File_Stem_Single(const std::filesystem::path& rootPath,
         const std::string& baseStem,

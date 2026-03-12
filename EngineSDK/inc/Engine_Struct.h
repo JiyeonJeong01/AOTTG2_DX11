@@ -22,6 +22,8 @@ namespace  Engine
         const std::string HEADER = "Public";
         const std::string IMPL = "Private";
         const std::string MESH = "Assets/Meshes";
+        const std::string MATERIAL = "Assets/Materials";
+        const std::string TEXTURE = "Assets/Textures";
     }
 
     namespace GameConfig

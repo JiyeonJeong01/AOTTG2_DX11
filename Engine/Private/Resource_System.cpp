@@ -133,6 +133,7 @@ uint32_t CResource_System::Load_Model(const ASSET_GUID& tGUID)
     model.tGUID = tGUID;
     model.parts.reserve(desc.parts.size());
 
+    /* 모델이 소유한 파트(=메쉬) 정보 채우기 */
     for (const auto& partDesc : desc.parts)
     {
         const uint32_t hMesh = Load_Mesh(partDesc.tMeshGUID);
@@ -143,6 +144,13 @@ uint32_t CResource_System::Load_Model(const ASSET_GUID& tGUID)
         part.hMesh = hMesh;
         part.hMaterial = INVALID_HANDLE_UINT;
         model.parts.push_back(part);
+
+        if (!part.materialGUID.Is_Valid())
+        {
+            part.hMaterial = INVALID_HANDLE_UINT;
+            continue;
+        }
+        part.hMaterial = Load_Material(part.materialGUID);
     }
 
     IF_TRUE_RETURN_MSG_BREAK(model.parts.empty(), INVALID_HANDLE_UINT, "Load_Model failed: no valid parts");
@@ -272,12 +280,12 @@ uint32_t CResource_System::Load_Material(const ASSET_GUID& tGUID)
     desc.hShader = Load_Shader(desc.shaderGUID);
     IF_TRUE_RETURN_MSG_BREAK(desc.hShader == INVALID_HANDLE_UINT, INVALID_HANDLE_UINT, "Load_Material failed: invalid shader handle.");
 
+
     /* 머테리얼의 기본 텍스쳐를 로드해온다. */
     desc.hBaseMap = Load_Texture(desc.baseMapGUID);
     IF_TRUE_RETURN_MSG_BREAK(desc.hBaseMap == INVALID_HANDLE_UINT, INVALID_HANDLE_UINT, "Load_Material failed: invalid base map handle.");
 
-    /* param block에 반영한다. */
-    desc.Sync_StandardParams();
+  
 
     /* Effect 변수 포인터 캐싱 포함한 런타임 머테리얼 엔트리를 생성한다. */
     const uint32_t hMaterial = Load_Material(desc); // 기존 Load_Material(const MATERIAL_ENTRY&) 사용
@@ -306,15 +314,15 @@ uint32_t CResource_System::Load_Material(const MATERIAL_ENTRY& tDesc)
     entry.pView = pFx->GetVariableByName("g_ViewMatrix")->AsMatrix();
     entry.pProj = pFx->GetVariableByName("g_ProjMatrix")->AsMatrix();
 
-    entry.pMainTex = pFx->GetVariableByName("g_BaseMap")->AsShaderResource();
-    entry.pColor = pFx->GetVariableByName("g_BaseColor")->AsVector();
+    entry.pBaseMap = pFx->GetVariableByName("g_BaseMap")->AsShaderResource();
+    entry.pBaseColor = pFx->GetVariableByName("g_BaseColor")->AsVector();
 
 #ifdef _DEBUG
     IF_TRUE_RETURN_MSG_BREAK(!entry.pWorld || !entry.pWorld->IsValid(), INVALID_HANDLE_UINT, "Material matrix variable invalid: g_WorldMatrix");
     IF_TRUE_RETURN_MSG_BREAK(!entry.pView || !entry.pView->IsValid(), INVALID_HANDLE_UINT, "Material matrix variable invalid: g_ViewMatrix");
     IF_TRUE_RETURN_MSG_BREAK(!entry.pProj || !entry.pProj->IsValid(), INVALID_HANDLE_UINT, "Material matrix variable invalid: g_ProjMatrix");
 
-    IF_TRUE_RETURN_MSG_BREAK(entry.pMainTex && !entry.pMainTex->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_BaseMap");
+    IF_TRUE_RETURN_MSG_BREAK(entry.pBaseMap && !entry.pBaseMap->IsValid(), INVALID_HANDLE_UINT, "Material var invalid: g_BaseMap");
 #endif
 
     const uint32_t handle = (uint32_t)m_Materials.size();
@@ -322,7 +330,7 @@ uint32_t CResource_System::Load_Material(const MATERIAL_ENTRY& tDesc)
     return handle;
 }
 
-const MESH_ENTRY* CResource_System::Get_Mesh(uint32_t handle) const
+ MESH_ENTRY* CResource_System::Get_Mesh(uint32_t handle) 
 {
     const uint32_t iIndex = Handle_Index(handle);
     if (handle == INVALID_HANDLE_UINT || iIndex >= m_Meshes.size())
@@ -330,7 +338,7 @@ const MESH_ENTRY* CResource_System::Get_Mesh(uint32_t handle) const
 
     return &m_Meshes[iIndex];
 }
-const MODEL_ENTRY* CResource_System::Get_Model(uint32_t handle) const
+MODEL_ENTRY* CResource_System::Get_Model(uint32_t handle) 
 {
     const uint32_t iIndex = Handle_Index(handle);
     if (handle == INVALID_HANDLE_UINT || iIndex >= m_Models.size())
@@ -348,7 +356,7 @@ SHADER_ENTRY* CResource_System::Get_Shader(uint32_t handle)
     return &m_Shaders[handle];
 }
 
-const TEXTURE_ENTRY* CResource_System::Get_Texture(uint32_t handle) const
+TEXTURE_ENTRY* CResource_System::Get_Texture(uint32_t handle)
 {
     if (handle == INVALID_HANDLE_UINT || handle >= m_Textures.size())
         return nullptr;
