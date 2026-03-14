@@ -36,6 +36,20 @@ void CPlayerState_Grounded::Late_Update(_float fDT)
     CPlayerState::Late_Update(fDT);
 }
 
+void CPlayerState_Grounded::Decide_NextState()
+{
+    if (m_tInputCmd.bBoostPressed)
+    {
+        /* 점프 */
+    }
+
+    if (m_tInputCmd.bLeftAnchorPressed || m_tInputCmd.bLeftAnchorPressed)
+    {
+        /* 앵커 고정 가능한지 판단 */
+        /* TODO : 이 판단은 꼭 Utils로 만들자! */
+    }
+}
+
 void CPlayerState_Grounded::Enter()
 {
     LOG_INFO("Enter CPlayerState_Grounded");
@@ -43,10 +57,12 @@ void CPlayerState_Grounded::Enter()
 
 void CPlayerState_Grounded::Walk(_float fDT)
 {
-    _float3 vPosDelta{};
-    XMStoreFloat3(&vPosDelta, XMLoadFloat3(&m_tInputCmd.vMove) * 10.f * fDT);
+    _float3 vLinearVel = m_rbPlayer.Get_LinearVel();
 
-    m_rbPlayer.Translate(vPosDelta);
+    vLinearVel.x = m_tInputCmd.vMove.x * 10.f;
+    vLinearVel.z = m_tInputCmd.vMove.z * 10.f;
+
+    m_rbPlayer.Set_LinearVel(vLinearVel);
 }
 
 std::shared_ptr<CPlayerState_Grounded> CPlayerState_Grounded::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer)

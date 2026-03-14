@@ -62,6 +62,7 @@ private:
     /* --- Playe UI State --- */
     _bool m_bPlaying = false;
     _bool m_bSceneStarted = false;
+    _bool m_bForceSceneView = false;
 
     static constexpr const char* PANEL_HIERARCHY = "Hierarchy";
     static constexpr const char* PANEL_INSPECTOR = "Inspector";

@@ -80,6 +80,7 @@ private:
 
     _float  m_fMouseSens = 3.f;
     _float  m_fWheelZoomSpeed = 1.5f;
+
 /* -------------------- SceneView camera -------------------- */
 private :
     CTransform_Processor*           m_pTransform_Processor{};

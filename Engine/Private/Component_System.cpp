@@ -54,18 +54,26 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
 
 void CComponent_System::Update(_float fDT)
 {
-	for (auto& pProcessor : m_pComProcessors)
-        if (pProcessor) 
-    		pProcessor->Update(fDT);
+    static_cast<CScript_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::SCRIPT)].get())->Update(fDT);
+    static_cast<CTransform_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::TRANSFORM)].get())->Update(fDT);
+    static_cast<CEnvironment_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::ENVIRONMENT)].get())->Update(fDT);
+    static_cast<CRectTransform_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::RECT_TRANSFORM)].get())->Update(fDT);
+    static_cast<CUI_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::UI)].get())->Update(fDT);
+    static_cast<CPhysics_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::PHYSICS)].get())->Update(fDT);
+    static_cast<CMeshRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::MESH_RENDERER)].get())->Update(fDT);
+    static_cast<CCanvasRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::CANVAS_RENDERER)].get())->Update(fDT);
 }
 
 void CComponent_System::LateUpdate(_float fDT)
 {
-    for (auto& pProcessor : m_pComProcessors)
-    {
-        if (pProcessor)
-            pProcessor->LateUpdate(fDT);
-    }
+    static_cast<CScript_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::SCRIPT)].get())->LateUpdate(fDT);
+    static_cast<CTransform_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::TRANSFORM)].get())->LateUpdate(fDT);
+    static_cast<CEnvironment_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::ENVIRONMENT)].get())->LateUpdate(fDT);
+    static_cast<CRectTransform_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::RECT_TRANSFORM)].get())->LateUpdate(fDT);
+    static_cast<CUI_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::UI)].get())->LateUpdate(fDT);
+    static_cast<CPhysics_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::PHYSICS)].get())->LateUpdate(fDT);
+    static_cast<CMeshRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::MESH_RENDERER)].get())->LateUpdate(fDT);
+    static_cast<CCanvasRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::CANVAS_RENDERER)].get())->LateUpdate(fDT);
 }
 
 void CComponent_System::FixedUpdate(_float fDT)
@@ -80,8 +88,8 @@ void CComponent_System::Build_RenderQueue(vector<DRAW_CMD>& cmds)
     IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)], , "m_pComProcessor is nullptr");
     IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)], , "m_pComProcessor is nullptr");
 
-    SCAST(CMeshRenderer_Processor*, m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)].get())->Build_RenderQueue(cmds);
-    SCAST(CCanvasRenderer_Processor*, m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)].get())->Build_RenderQueue(cmds);
+    To<CMeshRenderer_Processor*>(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)].get())->Build_RenderQueue(cmds);
+    To<CCanvasRenderer_Processor*>(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)].get())->Build_RenderQueue(cmds);
 }
 
 void CComponent_System::Render()

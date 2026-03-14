@@ -91,6 +91,12 @@
     <ClInclude Include="..\Public\Easing_Function.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\FreeCam.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GameManager.h">
+      <Filter>MainApp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -133,6 +139,12 @@
       <Filter>Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MainMenu_Controller.cpp">
+      <Filter>MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FreeCam.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GameManager.cpp">
       <Filter>MainApp</Filter>
     </ClCompile>
   </ItemGroup>

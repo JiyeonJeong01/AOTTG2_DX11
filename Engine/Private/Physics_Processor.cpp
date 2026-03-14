@@ -74,20 +74,20 @@ void CPhysics_Processor::Fixed_Update(_float fDT)
 
 void CPhysics_Processor::Render()
 {
-    //m_upDebugRenderer->Begin();
+    m_upDebugRenderer->Begin();
 
-    //for (const auto& tProxy : m_AllColliders)
-    //{
-    //    if (tProxy.pCol == nullptr)
-    //        continue;
+    for (const auto& tProxy : m_AllColliders)
+    {
+        if (tProxy.pCol == nullptr)
+            continue;
 
-    //    if (!tProxy.pCol->bEnable)
-    //        continue;
+        if (!tProxy.pCol->bEnable)
+            continue;
 
-    //    m_upDebugRenderer->Draw_Collider(tProxy);
-    //}
+        m_upDebugRenderer->Draw_Collider(tProxy);
+    }
 
-    //m_upDebugRenderer->End();
+    m_upDebugRenderer->End();
 }
 
 void CPhysics_Processor::Process_SpringJoints(_float fDT)

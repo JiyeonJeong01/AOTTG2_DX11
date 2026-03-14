@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <Transform.h>
-
+#include "SpringJoint.h"
 #include "Client_Define.h"
 #include "Script.h"
 
@@ -35,7 +35,8 @@ public:
     void Late_Update(void* pCtx, _float fDT) override;
 
 private :
-    CTransform m_Trnasform;
+    CTransform      m_Transform;
+    CSpringJoint    m_SpringJoint;
     CGameObject* m_pTarget = nullptr;
 
 private :

@@ -17,6 +17,7 @@ public :
     void Update(_float fDT) override;
     void Late_Update(_float fDT) override;
 
+    void Decide_NextState() override;
     void Enter() override;
 
 private :

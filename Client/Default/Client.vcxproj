@@ -22,6 +22,8 @@
     <ClInclude Include="..\Public\CameraController.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Easing_Function.h" />
+    <ClInclude Include="..\Public\FreeCam.h" />
+    <ClInclude Include="..\Public\GameManager.h" />
     <ClInclude Include="..\Public\Hello.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MainMenu_Controller.h" />
@@ -39,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\CameraController.cpp" />
+    <ClCompile Include="..\Private\FreeCam.cpp" />
+    <ClCompile Include="..\Private\GameManager.cpp" />
     <ClCompile Include="..\Private\Hello.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MainMenu_Controller.cpp" />

@@ -43,7 +43,7 @@ static std::unordered_set<std::wstring> Build_ExistingModelStemSet(const std::fi
     return set;
 }
 
-static _bool Convert_SingleMesh(const aiMesh* pAIMesh, Engine::CONVERTED_MESH& out)
+static _bool Convert_SingleMesh(const aiMesh* pAIMesh, Engine::CONVERTED_MESH& out, const float fImportScale)
 {
     if (!pAIMesh || pAIMesh->mNumVertices == 0)
         return false;
@@ -57,9 +57,10 @@ static _bool Convert_SingleMesh(const aiMesh* pAIMesh, Engine::CONVERTED_MESH& o
 
     out.vertices.resize(pAIMesh->mNumVertices);
 
+
     for (size_t v = 0; v < pAIMesh->mNumVertices; ++v)
     {
-        CopyFloat3(out.vertices[v].vPosition, pAIMesh->mVertices[v]);
+        CopyFloat3_Scale(out.vertices[v].vPosition, pAIMesh->mVertices[v], fImportScale);
 
         if (hasNormals)  CopyFloat3(out.vertices[v].vNormal, pAIMesh->mNormals[v]);
         else             out.vertices[v].vNormal = _float3{ 0.f, 1.f, 0.f };
@@ -87,7 +88,7 @@ static _bool Convert_SingleMesh(const aiMesh* pAIMesh, Engine::CONVERTED_MESH& o
     return !out.vertices.empty() && !out.indices.empty();
 }
 
-static _bool Convert_Model(const aiScene* scene, CONVERTED_MODEL& out)
+static _bool Convert_Model(const aiScene* scene, CONVERTED_MODEL& out, const float fImportScale)
 {
     if (!scene || scene->mNumMeshes == 0)
         return false;
@@ -109,7 +110,7 @@ static _bool Convert_Model(const aiScene* scene, CONVERTED_MODEL& out)
 
         part.iMaterialIndex = pAIMesh->mMaterialIndex;
 
-        if (!Convert_SingleMesh(pAIMesh, part.mesh))
+        if (!Convert_SingleMesh(pAIMesh, part.mesh, fImportScale))
             continue;
 
         out.parts.push_back(std::move(part));
@@ -362,7 +363,8 @@ inline static _bool Convert(
     std::filesystem::path& textureRoot,     /* Client/Assets/Textures */
     std::filesystem::path& outMeshPath,     /* Client/Assets/Meshes  */
     std::filesystem::path& outMatPath,      /* Client/Assets/Materials  */
-    std::filesystem::path& outMeshMeta)
+    std::filesystem::path& outMeshMeta,
+    const _float fImportScale)
 {
     Assimp::Importer importer;
     const aiScene* pAIScene = LoadScene_Assimp(importer, inPath);
@@ -374,7 +376,7 @@ inline static _bool Convert(
     }
 
     CONVERTED_MODEL model{}; /* CONVERTED_MODEL_PART 컨테이너를 가진 구조체 */
-    if (!Convert_Model(pAIScene, model))
+    if (!Convert_Model(pAIScene, model, fImportScale))
     {
         std::cout << "Convert model failed : " << inPath.string() << "\n";
         return false;
@@ -395,7 +397,7 @@ inline static _bool Convert(
     std::unordered_map<uint32_t, std::string> materialIndexToGUID;
     {
         /* 머테리얼 정보 없을 시 채워넣을 기본 텍스쳐, 셰이더 GUID */
-        const std::string strDefaultShaderGUID = To_String_Utf8(DEFAULT_ASSET_GUID::SHADER_VTXTEX.value);
+        const std::string strDefaultShaderGUID = To_String_Utf8(DEFAULT_ASSET_GUID::SHADER_VTXMESH.value);
         const std::string strDefaultBaseMapGUID = To_String_Utf8(DEFAULT_ASSET_GUID::TEXTURE_BASEMAP_DEFAULT.value);
         const std::string strDefaultNormalMapGUID = To_String_Utf8(DEFAULT_ASSET_GUID::TEXTURE_NORMALMAP_DEFAULT.value);
 

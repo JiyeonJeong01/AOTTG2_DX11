@@ -8,6 +8,12 @@ static inline void CopyFloat3(_float3& dst, const aiVector3D& src)
 {
     dst.x = src.x; dst.y = src.y; dst.z = src.z;
 }
+
+static inline void CopyFloat3_Scale(_float3& dst, const aiVector3D& src, const float fImportScale)
+{
+    dst.x = src.x * fImportScale; dst.y = src.y * fImportScale; dst.z = src.z * fImportScale;
+}
+
 static inline void CopyFloat2(_float2& dst, const aiVector3D& src)
 {
     dst.x = src.x; dst.y = src.y;

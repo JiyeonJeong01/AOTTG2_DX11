@@ -481,6 +481,34 @@ void CMainPanel::Draw_Toolbar()
             SYS_CORE.Restart();
         }
         ImGui::SameLine();
+
+        ImGui::SameLine();
+        ImGui::Dummy(ImVec2(8.f, 0.f));
+        ImGui::SameLine();
+        ImGui::TextDisabled("|");
+        ImGui::SameLine();
+        ImGui::Dummy(ImVec2(8.f, 0.f));
+        ImGui::SameLine();
+
+
+        if (m_bForceSceneView)
+        {
+            if (ImGui::Button("GameView", ImVec2(button_size, 80)))
+            {
+                m_bForceSceneView = false;
+                SYS_EDITOR.Toggle_SceneViewCamera(false);
+            }
+        }
+        else
+        {
+            if (ImGui::Button("SceneView", ImVec2(button_size, 80)))
+            {
+                m_bForceSceneView = true;
+                SYS_EDITOR.Toggle_SceneViewCamera(true);
+            }
+        }
+
+        ImGui::SameLine();
     }
 
     ImGui::EndChild();

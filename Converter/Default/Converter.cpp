@@ -15,68 +15,80 @@ int main()
         return 1;
     }
 
-    std::unordered_set<std::wstring> existing = Build_ExistingModelStemSet(modelPath);
+    std::wstring fileName;
+    std::wcout << L"Enter the name of the file to convert under the FBXs folder (excluding extension) : ";
+    std::getline(std::wcin, fileName);
 
-    std::error_code ec;
-    if (!std::filesystem::exists(fbxPath, ec))
+    if (fileName.empty())
     {
-        std::cout << "FBX root not found: " << fbxPath.string() << "\n";
+        std::cout << "File name is empty.\n";
         return 1;
     }
 
-    uint32_t convertedCount = 0;
-    uint32_t skippedCount = 0;
+    std::wstringstream ssScale;
+    std::wstring strScale;
 
-    for (auto& it : std::filesystem::recursive_directory_iterator(fbxPath, ec))
+    std::wcout << L"enter the scale value (e.g., 1.0 / 0.01) : ";
+    std::getline(std::wcin, strScale);
+
+    if (strScale.empty())
     {
-        if (ec)
-            break;
-        if (!it.is_regular_file(ec))
-            continue;
-
-        const std::filesystem::path inPath = it.path();
-        if (inPath.extension() != L".fbx")
-            continue;
-
-        const std::wstring stem = inPath.stem().wstring();
-
-        if (existing.find(stem) != existing.end())
-        {
-            ++skippedCount;
-            continue;
-        }
-
-        std::filesystem::path outMeshPath = modelPath / (stem + L".model");
-        outMeshPath.make_preferred();
-        std::filesystem::path outMeshMeta = modelPath / (stem + L".model.meta");
-        outMeshMeta.make_preferred();
-
-        std::filesystem::path outMatPath = matPath / (stem + L".mat");
-        outMatPath.make_preferred();
-
-        std::filesystem::path fbxFile = inPath;
-        std::filesystem::path texRoot = textureRoot;
-
-        _bool bOK = Converter::Convert(
-            fbxFile,
-            texRoot,
-            outMeshPath,
-            outMatPath,
-            outMeshMeta);
-
-        if (!bOK)
-        {
-            std::cout << "Convert failed: " << inPath.string() << "\n";
-            continue;
-        }
-
-        existing.insert(stem);
-        ++convertedCount;
-
-        std::cout << "Converted: " << inPath.string() << " -> " << outMeshPath.string() << "\n";
+        std::cout << "Scale is empty.\n";
+        return 1;
     }
 
-    std::cout << "Done. converted=" << convertedCount << " skipped=" << skippedCount << "\n";
+    ssScale << strScale;
+
+    _float fImportScale = 1.f;
+    ssScale >> fImportScale;
+
+    if (ssScale.fail() || fImportScale <= 0.f)
+    {
+        std::cout << "Invalid scale value.\n";
+        return 1;
+    }
+
+    std::filesystem::path inPath = fbxPath / (fileName + L".fbx");
+    inPath.make_preferred();
+
+    if (!std::filesystem::exists(inPath))
+    {
+        std::wcout << L"FBX file not found: " << inPath.wstring() << L"\n";
+        return 1;
+    }
+
+    const std::wstring stem = inPath.stem().wstring();
+
+    std::filesystem::path outMeshPath = modelPath / (stem + L".model");
+    outMeshPath.make_preferred();
+
+    std::filesystem::path outMeshMeta = modelPath / (stem + L".model.meta");
+    outMeshMeta.make_preferred();
+
+    std::filesystem::path outMatPath = matPath / (stem + L".mat");
+    outMatPath.make_preferred();
+
+    std::filesystem::path fbxFile = inPath;
+    std::filesystem::path texRoot = textureRoot;
+
+    _bool bOK = Converter::Convert(
+        fbxFile,
+        texRoot,
+        outMeshPath,
+        outMatPath,
+        outMeshMeta,
+        fImportScale);
+
+    if (!bOK)
+    {
+        std::wcout << L"Convert failed: " << inPath.wstring() << L"\n";
+        system("pause");
+        return 1;
+    }
+
+    std::wcout << L"Converted: " << inPath.wstring()
+        << L" -> " << outMeshPath.wstring()
+        << L" (Scale=" << fImportScale << L")\n";
 
     system("pause");
     return 0;

@@ -20,6 +20,7 @@ typedef struct ENGINE_DLL DefaultAssetGuid
 
     static ASSET_GUID SHADER_VTXCOL;
     static ASSET_GUID SHADER_VTXTEX;
+    static ASSET_GUID SHADER_VTXMESH;
 } DEFAULT_ASSET_GUID;
 
 NS_END

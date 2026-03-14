@@ -49,7 +49,7 @@ void CEditor_System::Update(_float fDT)
 {
 	Update_Input(fDT);
 	/* TODO 현재 씬 상태에 따른 (Edit, Play) 자유 카메라 모드 설정 */
-    if (m_pCurScene != nullptr && (m_pCurScene->Get_State() != SCENE_STATE::PLAY))
+    if (m_bScencViewCam || (m_pCurScene != nullptr && (m_pCurScene->Get_State() != SCENE_STATE::PLAY)))
     	Submit_SceneViewCamera();
 }
 
