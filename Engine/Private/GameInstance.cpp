@@ -1,8 +1,17 @@
 ﻿#include "GameInstance.h"
 
 #include "Core_System.h"
+#include "GameObject_System.h"
+#include "Component_System.h"
+#include "Input_System.h"
+#include "Logger.h"
+
 #include "Asset_Registry.h"
 #include "Engine_Log.h"
+#include "GameObject.h"
+
+#include "Raycast.h"
+#include "Physics_Processor.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -17,6 +26,9 @@ CGameInstance::CGameInstance()
 HRESULT CGameInstance::Initialize()
 {
     Read_GameConfig();
+
+    m_pPhysics = SYS_COMPONENT.Bind_Processor<CPhysics_Processor>();
+    IF_NULL_RETURN_MSG_BREAK(m_pPhysics, E_FAIL, "CPhysics Processor is nullptr.");
 
     return S_OK;
 }
@@ -58,6 +70,81 @@ CGameObject* CGameInstance::Get_GameObject(COMPONENT_HANDLE hComponent)
 CGameObject* CGameInstance::Find_GameObject(const std::string& strName)
 {
     return nullptr;
+}
+
+_bool CGameInstance::Raycast(const POINT& pt, RAY& tRAY, RAYCAST_HIT& tHitInfo)
+{
+    RAYCAST_HITS allHits{};
+    CRaycast::Intersect_Ray(allHits, tRAY, pt, m_pPhysics);
+
+    if (allHits.iNumHits > 0)
+    {
+        tHitInfo = allHits.primaryHit;
+        return true;
+    }
+    return false;
+}
+
+_bool CGameInstance::RaycastAll(const POINT& pt, RAY& tRAY, RAYCAST_HITS& tAllHitInfo)
+{
+    CRaycast::Intersect_Ray(tAllHitInfo, tRAY, pt, m_pPhysics);
+
+    if (tAllHitInfo.iNumHits > 0)
+        return true;
+
+    return false;
+}
+
+void CGameInstance::Test_Raycast()
+{
+    RAYCAST_HITS allHitInfo{};
+    RAY tRAY;
+
+    if (SYS_INPUT.Get_KeyDown('I'))
+    {
+        tRAY.fMaxDist = 1000.f;
+        tRAY.fMinDist = 0.f;
+
+        LOG_INFO("[ RAYCAST TEST ] : max dist - %.1f, min dist - %.1f",
+            tRAY.fMaxDist, tRAY.fMinDist);
+
+        CRaycast::Intersect_Ray(allHitInfo, tRAY, SYS_INPUT.Get_GameMousePos(), m_pPhysics);
+    }
+
+    if (SYS_INPUT.Get_KeyDown('O'))
+    {
+        tRAY.fMaxDist = 50.f;
+        tRAY.fMinDist = 0.f;
+
+        LOG_INFO("[ RAYCAST TEST ] : max dist - %.1f, min dist - %.1f",
+            tRAY.fMaxDist, tRAY.fMinDist);
+
+        CRaycast::Intersect_Ray(allHitInfo, tRAY, SYS_INPUT.Get_GameMousePos(), m_pPhysics);
+    }
+
+    if (SYS_INPUT.Get_KeyDown('P'))
+    {
+        tRAY.fMaxDist = 1000.f;
+        tRAY.fMinDist = 50.f;
+
+        LOG_INFO("[ RAYCAST TEST ] : max dist - %.1f, min dist - %.1f",
+            tRAY.fMaxDist, tRAY.fMinDist);
+
+        CRaycast::Intersect_Ray(allHitInfo, tRAY, SYS_INPUT.Get_GameMousePos(), m_pPhysics);
+    }
+
+    if (allHitInfo.iNumHits > 0)
+    {
+        _uint i = 0;
+        for (auto hit : allHitInfo.allHits)
+        {
+            CGameObject* pObject = SYS_GAMEOBJECT.Get_Wrapper(hit.hObject);
+            LOG_INFO("%d : Object : { %.*s } | Hit Pos : { %.1f, %.1f, %.1f }",
+                i,
+                pObject->Get_Label().data(),
+                hit.vHitPos.x, hit.vHitPos.y, hit.vHitPos.z);
+        }
+    }
 }
 
 _float CGameInstance::Get_DT() const noexcept

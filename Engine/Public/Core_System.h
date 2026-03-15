@@ -10,6 +10,9 @@ class CTimer_Handler;
 class CScene_Handler;
 class CScene;
 
+/**
+ * \brief 엔진 전역 기반 인프라를 소유한다.
+ */
 class ENGINE_DLL CCore_System final
 {
 	DECLARE_SINGLETON(CCore_System)

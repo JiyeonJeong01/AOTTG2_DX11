@@ -47,7 +47,7 @@ void CPhysics_Processor::LateUpdate(_float fDT)
 
 void CPhysics_Processor::Fixed_Update(_float fDT)
 {
-    m_AllColliders.clear();
+    m_ActivatedColliders.clear();
 
     /* spring joint */
     Process_SpringJoints(fDT);
@@ -76,7 +76,7 @@ void CPhysics_Processor::Render()
 {
     m_upDebugRenderer->Begin();
 
-    for (const auto& tProxy : m_AllColliders)
+    for (const auto& tProxy : m_ActivatedColliders)
     {
         if (tProxy.pCol == nullptr)
             continue;
@@ -353,7 +353,7 @@ void CPhysics_Processor::Integrate_Velocities(_float fDT)
 
 void CPhysics_Processor::Process_Collision(vector<CONTACT_DESC>& outContacts)
 {
-    m_AllColliders.clear();
+    m_ActivatedColliders.clear();
 
     /* TODO : 가능하면 active count로 reserve 해두기 */
 
@@ -375,12 +375,12 @@ void CPhysics_Processor::Process_Collision(vector<CONTACT_DESC>& outContacts)
             m_upCollider_Builder->Build_Collider_Proxy(pData, outData);
             pData->bDirty = false;
 
-            m_AllColliders.push_back(std::move(outData));
+            m_ActivatedColliders.push_back(std::move(outData));
         }
     }
 
     vector<COLLIDER_PAIR> outPair;
-    m_upCollision_Detector->Generate_BroadPhase_Pairs(m_AllColliders, outPair);
+    m_upCollision_Detector->Generate_BroadPhase_Pairs(m_ActivatedColliders, outPair);
 
     m_upCollision_Detector->Process_NarrowPhase(outPair, outContacts);
 }
@@ -425,6 +425,11 @@ void CPhysics_Processor::Apply_PositionLock(RIGIDBODY_DATA& data)
     if (data.tPositionLock.bX) data.vLinearVel.x = 0.f;
     if (data.tPositionLock.bY) data.vLinearVel.y = 0.f;
     if (data.tPositionLock.bZ) data.vLinearVel.z = 0.f;
+}
+
+_bool CPhysics_Processor::Detect_Raycast(RAY& tRay, RAYCAST_HITS& outHits)
+{
+    return m_upCollision_Detector->Detect_Raycast(tRay, m_ActivatedColliders, outHits);
 }
 
 COMPONENT_HANDLE CPhysics_Processor::Create_Component_Data(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject)

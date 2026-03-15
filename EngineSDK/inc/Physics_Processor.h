@@ -14,6 +14,9 @@ class CRigidbody_Builder;
 class CSolver;
 class CDebug_Renderer;
 
+typedef struct tagRay RAY;
+typedef struct tagRaycastHits RAYCAST_HITS;
+
 class CPhysics_Processor :  public CComponent_Processor
 {
     DEF_PROCESSOR_ID(PROCESSOR_ID::PHYSICS)
@@ -83,12 +86,14 @@ private :
     HRESULT Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE h);
 
 public :
+    _bool       Detect_Raycast(RAY& tRay, RAYCAST_HITS& outHits);
 
 private:
     CComponent_Pool<CCollider>          m_ColliderPool;
     CComponent_Pool<CRigidbody>         m_RigidbodyPool;
     CComponent_Pool<CSpringJoint>       m_SpringJointPool;
-    std::vector<COLLIDER_PROXY_DATA>    m_AllColliders{}; /* Transient */
+
+    std::vector<COLLIDER_PROXY_DATA>    m_ActivatedColliders; /* Transient */
 
     CTransform_Processor*                       m_pTransformProcessor{};
     std::unique_ptr<CCollision_Detector>        m_upCollision_Detector{};

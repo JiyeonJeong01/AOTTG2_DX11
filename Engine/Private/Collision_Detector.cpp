@@ -3,6 +3,7 @@
 #include "Physics_Processor.h"
 #include "Transform_Processor.h"
 #include "Engine_Math.h"
+#include "Raycast.h"
 
 namespace
 {
@@ -428,6 +429,282 @@ _bool CCollision_Detector::Detect_BoxCollision(CONTACT_DESC* pOut, COLLIDER_PROX
     pOut->fDepth = fDepth;
 
     return true;
+}
+
+_bool CCollision_Detector::Detect_RayBox(RAYCAST_HIT* pOutHit, RAY& tRay, const COLLIDER_PROXY_DATA& tData)
+{
+    if (!pOutHit)
+        return false;
+
+    const _float fEpsilon = 1e-6f;
+
+    _float fTMin = tRay.fMinDist;
+    _float fTMax = tRay.fMaxDist;
+
+    const _float3& vRayOrigin = tRay.vOrigin;
+    const _float3& vRayDir = tRay.vDir;
+
+    const _float3 vBoxMin = {
+        tData.vCenterWorld.x - tData.box.vHalfExtentsWorld.x,
+        tData.vCenterWorld.y - tData.box.vHalfExtentsWorld.y,
+        tData.vCenterWorld.z - tData.box.vHalfExtentsWorld.z
+    };
+    const _float3 vBoxMax = {
+        tData.vCenterWorld.x + tData.box.vHalfExtentsWorld.x,
+        tData.vCenterWorld.y + tData.box.vHalfExtentsWorld.y,
+        tData.vCenterWorld.z + tData.box.vHalfExtentsWorld.z
+    };
+
+    // X
+    if (fabsf(vRayDir.x) < fEpsilon)
+    {
+        if (vRayOrigin.x < vBoxMin.x || vRayOrigin.x > vBoxMax.x)
+            return false;
+    }
+    else
+    {
+        _float fInvDir = 1.f / vRayDir.x;
+        _float fT1 = (vBoxMin.x - vRayOrigin.x) * fInvDir;
+        _float fT2 = (vBoxMax.x - vRayOrigin.x) * fInvDir;
+
+        _float3 vN1 = _float3(-1.f, 0.f, 0.f);
+        _float3 vN2 = _float3(1.f, 0.f, 0.f);
+
+        if (fT1 > fT2)
+        {
+            std::swap(fT1, fT2);
+            std::swap(vN1, vN2);
+        }
+
+        if (fT1 > fTMin)
+            fTMin = fT1;
+
+        fTMax = min(fTMax, fT2);
+
+        if (fTMin > fTMax)
+            return false;
+    }
+
+    // Y
+    if (fabsf(vRayDir.y) < fEpsilon)
+    {
+        if (vRayOrigin.y < vBoxMin.y || vRayOrigin.y > vBoxMax.y)
+            return false;
+    }
+    else
+    {
+        _float fInvDir = 1.f / vRayDir.y;
+        _float fT1 = (vBoxMin.y - vRayOrigin.y) * fInvDir;
+        _float fT2 = (vBoxMax.y - vRayOrigin.y) * fInvDir;
+
+        _float3 vN1 = _float3(0.f, -1.f, 0.f);
+        _float3 vN2 = _float3(0.f, 1.f, 0.f);
+
+        if (fT1 > fT2)
+        {
+            std::swap(fT1, fT2);
+            std::swap(vN1, vN2);
+        }
+
+        if (fT1 > fTMin)
+            fTMin = fT1;
+
+        fTMax = min(fTMax, fT2);
+
+        if (fTMin > fTMax)
+            return false;
+    }
+
+    // Z
+    if (fabsf(vRayDir.z) < fEpsilon)
+    {
+        if (vRayOrigin.z < vBoxMin.z || vRayOrigin.z > vBoxMax.z)
+            return false;
+    }
+    else
+    {
+        _float fInvDir = 1.f / vRayDir.z;
+        _float fT1 = (vBoxMin.z - vRayOrigin.z) * fInvDir;
+        _float fT2 = (vBoxMax.z - vRayOrigin.z) * fInvDir;
+
+        _float3 vN1 = _float3(0.f, 0.f, -1.f);
+        _float3 vN2 = _float3(0.f, 0.f, 1.f);
+
+        if (fT1 > fT2)
+        {
+            std::swap(fT1, fT2);
+            std::swap(vN1, vN2);
+        }
+
+        if (fT1 > fTMin)
+            fTMin = fT1;
+
+        fTMax = min(fTMax, fT2);
+
+        if (fTMin > fTMax)
+            return false;
+    }
+
+    _float fHitDistance = fTMin;
+    if (fHitDistance < tRay.fMinDist)
+        fHitDistance = fTMax;
+
+    if (fHitDistance < tRay.fMinDist || fHitDistance > tRay.fMaxDist)
+        return false;
+
+    pOutHit->fDist = fHitDistance;
+    pOutHit->hObject = tData.pCol->hObject;
+    Math::Store(pOutHit->vHitPos, Math::Load(vRayOrigin) + Math::Load(vRayDir) * fHitDistance);
+
+    return true;
+}
+
+_bool CCollision_Detector::Detect_RaySphere(RAYCAST_HIT* pOutHit, RAY& tRay, const COLLIDER_PROXY_DATA& tData)
+{
+    if (!pOutHit)
+        return false;
+
+    _vector vRayOrigin = Math::Load(tRay.vOrigin);
+    _vector vRayDir = Math::Load(tRay.vDir);
+    _vector vSphereCenter = Math::Load(tData.vCenterWorld);
+
+    _vector vCenterToOrigin = vRayOrigin - vSphereCenter;
+
+    /* Ray의 방향과 vCenterToOrigin 내적하여, 멀어지는 방향인지 확인 */
+    const _float fProjection = Math::Get_X(Math::Dot(vRayDir, vCenterToOrigin));
+
+    /* |O - C|^2 - R^2 */
+    const _float fOriginDistSq = Math::Get_X(Math::Dot(vCenterToOrigin, vCenterToOrigin))
+        - tData.sphere.fRadiusWorld * tData.sphere.fRadiusWorld;
+
+    if (fOriginDistSq > 0.f && fProjection > 0.f)
+        return false;
+
+    /* b^2 - c */
+    const _float fDiscriminant = fProjection * fProjection - fOriginDistSq;
+    if (fDiscriminant < 0.f)
+        return false;
+
+    const _float fSqrtDiscriminant = sqrtf(fDiscriminant);
+
+    /* 가장 가까운 해 */
+    _float fHitDistance = -fProjection - fSqrtDiscriminant;
+
+    /* 구 내부에서 시작한 경우 반대편 출구 해 사용 */
+    if (fHitDistance < tRay.fMinDist)
+        fHitDistance = -fProjection + fSqrtDiscriminant;
+
+    if (fHitDistance > tRay.fMaxDist || fHitDistance < tRay.fMinDist)
+        return false;
+
+    pOutHit->fDist = fHitDistance;
+    pOutHit->hObject = tData.pCol->hObject;
+    Math::Store(pOutHit->vHitPos, vRayOrigin + vRayDir * fHitDistance);
+
+    return true;
+}
+
+_bool CCollision_Detector::Detect_RayPlane(RAYCAST_HIT* pOutHit, RAY& tRay, const COLLIDER_PROXY_DATA& tData)
+{
+    if (!pOutHit)
+        return false;
+
+    _vector vRayOrigin = Math::Load(tRay.vOrigin);
+    _vector vRayDir = Math::Load(tRay.vDir);
+    _vector vPlaneNormal = Math::Load(tData.plane.vNormalWorld);
+    _vector vPlanePoint = Math::Load(tData.vCenterWorld);
+
+    const _float fEpsilon = 1e-6f;
+
+    /* Ray의 방향과 Plane의 normal 방향 내적 */
+    const _float fDenom = Math::Get_X(Math::Dot(vPlaneNormal, vRayDir));
+
+    if (fabsf(fDenom) < fEpsilon) /* 평행인지 검사 */
+        return false;
+
+    const _vector vRayToPlane = vPlanePoint - vRayOrigin;
+
+    /* Ray 가 Plane에 도달하기 위해 이동해야 하는 거리 t */
+    const _float fHitDistance = Math::Get_X(Math::Dot(vPlaneNormal, vRayToPlane)) / fDenom;
+
+    if (fHitDistance < tRay.fMinDist || fHitDistance > tRay.fMaxDist)
+        return false;
+
+    _vector vHitPos = vRayOrigin + vRayDir * fHitDistance;
+
+    if (!tData.plane.bInfinite)
+    {
+        _vector vAxisU = Math::Normalize(Math::Load(tData.plane.vAxisUWorld));
+        _vector vAxisV = Math::Normalize(Math::Load(tData.plane.vAxisVWorld));
+
+        _vector vToPoint = vHitPos - vPlanePoint;
+
+        _float fU = Math::Get_X(Math::Dot(vToPoint, vAxisU));
+        _float fV = Math::Get_X(Math::Dot(vToPoint, vAxisV));
+
+        const _float fHalfW = tData.plane.vDimension.x * 0.5f;
+        const _float fHalfH = tData.plane.vDimension.y * 0.5f;
+
+        if (fabsf(fU) > fHalfW || fabsf(fV) > fHalfH)
+            return false;
+    }
+
+    pOutHit->fDist = fHitDistance;
+    pOutHit->hObject = tData.pCol->hObject;
+    Math::Store(pOutHit->vHitPos, vHitPos);
+
+    return true;
+}
+
+_bool CCollision_Detector::Detect_Raycast(RAY& tRay, const vector<COLLIDER_PROXY_DATA>& AllColliders, RAYCAST_HITS& outHits)
+{
+    outHits.allHits.clear();
+    outHits.primaryHit = {};
+
+    RAYCAST_HIT primary{};
+    primary.fDist = FLT_MAX;
+
+    _bool bAnyHit = false;
+
+    for (const auto& collider : AllColliders)
+    {
+        _bool bCurHit = false;
+        RAYCAST_HIT curHit{};
+        curHit.fDist = FLT_MAX;
+
+        switch (collider.pCol->eShape)
+        {
+        case SHAPE::BOX:
+            bCurHit = Detect_RayBox(&curHit, tRay, collider);
+            break;
+
+        case SHAPE::SPHERE:
+            bCurHit = Detect_RaySphere(&curHit, tRay, collider);
+            break;
+
+        case SHAPE::PLANE:
+            bCurHit = Detect_RayPlane(&curHit, tRay, collider);
+            break;
+
+        default:
+            break;
+        }
+
+        if (bCurHit)
+        {
+            if (primary.fDist > curHit.fDist)
+                primary = curHit;
+
+            outHits.allHits.push_back(curHit);
+            bAnyHit = true;
+        }
+    }
+
+    if (bAnyHit)
+        outHits.primaryHit = primary;
+    outHits.iNumHits = outHits.allHits.size();
+
+    return bAnyHit;
 }
 
 void CCollision_Detector::Register_DetectTable()

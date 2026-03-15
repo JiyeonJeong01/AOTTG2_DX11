@@ -36,7 +36,7 @@ typedef struct ENGINE_DLL tagMeshEntry
 
     _uint                       iVBOffset = 0; /* usually 0 */
 
-    _float3                      minAABB{}, maxAABB{};
+    _float3                     minAABB{}, maxAABB{};
 
 public:
     _bool Is_Valid() const noexcept

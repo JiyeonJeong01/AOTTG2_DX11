@@ -3,10 +3,15 @@
 #include "Component_Struct.h"
 #include "Identity.h"
 
+#pragma region FOWARD DECLARATION
 NS_BEGIN(Engine)
-    class CGameObject;
-
+class CGameObject;
+class CPhysics_Processor;
+typedef struct tagRay RAY;
+typedef struct tagRaycastHit RAYCAST_HIT;
+typedef struct tagRaycastHits RAYCAST_HITS;
 NS_END
+#pragma endregion
 
 NS_BEGIN(Engine)
 
@@ -26,6 +31,10 @@ public: /* -------- GameObject --------- */
     CGameObject* Get_GameObject(COMPONENT_HANDLE hComponent);
     CGameObject* Find_GameObject(const std::string& strName);
 
+public : /* -------- Raycast -------- */
+    _bool   Raycast(const POINT& pt, RAY& tRAY, RAYCAST_HIT& tHitInfo);
+    _bool   RaycastAll(const POINT& pt, RAY& tRAY, RAYCAST_HITS& tAllHitInfo);
+    void    Test_Raycast();
 
 public : /* ---------- Game ---------- */
     _float      Get_DT() const noexcept;
@@ -35,6 +44,8 @@ public : /* ---------- Game ---------- */
 
 private :
     GameConfig::GAME_CONFIG     m_tGameConfig{};
+
+    CPhysics_Processor*         m_pPhysics{};
 
 
 private : /* ----------- Scene ----------- */

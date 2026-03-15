@@ -417,9 +417,6 @@
     <ClInclude Include="..\Public\Environment_Processor.h">
       <Filter>01. Utility\04. Component\06. Environment\00. Environment_Processor</Filter>
     </ClInclude>
-    <ClInclude Include="Raycast.h">
-      <Filter>00. System\02. Ray</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Converter_Struct.h">
       <Filter>99. Defines\Engine_Struct</Filter>
     </ClInclude>
@@ -470,6 +467,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Spec_Util.h">
       <Filter>01. Utility\04. Component\07. RectTransform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Raycast.h">
+      <Filter>00. System\02. Ray</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -611,9 +611,6 @@
     <ClCompile Include="..\Private\Environment_Processor.cpp">
       <Filter>01. Utility\04. Component\06. Environment\00. Environment_Processor</Filter>
     </ClCompile>
-    <ClCompile Include="Raycast.cpp">
-      <Filter>00. System\02. Ray</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\GameInstance.cpp">
       <Filter>00. System\99. GameInstance</Filter>
     </ClCompile>
@@ -652,6 +649,9 @@
     </ClCompile>
     <ClCompile Include="..\Public\Identity.cpp">
       <Filter>00. System\05. Resource\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Raycast.cpp">
+      <Filter>00. System\02. Ray</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
