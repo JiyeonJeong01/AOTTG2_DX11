@@ -46,8 +46,10 @@ public: /* For.Timer_Manager */
 
 public: /* For.Scene_Handler */
     HRESULT Register_Scenes(const ASSET_GUID& tGUID, const std::filesystem::path& scenePath);
-    HRESULT Change_Scene(const std::string& sceneName, APP_MODE eMode);
-    HRESULT Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode);
+    HRESULT Open_EditScene(const std::string& sceneName);
+    HRESULT Open_EditScene(const ASSET_GUID& tGUID);
+    HRESULT Change_Scene(const std::string& sceneName);
+    HRESULT Change_Scene(const ASSET_GUID& tGUID);
     HRESULT Save_CurrentScene(const std::filesystem::path& path);
     CScene* Get_CurrentScene();
     void    Set_CurrentScene(std::unique_ptr<CScene> pScene);

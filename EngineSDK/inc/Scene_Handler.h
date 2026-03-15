@@ -21,7 +21,8 @@ public:
 public:
     HRESULT Register_Scenes(const ASSET_GUID& tGUID, const std::filesystem::path& scenePath);
     _bool   Find_GUID_By_Name(const std::string& name, ASSET_GUID& outGUID) const;
-    HRESULT Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode);
+    HRESULT Change_Scene(const ASSET_GUID& tGUID);
+    HRESULT Open_EditScene(const ASSET_GUID& tGUID);
     void    Update(_float fTimeDelta);
     HRESULT Render();
 

@@ -25,8 +25,6 @@ class CTransform_Processor;
 class ENGINE_DLL CTransform final : public CComponent_Proxy_Base<TRANSFORM_DATA, CTransform, COMPONENT_TYPE::TRANSFORM>
 {
 public:
-    static constexpr COMPONENT_TYPE kComponentType = COMPONENT_TYPE::TRANSFORM;
-
     CTransform() : CComponent_Proxy_Base() { }
     CTransform(DataType* pData, COMPONENT_HANDLE handle)  : CComponent_Proxy_Base(pData, handle) { }
     ~CTransform() override = default;

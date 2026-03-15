@@ -47,29 +47,24 @@ HRESULT CGameInstance::SetUp_Game()
     IF_TRUE_RETURN_MSG_BREAK(!Resolve_SceneGUID(strScene, outGUID), E_FAIL, "SetUp_Game failed: Resolve_SceneGUID failed");
 
     /* GUID -> 씬 시작 */
-    IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(outGUID, APP_MODE::GAME_PLAY), E_FAIL, "SetUp_Game failed: Change_Scene failed");
+    IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(outGUID), E_FAIL, "SetUp_Game failed: Change_Scene failed");
 
     return S_OK;
 }
 
-void CGameInstance::Change_Scene(const std::string& strScene)
+HRESULT CGameInstance::Change_Scene(const std::string& strScene)
 {
-    /* 반드시 .scene 의 이름과 동일해야 한다. */
+    return SYS_CORE.Change_Scene(strScene);
 }
 
-CGameObject* CGameInstance::Get_GameObject(OBJECT_HANDLE hObj)
+CGameObject* CGameInstance::Find_GameObject(OBJECT_HANDLE hObj)
 {
-    return nullptr;
-}
-
-CGameObject* CGameInstance::Get_GameObject(COMPONENT_HANDLE hComponent)
-{
-    return nullptr;
+    return SYS_GAMEOBJECT.Get_Wrapper(hObj);
 }
 
 CGameObject* CGameInstance::Find_GameObject(const std::string& strName)
 {
-    return nullptr;
+    return SYS_GAMEOBJECT.Find_GameObject(strName);
 }
 
 _bool CGameInstance::Raycast(const POINT& pt, RAY& tRAY, RAYCAST_HIT& tHitInfo)
@@ -141,6 +136,7 @@ void CGameInstance::Test_Raycast()
             CGameObject* pObject = SYS_GAMEOBJECT.Get_Wrapper(hit.hObject);
             LOG_INFO("%d : Object : { %.*s } | Hit Pos : { %.1f, %.1f, %.1f }",
                 i,
+                (int)pObject->Get_Label().size(),
                 pObject->Get_Label().data(),
                 hit.vHitPos.x, hit.vHitPos.y, hit.vHitPos.z);
         }

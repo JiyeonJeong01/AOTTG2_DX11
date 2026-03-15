@@ -93,6 +93,8 @@ void CRender_System::Priority_Update()
 {
     bSubmittedThisFrame = false;
 
+    m_upRenderContext->Update();
+
     m_matView = m_upRenderContext->Get_View();
     m_matProj = m_upRenderContext->Get_Proj();
     m_gUI = m_upRenderContext->Get_UI_Global();

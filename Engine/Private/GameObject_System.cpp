@@ -508,6 +508,23 @@ CGameObject* CGameObject_System::Get_Wrapper(OBJECT_HANDLE hObj)
     return m_wrapperPool[hObj.Index()].get();
 }
 
+CGameObject* CGameObject_System::Find_GameObject(const std::string& strLabel)
+{
+    if (strLabel.empty())
+        return nullptr;
+
+    for (_uint i = 0; i < m_iLayerCount; ++i)
+    {
+        for (auto* pObj : m_layerBuckets[i])
+        {
+            if (strLabel == pObj->Get_Label())
+                return pObj;
+        }
+    }
+
+    return nullptr;
+}
+
 bool CGameObject_System::Is_Valid_Handle(OBJECT_HANDLE hObj) const
 {
     if (hObj.Index() == 0 || hObj.Index() >= m_dataPool.size())

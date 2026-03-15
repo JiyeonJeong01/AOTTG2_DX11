@@ -57,8 +57,6 @@ typedef struct tagScriptData
 class ENGINE_DLL CScript : public CComponent_Proxy_Base<SCRIPT_DATA, CScript, COMPONENT_TYPE::SCRIPT>
 {
 public:
-    static constexpr COMPONENT_TYPE kComponentType = COMPONENT_TYPE::SCRIPT;
-
     CScript() : CComponent_Proxy_Base() {}
     CScript(DataType* pData, COMPONENT_HANDLE handle) : CComponent_Proxy_Base(pData, handle) {}
     ~CScript() override = default;

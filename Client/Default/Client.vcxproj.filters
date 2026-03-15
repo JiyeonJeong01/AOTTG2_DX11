@@ -38,6 +38,9 @@
     <Filter Include="Camera">
       <UniqueIdentifier>{3667b0b7-bc15-40e2-a1c3-c08e79de2444}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Equipment">
+      <UniqueIdentifier>{40feaf96-3321-4f82-ba73-03f504c31bfd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -97,6 +100,9 @@
     <ClInclude Include="..\Public\GameManager.h">
       <Filter>MainApp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\ODM_Gear.h">
+      <Filter>Equipment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -146,6 +152,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\GameManager.cpp">
       <Filter>MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ODM_Gear.cpp">
+      <Filter>Equipment</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

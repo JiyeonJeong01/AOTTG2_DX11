@@ -266,16 +266,28 @@ HRESULT CCore_System::Register_Scenes(const ASSET_GUID& tGUID, const std::filesy
     return m_pScene_Handler->Register_Scenes(tGUID, scenePath);
 }
 
-HRESULT CCore_System::Change_Scene(const std::string& sceneName, APP_MODE eMode)
+HRESULT CCore_System::Open_EditScene(const std::string& sceneName)
 {
     ASSET_GUID outGuUID{};
     m_pScene_Handler->Find_GUID_By_Name(sceneName, outGuUID);
-    return m_pScene_Handler->Change_Scene(outGuUID, eMode);
+    return m_pScene_Handler->Open_EditScene(outGuUID);
 }
 
-HRESULT CCore_System::Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode)
+HRESULT CCore_System::Open_EditScene(const ASSET_GUID& tGUID)
 {
-    return m_pScene_Handler->Change_Scene(tGUID, eMode);
+    return m_pScene_Handler->Open_EditScene(tGUID);
+}
+
+HRESULT CCore_System::Change_Scene(const std::string& sceneName)
+{
+    ASSET_GUID outGuUID{};
+    m_pScene_Handler->Find_GUID_By_Name(sceneName, outGuUID);
+    return m_pScene_Handler->Change_Scene(outGuUID);
+}
+
+HRESULT CCore_System::Change_Scene(const ASSET_GUID& tGUID)
+{
+    return m_pScene_Handler->Change_Scene(tGUID);
 }
 
 HRESULT CCore_System::Save_CurrentScene(const std::filesystem::path& path)

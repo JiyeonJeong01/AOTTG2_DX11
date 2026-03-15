@@ -55,7 +55,7 @@ _bool CScene_Handler::Find_GUID_By_Name(const std::string& name, ASSET_GUID& out
     return true;
 }
 
-HRESULT CScene_Handler::Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode)
+HRESULT CScene_Handler::Change_Scene(const ASSET_GUID& tGUID)
 {
     IF_TRUE_RETURN_MSG_BREAK(!tGUID.Is_Valid(), E_FAIL, "Invalid scene GUID");
 
@@ -85,6 +85,7 @@ HRESULT CScene_Handler::Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode)
     // current guid 갱신
     m_pCurrentScene->Set_GUID(tGUID);
     m_pCurrentScene->Set_Label(path.stem().string());
+    m_pCurrentScene->Set_State(SCENE_STATE::PLAY);
 
     /* --- TODO (Optional) Handle Editor/Game scene change logic */
 
@@ -92,12 +93,18 @@ HRESULT CScene_Handler::Change_Scene(const ASSET_GUID& tGUID, APP_MODE eMode)
     SCENECHANGE_EVENT_DATA onSceneChange(EVENT_TYPE::On_Scene_Changed, m_pCurrentScene.get(), pOldScene.get());
     SYS_EVENT.Trigger(onSceneChange);
 
-    if (eMode == APP_MODE::EDITOR_EDIT)
-        m_pCurrentScene->Set_State(SCENE_STATE::EDIT);
 
     return S_OK;
 }
 
+HRESULT CScene_Handler::Open_EditScene(const ASSET_GUID& tGUID)
+{
+    IF_FAIL_RETURN_MSG_BREAK(Change_Scene(tGUID), E_FAIL, "change scene failed");
+
+    m_pCurrentScene->Set_State(SCENE_STATE::EDIT);
+
+    return S_OK;
+}
 
 void CScene_Handler::Update(_float fTimeDelta)
 {
@@ -177,7 +184,7 @@ _bool CScene_Handler::Restart()
     if (nullptr == m_pCurrentScene)
         return false;
 
-    HRESULT hr = Change_Scene(m_pCurrentScene->Get_GUID(), APP_MODE::EDITOR_EDIT);
+    HRESULT hr = Open_EditScene(m_pCurrentScene->Get_GUID());
 
     if (hr == E_FAIL) return false;
     else return true;

@@ -81,7 +81,7 @@ private:
 
     _bool Is_Scene_Asset(const LIST_ASSET& tAsset) const;
     _bool Try_Get_Asset_GUID(const std::filesystem::path& path, Engine::ASSET_GUID& outGuid) const;
-    void  Open_Scene_By_GUID(const Engine::ASSET_GUID& guid, APP_MODE eMode);
+    void  Open_Scene_By_GUID(const Engine::ASSET_GUID& guid);
 
     /* Scripts */
     void Draw_Create_Script_Popup();

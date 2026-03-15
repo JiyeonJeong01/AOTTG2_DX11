@@ -294,8 +294,6 @@ void CUI_Processor::Update_Buttons(_float fDT)
     if (tMousePos.x < 0 || tMousePos.y < 0)
         return;
     const _bool bMouseDown = SYS_INPUT.Get_KeyDown(VK_LBUTTON);
-    if (bMouseDown)
-        LOG_INFO("down");
     const _bool bMouseUp = SYS_INPUT.Get_KeyUp(VK_LBUTTON);
 
     const auto& ButtonPages = m_ButtonPool.GetPages();

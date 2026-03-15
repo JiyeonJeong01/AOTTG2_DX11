@@ -16,6 +16,7 @@
 #include "GameObject_System.h"
 #include "Engine_Math.h"
 #include "Render_Context.h"
+#include "MeshRenderer.h"
 
 IMPLEMENT_SINGLETON(CEditor_System)
 
@@ -48,9 +49,9 @@ HRESULT CEditor_System::Initialize(const std::filesystem::path& assetRoot)
 void CEditor_System::Update(_float fDT)
 {
 	Update_Input(fDT);
-	/* TODO 현재 씬 상태에 따른 (Edit, Play) 자유 카메라 모드 설정 */
-    if (m_bScencViewCam || (m_pCurScene != nullptr && (m_pCurScene->Get_State() != SCENE_STATE::PLAY)))
-    	Submit_SceneViewCamera();
+
+    if (m_bDebugCam/* || (m_pCurScene != nullptr && (m_pCurScene->Get_State() != SCENE_STATE::PLAY))*/)
+    	Submit_DebugCamera();
 }
 
 /* NOTE : 에디터 시작 시점에 기본 씬(Untitled)으로 시작한다. */
@@ -137,8 +138,6 @@ void CEditor_System::Pause()
 {
     IF_NULL_RETURN_MSG_BREAK(m_pCurScene, , "m_pCurScene is nullptr");
     m_pCurScene->Set_State(SCENE_STATE::PAUSE);
-    
-    Swap_SceneViewCamera();
 }
 
 void CEditor_System::Step(_float fDT)
@@ -148,7 +147,7 @@ void CEditor_System::Step(_float fDT)
         SYS_CORE.Request_Step(fDT, m_pCurScene);
 }
 
-void CEditor_System::Submit_SceneViewCamera()
+void CEditor_System::Submit_DebugCamera()
 {
     Build_SceneView_Matrices();
 
@@ -163,9 +162,32 @@ void CEditor_System::Update_SceneView_State(_float fWidth, _float fHeight)
     Engine::Math::Store(m_matCamProj, matProj);
 }
 
-void CEditor_System::Toggle_SceneViewCamera(_bool bToggle)
+void CEditor_System::Toggle_DebugCamera(_bool bToggle)
 {
-    m_bScencViewCam = bToggle;
+    m_bDebugCam = bToggle;
+
+    /* Debug Camera로 전환! */
+    if (bToggle)
+    {
+        m_matCamView = SYS_RENDER.Contexts()->Get_View();
+        m_matCamProj = SYS_RENDER.Contexts()->Get_Proj();
+        m_vCamPos = SYS_RENDER.Contexts()->Get_CamPosition();
+
+        const auto& matViewInv = SYS_RENDER.Contexts()->Get_ViewInv();
+
+        _float3 vLook = {};
+        memcpy(&vLook, &matViewInv.m[To<size_t>(STATE::LOOK)][0], sizeof(_float3));
+
+        const _vector vLookNorm = XMVector3Normalize(XMLoadFloat3(&vLook));
+        XMStoreFloat3(&vLook, vLookNorm);
+
+        m_fYaw = atan2f(vLook.x, vLook.z);
+        const _float fLenXZ = sqrtf(vLook.x * vLook.x + vLook.z * vLook.z);
+        m_fPitch = -atan2f(vLook.y, fLenXZ);
+
+        m_vCamVel = { 0.f, 0.f, 0.f };
+    }
+
 }
 
 void CEditor_System::Focus_Object(CGameObject* pObj)
@@ -174,6 +196,7 @@ void CEditor_System::Focus_Object(CGameObject* pObj)
         return;
 
     CTransform tr = pObj->Get_Component<CTransform>();
+    CMeshRenderer mr = pObj->Get_Component<CMeshRenderer>();
 
     _float3 vTargetPos = tr->vPosition;
 
@@ -182,31 +205,23 @@ void CEditor_System::Focus_Object(CGameObject* pObj)
 
     const _float fFocusDistance = 5.f;
 
-    m_vCamPos.x = vTargetPos.x - vForward.x * fFocusDistance;
-    m_vCamPos.y = vTargetPos.y - vForward.y * fFocusDistance;
-    m_vCamPos.z = vTargetPos.z - vForward.z * fFocusDistance;
+    const _float fOffset = std::fmaxf(std::fmaxf(tr->vScale.x, tr->vScale.y), tr->vScale.z);
+
+    if (mr.Is_Valid())
+    {
+        const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(mr->hMesh);
+        if (pMesh)
+        {
+            pMesh->minAABB;
+            pMesh->maxAABB;
+        }
+    }
+
+    m_vCamPos.x = vTargetPos.x - vForward.x * fFocusDistance * fOffset;
+    m_vCamPos.y = vTargetPos.y - vForward.y * fFocusDistance * fOffset;
+    m_vCamPos.z = vTargetPos.z - vForward.z * fFocusDistance * fOffset;
 
     m_vCamVel = { 0.f, 0.f, 0.f };
-}
-
-void CEditor_System::Swap_SceneViewCamera()
-{
-    m_matCamView = SYS_RENDER.Contexts()->Get_View();
-    m_matCamProj = SYS_RENDER.Contexts()->Get_Proj();
-    m_vCamPos = SYS_RENDER.Contexts()->Get_CamPosition();
-
-    const auto& matViewInv = SYS_RENDER.Contexts()->Get_ViewInv();
-
-    _float3 vLook = {};
-    memcpy(&vLook, &matViewInv.m[To<size_t>(STATE::LOOK)][0], sizeof(_float3));
-
-    m_fYaw = atan2f(vLook.x, vLook.z);
-    const _float fLenXZ = sqrtf(vLook.x * vLook.x + vLook.z * vLook.z);
-    m_fPitch = atan2f(vLook.y, fLenXZ);
-
-    m_vCamVel = { 0.f, 0.f, 0.f };
-
-    m_bScencViewCam = true;
 }
 
 /* Editor 마우스 피킹은 Ray <-> AABB */
@@ -457,7 +472,7 @@ void CEditor_System::Build_SceneView_Matrices()
 
 void CEditor_System::Update_Input(_float fDT)
 {
-    if (!m_bScencViewCam)
+    if (!m_bDebugCam)
         return;
 
     /* ----------------------------- 마우스 입력 ----------------------------- */

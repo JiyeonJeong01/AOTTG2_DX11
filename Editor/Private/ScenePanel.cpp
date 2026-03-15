@@ -27,6 +27,7 @@ HRESULT CScenePanel::Initialize(CHierarchyPanel* pHierarchy)
     pHierarchy->m_OnPrimarySelectionChanged.Add_Listener(&CScenePanel::Set_Target, this);
 
     SYS_EDITOR.Update_SceneView_State((_float)m_FIXEDW, (_float)m_FIXEDH);
+    SYS_EDITOR.Toggle_DebugCamera(true);
 
     m_pGizmo = CGizmo::Create();
     return S_OK;
@@ -152,39 +153,8 @@ void CScenePanel::Draw_Viewport()
     ui.vViewport = { rtW, rtH };
     SYS_RENDER.Contexts()->Set_UI_Global(ui);
 
-    const _matrix matView =  Engine::Math::Load(SYS_RENDER.Contexts()->Get_View());
+    const _matrix matView = Engine::Math::Load(SYS_RENDER.Contexts()->Get_View());
     const _matrix matProj = Engine::Math::Load(SYS_RENDER.Contexts()->Get_Proj());
-
-    /* ----------------------- 마우스 피킹 ----------------------- */
-    ImVec2 mouse = ImGui::GetMousePos();
-    const bool inside =
-        (mouse.x >= vpPos.x) && (mouse.y >= vpPos.y) &&
-        (mouse.x < vpPos.x + vpSize.x) && (mouse.y < vpPos.y + vpSize.y);
-
-    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) /* 씬 뷰 클릭 시 활성화 */
-    {
-        if (inside)
-        {
-            SYS_EDITOR.Toggle_SceneViewCamera(true);
-            m_ShowSceneGizmo = true;
-
-            float u = (mouse.x - vpPos.x) / vpSize.x;
-            float v = (mouse.y - vpPos.y) / vpSize.y;
-
-            if (u < 0.f) u = 0.f; if (u > 0.999999f) u = 0.999999f;
-            if (v < 0.f) v = 0.f; if (v > 0.999999f) v = 0.999999f;
-
-            const _uint px = (_uint)(u * (float)m_FIXEDW);
-            const _uint py = (_uint)(v * (float)m_FIXEDH);
-
-            SYS_EDITOR.Pick_SceneView(px, py, m_FIXEDW, m_FIXEDH);
-        }
-        else /* 씬 뷰 바깥 영역 클릭 시 에디터 자유캠 막기 */
-        {
-            SYS_EDITOR.Toggle_SceneViewCamera(false);
-            m_ShowSceneGizmo = false;
-        }
-    }
 
     auto MatToFloat16 = [this](const _matrix& mat, _float(&outFloat)[16])->void
         {
@@ -208,21 +178,59 @@ void CScenePanel::Draw_Viewport()
         m_pGizmo->Render_ViewAxis(view, vpPos, vpSize);
     }
 
-    if (m_pTransformData) /* ---------------- Transform -----------------*/
+    /* ---------------- Transform Gizmo -----------------*/
+    if (m_pTransformData)
     {
         const _matrix matWorld = Math::Load(m_pTransformData->matWorld);
-
         MatToFloat16(matWorld, world);
 
         m_pGizmo->Render(view, proj, world, vpPos, vpSize);
+
         if (ImGuizmo::IsUsing())
         {
             CGizmo::Apply_World_To_TransformData(world, *m_pTransformData);
+            m_ShowSceneGizmo = true;
         }
-
-        m_ShowSceneGizmo = true;
     }
 
+    /* ----------------------- 마우스 피킹 ----------------------- */
+    ImVec2 mouse = ImGui::GetMousePos();
+    const bool inside =
+        (mouse.x >= vpPos.x) && (mouse.y >= vpPos.y) &&
+        (mouse.x < vpPos.x + vpSize.x) && (mouse.y < vpPos.y + vpSize.y);
+
+    const bool bGizmoOver = ImGuizmo::IsOver();
+    const bool bGizmoUsing = ImGuizmo::IsUsing();
+
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) /* 씬 뷰 클릭 시 활성화 */
+    {
+        if (inside)
+        {
+            m_ShowSceneGizmo = true;
+
+            /* 기즈모 위 클릭이면 배경 피킹 막기 */
+            if (!bGizmoOver && !bGizmoUsing)
+            {
+                float u = (mouse.x - vpPos.x) / vpSize.x;
+                float v = (mouse.y - vpPos.y) / vpSize.y;
+
+                if (u < 0.f) u = 0.f;
+                if (u > 0.999999f) u = 0.999999f;
+                if (v < 0.f) v = 0.f;
+                if (v > 0.999999f) v = 0.999999f;
+
+                const _uint px = (_uint)(u * (float)m_FIXEDW);
+                const _uint py = (_uint)(v * (float)m_FIXEDH);
+
+                SYS_EDITOR.Pick_SceneView(px, py, m_FIXEDW, m_FIXEDH);
+            }
+        }
+        else 
+        {
+            if (!bGizmoUsing)
+                m_ShowSceneGizmo = false;
+        }
+    }
 }
 
 void CScenePanel::Set_Target(Engine::CGameObject* pObj)

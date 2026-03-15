@@ -54,7 +54,7 @@ HRESULT CMainPanel::Initialize()
     IF_TRUE_RETURN_MSG_BREAK(!ensureGUID.Is_Valid(), E_FAIL, "Default scene guid invalid");
 
     /* 기본 씬을 로드한다. */
-    IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(ensureGUID, APP_MODE::EDITOR_EDIT), E_FAIL,
+    IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Open_EditScene(ensureGUID), E_FAIL,
         "Change_Scene(Default) failed");
 
     /* UI 캐시용 */
@@ -269,7 +269,7 @@ void CMainPanel::Draw_Menu_File()
         const ASSET_GUID newGuid = SYS_EDITOR.Create_NewScene_Asset(&newPath);
         IF_TRUE_RETURN_MSG_BREAK(!newGuid.Is_Valid(), , "Create_NewScene_Asset failed");
 
-        IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(newGuid, APP_MODE::EDITOR_EDIT), ,
+        IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Open_EditScene(newGuid), ,
             "Change_Scene(New) failed");
 
         m_scenePath = newPath.wstring();
@@ -304,7 +304,7 @@ void CMainPanel::Draw_Menu_File()
 
             IF_TRUE_RETURN_MSG_BREAK(!outGUID.Is_Valid(), , "Open Scene failed: GUID invalid.");
 
-            IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Change_Scene(outGUID, APP_MODE::EDITOR_EDIT), ,
+            IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Open_EditScene(outGUID), ,
                 "Open Scene failed: Change_Scene failed.");
 
             m_scenePath = pathW;
@@ -433,7 +433,7 @@ void CMainPanel::Draw_Toolbar()
 {
     ImGui::BeginChild("##MainToolbar", ImVec2(0, 34.f), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
-    const _float button_size = 60.0f;
+    const _float button_size = 70.0f;
     const _float spacing = ImGui::GetStyle().ItemSpacing.x;
     const _float total_width = button_size * 3 + spacing * 2;
 
@@ -452,6 +452,7 @@ void CMainPanel::Draw_Toolbar()
                     SYS_EDITOR.Play();
                 }
                 m_bPlaying = true;
+                SYS_EDITOR.Toggle_DebugCamera(false);
             }
         }
         else
@@ -483,35 +484,27 @@ void CMainPanel::Draw_Toolbar()
             SYS_EDITOR.Pause();
             SYS_CORE.Restart();
         }
-        ImGui::SameLine();
 
-        ImGui::SameLine();
-        ImGui::Dummy(ImVec2(8.f, 0.f));
-        ImGui::SameLine();
+        ImGui::SameLine(0.f, 8.f);
         ImGui::TextDisabled("|");
-        ImGui::SameLine();
-        ImGui::Dummy(ImVec2(8.f, 0.f));
-        ImGui::SameLine();
-
+        ImGui::SameLine(0.f, 8.f);
 
         if (m_bForceSceneView)
         {
-            if (ImGui::Button("GameView", ImVec2(button_size, 80)))
+            if (ImGui::Button("> Game", ImVec2(button_size + 15, 35)))
             {
                 m_bForceSceneView = false;
-                SYS_EDITOR.Toggle_SceneViewCamera(false);
+                SYS_EDITOR.Toggle_DebugCamera(false);
             }
         }
         else
         {
-            if (ImGui::Button("SceneView", ImVec2(button_size, 80)))
+            if (ImGui::Button("> Debug", ImVec2(button_size + 15, 35)))
             {
                 m_bForceSceneView = true;
-                SYS_EDITOR.Toggle_SceneViewCamera(true);
+                SYS_EDITOR.Toggle_DebugCamera(true);
             }
         }
-
-        ImGui::SameLine();
     }
 
     ImGui::EndChild();

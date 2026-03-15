@@ -48,6 +48,7 @@ public :
 
     GAMEOBJECT_DATA&    Access_Data_Raw(OBJECT_HANDLE hObj);
     CGameObject*        Get_Wrapper(OBJECT_HANDLE hObj);
+    CGameObject*        Find_GameObject(const std::string& strLabel);
     _bool               Is_Valid_Handle(OBJECT_HANDLE hObj) const;
 
     HRESULT             Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& outSpecs);

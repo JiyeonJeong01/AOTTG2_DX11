@@ -29,13 +29,14 @@ public:
     void        Pause();
     void        Step(_float fDT);
 
-/* ---------------- SceneView Camera ---------------- */
-public:  
-    void Submit_SceneViewCamera();
+/* ---------------- SceneView(Debug) Camera ---------------- */
+public:
     void Update_SceneView_State(_float fWidth, _float fHeight);
-    void Toggle_SceneViewCamera(_bool bToggle);
+
+    void Submit_DebugCamera();
+    void Toggle_DebugCamera(_bool bToggle);
+
     void Focus_Object(CGameObject* pObj);
-    void Swap_SceneViewCamera();
 
 
 private: /* SceneView Camera */
@@ -86,7 +87,7 @@ private :
     CTransform_Processor*           m_pTransform_Processor{};
     OBJECT_HANDLE                   m_hSelectedObject{};
     CEvent<GAMEOBJECT_EVENT_DATA&>  m_OnPicking{};
-    _bool                           m_bScencViewCam = false;
+    _bool                           m_bDebugCam = true;
 };
 
 NS_END
