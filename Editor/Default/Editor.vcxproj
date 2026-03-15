@@ -36,6 +36,7 @@
     <ClCompile Include="..\Private\MainPanel.cpp" />
     <ClCompile Include="..\Private\ProfilerPanel.cpp" />
     <ClCompile Include="..\Private\ProjectPanel.cpp" />
+    <ClCompile Include="..\Private\ResourcePanel.cpp" />
     <ClCompile Include="..\Private\ScenePanel.cpp" />
     <ClCompile Include="Editor.cpp" />
   </ItemGroup>
@@ -60,6 +61,7 @@
     <ClInclude Include="..\Public\MainPanel.h" />
     <ClInclude Include="..\Public\ProfilerPanel.h" />
     <ClInclude Include="..\Public\ProjectPanel.h" />
+    <ClInclude Include="..\Public\ResourcePanel.h" />
     <ClInclude Include="..\Public\ScenePanel.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="framework.h" />

@@ -1,5 +1,6 @@
 ﻿#include "MeshBuilder.h"
 
+#include "BuiltIn_GUID.h"
 #include "Render_Struct.h"
 
 HRESULT CMeshBuilder::Create_Mesh(ID3D11Device* pDevice, const MESH_DESC& tDesc, MESH_ENTRY& outEntry)
@@ -227,6 +228,21 @@ HRESULT CMeshBuilder::Create_Sphere_VtxCol(ID3D11Device* pDevice, MESH_ENTRY& ou
     return Create_Mesh(pDevice, d, outEntry);
 }
 
+HRESULT CMeshBuilder::Create_Builtin(ID3D11Device* pDevice, MESH_ENTRY& outEntry, const ASSET_GUID& tGUID)
+{
+    HRESULT hr = E_FAIL;
+    if (tGUID == DEFAULT_ASSET_GUID::MESH_CUBE)
+        hr = CMeshBuilder::Create_Cube_VtxCol(pDevice, outEntry);
+    else if (tGUID == DEFAULT_ASSET_GUID::MESH_RECT)
+        hr = CMeshBuilder::Create_Rect_VtxTex(pDevice, outEntry);
+    else if (tGUID == DEFAULT_ASSET_GUID::MESH_SPHERE)
+        hr = CMeshBuilder::Create_Sphere_VtxCol(pDevice, outEntry);
+    else if (tGUID == DEFAULT_ASSET_GUID::MESH_RECT_NORTEX)
+        hr = CMeshBuilder::Create_Rect_VtxNorTex(pDevice, outEntry);
+
+    return hr;
+}
+
 HRESULT CMeshBuilder::Load_ModelDesc(const std::filesystem::path& modelPath, MODEL_DESC& outDesc)
 {
     std::ifstream ifs(modelPath);
@@ -246,7 +262,7 @@ HRESULT CMeshBuilder::Load_ModelDesc(const std::filesystem::path& modelPath, MOD
 
         if (key == "guid")
         {
-            /* .model에 guid가 없을 수도 있으니, 있으면만 반영 */
+            /* .model에 guid가 없을 수도 있으니, 있는 경우만 반영한다. */
             ASSET_GUID::Try_Utf8_To_GUID(value, outDesc.tGUID);
         }
         else if (key == "source")
@@ -261,7 +277,8 @@ HRESULT CMeshBuilder::Load_ModelDesc(const std::filesystem::path& modelPath, MOD
         else if (key.rfind("part", 0) == 0)
         {
             const size_t namePos = key.find("Name");
-            const size_t guidPos = key.find("MeshGuid");
+            const size_t meshGuidPos = key.find("MeshGuid");
+            const size_t materialGuidPos = key.find("MaterialGuid");
 
             if (namePos != std::string::npos)
             {
@@ -273,15 +290,25 @@ HRESULT CMeshBuilder::Load_ModelDesc(const std::filesystem::path& modelPath, MOD
 
                 outDesc.parts[idx].strName = value;
             }
-            else if (guidPos != std::string::npos)
+            else if (meshGuidPos != std::string::npos)
             {
-                const std::string numStr = key.substr(4, guidPos - 4);
-                const uint32_t idx = (uint32_t)std::stoul(numStr);
+                const std::string numStr = key.substr(4, meshGuidPos - 4);
+                const uint32_t idx = (uint32_t)std::stoul(numStr); /* part0 에서 0 같은 인덱스를 뽑아온다. */
 
                 if (idx >= outDesc.parts.size())
                     outDesc.parts.resize(idx + 1);
 
                 ASSET_GUID::Try_Utf8_To_GUID(value, outDesc.parts[idx].tMeshGUID);
+            }
+            else if (materialGuidPos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, materialGuidPos - 4);
+                const uint32_t idx = (uint32_t)std::stoul(numStr); /* part0 에서 0 같은 인덱스를 뽑아온다. */
+
+                if (idx >= outDesc.parts.size())
+                    outDesc.parts.resize(idx + 1);
+
+                ASSET_GUID::Try_Utf8_To_GUID(value, outDesc.parts[idx].tMaterialGUID);
             }
         }
     }

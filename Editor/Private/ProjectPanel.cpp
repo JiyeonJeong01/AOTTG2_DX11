@@ -322,7 +322,7 @@ void CProjectPanel::Draw_File_Asset_Row(const LIST_ASSET& tAsset)
     ImGui::Text("[%s]", szAssetType);
     ImGui::PopStyleColor();
 
-    ImGui::SameLine(90.f);
+    ImGui::SameLine(150.f);
 
 
     /* Rename inline */
@@ -612,32 +612,66 @@ void CProjectPanel::Refresh_File_List()
         return;
     }
 
-    /* folders first */
-    for (auto& entry : std::filesystem::directory_iterator(m_currentFolder))
-    {
-        if (!entry.is_directory())
-            continue;
+    const bool bRecursiveSearch = !m_search.empty();
 
-        LIST_ASSET it;
-        it.path = entry.path();
-        it.name = Editor_Util::To_UTF8(entry.path().filename());
-        it.isDirectory = true;
-        it.type = SYS_ASSET.Detect_Type(it.path, true);
-        m_Assets.push_back(std::move(it));
+    if (!bRecursiveSearch)
+    {
+        /* folders first */
+        for (auto& entry : std::filesystem::directory_iterator(m_currentFolder))
+        {
+            if (!entry.is_directory())
+                continue;
+
+            LIST_ASSET it;
+            it.path = entry.path();
+            it.name = Editor_Util::To_UTF8(entry.path().filename());
+            it.isDirectory = true;
+            it.type = SYS_ASSET.Detect_Type(it.path, true);
+            m_Assets.push_back(std::move(it));
+        }
+
+        /* then files */
+        for (auto& entry : std::filesystem::directory_iterator(m_currentFolder))
+        {
+            if (!entry.is_regular_file())
+                continue;
+
+            LIST_ASSET it;
+            it.path = entry.path();
+            it.name = Editor_Util::To_UTF8(entry.path().filename());
+            it.isDirectory = false;
+            it.type = SYS_ASSET.Detect_Type(it.path, false);
+            m_Assets.push_back(std::move(it));
+        }
     }
-
-    /* then files */
-    for (auto& entry : std::filesystem::directory_iterator(m_currentFolder))
+    else
     {
-        if (!entry.is_regular_file())
-            continue;
+        /* search mode : recursive */
+        for (auto& entry : std::filesystem::recursive_directory_iterator(m_currentFolder))
+        {
+            if (!entry.is_directory())
+                continue;
 
-        LIST_ASSET it;
-        it.path = entry.path();
-        it.name = Editor_Util::To_UTF8(entry.path().filename());
-        it.isDirectory = false;
-        it.type = SYS_ASSET.Detect_Type(it.path, false);
-        m_Assets.push_back(std::move(it));
+            LIST_ASSET it;
+            it.path = entry.path();
+            it.name = Editor_Util::To_UTF8(entry.path().filename());
+            it.isDirectory = true;
+            it.type = SYS_ASSET.Detect_Type(it.path, true);
+            m_Assets.push_back(std::move(it));
+        }
+
+        for (auto& entry : std::filesystem::recursive_directory_iterator(m_currentFolder))
+        {
+            if (!entry.is_regular_file())
+                continue;
+
+            LIST_ASSET it;
+            it.path = entry.path();
+            it.name = Editor_Util::To_UTF8(entry.path().filename());
+            it.isDirectory = false;
+            it.type = SYS_ASSET.Detect_Type(it.path, false);
+            m_Assets.push_back(std::move(it));
+        }
     }
 
     m_bListDirty = false;

@@ -9,6 +9,8 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CMeshBuilder final
 {
 public :
+    static HRESULT  Create_Builtin(ID3D11Device* pDevice, MESH_ENTRY& outEntry, const ASSET_GUID& tGUID);
+
     static HRESULT  Create_Mesh(ID3D11Device* pDevice, const MESH_DESC& tDesc, MESH_ENTRY& outEntry);
     static HRESULT  Create_Mesh_By_Geometry(ID3D11Device* pDevice, Geometry eGeometry, MESH_ENTRY& outEntry);
     static HRESULT  Create_Rect_VtxTex(ID3D11Device* pDevice, MESH_ENTRY& outEntry);

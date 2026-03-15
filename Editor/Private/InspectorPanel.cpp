@@ -760,8 +760,10 @@ void CInspectorPanel::Draw_MeshRenderer()
 
     bool bChanged = false;
 
+    const bool bIsModel = SYS_RESOURCE.Is_ModelHandle(pData->hMesh);
+
     // --- Mesh ---
-    ImGui::TextUnformatted("Mesh handle");
+    ImGui::TextUnformatted(bIsModel ? "Model handle" : "Mesh handle");
     ImGui::SameLine();
     ImGui::Text("%u", pData->hMesh);
     {
@@ -771,10 +773,15 @@ void CInspectorPanel::Draw_MeshRenderer()
             pData->hMesh = hMesh;
             bChanged = true;
         }
+
         Editor_Util::Draw_DropTarget_GUID("Mesh", "ASSET_GUID",
             [&](const ASSET_GUID& dropped)
             {
-                ASSET_TYPE eType = SYS_ASSET.Find(dropped)->eType;
+                auto* pAsset = SYS_ASSET.Find(dropped);
+                if (!pAsset)
+                    return;
+
+                ASSET_TYPE eType = pAsset->eType;
 
                 uint32_t newHandle = INVALID_HANDLE_UINT;
                 if (eType == ASSET_TYPE::MODEL)
@@ -797,7 +804,7 @@ void CInspectorPanel::Draw_MeshRenderer()
     }
 
     // --- Material ---
-    ImGui::TextUnformatted("Material handle");
+    ImGui::TextUnformatted(bIsModel ? "Fallback Material handle" : "Material handle");
     ImGui::SameLine();
     ImGui::Text("%u", pData->hMaterial);
     {
@@ -822,8 +829,56 @@ void CInspectorPanel::Draw_MeshRenderer()
                     bChanged = true;
                 }
             },
-            "Drop Material here"
+            bIsModel ? "Drop Fallback Material here" : "Drop Material here"
         );
+    }
+
+    if (bIsModel)
+    {
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        const MODEL_ENTRY* pModel = SYS_RESOURCE.Get_Model(pData->hMesh);
+        if (!pModel)
+        {
+            ImGui::TextUnformatted("Model Parts: <invalid model>");
+        }
+        else
+        {
+            ImGui::Text("Model Parts (%zu)", pModel->parts.size());
+
+            for (_uint i = 0; i < (_uint)pModel->parts.size(); ++i)
+            {
+                const auto& part = pModel->parts[i];
+
+                ImGui::PushID((int)i);
+
+                std::string strLabel = "Part " + std::to_string(i);
+                const bool bPartOpen = ImGui::TreeNodeEx(
+                    strLabel.c_str(),
+                    ImGuiTreeNodeFlags_DefaultOpen |
+                    ImGuiTreeNodeFlags_SpanAvailWidth);
+
+                if (bPartOpen)
+                {
+                    ImGui::Text("Mesh Handle: %u", part.hMesh);
+                    ImGui::Text("Material Handle: %u", part.hMaterial);
+
+                    const uint32_t hResolvedMaterial =
+                        (part.hMaterial != INVALID_HANDLE_UINT) ? part.hMaterial : pData->hMaterial;
+
+                    ImGui::Text("Resolved Material: %u", hResolvedMaterial);
+
+                    if (part.hMaterial == INVALID_HANDLE_UINT)
+                        ImGui::TextUnformatted("Using MeshRenderer fallback material.");
+
+                    ImGui::TreePop();
+                }
+
+                ImGui::PopID();
+            }
+        }
     }
 
     // --- Layer ---

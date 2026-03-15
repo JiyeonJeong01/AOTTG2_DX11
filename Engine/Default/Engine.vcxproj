@@ -326,6 +326,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <None Include="..\..\Docs\Engine\Physics_Doc.md">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
+    <None Include="..\..\Docs\Engine\Render_Doc.md" />
     <None Include="..\..\Docs\Engine\Scene_Doc.md">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>

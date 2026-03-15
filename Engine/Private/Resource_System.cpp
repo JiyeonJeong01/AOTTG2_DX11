@@ -72,7 +72,7 @@ uint32_t CResource_System::Load_Texture(const ASSET_GUID& tGUID)
 
 uint32_t CResource_System::Load_Mesh(const ASSET_GUID& tGUID)
 {
-    // 1. 이미 로드된 메시인지 확인
+    /* 이미 로드된 모델인지 확인 */
     auto it = m_MeshGUIDMap.find(tGUID);
     if (it != m_MeshGUIDMap.end())
         return it->second;
@@ -84,24 +84,17 @@ uint32_t CResource_System::Load_Mesh(const ASSET_GUID& tGUID)
     auto pRec = SYS_ASSET.Find(tGUID);
     if (!pRec || pRec->eType != ASSET_TYPE::MESH)
     {
-        if (pRec->eType == ASSET_TYPE::MODEL)
+        if (pRec->eType == ASSET_TYPE::MODEL) /* .model이 .mesh 경로로 들어오는 경우 LoadModel로 다시 보내준다. */
             return Load_Model(tGUID);
         _DEBUG_ERROR_BREAK("such guid not exists");
         return INVALID_HANDLE_UINT;
     }
 
+    /* Built-in 처리 */
     if (pRec->eSrc == ASSET_SRC::BUILTIN)
     {
-        if (tGUID == DEFAULT_ASSET_GUID::MESH_CUBE)
-            hr = CMeshBuilder::Create_Cube_VtxCol(m_pDevice, entry);
-        else if (tGUID == DEFAULT_ASSET_GUID::MESH_RECT)
-            hr = CMeshBuilder::Create_Rect_VtxTex(m_pDevice, entry);
-        else if (tGUID == DEFAULT_ASSET_GUID::MESH_SPHERE)
-            hr = CMeshBuilder::Create_Sphere_VtxCol(m_pDevice, entry);
-        else if (tGUID == DEFAULT_ASSET_GUID::MESH_RECT_NORTEX)
-            hr = CMeshBuilder::Create_Rect_VtxNorTex(m_pDevice, entry);
-        else
-            return INVALID_HANDLE_UINT;
+        IF_FAIL_RETURN_MSG_BREAK(CMeshBuilder::Create_Builtin(m_pDevice, entry, tGUID), INVALID_HANDLE_UINT,
+            "Create built-in mesh failed");
     }
     else
     {
@@ -126,6 +119,7 @@ uint32_t CResource_System::Load_Model(const ASSET_GUID& tGUID)
 
     auto pRec = SYS_ASSET.Find(tGUID);
 
+    /* .model 파일로부터 해당 모델이 소유한 메쉬 GUID를 읽어온다. */
     MODEL_DESC desc{};
     IF_FAIL_RETURN_MSG_BREAK(CMeshBuilder::Load_ModelDesc(pRec->path, desc), E_FAIL, "Load_Model failed");
 
@@ -142,15 +136,14 @@ uint32_t CResource_System::Load_Model(const ASSET_GUID& tGUID)
 
         MODEL_PART part{};
         part.hMesh = hMesh;
-        part.hMaterial = INVALID_HANDLE_UINT;
-        model.parts.push_back(part);
+        part.materialGUID = partDesc.tMaterialGUID;
 
         if (!part.materialGUID.Is_Valid())
-        {
-            part.hMaterial = INVALID_HANDLE_UINT;
-            continue;
-        }
-        part.hMaterial = Load_Material(part.materialGUID);
+            part.hMaterial = INVALID_HANDLE_UINT; /* 또는 default material로 설정 고려 */ 
+        else
+            part.hMaterial = Load_Material(part.materialGUID);
+
+        model.parts.push_back(part);
     }
 
     IF_TRUE_RETURN_MSG_BREAK(model.parts.empty(), INVALID_HANDLE_UINT, "Load_Model failed: no valid parts");
@@ -362,6 +355,58 @@ TEXTURE_ENTRY* CResource_System::Get_Texture(uint32_t handle)
         return nullptr;
 
     return &m_Textures[handle];
+}
+
+const ASSET_GUID& CResource_System::Find_GUID_By_Handle(ASSET_TYPE eType, _uint iHandle)
+{
+    static ASSET_GUID s_tInvalid{};
+
+    switch (eType)
+    {
+    case ASSET_TYPE::MESH:
+    {
+        MESH_ENTRY* pEntry = Get_Mesh(iHandle);
+        return pEntry ? pEntry->tGUID : s_tInvalid;
+    }
+
+    case ASSET_TYPE::MODEL:
+    {
+        MODEL_ENTRY* pEntry = Get_Model(iHandle);
+        return pEntry ? pEntry->tGUID : s_tInvalid;
+    }
+
+    case ASSET_TYPE::MATERIAL:
+    {
+        MATERIAL_ENTRY* pEntry = Get_Material(iHandle);
+        return pEntry ? pEntry->tGUID : s_tInvalid;
+    }
+
+    case ASSET_TYPE::SHADER:
+    {
+        SHADER_ENTRY* pEntry = Get_Shader(iHandle);
+        return pEntry ? pEntry->tGUID : s_tInvalid;
+    }
+
+    case ASSET_TYPE::TEXTURE:
+    {
+        TEXTURE_ENTRY* pEntry = Get_Texture(iHandle);
+        return pEntry ? pEntry->tGUID : s_tInvalid;
+    }
+
+    default:
+        return s_tInvalid;
+    }
+}
+
+const std::string& CResource_System::Find_Name_By_GUID(const ASSET_GUID& tGUID)
+{
+    static const std::string s_strInvalid = "<invalid>";
+
+    auto* pAsset = SYS_ASSET.Find(tGUID);
+    if (!pAsset)
+        return s_strInvalid;
+
+    return pAsset->path.stem().string();
 }
 
 uint32_t CResource_System::Alloc_PerObjectParamBlock()

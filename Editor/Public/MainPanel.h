@@ -70,6 +70,7 @@ private:
     static constexpr const char* PANEL_PROJECT = "Project";
     static constexpr const char* PANEL_PROFILE = "Profile";
     static constexpr const char* PANEL_SCENE = "Scene";
+    static constexpr const char* PANEL_RESOURCE = "Resource";
 
 public:
     static std::unique_ptr<CMainPanel> Create(const std::string& strPanelName);

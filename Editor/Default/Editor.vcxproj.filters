@@ -49,6 +49,9 @@
     <Filter Include="02. Gizmo">
       <UniqueIdentifier>{ee7c99e4-dcf4-4e48-a891-6fc851176ad6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Editor Panel\Resource">
+      <UniqueIdentifier>{411eb739-ecc3-4c8f-9187-f8da9b68cb83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Editor.cpp">
@@ -107,6 +110,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Create_Asset_Helper.cpp">
       <Filter>01. Editor Panel\Project</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ResourcePanel.cpp">
+      <Filter>01. Editor Panel\Resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\ProjectPanel.h">
       <Filter>01. Editor Panel\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ResourcePanel.h">
+      <Filter>01. Editor Panel\Resource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

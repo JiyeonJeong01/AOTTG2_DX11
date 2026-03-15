@@ -673,5 +673,8 @@
     <None Include="..\..\Docs\Engine\Script_Doc.md">
       <Filter>100. Docementation</Filter>
     </None>
+    <None Include="..\..\Docs\Engine\Render_Doc.md">
+      <Filter>100. Docementation</Filter>
+    </None>
   </ItemGroup>
 </Project>

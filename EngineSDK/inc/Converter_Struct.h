@@ -36,6 +36,7 @@ typedef struct tagModelPartDesc
 {
     std::string strName;
     ASSET_GUID  tMeshGUID{};
+    ASSET_GUID  tMaterialGUID{};
 }MODEL_PART_DESC;
 
 typedef struct tagModelDesc

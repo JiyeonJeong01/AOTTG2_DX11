@@ -38,6 +38,10 @@ public:
     SHADER_ENTRY*         Get_Shader(uint32_t handle);
     TEXTURE_ENTRY*        Get_Texture(uint32_t handle);
 
+    const ASSET_GUID&       Find_GUID_By_Handle(ASSET_TYPE eType, _uint iHandle);
+    const std::string&      Find_Name_By_GUID(const ASSET_GUID& tGUID);
+
+
 public:
     uint32_t Alloc_PerObjectParamBlock();
     void     Free_PerObjectParamBlock(uint32_t handle);
