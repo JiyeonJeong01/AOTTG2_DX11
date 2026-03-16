@@ -25,6 +25,7 @@
     <ClInclude Include="..\Public\FreeCam.h" />
     <ClInclude Include="..\Public\GameManager.h" />
     <ClInclude Include="..\Public\Hello.h" />
+    <ClInclude Include="..\Public\Rope.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MainMenu_Controller.h" />
     <ClInclude Include="..\Public\ODM_Gear.h" />
@@ -45,6 +46,7 @@
     <ClCompile Include="..\Private\FreeCam.cpp" />
     <ClCompile Include="..\Private\GameManager.cpp" />
     <ClCompile Include="..\Private\Hello.cpp" />
+    <ClCompile Include="..\Private\Rope.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MainMenu_Controller.cpp" />
     <ClCompile Include="..\Private\ODM_Gear.cpp" />

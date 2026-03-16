@@ -29,7 +29,7 @@ namespace Engine
     enum                                    { COMPONENT_PROCESSOR_MAX = static_cast<uint32_t>(PROCESSOR_ID::END) };
 
     /* --- Render --- */
-    enum class DRAW_TYPE    : uint8_t       { MESH = 0, CANVAS, };
+    enum class DRAW_TYPE    : uint8_t       { MESH = 0, CANVAS, LINE,  };
     enum class RENDER_LAYER : uint8_t       { PRIORITY = 0, NONBLEND, BLEND, UI, END };
     enum RENDER_FLAGS : uint32_t            { RF_NONE = 0, RF_CAST_SHADOW = 1 << 0, RF_RECEIVE_SHADOW = 1 << 1, RF_DISABLE_CULL = 1 << 2, };
     enum CANVAS_FLAGS : uint32_t            { CF_NONE = 0, CF_CLIP_RECT = 1u << 0, CF_PIXEL_SNAP = 1u << 1, };

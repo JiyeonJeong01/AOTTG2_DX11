@@ -471,6 +471,9 @@
     <ClInclude Include="..\Public\Raycast.h">
       <Filter>00. System\02. Ray</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Line.h">
+      <Filter>00. System\05. Resource\Asset</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -652,6 +655,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Raycast.cpp">
       <Filter>00. System\02. Ray</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Line.cpp">
+      <Filter>00. System\05. Resource\Asset</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

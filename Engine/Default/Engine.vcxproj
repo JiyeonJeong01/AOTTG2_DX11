@@ -159,6 +159,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ThirdParty\magic_enum.hpp" />
+    <ClInclude Include="..\Public\Line.h" />
     <ClInclude Include="..\Public\BuiltIn_GUID.h" />
     <ClInclude Include="..\Public\CanvasRenderer.h" />
     <ClInclude Include="..\Public\CanvasRenderer_Processor.h" />
@@ -263,6 +264,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Collider_Proxy_Builder.cpp" />
     <ClCompile Include="..\Private\Collision_Detector.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
+    <ClCompile Include="..\Private\Line.cpp" />
     <ClCompile Include="..\Private\Physics_Processor.cpp" />
     <ClCompile Include="..\Private\Raycast.cpp" />
     <ClCompile Include="..\Private\Rigidbody.cpp" />

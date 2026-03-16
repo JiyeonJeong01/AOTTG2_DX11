@@ -219,6 +219,11 @@ HRESULT CRender_System::Create_RenderState()
     return S_OK;
 }
 
+void CRender_System::Submit_LineMesh(const DRAW_CMD& cmd)
+{
+    m_PendingDrawCmds.push_back(cmd);
+}
+
 void CRender_System::Build_RenderQueue()
 {
     for (int i = 0; i < LAYER_TO_IDX(RENDER_LAYER::END); ++i)
@@ -228,6 +233,8 @@ void CRender_System::Build_RenderQueue()
     m_AllDrawCmds.clear();
 
     // TODO : 빌드 전 벡터 사이즈 조절 할 수 있는 로직 추가하기. 잦은 재할당 방지.
+
+    m_AllDrawCmds.insert(m_AllDrawCmds.end(), m_PendingDrawCmds.begin(), m_PendingDrawCmds.end());
 
     SYS_COMPONENT.Build_RenderQueue(m_AllDrawCmds);
 
@@ -279,6 +286,8 @@ void CRender_System::Execute_RenderQueue()
 
     Apply_Pass_State_UI();
     Execute_Pass(RENDER_LAYER::UI);
+
+    m_PendingDrawCmds.clear();
 }
 
 void CRender_System::Execute_Pass(RENDER_LAYER layer)
@@ -306,6 +315,10 @@ void CRender_System::Execute_Draw(const DRAW_CMD& cmd)
 
     case DRAW_TYPE::CANVAS:
         Execute_Draw_Canvas(cmd);
+        break;
+
+    case DRAW_TYPE::LINE:
+        Execute_Draw_Line(cmd);
         break;
 
     default:
@@ -424,6 +437,16 @@ void CRender_System::Execute_Draw_Canvas(const DRAW_CMD& tCmd)
     pMesh->Bind_IA(m_pContext);
     pMesh->Draw(m_pContext, 0, 0);
 }
+
+void CRender_System::Execute_Draw_Line(const DRAW_CMD& tCmd)
+{
+    const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(tCmd.line.hMesh);
+    IF_NULL_RETURN_MSG_BREAK(pMesh, , "pMesh is nullptr.");
+
+    pMesh->Bind_IA(m_pContext);
+    pMesh->Draw(m_pContext);
+}
+
 
 void CRender_System::Render()
 {

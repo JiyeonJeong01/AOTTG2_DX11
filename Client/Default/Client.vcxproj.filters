@@ -103,6 +103,9 @@
     <ClInclude Include="..\Public\ODM_Gear.h">
       <Filter>Equipment</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Rope.h">
+      <Filter>Equipment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -154,6 +157,9 @@
       <Filter>MainApp</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ODM_Gear.cpp">
+      <Filter>Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Rope.cpp">
       <Filter>Equipment</Filter>
     </ClCompile>
   </ItemGroup>

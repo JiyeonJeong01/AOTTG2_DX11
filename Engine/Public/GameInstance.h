@@ -9,6 +9,7 @@
 NS_BEGIN(Engine)
 class CGameObject;
 class CPhysics_Processor;
+class CLine;
 typedef struct tagRay RAY;
 typedef struct tagRaycastHit RAYCAST_HIT;
 typedef struct tagRaycastHits RAYCAST_HITS;
@@ -22,7 +23,7 @@ class ENGINE_DLL CGameInstance final
     DECLARE_SINGLETON(CGameInstance)
 
 public:
-    HRESULT Initialize();
+    HRESULT Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     HRESULT SetUp_Game();
 
 public: /* ----------- Scene ----------- */
@@ -43,7 +44,19 @@ public : /* ---------- Game ---------- */
     void        Pause();
     void        Play();
 
+public : /* ---------- Game ---------- */
+    const _float3&     Cam_Position();
+
+
+public :/* ---------- Built-in ---------- */
+    unique_ptr<CLine>   Load_LineMesh(_uint iNumPoint, _float fThickness);
+    void                Test_LineRibbonMesh();
+
+
 private :
+    ID3D11Device*               m_pDevice = nullptr;
+    ID3D11DeviceContext*        m_pContext = nullptr;
+
     GameConfig::GAME_CONFIG     m_tGameConfig{};
 
     CPhysics_Processor*         m_pPhysics{};

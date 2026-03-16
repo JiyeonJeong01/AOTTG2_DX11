@@ -93,7 +93,7 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
     IF_FAIL_RETURN_MSG_BREAK(SYS_EDITOR.Initialize(ProjectConfig::PATH + ProjectConfig::ROOT), E_FAIL, "Editor System failed Initialize");
 
     /* --- GameInstance --- */
-    IF_FAIL_RETURN_MSG_BREAK(GAME_INSTANCE.Initialize(), E_FAIL, "GAME_INSTANCE failed Initialize");
+    IF_FAIL_RETURN_MSG_BREAK(GAME_INSTANCE.Initialize(m_pDevice, m_pContext), E_FAIL, "GAME_INSTANCE failed Initialize");
 
     /* --- Register event --- */
     SYS_EVENT.Subscribe(EVENT_TYPE::On_Window_Resize, &CCore_System::On_Resize, this);
@@ -121,7 +121,7 @@ void CCore_System::Update_Editor_Engine(_float fDT)
         {
             Update_RuntimeEngine(fDT, pScene);
             Fixed_Update(m_FIXED_DT);
-            GAME_INSTANCE.Test_Raycast();
+            GAME_INSTANCE.Test_LineRibbonMesh();
 
             //m_fTimeAcc += fDT;
             //if (m_fTimeAcc >= m_FIXED_DT)

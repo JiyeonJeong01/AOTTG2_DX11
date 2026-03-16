@@ -70,6 +70,17 @@ uint32_t CResource_System::Load_Texture(const ASSET_GUID& tGUID)
     return handle;
 }
 
+uint32_t CResource_System::Register_MeshEntry(MESH_ENTRY&& pEntry)
+{
+    if (!pEntry.Is_Valid())
+        return INVALID_HANDLE_UINT;
+
+    const uint32_t handle = (uint32_t)m_Meshes.size();
+    m_Meshes.push_back(std::move(pEntry));
+
+    return handle;
+}
+
 uint32_t CResource_System::Load_Mesh(const ASSET_GUID& tGUID)
 {
     /* 이미 로드된 모델인지 확인 */

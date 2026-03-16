@@ -36,7 +36,7 @@ HRESULT CEditor_System::Initialize(const std::filesystem::path& assetRoot)
 
     SYS_EVENT.Subscribe(EVENT_TYPE::On_Scene_Changed, &CEditor_System::On_SceneChanged, this);
 
-    m_fCamSpeed = 3.f;
+    m_fCamSpeed = 7.f;
     m_bCalculAcc = true;
 	m_fMouseSens = 0.0025f;
 

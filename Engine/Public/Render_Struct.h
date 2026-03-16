@@ -99,6 +99,11 @@ typedef struct ENGINE_DLL tagDrawCmd final
 
         struct
         {
+            uint32_t        hMesh = INVALID_HANDLE_UINT;
+        } line;
+
+        struct
+        {
             // UI는 보통 rect mesh는 Processor가 고정으로 들고감
             uint32_t        hMaterial = 0;
             uint32_t        hTexture = 0;
@@ -123,6 +128,15 @@ public:
         c.mesh.flags = flags;
         c.mesh.firstIndex = first;
         c.mesh.indexCount = count;
+        return c;
+    }
+
+    static tagDrawCmd Create_Line(uint32_t hMesh, DRAW_TYPE eType, RENDER_LAYER eLayer)
+    {
+        tagDrawCmd c{};
+        c.kind = DRAW_TYPE::LINE;
+        c.line.hMesh = hMesh;
+       
         return c;
     }
 

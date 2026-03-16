@@ -30,7 +30,7 @@ public:
     uint32_t Load_Shader(const ASSET_GUID& tGUID);
     uint32_t Load_Texture(const ASSET_GUID& tGUID);
 
-    uint32_t Load_Material_Temp(const ASSET_GUID& materialGuidAsShaderGuid, uint16_t passIndex);
+    uint32_t Register_MeshEntry(MESH_ENTRY&& pEntry);
 
     MESH_ENTRY*           Get_Mesh(uint32_t handle);
     MODEL_ENTRY*          Get_Model(uint32_t handle);

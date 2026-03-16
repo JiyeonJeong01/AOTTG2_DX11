@@ -18,7 +18,8 @@ public:
     void    Render();
 
     CRender_Context* Contexts();
-    _bool   Submit_Camera(_fmatrix matView, _fmatrix matProj);
+    _bool       Submit_Camera(_fmatrix matView, _fmatrix matProj);
+    void        Submit_LineMesh(const DRAW_CMD& cmd);
 
     const UI_GLOBAL&    Get_UI_Global();
     void                Set_UI_Global(const UI_GLOBAL& tUI);
@@ -60,6 +61,7 @@ private:
 
     /* Draw Calls */
     vector<DRAW_CMD>        m_AllDrawCmds;
+    vector<DRAW_CMD>        m_PendingDrawCmds;
     std::array<std::vector<DRAW_CMD*>, SCAST(size_t, RENDER_LAYER::END)> m_LayerCmds;
 
     class CTransform_Processor*     m_pTransform_Processor{};
@@ -71,11 +73,13 @@ private:
     HRESULT    Create_RenderState();
 
     void     Build_RenderQueue();
+
     void     Execute_RenderQueue();
     void     Execute_Pass(RENDER_LAYER layer);
     void     Execute_Draw(const DRAW_CMD& cmd);
     void     Execute_Draw_Mesh(const DRAW_CMD& cmd);
     void     Execute_Draw_Canvas(const DRAW_CMD& tCmd);
+    void     Execute_Draw_Line(const DRAW_CMD& tCmd);
 
     void     Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, uint32_t hPerObjectParams, uint32_t iFirstIdx, uint32_t iNumIdx);
 
@@ -95,6 +99,7 @@ private:
     void    Bind_RasterizerState_Default();
 
 };
+
 
 
 NS_END
