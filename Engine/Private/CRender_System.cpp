@@ -4,15 +4,13 @@
 
 #include "Component_System.h"
 #include "Engine_Math.h"
-#include "Event_System.h"
 #include "Resource_System.h"
-#include "WindowResize_Event.h"
-#include "Input_System.h"
 #include "Logger.h"
 
 // proxies
 #include "Transform_Processor.h"
 #include "RectTransform_Processor.h"
+#include "Animator_Processor.h"
 
 // resource types
 #include "BuiltIn_GUID.h"
@@ -21,6 +19,7 @@
 #include "Mesh.h"
 #include "Render_Context.h"
 #include "Texture.h"
+#include "Animator.h"
 #pragma endregion
 
 IMPLEMENT_SINGLETON(CRender_System)
@@ -82,6 +81,9 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 
         m_pRectTransform_Processor = SYS_COMPONENT.Bind_Processor<CRectTransform_Processor>();
         IF_NULL_RETURN_MSG_BREAK(m_pRectTransform_Processor, E_FAIL, "RectTransform processor bind failed");
+
+        m_pAnimator_Processor = SYS_COMPONENT.Bind_Processor<CAnimator_Processor>();
+        IF_NULL_RETURN_MSG_BREAK(m_pAnimator_Processor, E_FAIL, "Animator processor bind failed");
     }
 
     m_upRenderContext = CRender_Context::Create(iWidth, iHeight);
@@ -330,7 +332,7 @@ void CRender_System::Execute_Draw_Mesh(const DRAW_CMD& cmd)
 {
     if (!SYS_RESOURCE.Is_ModelHandle(cmd.mesh.hMesh))
     {
-        Execute_Draw_Mesh_Inner(cmd.mesh.hMesh, cmd.mesh.hMaterial, cmd.mesh.hTransform, cmd.mesh.hPerObjectParams,
+        Execute_Draw_Mesh_Inner(cmd.mesh.hMesh, cmd.mesh.hMaterial, cmd.mesh.hTransform, cmd.mesh.hAnimator, cmd.mesh.hPerObjectParams,
             cmd.mesh.firstIndex, cmd.mesh.indexCount);
         return;
     }
@@ -347,7 +349,7 @@ void CRender_System::Execute_Draw_Mesh(const DRAW_CMD& cmd)
         if (part.hMesh == INVALID_HANDLE_UINT)
             continue;
 
-        Execute_Draw_Mesh_Inner(part.hMesh, hMat, cmd.mesh.hTransform, cmd.mesh.hPerObjectParams,
+        Execute_Draw_Mesh_Inner(part.hMesh, hMat, cmd.mesh.hTransform, cmd.mesh.hAnimator, cmd.mesh.hPerObjectParams,
             cmd.mesh.firstIndex, cmd.mesh.indexCount);
     }
 }
@@ -456,7 +458,8 @@ void CRender_System::Render()
 }
 
 
-void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, uint32_t hPerObjectParams, uint32_t iFirstIdx, uint32_t iNumIdx)
+void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, COMPONENT_HANDLE hAnimator,
+    uint32_t hPerObjectParams, uint32_t iFirstIdx, uint32_t iNumIdx)
 {
     /* 메쉬 + 머테리얼 + 셰이더 리소스 가져오기 */
     const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(hMesh);
@@ -515,6 +518,18 @@ void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial,
     }
 
     Apply_Block_To_Shader(pShader, pMat->materialParams);
+
+    if (hAnimator.Is_Valid())
+    {
+        ANIMATOR_DATA* pAnim = To<ANIMATOR_DATA*>(m_pAnimator_Processor->Get_DataPtr(COMPONENT_TYPE::ANIMATOR, hAnimator));
+        if (pAnim && !pAnim->finalBoneMatrices.empty() && pMat->pBoneMatrices != nullptr)
+        {
+            pMat->pBoneMatrices->SetMatrixArray(
+                reinterpret_cast<const float*>(pAnim->finalBoneMatrices.data()),
+                0,
+                static_cast<UINT>(pAnim->finalBoneMatrices.size()));
+        }
+    }
 
     /* 사용자가 정의한 셰이더 변수 적용 */
     if (hPerObjectParams != INVALID_HANDLE_UINT)

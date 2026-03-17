@@ -1,6 +1,69 @@
-﻿#include "Mesh_Converter.h"
+﻿#pragma comment(lib, "Engine.lib")
 
-#pragma comment(lib, "Engine.lib")
+#include "NonAnim_Converter.h"
+#include "Anim_Converter.h"
+
+#pragma region Convert Entry
+
+int Convert_NonAnim_Model(
+    std::filesystem::path& inPath,
+    std::filesystem::path& textureRoot,
+    std::filesystem::path& outMeshPath,
+    std::filesystem::path& outMatPath,
+    std::filesystem::path& outMeshMeta,
+    const _float fImportScale)
+{
+    _bool bOK = Converter::Convert_NonAnim(
+        inPath,
+        textureRoot,
+        outMeshPath,
+        outMatPath,
+        outMeshMeta,
+        fImportScale);
+
+    if (!bOK)
+    {
+        std::wcout << L"Convert_NonAnim failed: " << inPath.wstring() << L"\n";
+        return 1;
+    }
+
+    std::wcout << L"[NONANIM] Converted: " << inPath.wstring()
+        << L" -> " << outMeshPath.wstring()
+        << L" (Scale=" << fImportScale << L")\n";
+
+    return 0;
+}
+
+int Convert_Anim_Model(
+    std::filesystem::path& inPath,
+    std::filesystem::path& textureRoot,
+    std::filesystem::path& outMeshPath,
+    std::filesystem::path& outMatPath,
+    std::filesystem::path& outMeshMeta,
+    const _float fImportScale)
+{
+    _bool bOK = Converter::Convert_Anim(
+        inPath,
+        textureRoot,
+        outMeshPath,
+        outMatPath,
+        outMeshMeta,
+        fImportScale);
+
+    if (!bOK)
+    {
+        std::wcout << L"Convert_Anim failed: " << inPath.wstring() << L"\n";
+        return 1;
+    }
+
+    std::wcout << L"[ANIM] Converted: " << inPath.wstring()
+        << L" -> " << outMeshPath.wstring()
+        << L" (Scale=" << fImportScale << L")\n";
+
+    return 0;
+}
+
+#pragma endregion
 
 int main()
 {
@@ -22,6 +85,33 @@ int main()
     if (fileName.empty())
     {
         std::cout << "File name is empty.\n";
+        return 1;
+    }
+
+    std::wstring strModelType;
+    std::wcout << L"Enter model type (0 = NONANIM, 1 = ANIM) : ";
+    std::getline(std::wcin, strModelType);
+
+    if (strModelType.empty())
+    {
+        std::cout << "Model type is empty.\n";
+        return 1;
+    }
+
+    int iModelType = 0;
+    try
+    {
+        iModelType = std::stoi(strModelType);
+    }
+    catch (...)
+    {
+        std::cout << "Invalid model type.\n";
+        return 1;
+    }
+
+    if (iModelType != 0 && iModelType != 1)
+    {
+        std::cout << "Model type must be 0 or 1.\n";
         return 1;
     }
 
@@ -71,25 +161,29 @@ int main()
     std::filesystem::path fbxFile = inPath;
     std::filesystem::path texRoot = textureRoot;
 
-    _bool bOK = Converter::Convert(
-        fbxFile,
-        texRoot,
-        outMeshPath,
-        outMatPath,
-        outMeshMeta,
-        fImportScale);
+    int iResult = 0;
 
-    if (!bOK)
+    if (iModelType == static_cast<int>(Engine::MODEL_TYPE::NONANIM))
     {
-        std::wcout << L"Convert failed: " << inPath.wstring() << L"\n";
-        system("pause");
-        return 1;
+        iResult = Convert_NonAnim_Model(
+            fbxFile,
+            texRoot,
+            outMeshPath,
+            outMatPath,
+            outMeshMeta,
+            fImportScale);
+    }
+    else
+    {
+        iResult = Convert_Anim_Model(
+            fbxFile,
+            texRoot,
+            outMeshPath,
+            outMatPath,
+            outMeshMeta,
+            fImportScale);
     }
 
-    std::wcout << L"Converted: " << inPath.wstring()
-        << L" -> " << outMeshPath.wstring()
-        << L" (Scale=" << fImportScale << L")\n";
-
     system("pause");
-    return 0;
+    return iResult;
 }

@@ -24,6 +24,8 @@ typedef struct ENGINE_DLL tagMaterialEntry final
     ID3DX11EffectVectorVariable* pBaseColor = nullptr;              // float4
     ID3DX11EffectScalarVariable* pShininess = nullptr;              // float4
 
+    ID3DX11EffectMatrixVariable* pBoneMatrices = nullptr;
+
     /* ------ Standard material properties ------ */
     _float4     baseColor = { 1.f, 1.f, 1.f, 1.f };     // Albedo tint
     _float      fShininess = 32.f;

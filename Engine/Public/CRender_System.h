@@ -66,6 +66,7 @@ private:
 
     class CTransform_Processor*     m_pTransform_Processor{};
     class CRectTransform_Processor* m_pRectTransform_Processor{};
+    class CAnimator_Processor* m_pAnimator_Processor{};
 
     _bool   bSubmittedThisFrame{}; /* 프레임당 하나의 카메라의 submit만 받는다. */
 
@@ -81,7 +82,8 @@ private:
     void     Execute_Draw_Canvas(const DRAW_CMD& tCmd);
     void     Execute_Draw_Line(const DRAW_CMD& tCmd);
 
-    void     Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, uint32_t hPerObjectParams, uint32_t iFirstIdx, uint32_t iNumIdx);
+    void     Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, COMPONENT_HANDLE hAnimator, uint32_t hPerObjectParams,
+        uint32_t iFirstIdx, uint32_t iNumIdx);
 
 
     void    Apply_Pass_State_Priority();

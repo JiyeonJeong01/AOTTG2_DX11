@@ -175,6 +175,15 @@
     <Filter Include="01. Utility\98. Debug">
       <UniqueIdentifier>{a2a79021-a7f6-46cf-b6b3-097e376eb440}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\05. Resource\06. Skeleton">
+      <UniqueIdentifier>{8903acb3-228d-4a3c-90c9-2b23b5ccd5cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\05. Resource\07. Animation_Clip">
+      <UniqueIdentifier>{85d51a10-154b-4d54-89c9-cf713131c709}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Utility\04. Component\05. Animator">
+      <UniqueIdentifier>{423b8df5-5d12-4692-9654-40e47e83260d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -474,6 +483,18 @@
     <ClInclude Include="..\Public\Line.h">
       <Filter>00. System\05. Resource\Asset</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Skeleton.h">
+      <Filter>01. Utility\05. Resource\06. Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Animation_Clip.h">
+      <Filter>01. Utility\05. Resource\07. Animation_Clip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Animator.h">
+      <Filter>01. Utility\04. Component\05. Animator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Animator_Processor.h">
+      <Filter>01. Utility\04. Component\05. Animator</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -659,6 +680,12 @@
     <ClCompile Include="..\Private\Line.cpp">
       <Filter>00. System\05. Resource\Asset</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Animator.cpp">
+      <Filter>01. Utility\04. Component\05. Animator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Animator_Processor.cpp">
+      <Filter>01. Utility\04. Component\05. Animator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Public\Component_System.inl">
@@ -680,6 +707,9 @@
       <Filter>100. Docementation</Filter>
     </None>
     <None Include="..\..\Docs\Engine\Render_Doc.md">
+      <Filter>100. Docementation</Filter>
+    </None>
+    <None Include="..\..\Docs\Engine\Animation_Resource.md">
       <Filter>100. Docementation</Filter>
     </None>
   </ItemGroup>

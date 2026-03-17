@@ -9,6 +9,7 @@ typedef struct ENGINE_DLL tagMeshRendererData final
     _bool               bEnable = false;
 
     COMPONENT_HANDLE hTransform = INVALID_HANDLE;
+    COMPONENT_HANDLE hAnimator = INVALID_HANDLE;
     uint32_t hMesh =            INVALID_HANDLE_UINT;
     uint32_t hMaterial =        INVALID_HANDLE_UINT;
     uint32_t hPerObjectParams = INVALID_HANDLE_UINT;

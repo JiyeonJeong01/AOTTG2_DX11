@@ -71,6 +71,7 @@ namespace Engine
             Component::To_Bit(COMPONENT_TYPE::TRANSFORM) |
             Component::To_Bit(COMPONENT_TYPE::RECT_TRANSFORM) |
             Component::To_Bit(COMPONENT_TYPE::RIGIDBODY) |
+            Component::To_Bit(COMPONENT_TYPE::ANIMATOR) |
             Component::To_Bit(COMPONENT_TYPE::MESH_RENDERER) |
             Component::To_Bit(COMPONENT_TYPE::CANVAS_RENDERER);
 

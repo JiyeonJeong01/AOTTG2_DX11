@@ -2,6 +2,8 @@
 
 #include "BuiltIn_GUID.h"
 #include "Render_Struct.h"
+#include "Skeleton.h"
+#include "Animation_Clip.h"
 
 HRESULT CMeshBuilder::Create_Mesh(ID3D11Device* pDevice, const MESH_DESC& tDesc, MESH_ENTRY& outEntry)
 {
@@ -310,6 +312,29 @@ HRESULT CMeshBuilder::Create_RibbonLine_VtxCol(ID3D11Device* pDevice, MESH_ENTRY
     return S_OK;
 }
 
+MODEL_TYPE CMeshBuilder::Peek_ModelType(const std::filesystem::path& modelPath)
+{
+    std::ifstream ifs(modelPath);
+    if (!ifs.is_open())
+        return Engine::MODEL_TYPE::NONANIM;
+
+    std::string line;
+    while (std::getline(ifs, line))
+    {
+        if (line.empty())
+            continue;
+
+        std::string key, value;
+        if (!Split_KeyValue(line, key, value))
+            continue;
+
+        if (key == "boneCount" || key == "animCount")
+            return Engine::MODEL_TYPE::ANIM;
+    }
+
+    return Engine::MODEL_TYPE::NONANIM;
+}
+
 HRESULT CMeshBuilder::Create_Builtin(ID3D11Device* pDevice, MESH_ENTRY& outEntry, const ASSET_GUID& tGUID)
 {
     HRESULT hr = E_FAIL;
@@ -325,10 +350,10 @@ HRESULT CMeshBuilder::Create_Builtin(ID3D11Device* pDevice, MESH_ENTRY& outEntry
     return hr;
 }
 
-HRESULT CMeshBuilder::Load_ModelDesc(const std::filesystem::path& modelPath, MODEL_DESC& outDesc)
+HRESULT CMeshBuilder::Load_NonAnim_ModelDesc(const std::filesystem::path& modelPath, MODEL_DESC& outDesc)
 {
     std::ifstream ifs(modelPath);
-    IF_TRUE_RETURN_MSG_BREAK(!ifs.is_open(), E_FAIL, "Load_ModelDesc failed: file open failed");
+    IF_TRUE_RETURN_MSG_BREAK(!ifs.is_open(), E_FAIL, "Load_NonAnim_ModelDesc failed: file open failed");
 
     outDesc = MODEL_DESC{};
 
@@ -396,6 +421,402 @@ HRESULT CMeshBuilder::Load_ModelDesc(const std::filesystem::path& modelPath, MOD
     }
 
     /* guid가 없어도 괜찮고, parts가 비었으면 실패 */
+    return outDesc.parts.empty() ? E_FAIL : S_OK;
+}
+
+static _bool Parse_Float4x4(const std::string& value, _float4x4& outMat)
+{
+    std::stringstream ss(value);
+    std::string token;
+
+    float vals[16]{};
+    int i = 0;
+
+    while (std::getline(ss, token, ','))
+    {
+        if (i >= 16)
+            return false;
+
+        vals[i++] = std::stof(token);
+    }
+
+    if (i != 16)
+        return false;
+
+    outMat._11 = vals[0];  outMat._12 = vals[1];  outMat._13 = vals[2];  outMat._14 = vals[3];
+    outMat._21 = vals[4];  outMat._22 = vals[5];  outMat._23 = vals[6];  outMat._24 = vals[7];
+    outMat._31 = vals[8];  outMat._32 = vals[9];  outMat._33 = vals[10]; outMat._34 = vals[11];
+    outMat._41 = vals[12]; outMat._42 = vals[13]; outMat._43 = vals[14]; outMat._44 = vals[15];
+
+    return true;
+}
+
+static _bool Parse_AnimKeyFrame(const std::string& value, ANIM_KEYFRAME& outKey)
+{
+    std::stringstream ss(value);
+    std::string part;
+
+    std::vector<std::string> chunks;
+    while (std::getline(ss, part, '|'))
+        chunks.push_back(part);
+
+    if (chunks.size() != 4)
+        return false;
+
+    outKey.fTrackPosition = std::stof(chunks[0]);
+
+    {
+        std::stringstream s0(chunks[1]);
+        std::string token;
+        float vals[3]{};
+        int i = 0;
+
+        while (std::getline(s0, token, ','))
+        {
+            if (i >= 3)
+                return false;
+            vals[i++] = std::stof(token);
+        }
+
+        if (i != 3)
+            return false;
+
+        outKey.vScale = _float3(vals[0], vals[1], vals[2]);
+    }
+
+    {
+        std::stringstream s1(chunks[2]);
+        std::string token;
+        float vals[4]{};
+        int i = 0;
+
+        while (std::getline(s1, token, ','))
+        {
+            if (i >= 4)
+                return false;
+            vals[i++] = std::stof(token);
+        }
+
+        if (i != 4)
+            return false;
+
+        outKey.vRotation = _float4(vals[0], vals[1], vals[2], vals[3]);
+    }
+
+    {
+        std::stringstream s2(chunks[3]);
+        std::string token;
+        float vals[3]{};
+        int i = 0;
+
+        while (std::getline(s2, token, ','))
+        {
+            if (i >= 3)
+                return false;
+            vals[i++] = std::stof(token);
+        }
+
+        if (i != 3)
+            return false;
+
+        outKey.vTranslation = _float3(vals[0], vals[1], vals[2]);
+    }
+
+    return true;
+}
+
+HRESULT CMeshBuilder::Load_Anim_ModelDesc(const std::filesystem::path& modelPath, ANIM_MODEL_DESC& outDesc)
+{
+    std::ifstream ifs(modelPath);
+    IF_TRUE_RETURN_MSG_BREAK(!ifs.is_open(), E_FAIL, "Load_AnimModelDesc failed: file open failed");
+
+    outDesc = ANIM_MODEL_DESC{};
+
+    std::string line;
+    while (std::getline(ifs, line))
+    {
+        if (line.empty())
+            continue;
+
+        std::string key, value;
+        if (!Split_KeyValue(line, key, value))
+            continue;
+
+        if (key == "guid")
+        {
+            ASSET_GUID::Try_Utf8_To_GUID(value, outDesc.tGUID);
+        }
+        else if (key == "source")
+        {
+            outDesc.pathSource = value;
+        }
+        else if (key == "meshCount")
+        {
+            const uint32_t count = (uint32_t)std::stoul(value);
+            outDesc.parts.resize(count);
+        }
+        else if (key == "boneCount")
+        {
+            const uint32_t count = (uint32_t)std::stoul(value);
+            outDesc.tSkeleton.bones.resize(count);
+        }
+        else if (key == "animCount")
+        {
+            const uint32_t count = (uint32_t)std::stoul(value);
+            outDesc.vecAnimClips.resize(count);
+        }
+        else if (key.rfind("part", 0) == 0)
+        {
+            const size_t namePos = key.find("Name");
+            const size_t meshGuidPos = key.find("MeshGuid");
+            const size_t materialGuidPos = key.find("MaterialGuid");
+            const size_t boneCountPos = key.find("BoneCount");
+            const size_t boneIndexPos = key.find("BoneIndex");
+            const size_t offsetPos = key.find("Offset");
+
+            if (namePos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, namePos - 4);
+                const uint32_t idx = (uint32_t)std::stoul(numStr);
+
+                if (idx >= outDesc.parts.size())
+                    outDesc.parts.resize(idx + 1);
+
+                outDesc.parts[idx].strName = value;
+            }
+            else if (meshGuidPos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, meshGuidPos - 4);
+                const uint32_t idx = (uint32_t)std::stoul(numStr);
+
+                if (idx >= outDesc.parts.size())
+                    outDesc.parts.resize(idx + 1);
+
+                ASSET_GUID::Try_Utf8_To_GUID(value, outDesc.parts[idx].tMeshGUID);
+            }
+            else if (materialGuidPos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, materialGuidPos - 4);
+                const uint32_t idx = (uint32_t)std::stoul(numStr);
+
+                if (idx >= outDesc.parts.size())
+                    outDesc.parts.resize(idx + 1);
+
+                ASSET_GUID::Try_Utf8_To_GUID(value, outDesc.parts[idx].tMaterialGUID);
+            }
+            else if (boneCountPos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, boneCountPos - 4);
+                const uint32_t idx = (uint32_t)std::stoul(numStr);
+
+                if (idx >= outDesc.parts.size())
+                    outDesc.parts.resize(idx + 1);
+
+                const uint32_t boneCount = (uint32_t)std::stoul(value);
+                outDesc.parts[idx].vecBoneIndices.resize(boneCount);
+                outDesc.parts[idx].vecOffsetMatrices.resize(boneCount);
+            }
+            else if (boneIndexPos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, boneIndexPos - 4);
+                const uint32_t partIdx = (uint32_t)std::stoul(numStr);
+
+                const std::string suffix = key.substr(boneIndexPos + strlen("BoneIndex"));
+                const uint32_t boneIdx = (uint32_t)std::stoul(suffix);
+
+                if (partIdx >= outDesc.parts.size())
+                    outDesc.parts.resize(partIdx + 1);
+
+                if (boneIdx >= outDesc.parts[partIdx].vecBoneIndices.size())
+                    outDesc.parts[partIdx].vecBoneIndices.resize(boneIdx + 1);
+
+                outDesc.parts[partIdx].vecBoneIndices[boneIdx] = (uint32_t)std::stoul(value);
+            }
+            else if (offsetPos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, offsetPos - 4);
+                const uint32_t partIdx = (uint32_t)std::stoul(numStr);
+
+                const std::string suffix = key.substr(offsetPos + strlen("Offset"));
+                const uint32_t offsetIdx = (uint32_t)std::stoul(suffix);
+
+                if (partIdx >= outDesc.parts.size())
+                    outDesc.parts.resize(partIdx + 1);
+
+                if (offsetIdx >= outDesc.parts[partIdx].vecOffsetMatrices.size())
+                    outDesc.parts[partIdx].vecOffsetMatrices.resize(offsetIdx + 1);
+
+                Parse_Float4x4(value, outDesc.parts[partIdx].vecOffsetMatrices[offsetIdx]);
+            }
+        }
+        else if (key.rfind("bone", 0) == 0)
+        {
+            const size_t namePos = key.find("Name");
+            const size_t parentPos = key.find("Parent");
+            const size_t localBindPos = key.find("LocalBind");
+            const size_t offsetPos = key.find("Offset");
+
+            if (namePos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, namePos - 4);
+                const uint32_t idx = (uint32_t)std::stoul(numStr);
+
+                if (idx >= outDesc.tSkeleton.bones.size())
+                    outDesc.tSkeleton.bones.resize(idx + 1);
+
+                outDesc.tSkeleton.bones[idx].strName = value;
+                outDesc.tSkeleton.BoneNameToIndex[value] = idx;
+            }
+            else if (parentPos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, parentPos - 4);
+                const uint32_t idx = (uint32_t)std::stoul(numStr);
+
+                if (idx >= outDesc.tSkeleton.bones.size())
+                    outDesc.tSkeleton.bones.resize(idx + 1);
+
+                outDesc.tSkeleton.bones[idx].iParentBoneIndex = std::stoi(value);
+            }
+            else if (localBindPos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, localBindPos - 4);
+                const uint32_t idx = (uint32_t)std::stoul(numStr);
+
+                if (idx >= outDesc.tSkeleton.bones.size())
+                    outDesc.tSkeleton.bones.resize(idx + 1);
+
+                Parse_Float4x4(value, outDesc.tSkeleton.bones[idx].matLocalBind);
+            }
+            else if (offsetPos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, offsetPos - 4);
+                const uint32_t idx = (uint32_t)std::stoul(numStr);
+
+                if (idx >= outDesc.tSkeleton.bones.size())
+                    outDesc.tSkeleton.bones.resize(idx + 1);
+
+                Parse_Float4x4(value, outDesc.tSkeleton.bones[idx].matOffset);
+            }
+        }
+        else if (key.rfind("anim", 0) == 0)
+        {
+            const size_t namePos = key.find("Name");
+            const size_t durationPos = key.find("Duration");
+            const size_t tickPos = key.find("TickPerSecond");
+            const size_t channelCountPos = key.find("ChannelCount");
+            const size_t channelPos = key.find("Channel");
+
+            if (namePos != std::string::npos && channelPos == std::string::npos)
+            {
+                const std::string numStr = key.substr(4, namePos - 4);
+                const uint32_t animIdx = (uint32_t)std::stoul(numStr);
+
+                if (animIdx >= outDesc.vecAnimClips.size())
+                    outDesc.vecAnimClips.resize(animIdx + 1);
+
+                outDesc.vecAnimClips[animIdx].strName = value;
+            }
+            else if (durationPos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, durationPos - 4);
+                const uint32_t animIdx = (uint32_t)std::stoul(numStr);
+
+                if (animIdx >= outDesc.vecAnimClips.size())
+                    outDesc.vecAnimClips.resize(animIdx + 1);
+
+                outDesc.vecAnimClips[animIdx].fDuration = std::stof(value);
+            }
+            else if (tickPos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, tickPos - 4);
+                const uint32_t animIdx = (uint32_t)std::stoul(numStr);
+
+                if (animIdx >= outDesc.vecAnimClips.size())
+                    outDesc.vecAnimClips.resize(animIdx + 1);
+
+                outDesc.vecAnimClips[animIdx].fTickPerSecond = std::stof(value);
+            }
+            else if (channelCountPos != std::string::npos)
+            {
+                const std::string numStr = key.substr(4, channelCountPos - 4);
+                const uint32_t animIdx = (uint32_t)std::stoul(numStr);
+
+                if (animIdx >= outDesc.vecAnimClips.size())
+                    outDesc.vecAnimClips.resize(animIdx + 1);
+
+                const uint32_t count = (uint32_t)std::stoul(value);
+                outDesc.vecAnimClips[animIdx].channels.resize(count);
+            }
+            else if (channelPos != std::string::npos)
+            {
+                const size_t boneNamePos = key.find("BoneName");
+                const size_t boneIndexPos = key.find("BoneIndex");
+                const size_t keyCountPos = key.find("KeyCount");
+                const size_t keyPos = key.find("Key");
+
+                const std::string animNumStr = key.substr(4, channelPos - 4);
+                const uint32_t animIdx = (uint32_t)std::stoul(animNumStr);
+
+                const size_t channelNumStart = channelPos + strlen("Channel");
+                size_t channelNumEnd = std::string::npos;
+
+                if (boneNamePos != std::string::npos) channelNumEnd = boneNamePos;
+                else if (boneIndexPos != std::string::npos) channelNumEnd = boneIndexPos;
+                else if (keyCountPos != std::string::npos) channelNumEnd = keyCountPos;
+                else if (keyPos != std::string::npos) channelNumEnd = keyPos;
+
+                const std::string channelNumStr = key.substr(channelNumStart, channelNumEnd - channelNumStart);
+                const uint32_t channelIdx = (uint32_t)std::stoul(channelNumStr);
+
+                if (animIdx >= outDesc.vecAnimClips.size())
+                    outDesc.vecAnimClips.resize(animIdx + 1);
+
+                if (channelIdx >= outDesc.vecAnimClips[animIdx].channels.size())
+                    outDesc.vecAnimClips[animIdx].channels.resize(channelIdx + 1);
+
+                ANIMATION_CHANNEL_ENTRY& ch = outDesc.vecAnimClips[animIdx].channels[channelIdx];
+
+                if (boneNamePos != std::string::npos)
+                {
+                    ch.strBoneName = value;
+                }
+                else if (boneIndexPos != std::string::npos)
+                {
+                    ch.iBoneIndex = std::stoi(value);
+                }
+                else if (keyCountPos != std::string::npos)
+                {
+                    const uint32_t keyCount = (uint32_t)std::stoul(value);
+                    ch.vecKeyFrames.resize(keyCount);
+                }
+                else if (keyPos != std::string::npos)
+                {
+                    const std::string keyNumStr = key.substr(keyPos + strlen("Key"));
+                    const uint32_t keyIdx = (uint32_t)std::stoul(keyNumStr);
+
+                    if (keyIdx >= ch.vecKeyFrames.size())
+                        ch.vecKeyFrames.resize(keyIdx + 1);
+
+                    Parse_AnimKeyFrame(value, ch.vecKeyFrames[keyIdx]);
+                }
+            }
+        }
+    }
+
+    /* skeleton child 정보 재구성 */
+    for (uint32_t i = 0; i < outDesc.tSkeleton.bones.size(); ++i)
+    {
+        const int32_t iParent = outDesc.tSkeleton.bones[i].iParentBoneIndex;
+        if (iParent >= 0)
+        {
+            outDesc.tSkeleton.bones[iParent].vecChildBoneIndices.push_back(i);
+        }
+        else if (outDesc.tSkeleton.iRootBoneIndex < 0)
+        {
+            outDesc.tSkeleton.iRootBoneIndex = (int32_t)i;
+        }
+    }
+
     return outDesc.parts.empty() ? E_FAIL : S_OK;
 }
 

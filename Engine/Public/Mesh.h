@@ -5,7 +5,8 @@
 #include "Identity.h"
 
 NS_BEGIN(Engine)
-    typedef struct ENGINE_DLL tagMeshDesc
+
+typedef struct ENGINE_DLL tagMeshDesc
 {
     const void* pVertices{ };
     _uint       iVertexStride{ };

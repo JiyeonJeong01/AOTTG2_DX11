@@ -34,6 +34,8 @@ HRESULT CLine::Initialize(_uint iMaxPoints, _float fThickness)
     IF_NULL_RETURN_MSG_BREAK(m_pContext, E_FAIL, "context is nullptr");
     IF_TRUE_RETURN_MSG_BREAK(m_iMaxPoints < 2, E_FAIL, "iMaxPoints must be over two");
     IF_TRUE_RETURN_MSG_BREAK(m_fThickness < 0.f, E_FAIL, "iThickness must be over zero");
+
+    return S_OK;
 }
 
 HRESULT CLine::Update(const _float3* pPoints, _uint iNumPoints)

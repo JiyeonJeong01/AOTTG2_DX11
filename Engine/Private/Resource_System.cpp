@@ -130,34 +130,72 @@ uint32_t CResource_System::Load_Model(const ASSET_GUID& tGUID)
 
     auto pRec = SYS_ASSET.Find(tGUID);
 
-    /* .model 파일로부터 해당 모델이 소유한 메쉬 GUID를 읽어온다. */
-    MODEL_DESC desc{};
-    IF_FAIL_RETURN_MSG_BREAK(CMeshBuilder::Load_ModelDesc(pRec->path, desc), E_FAIL, "Load_Model failed");
+    /* anim / non-anim 에 따른 분기 처리 */
+    const MODEL_TYPE eModelType = CMeshBuilder::Peek_ModelType(pRec->path);
 
     MODEL_ENTRY model{};
     model.tGUID = tGUID;
-    model.parts.reserve(desc.parts.size());
 
-    /* 모델이 소유한 파트(=메쉬) 정보 채우기 */
-    for (const auto& partDesc : desc.parts)
+    if (eModelType == MODEL_TYPE::NONANIM)
     {
-        const uint32_t hMesh = Load_Mesh(partDesc.tMeshGUID);
-        if (hMesh == INVALID_HANDLE_UINT)
-            continue;
+        /* .model 파일로부터 해당 모델이 소유한 메쉬 GUID를 읽어온다. */
+        MODEL_DESC desc{};
+        IF_FAIL_RETURN_MSG_BREAK(CMeshBuilder::Load_NonAnim_ModelDesc(pRec->path, desc), E_FAIL, "Load_Model failed");
 
-        MODEL_PART part{};
-        part.hMesh = hMesh;
-        part.materialGUID = partDesc.tMaterialGUID;
+        model.parts.reserve(desc.parts.size());
 
-        if (!part.materialGUID.Is_Valid())
-            part.hMaterial = INVALID_HANDLE_UINT; /* 또는 default material로 설정 고려 */ 
-        else
-            part.hMaterial = Load_Material(part.materialGUID);
+        /* 모델이 소유한 파트(=메쉬) 정보 채우기 */
+        for (const auto& partDesc : desc.parts)
+        {
+            const uint32_t hMesh = Load_Mesh(partDesc.tMeshGUID);
+            if (hMesh == INVALID_HANDLE_UINT)
+                continue;
 
-        model.parts.push_back(part);
+            MODEL_PART part{};
+            part.hMesh = hMesh;
+            part.materialGUID = partDesc.tMaterialGUID;
+
+            if (!part.materialGUID.Is_Valid())
+                part.hMaterial = INVALID_HANDLE_UINT; /* 또는 default material로 설정 고려 */
+            else
+                part.hMaterial = Load_Material(part.materialGUID);
+
+            model.parts.push_back(part);
+        }
+    }
+    else /* --- Anim --- */
+    {
+        ANIM_MODEL_DESC desc{};
+        IF_FAIL_RETURN_MSG_BREAK( CMeshBuilder::Load_Anim_ModelDesc(pRec->path, desc), INVALID_HANDLE_UINT, "Load_Model failed : Load_Anim_ModelDesc failed");
+
+        model.tSkeleton = desc.tSkeleton;
+        model.vecAnimClips = desc.vecAnimClips;
+
+        model.parts.reserve(desc.parts.size());
+
+        for (const auto& partDesc : desc.parts)
+        {
+            const uint32_t hMesh = Load_Mesh(partDesc.tMeshGUID);
+            if (hMesh == INVALID_HANDLE_UINT)
+                continue;
+
+            MODEL_PART part{};
+            part.hMesh = hMesh;
+            part.materialGUID = partDesc.tMaterialGUID;
+
+            if (!part.materialGUID.Is_Valid())
+                part.hMaterial = INVALID_HANDLE_UINT;
+            else
+                part.hMaterial = Load_Material(part.materialGUID);
+
+            part.vecBoneIndices = partDesc.vecBoneIndices;
+            part.vecOffsetMatrices = partDesc.vecOffsetMatrices;
+
+            model.parts.push_back(std::move(part));
+        }
     }
 
-    IF_TRUE_RETURN_MSG_BREAK(model.parts.empty(), INVALID_HANDLE_UINT, "Load_Model failed: no valid parts");
+    IF_TRUE_RETURN_MSG_BREAK(model.parts.empty(), INVALID_HANDLE_UINT, "Load_Model failed: no valid parts");   
 
     const uint32_t handle = (uint32_t)m_Models.size();
     m_Models.push_back(std::move(model));
@@ -320,6 +358,8 @@ uint32_t CResource_System::Load_Material(const MATERIAL_ENTRY& tDesc)
 
     entry.pBaseMap = pFx->GetVariableByName("g_BaseMap")->AsShaderResource();
     entry.pBaseColor = pFx->GetVariableByName("g_BaseColor")->AsVector();
+
+    entry.pBoneMatrices = pFx->GetVariableByName("g_BoneMatrices")->AsMatrix();
 
 #ifdef _DEBUG
     IF_TRUE_RETURN_MSG_BREAK(!entry.pWorld || !entry.pWorld->IsValid(), INVALID_HANDLE_UINT, "Material matrix variable invalid: g_WorldMatrix");

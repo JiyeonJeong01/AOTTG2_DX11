@@ -702,7 +702,7 @@ _bool CCollision_Detector::Detect_Raycast(RAY& tRay, const vector<COLLIDER_PROXY
 
     if (bAnyHit)
         outHits.primaryHit = primary;
-    outHits.iNumHits = outHits.allHits.size();
+    outHits.iNumHits = To<_uint>(outHits.allHits.size());
 
     return bAnyHit;
 }

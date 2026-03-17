@@ -60,7 +60,7 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             if (pData->hMesh == 0 || pData->hMaterial == 0)
                 continue;
 
-            DRAW_CMD tCmd = DRAW_CMD::Create_Mesh(pData->hMesh, pData->hMaterial, pData->hTransform, pData->flags, 0, 0);
+            DRAW_CMD tCmd = DRAW_CMD::Create_Mesh(pData->hMesh, pData->hMaterial, pData->hTransform, pData->hAnimator, pData->flags, 0, 0);
             tCmd.mesh.hPerObjectParams = pData->hPerObjectParams;
             tCmd.sortKey = Make_SortKey(*pData);
             outCmds.push_back(tCmd);

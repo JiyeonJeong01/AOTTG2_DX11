@@ -2,6 +2,7 @@
 #include "Converter_Define.h"
 #include "Converter_Util.h"
 #include "BuiltIn_GUID.h"
+#include "Material_Converter.h"
 
 #include <filesystem>
 #include <fstream>
@@ -9,41 +10,9 @@
 
 NS_BEGIN(Converter)
 
-static std::unordered_set<std::wstring> Build_ExistingModelStemSet(const std::filesystem::path& meshRoot)
-{
-    std::unordered_set<std::wstring> set;
 
-    std::error_code ec;
-    if (!std::filesystem::exists(meshRoot, ec))
-        return set;
 
-    for (auto& it : std::filesystem::directory_iterator(meshRoot, ec))
-    {
-        if (ec) break;
-        if (!it.is_regular_file(ec)) continue;
-
-        const auto& p = it.path();
-
-        if (p.extension() == L".meta")
-        {
-            const std::wstring filename = p.filename().wstring();
-
-            const std::wstring suffix = L".model.meta";
-            if (filename.size() >= suffix.size())
-            {
-                if (filename.compare(filename.size() - suffix.size(), suffix.size(), suffix) == 0)
-                {
-                    const std::wstring stem = filename.substr(0, filename.size() - suffix.size());
-                    set.insert(stem);
-                }
-            }
-        }
-    }
-
-    return set;
-}
-
-static _bool Convert_SingleMesh(const aiMesh* pAIMesh, Engine::CONVERTED_MESH& out, const float fImportScale)
+static _bool Convert_SingleNonAnimMesh(const aiMesh* pAIMesh, Engine::CONVERTED_MESH& out, const float fImportScale)
 {
     if (!pAIMesh || pAIMesh->mNumVertices == 0)
         return false;
@@ -88,7 +57,7 @@ static _bool Convert_SingleMesh(const aiMesh* pAIMesh, Engine::CONVERTED_MESH& o
     return !out.vertices.empty() && !out.indices.empty();
 }
 
-static _bool Convert_Model(const aiScene* scene, CONVERTED_MODEL& out, const float fImportScale)
+static _bool Convert_NonAnimModel(const aiScene* scene, CONVERTED_MODEL& out, const float fImportScale)
 {
     if (!scene || scene->mNumMeshes == 0)
         return false;
@@ -110,7 +79,7 @@ static _bool Convert_Model(const aiScene* scene, CONVERTED_MODEL& out, const flo
 
         part.iMaterialIndex = pAIMesh->mMaterialIndex;
 
-        if (!Convert_SingleMesh(pAIMesh, part.mesh, fImportScale))
+        if (!Convert_SingleNonAnimMesh(pAIMesh, part.mesh, fImportScale))
             continue;
 
         out.parts.push_back(std::move(part));
@@ -119,7 +88,7 @@ static _bool Convert_Model(const aiScene* scene, CONVERTED_MODEL& out, const flo
     return !out.parts.empty();
 }
 
-static const aiScene* LoadScene_Assimp(Assimp::Importer& importer, const std::filesystem::path& fbxPath, uint32_t iFlag = 0)
+static const aiScene* LoadScene_Assimp_NonAnim(Assimp::Importer& importer, const std::filesystem::path& fbxPath, uint32_t iFlag = 0)
 {
     const uint32_t flags =
         aiProcess_ConvertToLeftHanded |             /* 왼손 좌표계 기준으로 변경 */
@@ -132,12 +101,8 @@ static const aiScene* LoadScene_Assimp(Assimp::Importer& importer, const std::fi
     return importer.ReadFile(fbxPath.string(), flags | iFlag);
 }
 
-static std::string Generate_GUID_String()
-{
-    return Engine::ASSET_GUID::New_GUID().To_String_Utf8();
-}
 
-static _bool Save_MeshBin(const std::filesystem::path& outPath, const CONVERTED_MESH& mesh)
+static _bool Save_NonAnim_MeshBin(const std::filesystem::path& outPath, const CONVERTED_MESH& mesh)
 {
     std::ofstream ofs(outPath, std::ios_base::binary);
     if (!ofs.is_open())
@@ -154,7 +119,7 @@ static _bool Save_MeshBin(const std::filesystem::path& outPath, const CONVERTED_
     return true;
 }
 
-static _bool Save_MeshMeta(const std::filesystem::path& metaPath,
+static _bool Save_NonAnim_MeshMeta(const std::filesystem::path& metaPath,
     const std::string& strGUID,
     const std::filesystem::path& sourceFbx,
     const std::filesystem::path& cookedMeshbin,
@@ -174,157 +139,7 @@ static _bool Save_MeshMeta(const std::filesystem::path& metaPath,
     return true;
 }
 
-static _float4 Read_BaseColor(const aiMaterial* pAIMaterial)
-{
-    if (!pAIMaterial)
-        return _float4{ 1.f, 1.f, 1.f, 1.f };
-
-    aiColor4D vColor{};
-    if (AI_SUCCESS == aiGetMaterialColor(pAIMaterial, AI_MATKEY_COLOR_DIFFUSE, &vColor))
-    {
-        return _float4{ vColor.r, vColor.g, vColor.b, vColor.a };
-    }
-
-    return _float4{ 1.f, 1.f, 1.f, 1.f };
-}
-
-static _float Read_Shininess(const aiMaterial* pAIMaterial)
-{
-    if (!pAIMaterial)
-        return 32.f;
-
-    _float fShininess = 32.f;
-    if (AI_SUCCESS == aiGetMaterialFloat(pAIMaterial, AI_MATKEY_SHININESS, &fShininess))
-        return fShininess;
-
-    return 32.f;
-}
-
-static std::filesystem::path Make_MetaPath(const std::filesystem::path& assetPath)
-{
-    std::filesystem::path metaPath = assetPath;
-    metaPath += L".meta";
-    return metaPath;
-}
-
-static _bool Read_GUID_From_MetaFile(const std::filesystem::path& metaPath, std::string& outGUID)
-{
-    std::ifstream ifs(metaPath);
-    if (!ifs.is_open())
-        return false;
-
-    std::string line;
-    const std::string prefix = "guid=";
-
-    while (std::getline(ifs, line))
-    {
-        if (line.rfind(prefix, 0) == 0)
-        {
-            outGUID = line.substr(prefix.size());
-            return !outGUID.empty();
-        }
-    }
-
-    return false;
-}
-
-static std::string Extract_TextureFileName(const aiString& strTexturePath)
-{
-    const std::filesystem::path texPath = strTexturePath.C_Str();
-    return texPath.filename().string();
-}
-
-/**
- * \brief  Assets/Textures 폴더에 위치한 텍스쳐의 GUID를 반환하여, 머테리얼이 참조할 수 있도록 한다.
- */
-static std::string Resolve_Texture_GUID_From_AssimpPath(
-    const std::filesystem::path& textureRoot,
-    const aiString& strTexturePath,
-    const std::string& strDefaultGUID)
-{
-    const std::string strFileName = Extract_TextureFileName(strTexturePath);
-    if (strFileName.empty())
-        return strDefaultGUID;
-
-    std::error_code ec;
-    if (!std::filesystem::exists(textureRoot, ec))
-        return strDefaultGUID;
-
-    for (auto it = std::filesystem::recursive_directory_iterator(textureRoot, ec);
-        it != std::filesystem::recursive_directory_iterator();
-        ++it)
-    {
-        if (ec)
-            break;
-
-        if (!it->is_regular_file(ec))
-            continue;
-
-        const std::filesystem::path filePath = it->path();
-
-        if (filePath.extension() == L".meta")
-            continue;
-
-        if (filePath.filename().string() != strFileName)
-            continue;
-
-        const std::filesystem::path metaPath = Make_MetaPath(filePath);
-
-        std::string strGUID;
-        if (Read_GUID_From_MetaFile(metaPath, strGUID))
-            return strGUID;
-    }
-
-    std::cout << "Texture GUID resolve failed: " << strFileName
-        << " in root: " << textureRoot.string() << "\n";
-
-    return strDefaultGUID;
-}
-
-
-static _bool Save_MaterialFile(const std::filesystem::path& matPath,
-    const std::string& strMaterialGUID,
-    const std::string& strShaderGUID,
-    const _float4& baseColor,
-    _float fShininess,
-    const std::string& strBaseMapGUID,
-    const std::string& strNormalMapGUID)
-{
-    std::ofstream ofs(matPath);
-    if (!ofs.is_open())
-        return false;
-
-    ofs << "{\n";
-    ofs << "  \"GUID\": \"" << strMaterialGUID << "\",\n";
-    ofs << "  \"ShaderGUID\": \"" << strShaderGUID << "\",\n";
-    ofs << "  \"PassIndex\": 0,\n";
-    ofs << "  \"BaseColor\": [" << baseColor.x << ", " << baseColor.y << ", " << baseColor.z << ", " << baseColor.w << "],\n";
-    ofs << "  \"Shininess\": " << fShininess << ",\n";
-    ofs << "  \"BaseMapGUID\": \"" << strBaseMapGUID << "\",\n";
-    ofs << "  \"NormalMapGUID\": \"" << strNormalMapGUID << "\"\n";
-    ofs << "}\n";
-
-    return true;
-}
-
-static _bool Save_MaterialMeta(const std::filesystem::path& metaPath,
-    const std::string& strMaterialGUID,
-    const std::filesystem::path& sourceFbx,
-    const std::filesystem::path& cookedMaterialPath)
-{
-    std::ofstream ofs(metaPath);
-    if (!ofs.is_open())
-        return false;
-
-    ofs << "guid=" << strMaterialGUID << "\n";
-    ofs << "type=MATERIAL\n";
-    ofs << "source=" << sourceFbx.generic_string() << "\n";
-    ofs << "cooked=" << cookedMaterialPath.generic_string() << "\n";
-
-    return true;
-}
-
-static _bool Save_ModelFile(const std::filesystem::path& modelPath,
+static _bool Save_NonAnim_ModelFile(const std::filesystem::path& modelPath,
     const std::filesystem::path& sourceFbx,
     const std::vector<SAVED_MODEL_PART_INFO>& parts)
 {
@@ -345,20 +160,7 @@ static _bool Save_ModelFile(const std::filesystem::path& modelPath,
     return true;
 }
 
-static _bool Save_ModelMeta(const std::filesystem::path& metaPath,
-    const std::string& strModelGUID)
-{
-    std::ofstream ofs(metaPath);
-    if (!ofs.is_open())
-        return false;
-
-    ofs << "guid=" << strModelGUID << "\n";
-    ofs << "type=MODEL\n";
-
-    return true;
-}
-
-inline static _bool Convert(
+inline static _bool Convert_NonAnim(
     std::filesystem::path& inPath,          /* Converter/FBXs/... */
     std::filesystem::path& textureRoot,     /* Client/Assets/Textures */
     std::filesystem::path& outMeshPath,     /* Client/Assets/Meshes  */
@@ -367,7 +169,7 @@ inline static _bool Convert(
     const _float fImportScale)
 {
     Assimp::Importer importer;
-    const aiScene* pAIScene = LoadScene_Assimp(importer, inPath);
+    const aiScene* pAIScene = LoadScene_Assimp_NonAnim(importer, inPath);
 
     if (pAIScene == nullptr)
     {
@@ -376,9 +178,9 @@ inline static _bool Convert(
     }
 
     CONVERTED_MODEL model{}; /* CONVERTED_MODEL_PART 컨테이너를 가진 구조체 */
-    if (!Convert_Model(pAIScene, model, fImportScale))
+    if (!Convert_NonAnimModel(pAIScene, model, fImportScale))
     {
-        std::cout << "Convert model failed : " << inPath.string() << "\n";
+        std::cout << "Convert_NonAnim model failed : " << inPath.string() << "\n";
         return false;
     }
 
@@ -469,13 +271,13 @@ inline static _bool Convert(
         std::filesystem::path meshBinPath = parentMeshDir / (strPartFileBase + ".mesh");
         std::filesystem::path meshMetaPath = parentMeshDir / (strPartFileBase + ".mesh.meta");
 
-        if (!Save_MeshBin(meshBinPath, part.mesh))
+        if (!Save_NonAnim_MeshBin(meshBinPath, part.mesh))
         {
             std::cout << "Save mesh bin failed : " << meshBinPath.string() << "\n";
             return false;
         }
 
-        if (!Save_MeshMeta(meshMetaPath, strMeshGUID, inPath, meshBinPath, part.mesh))
+        if (!Save_NonAnim_MeshMeta(meshMetaPath, strMeshGUID, inPath, meshBinPath, part.mesh))
         {
             std::cout << "Save mesh meta failed : " << meshMetaPath.string() << "\n";
             return false;
@@ -497,7 +299,7 @@ inline static _bool Convert(
 
     /* 최종적으로 모델 정보 저장하기 */
     const std::string strModelGUID = Generate_GUID_String();
-    if (!Save_ModelFile(outMeshPath, inPath, savedParts))
+    if (!Save_NonAnim_ModelFile(outMeshPath, inPath, savedParts))
     {
         std::cout << "Save model file failed : " << outMeshPath.string() << "\n";
         return false;
@@ -511,8 +313,5 @@ inline static _bool Convert(
 
     return true;
 }
-
-
-
 
 NS_END

@@ -159,6 +159,9 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ThirdParty\magic_enum.hpp" />
+    <ClInclude Include="..\Public\Animation_Clip.h" />
+    <ClInclude Include="..\Public\Animator.h" />
+    <ClInclude Include="..\Public\Animator_Processor.h" />
     <ClInclude Include="..\Public\Line.h" />
     <ClInclude Include="..\Public\BuiltIn_GUID.h" />
     <ClInclude Include="..\Public\CanvasRenderer.h" />
@@ -187,6 +190,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Script_Handler.h" />
     <ClInclude Include="..\Public\Script_Processor.h" />
     <ClInclude Include="..\Public\Script_Register.h" />
+    <ClInclude Include="..\Public\Skeleton.h" />
     <ClInclude Include="..\Public\Solver.h" />
     <ClInclude Include="..\Public\Spec_Util.h" />
     <ClInclude Include="..\Public\SpringJoint.h" />
@@ -259,6 +263,8 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\BUTTON_EVENT_DATA.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\Animator.cpp" />
+    <ClCompile Include="..\Private\Animator_Processor.cpp" />
     <ClCompile Include="..\Private\DebugDraw.cpp" />
     <ClCompile Include="..\Private\Debug_Renderer.cpp" />
     <ClCompile Include="..\Private\Collider_Proxy_Builder.cpp" />
@@ -322,6 +328,10 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\UI_Processor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Docs\Engine\Animation_Resource.md">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="..\..\Docs\Engine\AssetRegistry_Doc.md">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>

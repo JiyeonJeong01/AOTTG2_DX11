@@ -135,9 +135,11 @@
     <ClCompile Include="Converter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\Anim_Converter.h" />
     <ClInclude Include="..\Public\Converter_Util.h" />
     <ClInclude Include="..\Public\Converter_Define.h" />
-    <ClInclude Include="..\Public\Mesh_Converter.h" />
+    <ClInclude Include="..\Public\Material_Converter.h" />
+    <ClInclude Include="..\Public\NonAnim_Converter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

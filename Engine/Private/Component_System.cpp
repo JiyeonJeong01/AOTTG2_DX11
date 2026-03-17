@@ -6,6 +6,7 @@
 #include "Physics_Processor.h"
 #include "Environment_Processor.h"
 #include "MeshRenderer_Processor.h"
+#include "Animator_Processor.h"
 #include "RectTransform_Processor.h"
 #include "CanvasRenderer_Processor.h"
 #include "Script_Processor.h"
@@ -38,6 +39,8 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
         = CPhysics_Processor::Create(m_pDevice, m_pContext);
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)]
         = CMeshRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CTransform_Processor*, m_pComProcessors[COM_TO_PID(COMPONENT_TYPE::TRANSFORM)].get()));
+    m_pComProcessors[PID_TO_INT(PROCESSOR_ID::ANIMATION)]
+        = CAnimator_Processor::Create();
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::ENVIRONMENT)]
         = CEnvironment_Processor::Create();
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::RECT_TRANSFORM)]
@@ -60,6 +63,7 @@ void CComponent_System::Update(_float fDT)
     static_cast<CRectTransform_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::RECT_TRANSFORM)].get())->Update(fDT);
     static_cast<CUI_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::UI)].get())->Update(fDT);
     static_cast<CPhysics_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::PHYSICS)].get())->Update(fDT);
+    static_cast<CAnimator_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::ANIMATION)].get())->Update(fDT);
     static_cast<CMeshRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::MESH_RENDERER)].get())->Update(fDT);
     static_cast<CCanvasRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::CANVAS_RENDERER)].get())->Update(fDT);
 }
@@ -72,6 +76,7 @@ void CComponent_System::LateUpdate(_float fDT)
     static_cast<CRectTransform_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::RECT_TRANSFORM)].get())->LateUpdate(fDT);
     static_cast<CUI_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::UI)].get())->LateUpdate(fDT);
     static_cast<CPhysics_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::PHYSICS)].get())->LateUpdate(fDT);
+    static_cast<CAnimator_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::ANIMATION)].get())->LateUpdate(fDT);
     static_cast<CMeshRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::MESH_RENDERER)].get())->LateUpdate(fDT);
     static_cast<CCanvasRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::CANVAS_RENDERER)].get())->LateUpdate(fDT);
 }

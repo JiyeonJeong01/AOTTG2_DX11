@@ -61,6 +61,27 @@ typedef struct tagVertexMesh
     };
 } VTXMESH;
 
+typedef struct tagVertexAnimMesh
+{
+    XMFLOAT3    vPosition;
+    XMFLOAT3    vNormal;
+    XMFLOAT3    vTangent;
+    XMFLOAT2    vTexcoord;
+
+    XMUINT4     vBlendIndex;
+    XMFLOAT4    vBlendWeight;
+
+    static const unsigned int iNumElements = 6;
+    static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TANGENT",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "BLENDINDEX", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA,0 },
+        { "BLENDWEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 60, D3D11_INPUT_PER_VERTEX_DATA,0 },
+    };
+} VTXANIMMESH;
+
 typedef struct ENGINE_DLL tagILDesc
 {
     const D3D11_INPUT_ELEMENT_DESC* pDesc;
@@ -72,7 +93,8 @@ static constexpr IL_DESC g_IL_TABLE[] = {
     { VTXCOL::Elements, VTXCOL::iNumElements },
     { VTXTEX::Elements, VTXTEX::iNumElements },
     { VTXNORTEX::Elements, VTXNORTEX::iNumElements },
-    { VTXMESH::Elements, VTXMESH::iNumElements }
+    { VTXMESH::Elements, VTXMESH::iNumElements },
+    { VTXANIMMESH::Elements, VTXANIMMESH::iNumElements }
 };
 
 typedef struct ENGINE_DLL tagDrawCmd final
@@ -90,6 +112,7 @@ typedef struct ENGINE_DLL tagDrawCmd final
             uint32_t        hMesh = INVALID_HANDLE_UINT;
             uint32_t        hMaterial = INVALID_HANDLE_UINT;
             COMPONENT_HANDLE hTransform{};
+            COMPONENT_HANDLE hAnimator = INVALID_HANDLE;
 
             uint32_t        flags = RF_NONE;
             uint32_t        firstIndex = INVALID_HANDLE_UINT;
@@ -118,13 +141,14 @@ typedef struct ENGINE_DLL tagDrawCmd final
     };
 
 public:
-    static tagDrawCmd Create_Mesh(uint32_t hMesh, uint32_t hMat, COMPONENT_HANDLE hTr, uint32_t flags, uint32_t first, uint32_t count)
+    static tagDrawCmd Create_Mesh(uint32_t hMesh, uint32_t hMat, COMPONENT_HANDLE hTr, COMPONENT_HANDLE hAt, uint32_t flags, uint32_t first, uint32_t count)
     {
         tagDrawCmd c{};
         c.kind = DRAW_TYPE::MESH;
         c.mesh.hMesh = hMesh;
         c.mesh.hMaterial = hMat;
         c.mesh.hTransform = hTr;
+        c.mesh.hAnimator = hAt;
         c.mesh.flags = flags;
         c.mesh.firstIndex = first;
         c.mesh.indexCount = count;

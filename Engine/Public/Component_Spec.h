@@ -982,4 +982,13 @@ typedef struct ENGINE_DLL tagSpringJointSpec final : public COMPONENT_SPEC_BASE
     }
 } SPRING_JOINT_SPEC;
 
+
+typedef struct ENGINE_DLL tagAnimatorSpec final : public COMPONENT_SPEC_BASE
+{
+    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::ANIMATOR)
+
+
+
+} ANIMATOR_SPEC;
+
 NS_END

@@ -19,7 +19,9 @@ public :
     static HRESULT  Create_Sphere_VtxCol(ID3D11Device* pDevice, MESH_ENTRY& outEntry, _uint iStack = 5, _uint iSlice = 10, _float fRadius = 0.5f);
     static HRESULT  Create_RibbonLine_VtxCol(ID3D11Device* pDevice, MESH_ENTRY& outEntry, _uint iNumCnt);
 
-    static HRESULT Load_ModelDesc(const std::filesystem::path& modelPath, MODEL_DESC& outDesc);
+    static MODEL_TYPE   Peek_ModelType(const std::filesystem::path& modelPath);
+    static HRESULT Load_NonAnim_ModelDesc(const std::filesystem::path& modelPath, MODEL_DESC& outDesc);
+    static HRESULT Load_Anim_ModelDesc(const std::filesystem::path& modelPath, ANIM_MODEL_DESC& outDesc);
 private :
     static _bool Split_KeyValue(const std::string& line, std::string& outKey, std::string& outValue);
 

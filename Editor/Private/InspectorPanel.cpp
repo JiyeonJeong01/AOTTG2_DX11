@@ -17,6 +17,7 @@
 #include "Script.h"
 #include "RectTransform.h"
 #include "Camera.h"
+#include "Animator.h"
 
 #include "UIImage.h"
 #include "UIButton.h"
@@ -542,6 +543,11 @@ void CInspectorPanel::Draw_AddComponentPopup()
             m_pTarget->Add_Component<CCamera>();
             ImGui::CloseCurrentPopup();
         }
+        if (ImGui::MenuItem("Animator"))
+        {
+            m_pTarget->Add_Component<CAnimator>();
+            ImGui::CloseCurrentPopup();
+        }
     }
     else   /* ------------------------------ UI ----------------------------------*/
     {
@@ -615,6 +621,9 @@ void CInspectorPanel::Draw_ComponentByType(COMPONENT_TYPE eComType)
         break;
     case COMPONENT_TYPE::CAMERA :
         Draw_Camera();
+        break;
+    case COMPONENT_TYPE::ANIMATOR :
+        Draw_Animator();
         break;
     case COMPONENT_TYPE::CANVAS_RENDERER:
         Draw_CanvasRenderer();
@@ -1604,6 +1613,191 @@ void CInspectorPanel::Draw_SpringJoint()
     }
 
     if (pData->bEnable == 0)
+        ImGui::EndDisabled();
+
+    ImGui::TreePop();
+}
+
+void CInspectorPanel::Draw_Animator()
+{
+    CAnimator animator = m_pTarget->Get_Component<CAnimator>();
+    if (!animator.Is_Valid())
+        return;
+
+    ANIMATOR_DATA* pData = animator._Data();
+    if (!pData)
+        return;
+
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    const ImGuiID idHeader = window->GetID("Animator_Header");
+    const ImGuiID idCheck = window->GetID("Animator_Enable");
+
+    ImGui::PushID(idHeader);
+
+    ImGui::AlignTextToFramePadding();
+
+    bool enabled = (pData->bEnable != 0);
+    if (ImGui::Checkbox("##Enable", &enabled))
+    {
+        pData->bEnable = enabled ? 1 : 0;
+    }
+
+    ImGui::SameLine();
+
+    const ImGuiTreeNodeFlags flags =
+        ImGuiTreeNodeFlags_DefaultOpen |
+        ImGuiTreeNodeFlags_Framed |
+        ImGuiTreeNodeFlags_SpanAvailWidth |
+        ImGuiTreeNodeFlags_AllowOverlap;
+
+    const bool open = ImGui::TreeNodeEx("Animator", flags);
+
+    ImGui::PopID();
+
+    if (!open)
+        return;
+
+    const bool bDisabledScope = (pData->bEnable == 0);
+    if (bDisabledScope)
+        ImGui::BeginDisabled();
+
+    bool bChanged = false;
+
+    bool bPlaying = (pData->bPlaying != 0);
+    if (ImGui::Checkbox("Playing", &bPlaying))
+    {
+        pData->bPlaying = bPlaying ? 1 : 0;
+        bChanged = true;
+    }
+
+    bool bLoop = (pData->bLoop != 0);
+    if (ImGui::Checkbox("Loop", &bLoop))
+    {
+        pData->bLoop = bLoop ? 1 : 0;
+        bChanged = true;
+    }
+
+    float fPlaySpeed = pData->fPlaySpeed;
+    if (ImGui::DragFloat("Play Speed", &fPlaySpeed, 0.01f, 0.f, 10.f, "%.3f"))
+    {
+        if (fPlaySpeed < 0.f)
+            fPlaySpeed = 0.f;
+
+        pData->fPlaySpeed = fPlaySpeed;
+        bChanged = true;
+    }
+
+    MODEL_ENTRY* pModel = nullptr;
+
+    if (m_pTarget)
+    {
+        CMeshRenderer mr = m_pTarget->Get_Component<CMeshRenderer>();
+        if (mr.Is_Valid())
+        {
+            pModel = SYS_RESOURCE.Get_Model(mr->hMesh);
+        }
+    }
+
+    ImGui::Separator();
+
+    if (!pModel)
+    {
+        ImGui::TextDisabled("No model.");
+    }
+    else if (!pModel->Has_Animation())
+    {
+        ImGui::TextDisabled("No animation clips.");
+    }
+    else
+    {
+        if (pData->iAnimationClip == INVALID_HANDLE_UINT ||
+            pData->iAnimationClip >= pModel->vecAnimClips.size())
+        {
+            pData->iAnimationClip = 0;
+        }
+
+        const ANIMATION_CLIP_ENTRY& curClip = pModel->vecAnimClips[pData->iAnimationClip];
+
+        ImGui::Text("Animation Clip Count : %d", SCAST(int, pModel->vecAnimClips.size()));
+        ImGui::Text("Current Clip : %s", curClip.strName.c_str());
+        ImGui::Text("Duration : %.3f", curClip.fDuration);
+        ImGui::Text("Tick Per Second : %.3f", curClip.fTickPerSecond);
+
+        int iCurrentClip = SCAST(int, pData->iAnimationClip);
+        if (ImGui::BeginCombo("Animation Clip", curClip.strName.c_str()))
+        {
+            for (int i = 0; i < SCAST(int, pModel->vecAnimClips.size()); ++i)
+            {
+                const bool bSelected = (iCurrentClip == i);
+                const char* pClipName = pModel->vecAnimClips[i].strName.empty()
+                    ? "<Unnamed Clip>"
+                    : pModel->vecAnimClips[i].strName.c_str();
+
+                if (ImGui::Selectable(pClipName, bSelected))
+                {
+                    pData->iAnimationClip = SCAST(uint32_t, i);
+                    pData->fTrackPosition = 0.f;
+
+                    const ANIMATION_CLIP_ENTRY& newClip = pModel->vecAnimClips[i];
+                    pData->currentKeyFrameIndices.assign(newClip.channels.size(), 0);
+
+                    bChanged = true;
+                }
+
+                if (bSelected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+
+        float fTrackPosition = pData->fTrackPosition;
+        const float fMaxTrack = curClip.fDuration > 0.f ? curClip.fDuration : 0.f;
+        if (ImGui::DragFloat("Track Position", &fTrackPosition, 0.01f, 0.f, fMaxTrack, "%.3f"))
+        {
+            if (fTrackPosition < 0.f)
+                fTrackPosition = 0.f;
+
+            if (curClip.fDuration > 0.f && fTrackPosition > curClip.fDuration)
+                fTrackPosition = curClip.fDuration;
+
+            pData->fTrackPosition = fTrackPosition;
+            bChanged = true;
+        }
+    }
+
+    if (bChanged)
+    {
+        if (pData->fPlaySpeed < 0.f)
+            pData->fPlaySpeed = 0.f;
+
+        if (pModel && pModel->Has_Animation())
+        {
+            if (pData->iAnimationClip == INVALID_HANDLE_UINT ||
+                pData->iAnimationClip >= pModel->vecAnimClips.size())
+            {
+                pData->iAnimationClip = 0;
+            }
+
+            const ANIMATION_CLIP_ENTRY& clip = pModel->vecAnimClips[pData->iAnimationClip];
+
+            if (pData->fTrackPosition < 0.f)
+                pData->fTrackPosition = 0.f;
+
+            if (clip.fDuration > 0.f && pData->fTrackPosition > clip.fDuration)
+                pData->fTrackPosition = clip.fDuration;
+        }
+        else
+        {
+            pData->iAnimationClip = INVALID_HANDLE_UINT;
+            pData->fTrackPosition = 0.f;
+            pData->currentKeyFrameIndices.clear();
+        }
+    }
+
+    if (bDisabledScope)
         ImGui::EndDisabled();
 
     ImGui::TreePop();
