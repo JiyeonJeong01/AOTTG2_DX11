@@ -2,12 +2,14 @@
 
 #include "GameObject_System.h"
 #include "GameObject.h"
+#include "Input_System.h"
 
 #include "PlayerState.h"
 #include "PlayerStateMachine.h"
 #include "Player_InputController.h"
 
 #include "CameraController.h"
+#include "ODM_Gear.h"
 
 
 NS_BEGIN(Client)
@@ -39,6 +41,7 @@ void CPlayer::Priority_Update(void* pCtx, _float fDT)
     if (!m_pCameraController)
     {
         m_pCameraController = m_goPlayer->Get_Script<CCameraController>();
+        m_pGear = m_goPlayer->Get_Script_InChildren<CODM_Gear>();
     }
 
     if (m_pCameraController)
@@ -51,6 +54,16 @@ void CPlayer::Priority_Update(void* pCtx, _float fDT)
 void CPlayer::Update(void* pCtx, _float fDT)
 {
     m_upStateMachine->Update(fDT);
+
+    if (SYS_INPUT.Get_KeyDown('Q'))
+    {
+        m_pGear->Try_Grappling();
+    }
+    if (SYS_INPUT.Get_KeyUp('Q'))
+    {
+        m_pGear->Finish_Grappling();
+    }
+
 }
 
 void CPlayer::Late_Update(void* pCtx, _float fDT)

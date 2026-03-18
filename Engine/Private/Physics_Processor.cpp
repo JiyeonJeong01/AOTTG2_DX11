@@ -152,10 +152,8 @@ void CPhysics_Processor::Process_SpringJoints(_float fDT)
             const _float fForceMag = (-pData->fSpring * fX) - (pData->fDamper * fV);
             _vector vForce = vN * fForceMag;
 
-            /* 로프 상승 보정 유지 */
             _float3 vForce3{};
             Math::Store(vForce3, vForce);
-            vForce3.y *= 1.5f;
 
             rigidbody.Add_Force(vForce3);
         }

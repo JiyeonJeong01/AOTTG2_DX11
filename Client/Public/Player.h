@@ -17,6 +17,7 @@ class CPlayer_InputController;
 class CPlayerStateMachine;
 class CPlayerState;
 class CCameraController;
+class CODM_Gear;
 
 class CPlayer : public IScript
 {
@@ -48,6 +49,7 @@ private:
     std::shared_ptr<CPlayerState>               m_spCurState{};
 
     CCameraController*                          m_pCameraController{};
+    CODM_Gear*                                  m_pGear{};
 
 private :
     void OnChange_CurState(std::shared_ptr<CPlayerState> spNewState);

@@ -84,6 +84,9 @@ void CInput_System::Update_System()
         }
     }
 
+    m_tGameCenterPos.x = SCAST(LONG, ui.vViewport.x * 0.5f);
+    m_tGameCenterPos.y = SCAST(LONG, ui.vViewport.y * 0.5f);
+
     m_pMouse->GetDeviceState(sizeof(m_tMouseState), &m_tMouseState);
 }
 
@@ -113,4 +116,9 @@ const POINT& CInput_System::Get_MousePos() const
 const POINT& CInput_System::Get_GameMousePos() const
 {
     return m_tGameMousePos;
+}
+
+const POINT& CInput_System::Get_GameCenterPos() const
+{
+    return m_tGameCenterPos;
 }

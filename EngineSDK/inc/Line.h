@@ -5,7 +5,7 @@
 
 NS_BEGIN(Engine)
 
-class CLine final
+class ENGINE_DLL CLine final
 {
 public :
     CLine(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

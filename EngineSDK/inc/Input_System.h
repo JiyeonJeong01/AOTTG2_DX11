@@ -33,6 +33,7 @@ public:
 
     const POINT& Get_MousePos() const;
     const POINT& Get_GameMousePos() const;
+    const POINT& Get_GameCenterPos() const;
 private:
     static constexpr int	KEY_CNT = 0xff;
     _bool					m_bPrevPress[KEY_CNT];
@@ -45,6 +46,7 @@ private:
     HWND                    m_hWnd{};
     POINT                   m_tMousePos{};
     POINT                   m_tGameMousePos{ -1, -1 };
+    POINT                   m_tGameCenterPos{ -1, -1 };
 };
 
 NS_END

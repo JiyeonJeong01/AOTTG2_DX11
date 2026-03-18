@@ -106,6 +106,9 @@
     <ClInclude Include="..\Public\Rope.h">
       <Filter>Equipment</Filter>
     </ClInclude>
+    <ClInclude Include="..\Publict\Equipment_Struct.h">
+      <Filter>Equipment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
