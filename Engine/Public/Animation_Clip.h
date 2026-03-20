@@ -30,4 +30,15 @@ typedef struct ENGINE_DLL tagAnimationClipEntry
 
     std::vector<ANIMATION_CHANNEL_ENTRY> channels;
 
+    const ANIMATION_CHANNEL_ENTRY* Find_Channel_ByBoneIndex(int32_t iBoneIndex) const
+    {
+        for (const ANIMATION_CHANNEL_ENTRY& tChannel : channels)
+        {
+            if (tChannel.iBoneIndex == iBoneIndex)
+                return &tChannel;
+        }
+
+        return nullptr;
+    }
+
 } ANIMATION_CLIP_ENTRY;

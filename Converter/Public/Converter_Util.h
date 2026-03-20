@@ -81,6 +81,19 @@ static std::unordered_set<std::wstring> Build_ExistingModelStemSet(const std::fi
     return set;
 }
 
+static void Write_Float4x4_Bin(std::ofstream& ofs, const _float4x4& mat)
+{
+    const _float values[16] =
+    {
+        mat._11, mat._12, mat._13, mat._14,
+        mat._21, mat._22, mat._23, mat._24,
+        mat._31, mat._32, mat._33, mat._34,
+        mat._41, mat._42, mat._43, mat._44
+    };
+
+    ofs.write(reinterpret_cast<const char*>(values), sizeof(values));
+}
+
 static _float4 Read_BaseColor(const aiMaterial* pAIMaterial)
 {
     if (!pAIMaterial)

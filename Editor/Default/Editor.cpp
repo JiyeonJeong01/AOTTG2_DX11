@@ -237,6 +237,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         SYS_EVENT.Trigger(eData);
     }
     break;
+    case WM_CREATE:
+    {
+        AllocConsole();
+
+        _tfreopen_s(&debug, _T("CONOUT$"), _T("w"), stdout);
+        _tfreopen_s(&debug, _T("CONOUT$"), _T("r"), stdin);
+        _tfreopen_s(&debug, _T("CONOUT$"), _T("w"), stderr);
+    }
+    break;
     case WM_CLOSE:
     {
         FreeConsole();

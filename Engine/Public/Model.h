@@ -12,9 +12,9 @@ typedef struct tagModelPart
 
     uint32_t iFirstIndex{}, iIndexCount{};
 
-    /* Skinning 용도 정적 매핑 정보 */
-    std::vector<uint32_t>   vecBoneIndices;
-    std::vector<_float4x4>  vecOffsetMatrices;          /* pAIBone->mOffsetMatrix */
+    /* SKELETON_ENTRY::bones 기준 전역 본 인덱스 */
+    std::vector<uint32_t>   vecBoneIndices;             /* 모델의 SKELETON_ENTRY에서 해당 메쉬가 영향을 받는 뼈들의 인덱스 */
+    std::vector<_float4x4>  vecOffsetMatrices;          /* vecBoneIndices가 가리키는 Bone의 offsetMatrix이다. pAIBone->mOffsetMatrix */
 
     _bool Is_Skinned() const noexcept
     {
@@ -25,10 +25,10 @@ typedef struct tagModelPart
 
 typedef struct tagModelEntry
 {
-    std::vector<MODEL_PART>         parts;
-    ASSET_GUID                      tGUID{};            /* 해당 ModelEntry가 생성된 .model 파일의 GUID */
+    std::vector<MODEL_PART>             parts;
+    ASSET_GUID                          tGUID{};            /* 해당 ModelEntry가 생성된 .model 파일의 GUID */
 
-    SKELETON_ENTRY                  tSkeleton;
+    SKELETON_ENTRY                      tSkeleton;          /* 모델이 이용하는 전체 Bones */
     std::vector<ANIMATION_CLIP_ENTRY>   vecAnimClips;
 
     _bool Is_Valid() const noexcept

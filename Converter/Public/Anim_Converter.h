@@ -4,201 +4,274 @@
 #include "BuiltIn_GUID.h"
 #include "Material_Converter.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include <filesystem>
 #include <fstream>
 #include <unordered_map>
+#include <algorithm>
 #include <set>
+#include <cmath>
+#include <cfloat>
 
 NS_BEGIN(Converter)
 
-namespace {
+/* ------------------------------------------------------------
+ * Binary Write Helpers
+ * ------------------------------------------------------------ */
 
-    typedef struct tagBoneWeightSlot
-    {
-        uint32_t    iIndices[4] = { 0, 0, 0, 0 };
-        _float      fWeights[4] = { 0.f, 0.f, 0.f };
-    } BONE_WEIGHT_SLOT;
+ /* 문자열을 length + bytes 형태로 저장하는 용도 */
+    static void Write_String_Bin(std::ofstream& ofs, const std::string& strValue)
+{
+    const uint32_t iLength = static_cast<uint32_t>(strValue.size());
+    ofs.write(reinterpret_cast<const char*>(&iLength), sizeof(iLength));
 
-    static void Add_BoneWeight(BONE_WEIGHT_SLOT& slot, uint32_t iBoneIndex, float fWeight)
-    {
-        if (fWeight <= 0.f)
-            return;
-
-        for (size_t i = 0; i < 4; ++i)
-        {
-            if (slot.fWeights[i] == 0.f) /* 가중치 빈 곳에 넣기 */
-            {
-                slot.iIndices[i] = iBoneIndex;
-                slot.fWeights[i] = fWeight;
-                return;
-            }
-        }
-    }
-
-    /* fWeight의 합이 1.0 이상이 되는 경우 방지 */
-    static void Normalize_BoneWeight(BONE_WEIGHT_SLOT& slot)
-    {
-        float fSum = slot.fWeights[0] + slot.fWeights[1] + slot.fWeights[2] + slot.fWeights[3];
-        if (fSum <= 0.f)
-        {
-            slot.iIndices[0] = 0;
-            slot.fWeights[0] = 1.f;
-            return;
-        }
-
-        for (size_t i = 0; i < 4; ++i)
-            slot.fWeights[i] /= fSum;
-    }
-
-    static _float4x4 To_Float4x4(const aiMatrix4x4& mat)
-    {
-        _float4x4 out{};
-        out._11 = mat.a1; out._12 = mat.b1; out._13 = mat.c1; out._14 = mat.d1;
-        out._21 = mat.a2; out._22 = mat.b2; out._23 = mat.c2; out._24 = mat.d2;
-        out._31 = mat.a3; out._32 = mat.b3; out._33 = mat.c3; out._34 = mat.d3;
-        out._41 = mat.a4; out._42 = mat.b4; out._43 = mat.c4; out._44 = mat.d4;
-        return out;
-    }
-
-    static void Apply_Scale_To_LocalBind(_float4x4& mat, float fImportScale)
-    {
-        mat._41 *= fImportScale;
-        mat._42 *= fImportScale;
-        mat._43 *= fImportScale;
-    }
-
-    /* aiNode로 이름 찾기 */
-    static const aiNode* Find_Node_By_Name_Recursive(const aiNode* pNode, const std::string& strName)
-    {
-        if (!pNode)
-            return nullptr;
-
-        if (strName == pNode->mName.C_Str())
-            return pNode;
-
-        for (uint32_t i = 0; i < pNode->mNumChildren; ++i)
-        {
-            const aiNode* pFound = Find_Node_By_Name_Recursive(pNode->mChildren[i], strName);
-            if (pFound)
-                return pFound;
-        }
-
-        return nullptr;
-    }
-
-    /* 메쉬에서 Bone 이름 추출하기 */
-    static void Gather_BoneNames_From_Meshes(const aiScene* pAIScene, std::set<std::string>& outBoneNames)
-    {
-        outBoneNames.clear();
-
-        if (!pAIScene)
-            return;
-
-        for (uint32_t iMesh = 0; iMesh < pAIScene->mNumMeshes; ++iMesh)
-        {
-            const aiMesh* pAIMesh = pAIScene->mMeshes[iMesh];
-            if (!pAIMesh)
-                continue;
-
-            for (uint32_t iBone = 0; iBone < pAIMesh->mNumBones; ++iBone)
-            {
-                const aiBone* pAIBone = pAIMesh->mBones[iBone];
-                if (!pAIBone)
-                    continue;
-
-                outBoneNames.insert(pAIBone->mName.C_Str());
-            }
-        }
-    }
-
-    /* 애니메이션으로부터 이름 추출하기 */
-    static void Gather_BoneNames_From_Animations(const aiScene* pAIScene, std::set<std::string>& outBoneNames)
-    {
-        if (!pAIScene)
-            return;
-
-        for (uint32_t iAnim = 0; iAnim < pAIScene->mNumAnimations; ++iAnim)
-        {
-            const aiAnimation* pAIAnim = pAIScene->mAnimations[iAnim];
-            if (!pAIAnim)
-                continue;
-
-            for (uint32_t iChannel = 0; iChannel < pAIAnim->mNumChannels; ++iChannel)
-            {
-                const aiNodeAnim* pAIChannel = pAIAnim->mChannels[iChannel];
-                if (!pAIChannel)
-                    continue;
-
-                outBoneNames.insert(pAIChannel->mNodeName.C_Str());
-            }
-        }
-    }
-
+    if (iLength > 0)
+        ofs.write(strValue.data(), iLength);
 }
 
-static void Build_Skeleton_Recursive(const aiNode* pNode, int32_t iParentBoneIndex, const std::set<std::string>& boneNames, SKELETON_ENTRY& out, float fImportScale)
+/* trivially copyable 데이터 하나를 저장하는 용도 */
+template <typename T>
+static void Write_Value_Bin(std::ofstream& ofs, const T& value)
 {
-    if (!pNode)
+    ofs.write(reinterpret_cast<const char*>(&value), sizeof(T));
+}
+
+/* trivially copyable 벡터 전체를 저장하는 용도 */
+template <typename T>
+static void Write_Vector_Bin(std::ofstream& ofs, const std::vector<T>& vecValue)
+{
+    const uint32_t iCount = static_cast<uint32_t>(vecValue.size());
+    ofs.write(reinterpret_cast<const char*>(&iCount), sizeof(iCount));
+
+    if (!vecValue.empty())
+        ofs.write(reinterpret_cast<const char*>(vecValue.data()), sizeof(T) * vecValue.size());
+}
+
+/* ------------------------------------------------------------
+ * Assimp <-> Engine Convert Helpers
+ * ------------------------------------------------------------ */
+
+ /* aiMatrix4x4 -> _float4x4 변환 용도 */
+static _float4x4 Convert_AiMatrix(const aiMatrix4x4& mat)
+{
+    _float4x4 out{};
+    out._11 = mat.a1; out._12 = mat.b1; out._13 = mat.c1; out._14 = mat.d1;
+    out._21 = mat.a2; out._22 = mat.b2; out._23 = mat.c2; out._24 = mat.d2;
+    out._31 = mat.a3; out._32 = mat.b3; out._33 = mat.c3; out._34 = mat.d3;
+    out._41 = mat.a4; out._42 = mat.b4; out._43 = mat.c4; out._44 = mat.d4;
+    return out;
+}
+
+/* aiVector3D -> _float3 변환 용도 */
+static _float3 Convert_AiVector3(const aiVector3D& v)
+{
+    _float3 out{};
+    out.x = v.x;
+    out.y = v.y;
+    out.z = v.z;
+    return out;
+}
+
+/* aiQuaternion -> _float4 변환 용도 */
+static _float4 Convert_AiQuaternion(const aiQuaternion& q)
+{
+    _float4 out{};
+    out.x = q.x;
+    out.y = q.y;
+    out.z = q.z;
+    out.w = q.w;
+    return out;
+}
+
+/* _float4 정규화 용도 */
+static void Normalize_Quaternion(_float4& q)
+{
+    const float fLenSq = q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w;
+    if (fLenSq <= FLT_EPSILON)
+    {
+        q = _float4{ 0.f, 0.f, 0.f, 1.f };
+        return;
+    }
+
+    const float fInvLen = 1.f / std::sqrt(fLenSq);
+    q.x *= fInvLen;
+    q.y *= fInvLen;
+    q.z *= fInvLen;
+    q.w *= fInvLen;
+}
+
+/* ------------------------------------------------------------
+ * Bone Weight Helpers
+ * ------------------------------------------------------------ */
+
+ /* 정점당 최대 4개 Bone Weight를 유지하는 용도 */
+static void Add_BoneWeight(BONE_WEIGHT_SLOT& slot, uint32_t iBoneIndex, float fWeight)
+{
+    if (fWeight <= 0.f)
         return;
 
-    const std::string strNodeName = pNode->mName.C_Str();
-
-    int32_t iThisBoneIndex = iParentBoneIndex;
-
-    if (boneNames.find(strNodeName) != boneNames.end())
+    for (size_t i = 0; i < 4; ++i)
     {
-        BONE_ENTRY tBone{};
-        tBone.strName = strNodeName;
-        tBone.iParentBoneIndex = iParentBoneIndex;
-        tBone.matLocalBind = To_Float4x4(pNode->mTransformation);
-        Apply_Scale_To_LocalBind(tBone.matLocalBind, fImportScale);
-        tBone.matCombinedBind = Math::Identity();
-        tBone.matOffset = Math::Identity();
-
-        iThisBoneIndex = static_cast<int32_t>(out.bones.size());
-        out.bones.push_back(tBone);
-        out.BoneNameToIndex[strNodeName] = static_cast<uint32_t>(iThisBoneIndex);
-
-        if (iParentBoneIndex >= 0)
-            out.bones[iParentBoneIndex].vecChildBoneIndices.push_back(static_cast<uint32_t>(iThisBoneIndex));
-        else if (out.iRootBoneIndex < 0)
-            out.iRootBoneIndex = iThisBoneIndex;
+        if (slot.fWeights[i] == 0.f)
+        {
+            slot.iIndices[i] = iBoneIndex;
+            slot.fWeights[i] = fWeight;
+            return;
+        }
     }
 
-    for (uint32_t i = 0; i < pNode->mNumChildren; ++i)
-        Build_Skeleton_Recursive(pNode->mChildren[i], iThisBoneIndex, boneNames, out, fImportScale);
+    size_t iMinIndex = 0;
+    for (size_t i = 1; i < 4; ++i)
+    {
+        if (slot.fWeights[i] < slot.fWeights[iMinIndex])
+            iMinIndex = i;
+    }
+
+    if (fWeight > slot.fWeights[iMinIndex])
+    {
+        slot.iIndices[iMinIndex] = iBoneIndex;
+        slot.fWeights[iMinIndex] = fWeight;
+    }
 }
 
-static void Build_Skeleton(const aiScene* pAIScene, SKELETON_ENTRY& out, float fImportScale)
+/* Bone Weight 4개를 내림차순으로 정렬하는 용도 */
+static void Sort_BoneWeightSlot(BONE_WEIGHT_SLOT& slot)
 {
-    out.bones.clear();
-    out.BoneNameToIndex.clear();
-    out.iRootBoneIndex = -1;
+    for (size_t i = 0; i < 4; ++i)
+    {
+        for (size_t j = i + 1; j < 4; ++j)
+        {
+            if (slot.fWeights[j] > slot.fWeights[i])
+            {
+                std::swap(slot.fWeights[i], slot.fWeights[j]);
+                std::swap(slot.iIndices[i], slot.iIndices[j]);
+            }
+        }
+    }
+}
 
+/* Bone Weight 합을 1로 정규화하는 용도 */
+static void Normalize_BoneWeightSlot(BONE_WEIGHT_SLOT& slot)
+{
+    Sort_BoneWeightSlot(slot);
+
+    float fSum = 0.f;
+    for (size_t i = 0; i < 4; ++i)
+        fSum += slot.fWeights[i];
+
+    if (fSum <= FLT_EPSILON)
+    {
+        slot.iIndices[0] = 0;
+        slot.fWeights[0] = 0.f;
+        slot.iIndices[1] = 0;
+        slot.fWeights[1] = 0.f;
+        slot.iIndices[2] = 0;
+        slot.fWeights[2] = 0.f;
+        slot.iIndices[3] = 0;
+        slot.fWeights[3] = 0.f;
+        return;
+    }
+
+    const float fInvSum = 1.f / fSum;
+    for (size_t i = 0; i < 4; ++i)
+        slot.fWeights[i] *= fInvSum;
+}
+
+/* ------------------------------------------------------------
+ * Assimp Scene Load
+ * ------------------------------------------------------------ */
+
+ /* 애니메이션 모델용 Assimp Scene 로드 용도 */
+static const aiScene* LoadScene_Assimp_Anim(Assimp::Importer& importer, const std::filesystem::path& fbxPath, uint32_t iFlag = 0)
+{
+    const uint32_t flags =
+        aiProcess_ConvertToLeftHanded |             /* 왼손 좌표계 기준으로 변경 */
+        aiProcessPreset_TargetRealtime_Fast |       /* 빠른 실시간 렌더링 용도 프리셋 */
+        aiProcess_Triangulate |                     /* 모든 폴리곤 Triangle */
+        aiProcess_JoinIdenticalVertices |           /* 중복 정점 줄여 최적화 */
+        aiProcess_GenNormals |                      /* 노멀이 없다면 자동 생성 */
+        aiProcess_CalcTangentSpace |                /* 탄젠트 계산 */
+        aiProcess_LimitBoneWeights;                 /* Bone Weight 개수 제한 */
+
+    return importer.ReadFile(fbxPath.string(), flags | iFlag);
+}
+
+/* ------------------------------------------------------------
+ * Skeleton Convert
+ * ------------------------------------------------------------ */
+
+ /* 노드 트리를 전부 Bone 배열로 만드는 용도 */
+static void Build_Skeleton_From_Node_Recursive(
+    const aiNode* pAINode,
+    int32_t iParentBoneIndex,
+    const aiMatrix4x4& matParentCombined,
+    CONVERTED_SKELETON& outSkeleton)
+{
+    if (!pAINode)
+        return;
+
+    CONVERTED_BONE bone{};
+    bone.strName = pAINode->mName.C_Str();
+    bone.iParentBoneIndex = iParentBoneIndex;
+
+    bone.matLocalBind = Convert_AiMatrix(pAINode->mTransformation);
+
+    const aiMatrix4x4 matCombined = pAINode->mTransformation * matParentCombined;
+    bone.matCombinedBind = Convert_AiMatrix(matCombined);
+
+    _float4x4 matIdentity{};
+    matIdentity._11 = 1.f;
+    matIdentity._22 = 1.f;
+    matIdentity._33 = 1.f;
+    matIdentity._44 = 1.f;
+    bone.matOffset = matIdentity; /* 실제 Skin Bone이 아니면 기본은 Identity */
+
+    const uint32_t iMyBoneIndex = static_cast<uint32_t>(outSkeleton.bones.size());
+    outSkeleton.BoneNameToIndex[bone.strName] = iMyBoneIndex;
+    outSkeleton.bones.push_back(std::move(bone));
+
+    if (iParentBoneIndex < 0)
+        outSkeleton.iRootBoneIndex = static_cast<int32_t>(iMyBoneIndex);
+    else
+        outSkeleton.bones[iParentBoneIndex].vecChildBoneIndices.push_back(iMyBoneIndex);
+
+    for (uint32_t i = 0; i < pAINode->mNumChildren; ++i)
+    {
+        Build_Skeleton_From_Node_Recursive(
+            pAINode->mChildren[i],
+            static_cast<int32_t>(iMyBoneIndex),
+            matCombined,
+            outSkeleton);
+    }
+}
+
+/* Scene 전체에서 Skeleton을 만드는 용도 */
+static _bool Convert_Skeleton(const aiScene* pAIScene, CONVERTED_SKELETON& outSkeleton)
+{
     if (!pAIScene || !pAIScene->mRootNode)
+        return false;
+
+    outSkeleton.bones.clear();
+    outSkeleton.BoneNameToIndex.clear();
+    outSkeleton.iRootBoneIndex = -1;
+
+    Build_Skeleton_From_Node_Recursive(
+        pAIScene->mRootNode,
+        -1,
+        aiMatrix4x4(),
+        outSkeleton);
+
+    return !outSkeleton.bones.empty();
+}
+
+/* Mesh Bone의 Offset 행렬을 Skeleton에 반영하는 용도 */
+static void Apply_MeshBone_Offsets(const aiScene* pAIScene, CONVERTED_SKELETON& ioSkeleton)
+{
+    if (!pAIScene)
         return;
-
-    std::set<std::string> boneNames;
-    Gather_BoneNames_From_Meshes(pAIScene, boneNames);
-    Gather_BoneNames_From_Animations(pAIScene, boneNames);
-
-    Build_Skeleton_Recursive(pAIScene->mRootNode, -1, boneNames, out, fImportScale);
-
-    for (size_t i = 0; i < out.bones.size(); ++i)
-    {
-        const int32_t iParent = out.bones[i].iParentBoneIndex;
-
-        if (iParent < 0)
-        {
-            out.bones[i].matCombinedBind = out.bones[i].matLocalBind;
-        }
-        else
-        {
-            const _matrix matLocal = XMLoadFloat4x4(&out.bones[i].matLocalBind);
-            const _matrix matParentCombined = XMLoadFloat4x4(&out.bones[iParent].matCombinedBind);
-            XMStoreFloat4x4(&out.bones[i].matCombinedBind, matLocal * matParentCombined);
-        }
-    }
 
     for (uint32_t iMesh = 0; iMesh < pAIScene->mNumMeshes; ++iMesh)
     {
@@ -212,193 +285,316 @@ static void Build_Skeleton(const aiScene* pAIScene, SKELETON_ENTRY& out, float f
             if (!pAIBone)
                 continue;
 
-            auto it = out.BoneNameToIndex.find(pAIBone->mName.C_Str());
-            if (it == out.BoneNameToIndex.end())
+            const std::string strBoneName = pAIBone->mName.C_Str();
+            auto itFound = ioSkeleton.BoneNameToIndex.find(strBoneName);
+            if (itFound == ioSkeleton.BoneNameToIndex.end())
                 continue;
 
-            out.bones[it->second].matOffset = To_Float4x4(pAIBone->mOffsetMatrix);
+            ioSkeleton.bones[itFound->second].matOffset = Convert_AiMatrix(pAIBone->mOffsetMatrix);
         }
     }
 }
 
-static ANIM_KEYFRAME Sample_Channel_KeyFrame(const aiNodeAnim* pAIChannel, double fTimeTick, float fImportScale)
+/* ------------------------------------------------------------
+ * Animation Sampling Helpers
+ * ------------------------------------------------------------ */
+
+ /* 해당 시간 이전/이후 키를 찾는 용도 */
+template <typename TKey>
+static uint32_t Find_Left_Key_Index(const TKey* pKeys, uint32_t iKeyCount, double fTime)
 {
-    ANIM_KEYFRAME out{};
+    if (!pKeys || iKeyCount == 0)
+        return 0;
 
-    out.fTrackPosition = (_float)fTimeTick;
-    out.vScale = _float3(1.f, 1.f, 1.f);
-    out.vRotation = _float4(0.f, 0.f, 0.f, 1.f);
-    out.vTranslation = _float3(0.f, 0.f, 0.f);
+    if (iKeyCount == 1)
+        return 0;
 
-    if (pAIChannel->mNumScalingKeys > 0)
+    for (uint32_t i = 0; i + 1 < iKeyCount; ++i)
     {
-        uint32_t iKey = 0;
-        while ((iKey + 1) < pAIChannel->mNumScalingKeys &&
-            pAIChannel->mScalingKeys[iKey + 1].mTime <= fTimeTick)
-        {
-            ++iKey;
-        }
-
-        if ((iKey + 1) < pAIChannel->mNumScalingKeys)
-        {
-            const aiVectorKey& left = pAIChannel->mScalingKeys[iKey];
-            const aiVectorKey& right = pAIChannel->mScalingKeys[iKey + 1];
-            const double denom = right.mTime - left.mTime;
-            const float ratio = (denom <= 0.0) ? 0.f : float((fTimeTick - left.mTime) / denom);
-
-            XMFLOAT3 l(left.mValue.x, left.mValue.y, left.mValue.z);
-            XMFLOAT3 r(right.mValue.x, right.mValue.y, right.mValue.z);
-
-            out.vScale.x = l.x + (r.x - l.x) * ratio;
-            out.vScale.y = l.y + (r.y - l.y) * ratio;
-            out.vScale.z = l.z + (r.z - l.z) * ratio;
-        }
-        else
-        {
-            const aiVector3D& v = pAIChannel->mScalingKeys[pAIChannel->mNumScalingKeys - 1].mValue;
-            out.vScale = _float3(v.x, v.y, v.z);
-        }
+        if (fTime < pKeys[i + 1].mTime)
+            return i;
     }
 
-    if (pAIChannel->mNumRotationKeys > 0)
+    return iKeyCount - 1;
+}
+
+/* Vector3 키를 보간 샘플링하는 용도 */
+static _float3 Sample_Vector3_Channel(
+    const aiVectorKey* pKeys,
+    uint32_t iKeyCount,
+    double fTime,
+    const _float3& vDefaultValue)
+{
+    if (!pKeys || iKeyCount == 0)
+        return vDefaultValue;
+
+    if (iKeyCount == 1)
+        return Convert_AiVector3(pKeys[0].mValue);
+
+    const uint32_t iLeft = Find_Left_Key_Index(pKeys, iKeyCount, fTime);
+    if (iLeft + 1 >= iKeyCount)
+        return Convert_AiVector3(pKeys[iKeyCount - 1].mValue);
+
+    const aiVectorKey& tLeft = pKeys[iLeft];
+    const aiVectorKey& tRight = pKeys[iLeft + 1];
+
+    const double fDenom = tRight.mTime - tLeft.mTime;
+    if (fDenom <= DBL_EPSILON)
+        return Convert_AiVector3(tLeft.mValue);
+
+    const float fRatio = static_cast<float>((fTime - tLeft.mTime) / fDenom);
+
+    aiVector3D vOut = tLeft.mValue + (tRight.mValue - tLeft.mValue) * fRatio;
+    return Convert_AiVector3(vOut);
+}
+
+/* Quaternion 키를 보간 샘플링하는 용도 */
+static _float4 Sample_Quaternion_Channel(
+    const aiQuatKey* pKeys,
+    uint32_t iKeyCount,
+    double fTime,
+    const _float4& vDefaultValue)
+{
+    if (!pKeys || iKeyCount == 0)
+        return vDefaultValue;
+
+    if (iKeyCount == 1)
     {
-        uint32_t iKey = 0;
-        while ((iKey + 1) < pAIChannel->mNumRotationKeys &&
-            pAIChannel->mRotationKeys[iKey + 1].mTime <= fTimeTick)
-        {
-            ++iKey;
-        }
-
-        if ((iKey + 1) < pAIChannel->mNumRotationKeys)
-        {
-            const aiQuatKey& left = pAIChannel->mRotationKeys[iKey];
-            const aiQuatKey& right = pAIChannel->mRotationKeys[iKey + 1];
-            const double denom = right.mTime - left.mTime;
-            const float ratio = (denom <= 0.0) ? 0.f : float((fTimeTick - left.mTime) / denom);
-
-            const _vector vLeft = XMVectorSet(left.mValue.x, left.mValue.y, left.mValue.z, left.mValue.w);
-            const _vector vRight = XMVectorSet(right.mValue.x, right.mValue.y, right.mValue.z, right.mValue.w);
-            _float4 q{};
-            XMStoreFloat4(&q, XMQuaternionSlerp(vLeft, vRight, ratio));
-            out.vRotation = q;
-        }
-        else
-        {
-            const aiQuaternion& q = pAIChannel->mRotationKeys[pAIChannel->mNumRotationKeys - 1].mValue;
-            out.vRotation = _float4(q.x, q.y, q.z, q.w);
-        }
+        _float4 out = Convert_AiQuaternion(pKeys[0].mValue);
+        Normalize_Quaternion(out);
+        return out;
     }
 
-    if (pAIChannel->mNumPositionKeys > 0)
+    const uint32_t iLeft = Find_Left_Key_Index(pKeys, iKeyCount, fTime);
+    if (iLeft + 1 >= iKeyCount)
     {
-        uint32_t iKey = 0;
-        while ((iKey + 1) < pAIChannel->mNumPositionKeys &&
-            pAIChannel->mPositionKeys[iKey + 1].mTime <= fTimeTick)
-        {
-            ++iKey;
-        }
-
-        if ((iKey + 1) < pAIChannel->mNumPositionKeys)
-        {
-            const aiVectorKey& left = pAIChannel->mPositionKeys[iKey];
-            const aiVectorKey& right = pAIChannel->mPositionKeys[iKey + 1];
-            const double denom = right.mTime - left.mTime;
-            const float ratio = (denom <= 0.0) ? 0.f : float((fTimeTick - left.mTime) / denom);
-
-            XMFLOAT3 l(left.mValue.x, left.mValue.y, left.mValue.z);
-            XMFLOAT3 r(right.mValue.x, right.mValue.y, right.mValue.z);
-
-            out.vTranslation.x = (l.x + (r.x - l.x) * ratio) * fImportScale;
-            out.vTranslation.y = (l.y + (r.y - l.y) * ratio) * fImportScale;
-            out.vTranslation.z = (l.z + (r.z - l.z) * ratio) * fImportScale;
-        }
-        else
-        {
-            const aiVector3D& v = pAIChannel->mPositionKeys[pAIChannel->mNumPositionKeys - 1].mValue;
-            out.vTranslation = _float3(v.x * fImportScale, v.y * fImportScale, v.z * fImportScale);
-        }
+        _float4 out = Convert_AiQuaternion(pKeys[iKeyCount - 1].mValue);
+        Normalize_Quaternion(out);
+        return out;
     }
 
+    const aiQuatKey& tLeft = pKeys[iLeft];
+    const aiQuatKey& tRight = pKeys[iLeft + 1];
+
+    const double fDenom = tRight.mTime - tLeft.mTime;
+    if (fDenom <= DBL_EPSILON)
+    {
+        _float4 out = Convert_AiQuaternion(tLeft.mValue);
+        Normalize_Quaternion(out);
+        return out;
+    }
+
+    const float fRatio = static_cast<float>((fTime - tLeft.mTime) / fDenom);
+
+    aiQuaternion qOut;
+    aiQuaternion::Interpolate(qOut, tLeft.mValue, tRight.mValue, fRatio);
+    qOut.Normalize();
+
+    _float4 out = Convert_AiQuaternion(qOut);
+    Normalize_Quaternion(out);
     return out;
 }
 
-static _bool Convert_Animations(
-    const aiScene* pAIScene,
-    const SKELETON_ENTRY& tSkeleton,
-    std::vector<ANIMATION_CLIP_ENTRY>& outClips,
-    float fImportScale)
+/* 채널의 모든 키 시간들을 하나로 모으는 용도 */
+static void Collect_Channel_KeyTimes(const aiNodeAnim* pAINodeAnim, std::vector<double>& outTimes)
 {
-    outClips.clear();
+    outTimes.clear();
+    if (!pAINodeAnim)
+        return;
 
-    if (!pAIScene || pAIScene->mNumAnimations == 0)
-        return true;
+    outTimes.reserve(
+        pAINodeAnim->mNumPositionKeys +
+        pAINodeAnim->mNumRotationKeys +
+        pAINodeAnim->mNumScalingKeys);
 
-    for (uint32_t iAnim = 0; iAnim < pAIScene->mNumAnimations; ++iAnim)
+    for (uint32_t i = 0; i < pAINodeAnim->mNumPositionKeys; ++i)
+        outTimes.push_back(pAINodeAnim->mPositionKeys[i].mTime);
+
+    for (uint32_t i = 0; i < pAINodeAnim->mNumRotationKeys; ++i)
+        outTimes.push_back(pAINodeAnim->mRotationKeys[i].mTime);
+
+    for (uint32_t i = 0; i < pAINodeAnim->mNumScalingKeys; ++i)
+        outTimes.push_back(pAINodeAnim->mScalingKeys[i].mTime);
+
+    std::sort(outTimes.begin(), outTimes.end());
+    outTimes.erase(
+        std::unique(outTimes.begin(), outTimes.end(),
+            [](double a, double b)
+            {
+                return std::abs(a - b) <= 1e-8;
+            }),
+        outTimes.end());
+}
+
+/* Bone 기본 자세에서 SRT를 추출하는 용도 */
+static void Extract_DefaultSRT_From_Bone(const CONVERTED_BONE& tBone, _float3& outScale, _float4& outRotation, _float3& outTranslation)
+{
+    const _matrix matLocal = XMLoadFloat4x4(&tBone.matLocalBind);
+
+    _vector vScale{};
+    _vector vRotation{};
+    _vector vTranslation{};
+
+    XMMatrixDecompose(&vScale, &vRotation, &vTranslation, matLocal);
+
+    XMStoreFloat3(&outScale, vScale);
+    XMStoreFloat4(&outRotation, vRotation);
+    XMStoreFloat3(&outTranslation, vTranslation);
+
+    Normalize_Quaternion(outRotation);
+}
+
+/* Assimp 채널을 런타임 채널 구조로 변환하는 용도 */
+static _bool Convert_Animation_Channel(
+    const aiNodeAnim* pAINodeAnim,
+    const CONVERTED_SKELETON& tSkeleton,
+    CONVERTED_ANIMATION_CHANNEL& outChannel)
+{
+    if (!pAINodeAnim)
+        return false;
+
+    outChannel = {};
+
+    outChannel.strBoneName = pAINodeAnim->mNodeName.C_Str();
+
+    auto itFound = tSkeleton.BoneNameToIndex.find(outChannel.strBoneName);
+    if (itFound == tSkeleton.BoneNameToIndex.end())
+        return false;
+
+    outChannel.iBoneIndex = static_cast<int32_t>(itFound->second);
+
+    std::vector<double> vecTimes;
+    Collect_Channel_KeyTimes(pAINodeAnim, vecTimes);
+
+    if (vecTimes.empty())
     {
-        const aiAnimation* pAIAnim = pAIScene->mAnimations[iAnim];
-        if (!pAIAnim)
+        ANIM_KEYFRAME tKeyFrame{};
+        tKeyFrame.fTrackPosition = 0.f;
+
+        const CONVERTED_BONE& tBone = tSkeleton.bones[outChannel.iBoneIndex];
+        Extract_DefaultSRT_From_Bone(tBone, tKeyFrame.vScale, tKeyFrame.vRotation, tKeyFrame.vTranslation);
+
+        outChannel.vecKeyFrames.push_back(tKeyFrame);
+        return true;
+    }
+
+    outChannel.vecKeyFrames.reserve(vecTimes.size());
+
+    _float3 vDefaultScale{ 1.f, 1.f, 1.f };
+    _float4 vDefaultRotation{ 0.f, 0.f, 0.f, 1.f };
+    _float3 vDefaultTranslation{ 0.f, 0.f, 0.f };
+
+    {
+        const CONVERTED_BONE& tBone = tSkeleton.bones[outChannel.iBoneIndex];
+        Extract_DefaultSRT_From_Bone(tBone, vDefaultScale, vDefaultRotation, vDefaultTranslation);
+    }
+
+    for (double fTime : vecTimes)
+    {
+        ANIM_KEYFRAME tKeyFrame{};
+        tKeyFrame.fTrackPosition = static_cast<_float>(fTime);
+
+        tKeyFrame.vScale = Sample_Vector3_Channel(
+            pAINodeAnim->mScalingKeys,
+            pAINodeAnim->mNumScalingKeys,
+            fTime,
+            vDefaultScale);
+
+        tKeyFrame.vRotation = Sample_Quaternion_Channel(
+            pAINodeAnim->mRotationKeys,
+            pAINodeAnim->mNumRotationKeys,
+            fTime,
+            vDefaultRotation);
+
+        tKeyFrame.vTranslation = Sample_Vector3_Channel(
+            pAINodeAnim->mPositionKeys,
+            pAINodeAnim->mNumPositionKeys,
+            fTime,
+            vDefaultTranslation);
+
+        outChannel.vecKeyFrames.push_back(tKeyFrame);
+    }
+
+    return !outChannel.vecKeyFrames.empty();
+}
+
+/* Assimp 애니메이션 하나를 런타임 클립 구조로 변환하는 용도 */
+static _bool Convert_Animation_Clip(
+    const aiAnimation* pAIAnim,
+    const CONVERTED_SKELETON& tSkeleton,
+    CONVERTED_ANIMATION_CLIP& outClip,
+    uint32_t iClipIndex)
+{
+    if (!pAIAnim)
+        return false;
+
+    outClip = {};
+
+    if (pAIAnim->mName.length > 0)
+        outClip.strName = pAIAnim->mName.C_Str();
+    else
+        outClip.strName = "AnimClip_" + std::to_string(iClipIndex);
+
+    outClip.fDuration = static_cast<_float>(pAIAnim->mDuration);
+    outClip.fTickPerSecond = (pAIAnim->mTicksPerSecond > 0.0)
+        ? static_cast<_float>(pAIAnim->mTicksPerSecond)
+        : 1.f;
+
+    outClip.channels.reserve(pAIAnim->mNumChannels);
+
+    for (uint32_t i = 0; i < pAIAnim->mNumChannels; ++i)
+    {
+        const aiNodeAnim* pAINodeAnim = pAIAnim->mChannels[i];
+        if (!pAINodeAnim)
             continue;
 
-        ANIMATION_CLIP_ENTRY tClip{};
-        ASSET_GUID::Try_Utf8_To_GUID(Generate_GUID_String(), tClip.tGUID);
-        tClip.strName = (pAIAnim->mName.length > 0) ? pAIAnim->mName.C_Str() : ("Anim_" + std::to_string(iAnim));
-        tClip.fDuration = (_float)pAIAnim->mDuration;
-        tClip.fTickPerSecond = (_float)((pAIAnim->mTicksPerSecond > 0.0) ? pAIAnim->mTicksPerSecond : 25.0);
+        CONVERTED_ANIMATION_CHANNEL channel{};
+        if (!Convert_Animation_Channel(pAINodeAnim, tSkeleton, channel))
+            continue;
 
-        tClip.channels.reserve(pAIAnim->mNumChannels);
-
-        for (uint32_t iChannel = 0; iChannel < pAIAnim->mNumChannels; ++iChannel)
-        {
-            const aiNodeAnim* pAIChannel = pAIAnim->mChannels[iChannel];
-            if (!pAIChannel)
-                continue;
-
-            ANIMATION_CHANNEL_ENTRY tChannel{};
-            tChannel.strBoneName = pAIChannel->mNodeName.C_Str();
-
-            auto itBone = tSkeleton.BoneNameToIndex.find(tChannel.strBoneName);
-            if (itBone == tSkeleton.BoneNameToIndex.end())
-                continue;
-
-            tChannel.iBoneIndex = (int32_t)itBone->second;
-
-            std::set<double> keyTimes;
-            for (uint32_t i = 0; i < pAIChannel->mNumScalingKeys; ++i)   keyTimes.insert(pAIChannel->mScalingKeys[i].mTime);
-            for (uint32_t i = 0; i < pAIChannel->mNumRotationKeys; ++i)  keyTimes.insert(pAIChannel->mRotationKeys[i].mTime);
-            for (uint32_t i = 0; i < pAIChannel->mNumPositionKeys; ++i)  keyTimes.insert(pAIChannel->mPositionKeys[i].mTime);
-
-            if (keyTimes.empty())
-            {
-                ANIM_KEYFRAME tKey{};
-                tKey.fTrackPosition = 0.f;
-                tChannel.vecKeyFrames.push_back(tKey);
-            }
-            else
-            {
-                tChannel.vecKeyFrames.reserve(keyTimes.size());
-                for (double fTimeTick : keyTimes)
-                {
-                    ANIM_KEYFRAME tKey = Sample_Channel_KeyFrame(pAIChannel, fTimeTick, fImportScale);
-                    tKey.fTrackPosition = (_float)fTimeTick;
-                    tChannel.vecKeyFrames.push_back(tKey);
-                }
-            }
-
-            tClip.channels.push_back(std::move(tChannel));
-        }
-
-        outClips.push_back(std::move(tClip));
+        outClip.channels.push_back(std::move(channel));
     }
 
     return true;
 }
 
+/* Scene 전체의 애니메이션 클립을 변환하는 용도 */
+static _bool Convert_Animation_Clips(
+    const aiScene* pAIScene,
+    const CONVERTED_SKELETON& tSkeleton,
+    std::vector<CONVERTED_ANIMATION_CLIP>& outClips)
+{
+    if (!pAIScene)
+        return false;
+
+    outClips.clear();
+    outClips.reserve(pAIScene->mNumAnimations);
+
+    for (uint32_t i = 0; i < pAIScene->mNumAnimations; ++i)
+    {
+        const aiAnimation* pAIAnim = pAIScene->mAnimations[i];
+        if (!pAIAnim)
+            continue;
+
+        CONVERTED_ANIMATION_CLIP clip{};
+        if (!Convert_Animation_Clip(pAIAnim, tSkeleton, clip, i))
+            continue;
+
+        outClips.push_back(std::move(clip));
+    }
+
+    return true;
+}
+
+/* ------------------------------------------------------------
+ * Anim Mesh Convert
+ * ------------------------------------------------------------ */
+
+ /* 애니메이션 메쉬 하나를 변환하는 용도 */
 static _bool Convert_SingleAnimMesh(
     const aiMesh* pAIMesh,
-    const SKELETON_ENTRY& tSkeleton,
-    Engine::CONVERTED_ANIM_MESH& out,
-    std::vector<uint32_t>& outBoneIndices,
-    std::vector<_float4x4>& outOffsetMatrices,
+    const CONVERTED_SKELETON& tSkeleton,
+    CONVERTED_ANIM_MESH& out,
     const float fImportScale)
 {
     if (!pAIMesh || pAIMesh->mNumVertices == 0)
@@ -406,15 +602,12 @@ static _bool Convert_SingleAnimMesh(
 
     out.vertices.clear();
     out.indices.clear();
-    outBoneIndices.clear();
-    outOffsetMatrices.clear();
 
     const _bool hasNormals = (pAIMesh->mNormals != nullptr);
     const _bool hasTangents = (pAIMesh->mTangents != nullptr);
     const _bool hasUV0 = (pAIMesh->mTextureCoords[0] != nullptr);
 
     out.vertices.resize(pAIMesh->mNumVertices);
-    std::vector<BONE_WEIGHT_SLOT> weightSlots(pAIMesh->mNumVertices);
 
     for (size_t v = 0; v < pAIMesh->mNumVertices; ++v)
     {
@@ -428,7 +621,13 @@ static _bool Convert_SingleAnimMesh(
 
         if (hasUV0)      CopyFloat2(out.vertices[v].vTexcoord, pAIMesh->mTextureCoords[0][v]);
         else             out.vertices[v].vTexcoord = _float2{ 0.f, 0.f };
+
+        out.vertices[v].vBlendIndex = XMUINT4(0, 0, 0, 0);
+        out.vertices[v].vBlendWeight = _float4(0.f, 0.f, 0.f, 0.f);
     }
+
+    std::vector<BONE_WEIGHT_SLOT> vecWeightSlots;
+    vecWeightSlots.resize(pAIMesh->mNumVertices);
 
     for (uint32_t iBone = 0; iBone < pAIMesh->mNumBones; ++iBone)
     {
@@ -436,43 +635,53 @@ static _bool Convert_SingleAnimMesh(
         if (!pAIBone)
             continue;
 
-        auto it = tSkeleton.BoneNameToIndex.find(pAIBone->mName.C_Str());
-        if (it == tSkeleton.BoneNameToIndex.end())
+        const std::string strBoneName = pAIBone->mName.C_Str();
+        auto itFound = tSkeleton.BoneNameToIndex.find(strBoneName);
+        if (itFound == tSkeleton.BoneNameToIndex.end())
             continue;
 
-        const uint32_t iSkeletonBoneIndex = it->second;
-        const uint32_t iPaletteIndex = static_cast<uint32_t>(outBoneIndices.size());
-
-        outBoneIndices.push_back(iSkeletonBoneIndex);
-        outOffsetMatrices.push_back(To_Float4x4(pAIBone->mOffsetMatrix));
+        const uint32_t iBoneIndex = itFound->second;
 
         for (uint32_t iWeight = 0; iWeight < pAIBone->mNumWeights; ++iWeight)
         {
-            const aiVertexWeight& w = pAIBone->mWeights[iWeight];
-            if (w.mVertexId >= pAIMesh->mNumVertices)
+            const aiVertexWeight& tWeight = pAIBone->mWeights[iWeight];
+            if (tWeight.mVertexId >= vecWeightSlots.size())
                 continue;
 
-            Add_BoneWeight(weightSlots[w.mVertexId], iSkeletonBoneIndex, w.mWeight);
+            Add_BoneWeight(vecWeightSlots[tWeight.mVertexId], iBoneIndex, tWeight.mWeight);
         }
     }
 
-    for (size_t v = 0; v < pAIMesh->mNumVertices; ++v)
+    for (size_t v = 0; v < vecWeightSlots.size(); ++v)
     {
-        Normalize_BoneWeight(weightSlots[v]);
+        Normalize_BoneWeightSlot(vecWeightSlots[v]);
+
+        const float fWeightSum =
+            vecWeightSlots[v].fWeights[0] +
+            vecWeightSlots[v].fWeights[1] +
+            vecWeightSlots[v].fWeights[2] +
+            vecWeightSlots[v].fWeights[3];
+
+        if (fWeightSum <= FLT_EPSILON)
+        {
+            std::cout << "Anim mesh vertex has no bone weight : mesh = "
+                << pAIMesh->mName.C_Str()
+                << ", vertex = " << v << "\n";
+            return false;
+        }
 
         out.vertices[v].vBlendIndex = XMUINT4(
-            weightSlots[v].iIndices[0],
-            weightSlots[v].iIndices[1],
-            weightSlots[v].iIndices[2],
-            weightSlots[v].iIndices[3]);
+            vecWeightSlots[v].iIndices[0],
+            vecWeightSlots[v].iIndices[1],
+            vecWeightSlots[v].iIndices[2],
+            vecWeightSlots[v].iIndices[3]);
 
         out.vertices[v].vBlendWeight = _float4(
-            weightSlots[v].fWeights[0],
-            weightSlots[v].fWeights[1],
-            weightSlots[v].fWeights[2],
-            weightSlots[v].fWeights[3]);
+            vecWeightSlots[v].fWeights[0],
+            vecWeightSlots[v].fWeights[1],
+            vecWeightSlots[v].fWeights[2],
+            vecWeightSlots[v].fWeights[3]);
     }
-
     out.indices.reserve(pAIMesh->mNumFaces * 3);
 
     for (uint32_t f = 0; f < pAIMesh->mNumFaces; ++f)
@@ -481,31 +690,38 @@ static _bool Convert_SingleAnimMesh(
         if (face.mNumIndices != 3)
             continue;
 
-        out.indices.push_back((uint32_t)face.mIndices[0]);
-        out.indices.push_back((uint32_t)face.mIndices[1]);
-        out.indices.push_back((uint32_t)face.mIndices[2]);
+        out.indices.push_back(static_cast<uint32_t>(face.mIndices[0]));
+        out.indices.push_back(static_cast<uint32_t>(face.mIndices[1]));
+        out.indices.push_back(static_cast<uint32_t>(face.mIndices[2]));
     }
 
     return !out.vertices.empty() && !out.indices.empty();
 }
 
-static _bool Convert_AnimModel(const aiScene* pAIScene, CONVERTED_ANIM_MODEL& out, const float fImportScale)
+/* Scene 전체의 애니메이션 모델을 변환하는 용도 */
+static _bool Convert_AnimModel(
+    const aiScene* pAIScene,
+    CONVERTED_ANIM_MODEL& out,
+    const float fImportScale)
 {
     if (!pAIScene || pAIScene->mNumMeshes == 0)
         return false;
 
     out.parts.clear();
     out.tSkeleton = {};
-    out.animClips.clear();
+    out.vecAnimClips.clear();
 
-    Build_Skeleton(pAIScene, out.tSkeleton, fImportScale);
-    if (out.tSkeleton.bones.empty())
+    if (!Convert_Skeleton(pAIScene, out.tSkeleton))
         return false;
 
-    if (!Convert_Animations(pAIScene, out.tSkeleton, out.animClips, fImportScale))
+    Apply_MeshBone_Offsets(pAIScene, out.tSkeleton);
+
+    if (!Convert_Animation_Clips(pAIScene, out.tSkeleton, out.vecAnimClips))
         return false;
 
-    for (size_t i = 0; i < pAIScene->mNumMeshes; ++i)
+    out.parts.reserve(pAIScene->mNumMeshes);
+
+    for (uint32_t i = 0; i < pAIScene->mNumMeshes; ++i)
     {
         const aiMesh* pAIMesh = pAIScene->mMeshes[i];
         if (!pAIMesh)
@@ -520,16 +736,8 @@ static _bool Convert_AnimModel(const aiScene* pAIScene, CONVERTED_ANIM_MODEL& ou
 
         part.iMaterialIndex = pAIMesh->mMaterialIndex;
 
-        if (!Convert_SingleAnimMesh(
-            pAIMesh,
-            out.tSkeleton,
-            part.mesh,
-            part.vecBoneIndices,
-            part.vecOffsetMatrices,
-            fImportScale))
-        {
+        if (!Convert_SingleAnimMesh(pAIMesh, out.tSkeleton, part.mesh, fImportScale))
             continue;
-        }
 
         out.parts.push_back(std::move(part));
     }
@@ -537,52 +745,35 @@ static _bool Convert_AnimModel(const aiScene* pAIScene, CONVERTED_ANIM_MODEL& ou
     return !out.parts.empty();
 }
 
-static const aiScene* LoadScene_Assimp_Anim(Assimp::Importer& importer, const std::filesystem::path& fbxPath, uint32_t iFlag = 0)
-{
-    const uint32_t flags =
-        aiProcess_ConvertToLeftHanded |
-        aiProcessPreset_TargetRealtime_Fast |
-        aiProcess_Triangulate |
-        aiProcess_JoinIdenticalVertices |
-        aiProcess_GenNormals |
-        aiProcess_CalcTangentSpace;
-
-    return importer.ReadFile(fbxPath.string(), flags | iFlag);
-}
-
 /* ------------------------------------------------------------
-    저장부
------------------------------------------------------------- */
+ * Binary Save : Mesh
+ * ------------------------------------------------------------ */
 
-typedef struct tagAnimMeshHeader
-{
-    uint32_t iMagic = 0x4D534842; /* 'MSHB' */
-    uint32_t iVersion = 2;
-
-    uint32_t vertexCount = 0;
-    uint32_t indexCount = 0;
-    uint32_t vertexStride = sizeof(VTXANIMMESH);
-    uint32_t reserved0 = 0;
-} ANIM_MESH_HEADER;
-
+ /* 애니메이션 메쉬 바이너리 저장 용도 */
 static _bool Save_Anim_MeshBin(const std::filesystem::path& outPath, const CONVERTED_ANIM_MESH& mesh)
 {
     std::ofstream ofs(outPath, std::ios_base::binary);
     if (!ofs.is_open())
         return false;
 
-    ANIM_MESH_HEADER hdr{};
-    hdr.vertexCount = (uint32_t)mesh.vertices.size();
-    hdr.indexCount = (uint32_t)mesh.indices.size();
+    MESH_HEADER hdr{};
+    hdr.iMagic = 0x4D534842; /* 'MSHB' */
     hdr.vertexStride = sizeof(VTXANIMMESH);
+    hdr.vertexCount = static_cast<uint32_t>(mesh.vertices.size());
+    hdr.indexCount = static_cast<uint32_t>(mesh.indices.size());
 
-    ofs.write((const char*)&hdr, sizeof(hdr));
-    ofs.write((const char*)mesh.vertices.data(), sizeof(Engine::VTXANIMMESH) * mesh.vertices.size());
-    ofs.write((const char*)mesh.indices.data(), sizeof(uint32_t) * mesh.indices.size());
+    ofs.write(reinterpret_cast<const char*>(&hdr), sizeof(hdr));
 
-    return true;
+    if (!mesh.vertices.empty())
+        ofs.write(reinterpret_cast<const char*>(mesh.vertices.data()), sizeof(VTXANIMMESH) * mesh.vertices.size());
+
+    if (!mesh.indices.empty())
+        ofs.write(reinterpret_cast<const char*>(mesh.indices.data()), sizeof(uint32_t) * mesh.indices.size());
+
+    return ofs.good();
 }
 
+/* 애니메이션 메쉬 메타 저장 용도 */
 static _bool Save_Anim_MeshMeta(
     const std::filesystem::path& metaPath,
     const std::string& strGUID,
@@ -600,110 +791,135 @@ static _bool Save_Anim_MeshMeta(
     ofs << "cooked=" << cookedMeshbin.generic_string() << "\n";
     ofs << "vertexCount=" << mesh.vertices.size() << "\n";
     ofs << "indexCount=" << mesh.indices.size() << "\n";
-    ofs << "vertexFormat=VTXANIMMESH\n";
-
-    return true;
-}
-
-static _bool Save_Anim_ModelFile(
-    const std::filesystem::path& modelPath,
-    const std::filesystem::path& sourceFbx,
-    const std::vector<SAVED_MODEL_PART_INFO>& parts,
-    const SKELETON_ENTRY& tSkeleton,
-    const std::vector<ANIMATION_CLIP_ENTRY>& vecAnimClips,
-    const CONVERTED_ANIM_MODEL& model)
-{
-    std::ofstream ofs(modelPath);
-    if (!ofs.is_open())
-        return false;
-
-    ofs << "source=" << sourceFbx.generic_string() << "\n";
-    ofs << "meshCount=" << parts.size() << "\n";
-    ofs << "boneCount=" << tSkeleton.bones.size() << "\n";
-    ofs << "animCount=" << vecAnimClips.size() << "\n";
-
-    for (size_t i = 0; i < parts.size(); ++i)
-    {
-        ofs << "part" << i << "Name=" << parts[i].strName << "\n";
-        ofs << "part" << i << "MeshGuid=" << parts[i].strMeshGUID << "\n";
-        ofs << "part" << i << "MaterialGuid=" << parts[i].strMaterialGUID << "\n";
-
-        if (i < model.parts.size())
-        {
-            ofs << "part" << i << "BoneCount=" << model.parts[i].vecBoneIndices.size() << "\n";
-
-            for (size_t j = 0; j < model.parts[i].vecBoneIndices.size(); ++j)
-            {
-                ofs << "part" << i << "BoneIndex" << j << "=" << model.parts[i].vecBoneIndices[j] << "\n";
-
-                const _float4x4& mat = model.parts[i].vecOffsetMatrices[j];
-                ofs << "part" << i << "Offset" << j << "="
-                    << mat._11 << "," << mat._12 << "," << mat._13 << "," << mat._14 << ","
-                    << mat._21 << "," << mat._22 << "," << mat._23 << "," << mat._24 << ","
-                    << mat._31 << "," << mat._32 << "," << mat._33 << "," << mat._34 << ","
-                    << mat._41 << "," << mat._42 << "," << mat._43 << "," << mat._44 << "\n";
-            }
-        }
-    }
-
-    for (size_t i = 0; i < tSkeleton.bones.size(); ++i)
-    {
-        const auto& bone = tSkeleton.bones[i];
-        ofs << "bone" << i << "Name=" << bone.strName << "\n";
-        ofs << "bone" << i << "Parent=" << bone.iParentBoneIndex << "\n";
-        ofs << "bone" << i << "LocalBind="
-            << bone.matLocalBind._11 << "," << bone.matLocalBind._12 << "," << bone.matLocalBind._13 << "," << bone.matLocalBind._14 << ","
-            << bone.matLocalBind._21 << "," << bone.matLocalBind._22 << "," << bone.matLocalBind._23 << "," << bone.matLocalBind._24 << ","
-            << bone.matLocalBind._31 << "," << bone.matLocalBind._32 << "," << bone.matLocalBind._33 << "," << bone.matLocalBind._34 << ","
-            << bone.matLocalBind._41 << "," << bone.matLocalBind._42 << "," << bone.matLocalBind._43 << "," << bone.matLocalBind._44 << "\n";
-        ofs << "bone" << i << "Offset="
-            << bone.matOffset._11 << "," << bone.matOffset._12 << "," << bone.matOffset._13 << "," << bone.matOffset._14 << ","
-            << bone.matOffset._21 << "," << bone.matOffset._22 << "," << bone.matOffset._23 << "," << bone.matOffset._24 << ","
-            << bone.matOffset._31 << "," << bone.matOffset._32 << "," << bone.matOffset._33 << "," << bone.matOffset._34 << ","
-            << bone.matOffset._41 << "," << bone.matOffset._42 << "," << bone.matOffset._43 << "," << bone.matOffset._44 << "\n";
-    }
-
-    for (size_t i = 0; i < vecAnimClips.size(); ++i)
-    {
-        const auto& clip = vecAnimClips[i];
-        ofs << "anim" << i << "Name=" << clip.strName << "\n";
-        ofs << "anim" << i << "Duration=" << clip.fDuration << "\n";
-        ofs << "anim" << i << "TickPerSecond=" << clip.fTickPerSecond << "\n";
-        ofs << "anim" << i << "ChannelCount=" << clip.channels.size() << "\n";
-
-        for (size_t c = 0; c < clip.channels.size(); ++c)
-        {
-            const auto& ch = clip.channels[c];
-            ofs << "anim" << i << "Channel" << c << "BoneName=" << ch.strBoneName << "\n";
-            ofs << "anim" << i << "Channel" << c << "BoneIndex=" << ch.iBoneIndex << "\n";
-            ofs << "anim" << i << "Channel" << c << "KeyCount=" << ch.vecKeyFrames.size() << "\n";
-
-            for (size_t k = 0; k < ch.vecKeyFrames.size(); ++k)
-            {
-                const auto& key = ch.vecKeyFrames[k];
-                ofs << "anim" << i << "Channel" << c << "Key" << k << "="
-                    << key.fTrackPosition << "|"
-                    << key.vScale.x << "," << key.vScale.y << "," << key.vScale.z << "|"
-                    << key.vRotation.x << "," << key.vRotation.y << "," << key.vRotation.z << "," << key.vRotation.w << "|"
-                    << key.vTranslation.x << "," << key.vTranslation.y << "," << key.vTranslation.z
-                    << "\n";
-            }
-        }
-    }
+    ofs << "skinned=true\n";
 
     return true;
 }
 
 /* ------------------------------------------------------------
-    최종 진입점
------------------------------------------------------------- */
+ * Binary Save : Skeleton / Animation
+ * ------------------------------------------------------------ */
 
+ /* Bone 하나를 바이너리 저장하는 용도 */
+static void Save_Bone_Bin(std::ofstream& ofs, const CONVERTED_BONE& bone)
+{
+    Write_String_Bin(ofs, bone.strName);
+
+    BONE_HEADER_BIN hdr{};
+    hdr.iParentBoneIndex = bone.iParentBoneIndex;
+    hdr.childCount = static_cast<uint32_t>(bone.vecChildBoneIndices.size());
+    Write_Value_Bin(ofs, hdr);
+
+    if (!bone.vecChildBoneIndices.empty())
+    {
+        ofs.write(
+            reinterpret_cast<const char*>(bone.vecChildBoneIndices.data()),
+            sizeof(uint32_t) * bone.vecChildBoneIndices.size());
+    }
+
+    Write_Value_Bin(ofs, bone.matLocalBind);
+    Write_Value_Bin(ofs, bone.matCombinedBind);
+    Write_Value_Bin(ofs, bone.matOffset);
+}
+
+/* Skeleton 전체를 바이너리 저장하는 용도 */
+static void Save_Skeleton_Bin(std::ofstream& ofs, const CONVERTED_SKELETON& tSkeleton)
+{
+    SKELETON_HEADER_BIN hdr{};
+    hdr.boneCount = static_cast<uint32_t>(tSkeleton.bones.size());
+    hdr.iRootBoneIndex = tSkeleton.iRootBoneIndex;
+    Write_Value_Bin(ofs, hdr);
+
+    for (const CONVERTED_BONE& bone : tSkeleton.bones)
+        Save_Bone_Bin(ofs, bone);
+}
+
+/* 애니메이션 채널 하나를 바이너리 저장하는 용도 */
+static void Save_Animation_Channel_Bin(std::ofstream& ofs, const CONVERTED_ANIMATION_CHANNEL& channel)
+{
+    Write_String_Bin(ofs, channel.strBoneName);
+
+    ANIMATION_CHANNEL_HEADER_BIN hdr{};
+    hdr.iBoneIndex = channel.iBoneIndex;
+    hdr.keyFrameCount = static_cast<uint32_t>(channel.vecKeyFrames.size());
+    Write_Value_Bin(ofs, hdr);
+
+    if (!channel.vecKeyFrames.empty())
+    {
+        ofs.write(
+            reinterpret_cast<const char*>(channel.vecKeyFrames.data()),
+            sizeof(ANIM_KEYFRAME) * channel.vecKeyFrames.size());
+    }
+}
+
+/* 애니메이션 클립 하나를 바이너리 저장하는 용도 */
+static void Save_Animation_Clip_Bin(std::ofstream& ofs, const CONVERTED_ANIMATION_CLIP& clip)
+{
+    Write_String_Bin(ofs, clip.strName);
+
+    ANIMATION_CLIP_HEADER_BIN hdr{};
+    hdr.fDuration = clip.fDuration;
+    hdr.fTickPerSecond = clip.fTickPerSecond;
+    hdr.channelCount = static_cast<uint32_t>(clip.channels.size());
+    Write_Value_Bin(ofs, hdr);
+
+    for (const CONVERTED_ANIMATION_CHANNEL& channel : clip.channels)
+        Save_Animation_Channel_Bin(ofs, channel);
+}
+
+/* ------------------------------------------------------------
+ * Binary Save : Model File
+ * ------------------------------------------------------------ */
+
+ /* 파트 정보 문자열 묶음을 저장하는 용도 */
+static void Save_Anim_ModelPartInfo_Bin(std::ofstream& ofs, const SAVED_ANIM_MODEL_PART_INFO& partInfo)
+{
+    Write_String_Bin(ofs, partInfo.strName);
+    Write_String_Bin(ofs, partInfo.strMeshGUID);
+    Write_String_Bin(ofs, partInfo.strMaterialGUID);
+}
+
+/* 애니메이션 모델 파일 전체를 바이너리 저장하는 용도 */
+static _bool Save_Anim_ModelFile(
+    const std::filesystem::path& modelPath,
+    const CONVERTED_ANIM_MODEL& model,
+    const std::vector<SAVED_ANIM_MODEL_PART_INFO>& parts)
+{
+    std::ofstream ofs(modelPath, std::ios_base::binary);
+    if (!ofs.is_open())
+        return false;
+
+    ANIM_MODEL_HEADER hdr{};
+    hdr.iMagic = 0x4D494E41; /* 'ANIM' */
+    hdr.iVersion = 1;
+    hdr.partCount = static_cast<uint32_t>(parts.size());
+    hdr.clipCount = static_cast<uint32_t>(model.vecAnimClips.size());
+    hdr.boneCount = static_cast<uint32_t>(model.tSkeleton.bones.size());
+
+    Write_Value_Bin(ofs, hdr);
+
+    for (const SAVED_ANIM_MODEL_PART_INFO& partInfo : parts)
+        Save_Anim_ModelPartInfo_Bin(ofs, partInfo);
+
+    Save_Skeleton_Bin(ofs, model.tSkeleton);
+
+    for (const CONVERTED_ANIMATION_CLIP& clip : model.vecAnimClips)
+        Save_Animation_Clip_Bin(ofs, clip);
+
+    return true;
+}
+
+/* ------------------------------------------------------------
+ * Full Convert Entry
+ * ------------------------------------------------------------ */
+
+ /* 애니메이션 모델 전체 변환 및 저장 진입점 */
 inline static _bool Convert_Anim(
-    std::filesystem::path& inPath,
-    std::filesystem::path& textureRoot,
-    std::filesystem::path& outMeshPath,
-    std::filesystem::path& outMatPath,
-    std::filesystem::path& outMeshMeta,
+    std::filesystem::path& inPath,          /* Converter/FBXs/... */
+    std::filesystem::path& textureRoot,     /* Client/Assets/Textures */
+    std::filesystem::path& outMeshPath,     /* Client/Assets/Models/... .model */
+    std::filesystem::path& outMatPath,      /* Client/Assets/Materials/... */
+    std::filesystem::path& outMeshMeta,     /* Client/Assets/Models/... .model.meta */
     const _float fImportScale)
 {
     Assimp::Importer importer;
@@ -718,14 +934,14 @@ inline static _bool Convert_Anim(
     CONVERTED_ANIM_MODEL model{};
     if (!Convert_AnimModel(pAIScene, model, fImportScale))
     {
-        std::cout << "Convert_AnimModel failed : " << inPath.string() << "\n";
+        std::cout << "Convert_Anim model failed : " << inPath.string() << "\n";
         return false;
     }
 
     std::filesystem::create_directories(outMeshPath.parent_path());
     std::filesystem::create_directories(outMatPath.parent_path());
 
-    std::vector<SAVED_MODEL_PART_INFO> savedParts;
+    std::vector<SAVED_ANIM_MODEL_PART_INFO> savedParts;
     savedParts.reserve(model.parts.size());
 
     const std::string strMeshBaseName = outMeshPath.stem().string();
@@ -814,7 +1030,7 @@ inline static _bool Convert_Anim(
             return false;
         }
 
-        SAVED_MODEL_PART_INFO info{};
+        SAVED_ANIM_MODEL_PART_INFO info{};
         info.strName = part.strName;
         info.strMeshGUID = strMeshGUID;
 
@@ -828,7 +1044,8 @@ inline static _bool Convert_Anim(
     }
 
     const std::string strModelGUID = Generate_GUID_String();
-    if (!Save_Anim_ModelFile(outMeshPath, inPath, savedParts, model.tSkeleton, model.animClips, model))
+
+    if (!Save_Anim_ModelFile(outMeshPath, model, savedParts))
     {
         std::cout << "Save anim model file failed : " << outMeshPath.string() << "\n";
         return false;

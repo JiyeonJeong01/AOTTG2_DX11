@@ -166,7 +166,10 @@ uint32_t CResource_System::Load_Model(const ASSET_GUID& tGUID)
     else /* --- Anim --- */
     {
         ANIM_MODEL_DESC desc{};
-        IF_FAIL_RETURN_MSG_BREAK( CMeshBuilder::Load_Anim_ModelDesc(pRec->path, desc), INVALID_HANDLE_UINT, "Load_Model failed : Load_Anim_ModelDesc failed");
+        IF_FAIL_RETURN_MSG_BREAK(
+            CMeshBuilder::Load_Anim_ModelDesc(pRec->path, desc),
+            INVALID_HANDLE_UINT,
+            "Load_Model failed : Load_Anim_ModelDesc failed");
 
         model.tSkeleton = desc.tSkeleton;
         model.vecAnimClips = desc.vecAnimClips;
@@ -187,9 +190,6 @@ uint32_t CResource_System::Load_Model(const ASSET_GUID& tGUID)
                 part.hMaterial = INVALID_HANDLE_UINT;
             else
                 part.hMaterial = Load_Material(part.materialGUID);
-
-            part.vecBoneIndices = partDesc.vecBoneIndices;
-            part.vecOffsetMatrices = partDesc.vecOffsetMatrices;
 
             model.parts.push_back(std::move(part));
         }
