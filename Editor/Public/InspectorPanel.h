@@ -71,6 +71,8 @@ private:
     void Draw_UIImage();
     void Draw_UIButton();
 
+    void Draw_AnimatorBlendingView();
+
     void Validate_Target();
 
 private:

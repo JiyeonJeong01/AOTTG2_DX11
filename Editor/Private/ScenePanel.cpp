@@ -206,8 +206,6 @@ void CScenePanel::Draw_Viewport()
     {
         if (inside)
         {
-            while (ShowCursor(FALSE) >= 0) {} /* 마우스 커서 off */
-
             m_ShowSceneGizmo = true;
 
             /* 기즈모 위 클릭이면 배경 피킹 막기 */
@@ -229,7 +227,6 @@ void CScenePanel::Draw_Viewport()
         }
         else 
         {
-            while (ShowCursor(TRUE) < 0) {} /* 마우스 커서 on  */
             if (!bGizmoUsing)
                 m_ShowSceneGizmo = false;
         }

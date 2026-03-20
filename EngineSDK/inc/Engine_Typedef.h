@@ -123,6 +123,20 @@ namespace Engine
      */
     class TYPE_TIP {};
 
+    static constexpr int32_t INVALID_ANIM_CLIP_INDEX = -1;
+
+    typedef struct tagAnimationClipIndexHasher
+    {
+        size_t operator()(const uint64_t& key) const noexcept
+        {
+            uint32_t a = static_cast<uint32_t>(key >> 32);
+            uint32_t b = static_cast<uint32_t>(key & 0xffffffffu);
+
+            uint64_t hash = a;
+            hash ^= static_cast<uint64_t>(b) + 0x9e3779b97f4a7c15ull + (hash << 6) + (hash >> 2);
+            return static_cast<size_t>(hash);
+        }
+    } ANIMATION_CLIP_INDEX_HASHER;
 
 
 

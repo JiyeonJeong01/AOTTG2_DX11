@@ -110,8 +110,8 @@ void CAnimator::Set_NextAnimationClip(const std::string& strNextAnimClip)
     if (!m_pData->pAnimator_Processor)
         return;
 
-    //if (m_pData->NameToClipIndex.size() == 0)
-    //    m_pData->pAnimator_Processor->Try_Build_ClipNameMap(m_pData);
+    if (m_pData->NameToClipIndex.size() == 0)
+        m_pData->pAnimator_Processor->Try_Build_ClipNameMap(m_pData);
 
     if (m_pData->NameToClipIndex.size() == 0)
         return;
@@ -122,12 +122,7 @@ void CAnimator::Set_NextAnimationClip(const std::string& strNextAnimClip)
 
     uint32_t iNextAnimClip = it->second;
 
-    if (m_pData->iAnimationClip == iNextAnimClip)
-        return;
-
-    m_pData->fBlendElapsed = 0.f;
-    m_pData->iNextAnimationClip = iNextAnimClip;
-    m_pData->bIsBlending = true;
+    Set_NextAnimationClip(iNextAnimClip);
 }
 
 void CAnimator::Set_NextAnimationClip(uint32_t iNextAnimClip)
@@ -135,11 +130,14 @@ void CAnimator::Set_NextAnimationClip(uint32_t iNextAnimClip)
     if (!m_pData)
         return;
 
+    if (!m_pData->pAnimator_Processor)
+        return;
+
     if (m_pData->iAnimationClip == iNextAnimClip)
         return;
 
-    //if (m_pData->NameToClipIndex.size() == 0)
-    //    m_pData->pAnimator_Processor->Try_Build_ClipNameMap(m_pData);
+    if (m_pData->NameToClipIndex.size() == 0)
+        m_pData->pAnimator_Processor->Try_Build_ClipNameMap(m_pData);
 
     if (m_pData->NameToClipIndex.size() == 0)
         return;
@@ -147,6 +145,11 @@ void CAnimator::Set_NextAnimationClip(uint32_t iNextAnimClip)
     m_pData->fBlendElapsed = 0.f;
     m_pData->iNextAnimationClip = iNextAnimClip;
     m_pData->bIsBlending = true;
+
+    m_pData->fBlendDuration = m_pData->pAnimator_Processor->Get_BlendDuration(
+        m_pData,
+        m_pData->iAnimationClip,
+        iNextAnimClip);
 }
 
 void CAnimator::Reset_CurrentKeyFrameIndices()

@@ -25,6 +25,7 @@
 
 #include "Editor_Util.h"
 #include "Script_Processor.h"
+#include "Animator_Processor.h"
 
 #include "Material.h"
 #include "UI_Processor.h"
@@ -1660,6 +1661,15 @@ void CInspectorPanel::Draw_Animator()
     if (!open)
         return;
 
+    ImGui::SameLine(ImGui::GetCursorPosX() + 100.0f);
+
+    if (ImGui::Button("Blend"))
+    {
+        ImGui::OpenPopup("Animator Blend Editor");
+    }
+
+    Draw_AnimatorBlendingView();
+
     const bool bDisabledScope = (pData->bEnable == 0);
     if (bDisabledScope)
         ImGui::BeginDisabled();
@@ -1738,13 +1748,13 @@ void CInspectorPanel::Draw_Animator()
 
                 if (ImGui::Selectable(pClipName, bSelected))
                 {
-                    pData->iAnimationClip = SCAST(uint32_t, i);
-                    pData->fTrackPosition = 0.f;
+                    animator.Set_NextAnimationClip(pClipName);
 
-                    const ANIMATION_CLIP_ENTRY& newClip = pModel->vecAnimClips[i];
-                    pData->currentKeyFrameIndices.assign(newClip.channels.size(), 0);
-
-                    bChanged = true;
+                    //pData->iAnimationClip = SCAST(uint32_t, i);
+                    //pData->fTrackPosition = 0.f;
+                    //const ANIMATION_CLIP_ENTRY& newClip = pModel->vecAnimClips[i];
+                    //pData->currentKeyFrameIndices.assign(newClip.channels.size(), 0);
+                    //bChanged = true;
                 }
 
                 if (bSelected)
@@ -2748,6 +2758,148 @@ void CInspectorPanel::Draw_UIButton()
         ImGui::EndDisabled();
 
     ImGui::TreePop();
+}
+
+void CInspectorPanel::Draw_AnimatorBlendingView()
+{
+    CAnimator animator = m_pTarget->Get_Component<CAnimator>();
+    if (!animator.Is_Valid())
+        return;
+
+    ANIMATOR_DATA* pData = animator._Data();
+    if (!pData)
+        return;
+
+    CMeshRenderer meshRenderer = m_pTarget->Get_Component<CMeshRenderer>();
+    if (!meshRenderer.Is_Valid())
+        return;
+
+    MESH_RENDERER_DATA* pMrData = meshRenderer._Data();
+    if (!pMrData)
+        return;
+
+    if (pMrData->hMesh == INVALID_HANDLE_UINT)
+        return;
+
+    if (!SYS_RESOURCE.Is_ModelHandle(pMrData->hMesh))
+        return;
+
+    MODEL_ENTRY* pModel = SYS_RESOURCE.Get_Model(pMrData->hMesh);
+    if (!pModel)
+        return;
+
+    const auto& vecAnimClips = pModel->vecAnimClips;
+
+    if (ImGui::BeginPopup("Animator Blend Editor", ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        if (vecAnimClips.empty())
+        {
+            ImGui::TextDisabled("No animation clips.");
+            if (ImGui::Button("Close"))
+                ImGui::CloseCurrentPopup();
+
+            ImGui::EndPopup();
+            return;
+        }
+
+        static int32_t s_iFromClip = 0;
+        static int32_t s_iToClip = 0;
+        static _float s_fBlendDuration = 0.02f;
+
+        if (s_iFromClip >= static_cast<int32_t>(vecAnimClips.size()))
+            s_iFromClip = 0;
+        if (s_iToClip >= static_cast<int32_t>(vecAnimClips.size()))
+            s_iToClip = 0;
+
+        ImGui::Text("Blend transition setting");
+        ImGui::Separator();
+
+        if (ImGui::BeginCombo("From Clip", vecAnimClips[s_iFromClip].strName.c_str()))
+        {
+            for (int32_t i = 0; i < static_cast<int32_t>(vecAnimClips.size()); ++i)
+            {
+                const bool bSelected = (s_iFromClip == i);
+                if (ImGui::Selectable(vecAnimClips[i].strName.c_str(), bSelected))
+                    s_iFromClip = i;
+
+                if (bSelected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+
+        if (ImGui::BeginCombo("To Clip", vecAnimClips[s_iToClip].strName.c_str()))
+        {
+            for (int32_t i = 0; i < static_cast<int32_t>(vecAnimClips.size()); ++i)
+            {
+                const bool bSelected = (s_iToClip == i);
+                if (ImGui::Selectable(vecAnimClips[i].strName.c_str(), bSelected))
+                    s_iToClip = i;
+
+                if (bSelected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+
+        ImGui::DragFloat("Blend Duration", &s_fBlendDuration, 0.005f, 0.f, 5.f, "%.3f sec");
+
+        const bool bCanSave =
+            s_iFromClip >= 0 &&
+            s_iToClip >= 0 &&
+            s_iFromClip < static_cast<int32_t>(vecAnimClips.size()) &&
+            s_iToClip < static_cast<int32_t>(vecAnimClips.size()) &&
+            s_iFromClip != s_iToClip;
+
+        ImGui::BeginDisabled(!bCanSave);
+        if (ImGui::Button("Save"))
+        {
+            const uint64_t iBlendKey = pData->pAnimator_Processor->Make_AnimationClipBlendKey(
+                static_cast<uint32_t>(s_iFromClip),
+                static_cast<uint32_t>(s_iToClip));
+
+            pData->BlendMap[iBlendKey] = std::fmaxf(0.f, s_fBlendDuration);
+        }
+        ImGui::EndDisabled();
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Close"))
+            ImGui::CloseCurrentPopup();
+
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Text("Saved transitions");
+
+        std::vector<uint64_t> vecRemoveKeys;
+
+        for (const auto& pair : pData->BlendMap)
+        {
+            const uint64_t iKey = pair.first;
+            const _float fDuration = pair.second;
+
+            const uint32_t iFromClip = static_cast<uint32_t>(iKey >> 32);
+            const uint32_t iToClip = static_cast<uint32_t>(iKey & 0xffffffffu);
+
+            const char* pFromName = (iFromClip < vecAnimClips.size()) ? vecAnimClips[iFromClip].strName.c_str() : "<Invalid>";
+            const char* pToName = (iToClip < vecAnimClips.size()) ? vecAnimClips[iToClip].strName.c_str() : "<Invalid>";
+
+            ImGui::PushID(static_cast<int>(iFromClip ^ (iToClip << 16)));
+
+            ImGui::Text("%s -> %s : %.3f sec", pFromName, pToName, fDuration);
+            ImGui::SameLine();
+
+            if (ImGui::SmallButton("Delete"))
+                vecRemoveKeys.push_back(iKey);
+
+            ImGui::PopID();
+        }
+
+        for (uint64_t iKey : vecRemoveKeys)
+            pData->BlendMap.erase(iKey);
+
+        ImGui::EndPopup();
+    }
 }
 
 std::unique_ptr<CInspectorPanel> CInspectorPanel::Create(const std::string& strPanelName, CHierarchyPanel* pHierarcy, CProjectPanel* pProject)

@@ -982,13 +982,107 @@ typedef struct ENGINE_DLL tagSpringJointSpec final : public COMPONENT_SPEC_BASE
     }
 } SPRING_JOINT_SPEC;
 
-
 typedef struct ENGINE_DLL tagAnimatorSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::ANIMATOR)
 
+    _bool       bEnable = true;
+    _bool       bLoop = false;
+    _bool       bPlaying = true;
+    uint8_t     pad0[1] = {};
 
+    uint32_t    iAnimationClip = INVALID_ANIM_CLIP_INDEX;
 
+    _float      fPlaySpeed = 1.f;
+    _float      fBlendDuration = 0.02f;
+
+    std::unordered_map<uint64_t, _float, ANIMATION_CLIP_INDEX_HASHER> BlendMap;
+
+    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
+    {
+        return std::make_unique<tagAnimatorSpec>(*this);
+    }
+
+    void ToJson(json& j) const override
+    {
+        j["Type"] = SCAST(_uint, Get_Type());
+        j["Enabled"] = bEnable;
+        j["Loop"] = bLoop;
+        j["Playing"] = bPlaying;
+        j["AnimationClip"] = iAnimationClip;
+        j["PlaySpeed"] = fPlaySpeed;
+        j["BlendDuration"] = fBlendDuration;
+
+        j["BlendMap"] = json::array();
+        for (const auto& pair : BlendMap)
+        {
+            const uint64_t iKey = pair.first;
+            const _float fDuration = pair.second;
+
+            const uint32_t iFromClip = static_cast<uint32_t>(iKey >> 32);
+            const uint32_t iToClip = static_cast<uint32_t>(iKey & 0xffffffffu);
+
+            json item;
+            item["FromClip"] = iFromClip;
+            item["ToClip"] = iToClip;
+            item["Duration"] = fDuration;
+            j["BlendMap"].push_back(item);
+        }
+    }
+
+    _bool FromJson(const json& j) override
+    {
+        if (!Read_SpecType(j, Get_Type()))
+            return false;
+        if (!Read_Bool(j, "Enabled", bEnable))
+            return false;
+        if (!Read_Bool(j, "Loop", bLoop))
+            return false;
+        if (!Read_Bool(j, "Playing", bPlaying))
+            return false;
+        if (!Read_UInt(j, "AnimationClip", iAnimationClip))
+            return false;
+        if (!Read_Float(j, "PlaySpeed", fPlaySpeed))
+            return false;
+        if (!Read_Float(j, "BlendDuration", fBlendDuration))
+            return false;
+
+        BlendMap.clear();
+
+        auto it = j.find("BlendMap");
+        if (it != j.end() && it->is_array())
+        {
+            for (const auto& item : *it)
+            {
+                uint32_t iFromClip = INVALID_ANIM_CLIP_INDEX;
+                uint32_t iToClip = INVALID_ANIM_CLIP_INDEX;
+                _float fDuration = 0.f;
+
+                if (!Read_UInt(item, "FromClip", iFromClip))
+                    continue;
+                if (!Read_UInt(item, "ToClip", iToClip))
+                    continue;
+                if (!Read_Float(item, "Duration", fDuration))
+                    continue;
+
+                if (fDuration < 0.f)
+                    fDuration = 0.f;
+
+                const uint64_t iBlendKey =
+                    (static_cast<uint64_t>(iFromClip) << 32) | static_cast<uint64_t>(iToClip);
+
+                BlendMap[iBlendKey] = fDuration;
+            }
+        }
+
+        if (fPlaySpeed < 0.f)
+            fPlaySpeed = 0.f;
+
+        if (fBlendDuration < 0.f)
+            fBlendDuration = 0.f;
+
+        return true;
+    }
 } ANIMATOR_SPEC;
 
 NS_END

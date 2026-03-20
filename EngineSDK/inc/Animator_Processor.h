@@ -65,10 +65,12 @@ private:
     _float Get_NextClipTrackPosition(const ANIMATOR_DATA* pData, const ANIMATION_CLIP_ENTRY& tNextClip) const;
     _float Get_BlendAlpha(const ANIMATOR_DATA* pData) const;
 
-    uint64_t Make_AnimationClipBlendKey(uint32_t iFromClip, uint32_t iToClip) const;
 public :
+    uint64_t Make_AnimationClipBlendKey(uint32_t iFromClip, uint32_t iToClip) const;
     void Try_Build_ClipNameMap(ANIMATOR_DATA* pData);
     uint32_t Find_AnimationClip_By_Name(COMPONENT_HANDLE hComponent, const std::string& strClipName);
+    _float Get_BlendDuration(const ANIMATOR_DATA* pData, uint32_t iFromClip, uint32_t iToClip) const;
+
 
 public:
     static std::unique_ptr<CAnimator_Processor> Create();

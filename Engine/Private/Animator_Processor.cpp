@@ -61,12 +61,39 @@ void CAnimator_Processor::LateUpdate(_float fDT)
 
 HRESULT CAnimator_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
 {
+    auto pData = m_Pool.Get_Data_By_Handle(handle);
+    IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "pData is nullptr");
+
+    const ANIMATOR_SPEC* pAnimatorSpec = dynamic_cast<const ANIMATOR_SPEC*>(pSpec);
+    IF_NULL_RETURN_MSG_BREAK(pAnimatorSpec, E_FAIL, "pAnimatorSpec is nullptr");
+
+    pData->bEnable = pAnimatorSpec->bEnable;
+    pData->bLoop = pAnimatorSpec->bLoop;
+    pData->bPlaying = pAnimatorSpec->bPlaying;
+    pData->iAnimationClip = pAnimatorSpec->iAnimationClip;
+    pData->fPlaySpeed = pAnimatorSpec->fPlaySpeed;
+    pData->fBlendDuration = pAnimatorSpec->fBlendDuration;
+    pData->BlendMap = pAnimatorSpec->BlendMap;
+
     return S_OK;
 }
 
 std::unique_ptr<COMPONENT_SPEC_BASE> CAnimator_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
 {
-    return nullptr;
+    auto pData = m_Pool.Get_Data_By_Handle(hComponent);
+    IF_NULL_RETURN_MSG_BREAK(pData, nullptr, "pData is nullptr");
+
+    auto pSpec = std::make_unique<ANIMATOR_SPEC>();
+
+    pSpec->bEnable = pData->bEnable;
+    pSpec->bLoop = pData->bLoop;
+    pSpec->bPlaying = pData->bPlaying;
+    pSpec->iAnimationClip = pData->iAnimationClip;
+    pSpec->fPlaySpeed = pData->fPlaySpeed;
+    pSpec->fBlendDuration = pData->fBlendDuration;
+    pSpec->BlendMap = pData->BlendMap;
+
+    return pSpec;
 }
 
 void CAnimator_Processor::Initialize_Component_Data(COMPONENT_HANDLE hComponent)
@@ -87,6 +114,8 @@ void CAnimator_Processor::Initialize_Component_Data(COMPONENT_HANDLE hComponent)
     pData->bPlaying = true;
     pData->iNextAnimationClip = INVALID_ANIM_CLIP_INDEX;
     pData->bIsBlending = false;
+    pData->fTrackPosition = 0.f;
+    pData->fBlendElapsed = 0.f;
 }
 
 void CAnimator_Processor::Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, ANIMATOR_DATA* pData)
@@ -145,20 +174,20 @@ void CAnimator_Processor::Update_Animator(ANIMATOR_DATA* pData, _float fDT)
     Build_BoneCombinedMatrices(pData, pModel->tSkeleton);
     Build_FinalBoneMatrices(pData, *pModel);
 
-    //if (pData->bIsBlending && pData->fBlendElapsed >= pData->fBlendDuration)
-    //{
-    //    ANIMATION_CLIP_ENTRY* pNextClip = Resolve_Next_AnimationClip(pData, pModel);
-    //    if (pNextClip)
-    //    {
-    //        pData->iAnimationClip = pData->iNextAnimationClip;
-    //        pData->fTrackPosition = Get_NextClipTrackPosition(pData, *pNextClip);
-    //    }
-
-    //    pData->iNextAnimationClip = INVALID_ANIM_CLIP_INDEX;
-    //    pData->bIsBlending = false;
-    //    pData->fBlendElapsed = 0.f;
-    //    pData->fBlendDuration = 0.f;
-    //}
+    if (pData->bIsBlending && pData->fBlendElapsed >= pData->fBlendDuration)
+    {
+        ANIMATION_CLIP_ENTRY* pNextClip = Resolve_Next_AnimationClip(pData, pModel);
+        if (pNextClip)
+        {
+            pData->iAnimationClip = pData->iNextAnimationClip;
+            pData->fTrackPosition = Get_NextClipTrackPosition(pData, *pNextClip);
+            pData->currentKeyFrameIndices.assign(pNextClip->channels.size(), 0);
+        }
+        pData->iNextAnimationClip = INVALID_ANIM_CLIP_INDEX;
+        pData->bIsBlending = false;
+        pData->fBlendElapsed = 0.f;
+        pData->fBlendDuration = 0.f;
+    }
 }
 
 void CAnimator_Processor::Update_TrackPosition(ANIMATOR_DATA* pData, const ANIMATION_CLIP_ENTRY& tClip, _float fDT, _bool& bOutFinished)
@@ -589,7 +618,7 @@ _float CAnimator_Processor::Get_BlendAlpha(const ANIMATOR_DATA* pData) const
 
 uint64_t CAnimator_Processor::Make_AnimationClipBlendKey(uint32_t iFromClip, uint32_t iToClip) const
 {
-    return (static_cast<uint64_t>(iFromClip) << 32) | static_cast<uint64_t>(iToClip);
+    return (To<uint64_t>(iFromClip) << 32) | static_cast<uint64_t>(iToClip);
 }
 
 void CAnimator_Processor::Try_Build_ClipNameMap(ANIMATOR_DATA* pData)
@@ -612,6 +641,20 @@ void CAnimator_Processor::Try_Build_ClipNameMap(ANIMATOR_DATA* pData)
     uint32_t iIndex = 0;
     for (const auto& clip : pModel->vecAnimClips)
         pData->NameToClipIndex.insert({ clip.strName, iIndex++ });
+}
+
+/* 설정한 블렌딩 시간 넣기 */
+_float CAnimator_Processor::Get_BlendDuration(const ANIMATOR_DATA* pData, uint32_t iFromClip, uint32_t iToClip) const
+{
+    if (!pData)
+        return 0.f;
+
+    const uint64_t iBlendKey = Make_AnimationClipBlendKey(iFromClip, iToClip);
+    auto it = pData->BlendMap.find(iBlendKey);
+    if (it == pData->BlendMap.end())
+        return pData->fBlendDuration;
+
+    return it->second;
 }
 
 std::unique_ptr<CAnimator_Processor> CAnimator_Processor::Create()
