@@ -1,0 +1,59 @@
+{
+  "prototype": {
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              1.6860843896865845,
+              0.0
+            ],
+            "Rotation": [
+              0.7009093165397644,
+              0.0,
+              0.0,
+              0.713250458240509
+            ],
+            "Scale": [
+              10.0,
+              10.0,
+              10.0
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "901B74F5-B6B8-4E54-A144-F03B20230FFA",
+            "MeshGUID": "632B9BC1-62A8-4FF6-AFBB-BA0BE8EA2545",
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "isUI": false,
+    "name": "Stall2"
+  },
+  "version": 1
+}

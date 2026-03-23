@@ -1,0 +1,8 @@
+source=../../Converter/Bin/FBXs/Momo_Tree_Oak2.fbx
+meshCount=2
+part0Name=Cube.002
+part0MeshGuid=6D052363-06DB-43BE-AB4F-AEDB75F31A22
+part0MaterialGuid=7DAC693D-CCF5-4B4A-B648-1E94F985495E
+part1Name=Cube.002
+part1MeshGuid=331950E4-A9ED-47AA-95F6-B4E3B849DC9A
+part1MaterialGuid=0E600E57-F21F-4BCA-8681-C276DB70470C

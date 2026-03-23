@@ -1,0 +1,88 @@
+{
+  "prototype": {
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              1.5,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              100.0,
+              100.0,
+              100.0
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "Dimension": [
+              100.0,
+              100.0
+            ],
+            "Enabled": true,
+            "Infinite": false,
+            "NormalLocal": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Offset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              90.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 2,
+            "Type": 1
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "1154D215-6BDF-485A-8B08-2441B93FA627",
+            "MeshGUID": "33333334-3334-3334-3334-333333333334",
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "isUI": false,
+    "name": "Terrain_Finite"
+  },
+  "version": 1
+}

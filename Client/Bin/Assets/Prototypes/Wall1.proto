@@ -1,0 +1,59 @@
+{
+  "prototype": {
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              32.19462203979492,
+              0.0,
+              0.9590467810630798
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "isUI": false,
+    "name": "Wall1"
+  },
+  "version": 1
+}

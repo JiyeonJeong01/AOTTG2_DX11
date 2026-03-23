@@ -1,0 +1,116 @@
+{
+  "prototype": {
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              2.0,
+              0.000359655125066638
+            ],
+            "Rotation": [
+              -8.35351602290757e-06,
+              1.025460392156674e-06,
+              -7.30704705347307e-05,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "Offset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Type": 1
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "AngularDrag": 0.0,
+            "BodyType": 0,
+            "Drag": 0.0,
+            "Enabled": true,
+            "Friction": 1.0,
+            "Gravity": true,
+            "Mass": 1.0,
+            "PositionLock": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Restitution": 0.0,
+            "RotationLock": [
+              1.0,
+              0.0,
+              1.0
+            ],
+            "Shape": 0,
+            "Type": 2
+          }
+        }
+      ],
+      [],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "ScriptGuid": "9A2112D9-2803-4492-B4F0-E005A55C4545",
+            "Type": 4
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "B69F88A4-F574-48AC-BD74-8410EA2AA6BB",
+            "MeshGUID": "11111111-1111-1111-1111-111111111111",
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "isUI": false,
+    "name": "Player_1"
+  },
+  "version": 1
+}

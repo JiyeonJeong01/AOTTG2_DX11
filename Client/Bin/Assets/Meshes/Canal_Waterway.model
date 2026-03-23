@@ -1,0 +1,5 @@
+source=../../Converter/Bin/FBXs/Canal_Waterway.fbx
+meshCount=1
+part0Name=Cylinder
+part0MeshGuid=EFB3BFA6-CFAC-49C4-9D51-DE14C83D98E2
+part0MaterialGuid=1F40A4FF-F6EF-40D7-9FF6-F07376BE92DD

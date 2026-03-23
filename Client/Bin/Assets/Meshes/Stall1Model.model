@@ -1,0 +1,8 @@
+source=../../Converter/Bin/FBXs/Stall1Model.fbx
+meshCount=2
+part0Name=Plane.002
+part0MeshGuid=CF90E300-D0CE-4D34-9AE4-4C9BB73983AC
+part0MaterialGuid=901B74F5-B6B8-4E54-A144-F03B20230FFA
+part1Name=对象001
+part1MeshGuid=EE5080CE-22C8-4C65-9A7A-31221C5F02A6
+part1MaterialGuid=901B74F5-B6B8-4E54-A144-F03B20230FFA

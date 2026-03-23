@@ -45,14 +45,12 @@ bld/
 
 # Build results on 'Bin' directories
 **/[Bb]in/*
+!Client/Bin/
+!Client/Bin/Assets/
+!Client/Bin/Assets/**
 # Uncomment if you have tasks that rely on *.refresh files to move binaries
 # (https://github.com/github/gitignore/pull/3736)
 #!**/[Bb]in/*.refresh
-
-# --- Exception: Keep Client/Bin/Resource in version control ---
-# Contains runtime assets (textures, meshes, etc.) required by the Client.
-!Client/Bin/Resource/
-!Client/Bin/Resource/**
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

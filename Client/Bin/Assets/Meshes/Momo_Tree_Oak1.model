@@ -1,0 +1,8 @@
+source=../../Converter/Bin/FBXs/Momo_Tree_Oak1.fbx
+meshCount=2
+part0Name=Cylinder.004
+part0MeshGuid=520880D9-D342-488C-8089-7ECBAA20CFA5
+part0MaterialGuid=1B968E1B-896F-469B-A6EB-1D3DEF2919C4
+part1Name=Cylinder.004
+part1MeshGuid=122993DD-6176-4A07-817D-5145BEBD93F5
+part1MaterialGuid=83B2B721-A0C9-4DBB-A408-D97C584322B4

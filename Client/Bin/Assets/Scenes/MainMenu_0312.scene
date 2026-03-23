@@ -1,0 +1,682 @@
+{
+  "objects": [
+    {
+      "isUI": true,
+      "layer": 31,
+      "name": "MainBG",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              1260.0,
+              540.0
+            ],
+            "SizePx": [
+              2260.0,
+              1340.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "21EB6B9F-74F6-4351-81D3-1F0178F41377",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "Color": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "TextureGuid": "21EB6B9F-74F6-4351-81D3-1F0178F41377",
+            "Type": 13,
+            "UV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "VisualPriority": 0
+          },
+          "type": 13
+        }
+      ],
+      "parent": "FD60F341-B1F9-49CA-B5A1-64CCC95BFCA0",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "E15C2111-3915-480C-B95E-D9A6286B52F5"
+    },
+    {
+      "isUI": true,
+      "layer": 31,
+      "name": "Panel",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              540.0
+            ],
+            "SizePx": [
+              2020.0,
+              1180.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "2ED02E9D-1974-42BC-941A-802B19803F70",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "Color": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "TextureGuid": "2ED02E9D-1974-42BC-941A-802B19803F70",
+            "Type": 13,
+            "UV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "VisualPriority": 2
+          },
+          "type": 13
+        }
+      ],
+      "parent": "FD60F341-B1F9-49CA-B5A1-64CCC95BFCA0",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "D570C58A-5BCD-434F-82F5-61FBE67C1437"
+    },
+    {
+      "isUI": true,
+      "layer": 31,
+      "name": "Buttons",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              540.0
+            ],
+            "SizePx": [
+              100.0,
+              100.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        }
+      ],
+      "parent": "FD60F341-B1F9-49CA-B5A1-64CCC95BFCA0",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "3A98B653-20FC-43FF-8A50-A03C19ADDA3D"
+    },
+    {
+      "isUI": true,
+      "layer": 31,
+      "name": "Canvas",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              540.0
+            ],
+            "SizePx": [
+              100.0,
+              100.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "FD60F341-B1F9-49CA-B5A1-64CCC95BFCA0"
+    },
+    {
+      "isUI": true,
+      "layer": 31,
+      "name": "Logo",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              540.0
+            ],
+            "SizePx": [
+              1920.0,
+              1080.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "8E15E0C1-0909-4FF3-A431-6755DC3AE88F",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "Color": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "TextureGuid": "8E15E0C1-0909-4FF3-A431-6755DC3AE88F",
+            "Type": 13,
+            "UV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "VisualPriority": 10
+          },
+          "type": 13
+        }
+      ],
+      "parent": "FD60F341-B1F9-49CA-B5A1-64CCC95BFCA0",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "B8A16FF1-84CE-462D-9620-21730FA89772"
+    },
+    {
+      "isUI": true,
+      "layer": 31,
+      "name": "Btn1",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              140.0,
+              540.0
+            ],
+            "SizePx": [
+              400.0,
+              100.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "3E25D6D0-253B-41FC-B0CF-ABBCF58CFC9B",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "DisabledColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "HoverColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "HoverTexGuid": "7FE21972-D894-4E4E-8932-71BA439C2F27",
+            "HoverUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Interactable": true,
+            "NormalColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "NormalTexGuid": "3E25D6D0-253B-41FC-B0CF-ABBCF58CFC9B",
+            "NormalUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnClickEventId": 0,
+            "PressedColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "PressedTexGuid": "7FE21972-D894-4E4E-8932-71BA439C2F27",
+            "PressedUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Type": 14,
+            "VisualPriority": 3
+          },
+          "type": 14
+        }
+      ],
+      "parent": "3A98B653-20FC-43FF-8A50-A03C19ADDA3D",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "62D2A716-D142-42DE-8A0B-45ABAA74406A"
+    },
+    {
+      "isUI": true,
+      "layer": 31,
+      "name": "Btn2",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              140.0,
+              636.0
+            ],
+            "SizePx": [
+              400.0,
+              100.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "3E25D6D0-253B-41FC-B0CF-ABBCF58CFC9B",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "DisabledColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "HoverColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "HoverTexGuid": "7FE21972-D894-4E4E-8932-71BA439C2F27",
+            "HoverUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Interactable": true,
+            "NormalColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "NormalTexGuid": "3E25D6D0-253B-41FC-B0CF-ABBCF58CFC9B",
+            "NormalUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnClickEventId": 0,
+            "PressedColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "PressedTexGuid": "7FE21972-D894-4E4E-8932-71BA439C2F27",
+            "PressedUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Type": 14,
+            "VisualPriority": 3
+          },
+          "type": 14
+        }
+      ],
+      "parent": "3A98B653-20FC-43FF-8A50-A03C19ADDA3D",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "82CF39F8-0829-4ACB-8DBA-ED0E4C823DA3"
+    },
+    {
+      "isUI": true,
+      "layer": 31,
+      "name": "Btn3",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              140.0,
+              734.0
+            ],
+            "SizePx": [
+              400.0,
+              100.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "3E25D6D0-253B-41FC-B0CF-ABBCF58CFC9B",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "DisabledColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "HoverColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "HoverTexGuid": "7FE21972-D894-4E4E-8932-71BA439C2F27",
+            "HoverUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Interactable": true,
+            "NormalColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "NormalTexGuid": "3E25D6D0-253B-41FC-B0CF-ABBCF58CFC9B",
+            "NormalUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnClickEventId": 0,
+            "PressedColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "PressedTexGuid": "7FE21972-D894-4E4E-8932-71BA439C2F27",
+            "PressedUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Type": 14,
+            "VisualPriority": 3
+          },
+          "type": 14
+        }
+      ],
+      "parent": "3A98B653-20FC-43FF-8A50-A03C19ADDA3D",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "7476C22D-2B56-4E35-8F2B-B3C7654AF282"
+    },
+    {
+      "isUI": true,
+      "layer": 31,
+      "name": "Controller",
+      "overrides": [
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CMainMenu_Controller",
+              "Fields": [
+                {
+                  "Name": "m_fBtnEffectScale",
+                  "Type": 1,
+                  "Value": 1.2000000476837158
+                },
+                {
+                  "Name": "m_refBtns[0]",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "62D2A716-D142-42DE-8A0B-45ABAA74406A"
+                  }
+                },
+                {
+                  "Name": "m_refBtns[1]",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "82CF39F8-0829-4ACB-8DBA-ED0E4C823DA3"
+                  }
+                },
+                {
+                  "Name": "m_refBtns[2]",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "7476C22D-2B56-4E35-8F2B-B3C7654AF282"
+                  }
+                },
+                {
+                  "Name": "m_refImgBackground",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "E15C2111-3915-480C-B95E-D9A6286B52F5"
+                  }
+                },
+                {
+                  "Name": "m_refImgPanel",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "D570C58A-5BCD-434F-82F5-61FBE67C1437"
+                  }
+                }
+              ]
+            },
+            "ScriptGuid": "F60F1DB1-F0D4-496A-B571-2D65BF62F692",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              540.0
+            ],
+            "SizePx": [
+              100.0,
+              100.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "EA35D29A-DD77-4C8D-B6AD-C125C14A6011"
+    }
+  ],
+  "version": 1
+}

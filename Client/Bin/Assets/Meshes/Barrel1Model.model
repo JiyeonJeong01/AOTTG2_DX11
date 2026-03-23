@@ -1,0 +1,8 @@
+source=../../Converter/Bin/FBXs/Barrel1Model.fbx
+meshCount=2
+part0Name=Circle.001
+part0MeshGuid=FF730B5A-CBAE-4E4C-9972-187C77ED4338
+part0MaterialGuid=B3EE6ECE-1A0D-468D-9F2E-763636760959
+part1Name=Cylinder.002
+part1MeshGuid=92AE5023-9944-44EF-9AD7-9F4ABB98A37A
+part1MaterialGuid=543B4511-9450-43EF-9EBC-7C0BD3E0C8C9

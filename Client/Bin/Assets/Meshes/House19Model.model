@@ -1,0 +1,8 @@
+source=../../Converter/Bin/FBXs/House19Model.fbx
+meshCount=2
+part0Name=Plane.033
+part0MeshGuid=22E4DEB3-89EF-4F8F-8D9A-E640A818E309
+part0MaterialGuid=4B32D25E-2509-44D8-9A0B-F707DDE392E8
+part1Name=Plane.040
+part1MeshGuid=1ECB042A-9312-48A5-B432-FE68D9B13963
+part1MaterialGuid=4B32D25E-2509-44D8-9A0B-F707DDE392E8

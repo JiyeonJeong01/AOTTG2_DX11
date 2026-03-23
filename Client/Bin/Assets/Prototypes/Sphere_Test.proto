@@ -1,0 +1,104 @@
+{
+  "prototype": {
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              4.867894172668457,
+              8.995919227600098,
+              0.0
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "Offset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnCol": false,
+            "RadiusLocal": 0.5,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 1,
+            "Type": 1
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "AngularDrag": 0.0,
+            "BodyType": 0,
+            "Drag": 0.0,
+            "Enabled": true,
+            "Friction": 1.0,
+            "Gravity": true,
+            "Mass": 1.0,
+            "PositionLock": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Restitution": 1.0,
+            "RotationLock": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 1,
+            "Type": 2
+          }
+        }
+      ],
+      [],
+      [],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "B69F88A4-F574-48AC-BD74-8410EA2AA6BB",
+            "MeshGUID": "33333333-3333-3333-3333-333333333333",
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "isUI": false,
+    "name": "Sphere_Test"
+  },
+  "version": 1
+}

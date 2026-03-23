@@ -1,0 +1,5 @@
+source=../../Converter/Bin/FBXs/Box1Model.fbx
+meshCount=1
+part0Name=Cube.003
+part0MeshGuid=9603BC0F-809F-4EDD-B996-95C46634632D
+part0MaterialGuid=D6692BC9-A425-4B6D-9506-4A6AD538C664

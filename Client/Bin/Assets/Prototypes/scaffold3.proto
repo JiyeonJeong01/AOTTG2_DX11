@@ -1,0 +1,59 @@
+{
+  "prototype": {
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              -1.153188943862915,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.7009093761444092,
+              0.0,
+              -0.0,
+              0.7132503986358643
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9CCBD38B-0C0B-4911-A83D-F3B7A19F2EEC",
+            "MeshGUID": "876568A6-3F13-40C4-859A-8C63A86EED09",
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "isUI": false,
+    "name": "scaffold3"
+  },
+  "version": 1
+}

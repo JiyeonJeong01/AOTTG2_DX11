@@ -1,0 +1,8 @@
+source=../../Converter/Bin/FBXs/Momo_CanalTower_Shiganshina1.fbx
+meshCount=2
+part0Name=Plane
+part0MeshGuid=F7F1AF6A-FAC6-432B-8528-13CC8897F0E1
+part0MaterialGuid=9106E5C0-FC02-4799-A4D6-E851EAA58010
+part1Name=Plane.003
+part1MeshGuid=0F4C996D-B86A-4ECE-AE14-5F7063990137
+part1MaterialGuid=9106E5C0-FC02-4799-A4D6-E851EAA58010

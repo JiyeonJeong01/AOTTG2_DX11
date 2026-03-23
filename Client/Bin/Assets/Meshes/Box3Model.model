@@ -1,0 +1,5 @@
+source=../../Converter/Bin/FBXs/Box3Model.fbx
+meshCount=1
+part0Name=crate
+part0MeshGuid=11D9D31F-D1B9-4E5B-A95C-173E5667CBF4
+part0MaterialGuid=5F1F828A-6AD8-43B9-9104-B52877169A02

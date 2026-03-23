@@ -1,0 +1,8 @@
+source=../../Converter/Bin/FBXs/Tower6Model.fbx
+meshCount=2
+part0Name=Cube
+part0MeshGuid=1DCB21F4-DCD4-478E-B33E-B4AABF678E28
+part0MaterialGuid=3AC9A738-1EAE-4C1A-A9AA-A1332CD90BF0
+part1Name=Cube.014
+part1MeshGuid=0BD99679-9B9A-4F60-826A-EAA7929C7253
+part1MaterialGuid=B9114F5E-93A4-41A3-A8BB-8A5405F241AD
