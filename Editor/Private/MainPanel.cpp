@@ -521,39 +521,39 @@ void CMainPanel::Build_Default_Layout()
     /* TODO : =======================================================*/
     /* TODO : =============== After learning RTV ====================*/
     /* TODO : =======================================================*/
-    //ImGuiID dockspace_id = ImGui::GetID(m_strPanelName.c_str());
+    ImGuiID dockspace_id = ImGui::GetID(m_strPanelName.c_str());
 
-    //ImGui::DockBuilderRemoveNode(dockspace_id);
-    //ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
-    //ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->WorkSize);
+    ImGui::DockBuilderRemoveNode(dockspace_id);
+    ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+    ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->WorkSize);
 
-    //ImGuiID dock_main = dockspace_id;
+    ImGuiID dock_main = dockspace_id;
 
-    //ImGuiID dock_left = 0;
-    //ImGuiID dock_right = 0;
-    //ImGuiID dock_bottom = 0;
-    //ImGuiID dock_center = 0;
+    ImGuiID dock_left = 0;
+    ImGuiID dock_right = 0;
+    ImGuiID dock_bottom = 0;
+    ImGuiID dock_center = 0;
 
-    ///* Inspector : right-side */
-    //dock_right = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Right, 0.25f, nullptr, &dock_main);
+    /* Inspector : right-side */
+    dock_right = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Right, 0.25f, nullptr, &dock_main);
 
-    ///* Hierarchy : left-side */
-    //dock_left = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Left, 0.20f, nullptr, &dock_main);
+    /* Hierarchy : left-side */
+    dock_left = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Left, 0.20f, nullptr, &dock_main);
 
-    ///* Console : bottom */
-    //dock_bottom = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Down, 0.28f, nullptr, &dock_main);
+    /* Console : bottom */
+    dock_bottom = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Down, 0.28f, nullptr, &dock_main);
 
-    ///* Center : scene-game view */
-    ////dock_center = dock_main;
+    /* Center : scene-game view */
+    //dock_center = dock_main;
 
-    //ImGui::DockBuilderDockWindow(PANEL_HIERARCHY, dock_left);
-    //ImGui::DockBuilderDockWindow(PANEL_INSPECTOR, dock_right);
-    //ImGui::DockBuilderDockWindow(PANEL_CONSOLE, dock_bottom);
-    ////ImGui::DockBuilderDockWindow("SCENE", dock_center); 
+    ImGui::DockBuilderDockWindow(PANEL_HIERARCHY, dock_left);
+    ImGui::DockBuilderDockWindow(PANEL_INSPECTOR, dock_right);
+    ImGui::DockBuilderDockWindow(PANEL_CONSOLE, dock_bottom);
+    //ImGui::DockBuilderDockWindow("SCENE", dock_center); 
 
-    //ImGui::DockBuilderFinish(dockspace_id);
+    ImGui::DockBuilderFinish(dockspace_id);
 
-    //m_bBuiltLayer = true;
+    m_bBuiltLayer = true;
 }
 
 void CMainPanel::Draw_Dockspace()
