@@ -38,7 +38,7 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::PHYSICS)]
         = CPhysics_Processor::Create(m_pDevice, m_pContext);
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)]
-        = CMeshRenderer_Processor::Create(m_pDevice, m_pContext, SCAST(CTransform_Processor*, m_pComProcessors[COM_TO_PID(COMPONENT_TYPE::TRANSFORM)].get()));
+        = CMeshRenderer_Processor::Create(m_pDevice, m_pContext);
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::ANIMATION)]
         = CAnimator_Processor::Create();
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::ENVIRONMENT)]
@@ -51,6 +51,12 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
         = CScript_Processor::Create();
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::UI)]
         = CUI_Processor::Create(m_pDevice, m_pContext);
+
+    for (auto& proc : m_pComProcessors)
+    {
+        if (proc)
+            proc->Late_Initialize();
+    }
 
 	return S_OK;
 }

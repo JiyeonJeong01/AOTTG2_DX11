@@ -8,16 +8,21 @@ typedef struct ENGINE_DLL tagMeshRendererData final
     OBJECT_HANDLE       hObject{ };
     _bool               bEnable = false;
 
-    COMPONENT_HANDLE hTransform = INVALID_HANDLE;
-    COMPONENT_HANDLE hAnimator = INVALID_HANDLE;
-    uint32_t hMesh =            INVALID_HANDLE_UINT;
-    uint32_t hMaterial =        INVALID_HANDLE_UINT;
-    uint32_t hPerObjectParams = INVALID_HANDLE_UINT;
+    COMPONENT_HANDLE    hTransform = INVALID_HANDLE;
+    COMPONENT_HANDLE    hAnimator = INVALID_HANDLE;
+    COMPONENT_HANDLE    hSkinningSourceAnimator = INVALID_HANDLE;
 
-    uint32_t     flags = RF_NONE;
-    RENDER_LAYER layer = RENDER_LAYER::NONBLEND;
+    uint32_t            hMesh =            INVALID_HANDLE_UINT;
+    uint32_t            hMaterial =        INVALID_HANDLE_UINT;
+    uint32_t            hPerObjectParams = INVALID_HANDLE_UINT;
 
-    _float    sortZ = 0.f; // transparent/ui
+    uint32_t            flags = RF_NONE;
+    RENDER_LAYER        layer = RENDER_LAYER::NONBLEND;
+
+    _float              sortZ = 0.f; // transparent/ui
+
+    std::vector<uint32_t>   vecSkinningBoneRemap;     /* 파츠 bone index -> 부모 bone index */
+    std::vector<_float4x4>  vecSkinningBoneMatrices; /* 파츠용으로 재조립한 최종 bone matrices */
 }MESH_RENDERER_DATA;
 
 class ENGINE_DLL CMeshRenderer : public CComponent_Proxy_Base<MESH_RENDERER_DATA, CMeshRenderer, COMPONENT_TYPE::MESH_RENDERER>

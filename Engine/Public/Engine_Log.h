@@ -23,6 +23,8 @@
 #define LOG_WARN(fmt, ...)  LOG_IMPL(SEVERITY_TYPE::WARN,  DOMAIN_TYPE::CLIENT, fmt, ##__VA_ARGS__)
 #define LOG_ERROR(fmt, ...) LOG_IMPL(SEVERITY_TYPE::ERR,   DOMAIN_TYPE::CLIENT, fmt, ##__VA_ARGS__)
 
+#define DEBUG_POINT         int a = 10;
+
 #define ERROR_BREAK(fmt, ...) \
   do { \
     LOG_ERROR(fmt, ##__VA_ARGS__); \

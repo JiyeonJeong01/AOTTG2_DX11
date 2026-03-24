@@ -14,6 +14,7 @@ public:
 
 public :
 	virtual HRESULT	Initialize() { return S_OK; };
+	virtual HRESULT	Late_Initialize() { return S_OK; };
 	virtual void	Update(_float fDT) { };
 	virtual void	LateUpdate(_float fDT) { };
 

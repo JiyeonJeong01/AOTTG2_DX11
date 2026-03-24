@@ -109,15 +109,17 @@ typedef struct ENGINE_DLL tagDrawCmd final
     {
         struct
         {
-            uint32_t        hMesh = INVALID_HANDLE_UINT;
-            uint32_t        hMaterial = INVALID_HANDLE_UINT;
-            COMPONENT_HANDLE hTransform{};
-            COMPONENT_HANDLE hAnimator = INVALID_HANDLE;
+            uint32_t            hMesh = INVALID_HANDLE_UINT;
+            uint32_t            hMaterial = INVALID_HANDLE_UINT;
+            COMPONENT_HANDLE    hTransform{};
+            COMPONENT_HANDLE    hAnimator = INVALID_HANDLE;
 
             uint32_t        flags = RF_NONE;
             uint32_t        firstIndex = INVALID_HANDLE_UINT;
             uint32_t        indexCount = INVALID_HANDLE_UINT;
             uint32_t        hPerObjectParams = INVALID_HANDLE_UINT;
+
+            const std::vector<_float4x4>* pSkinningMatrices = nullptr;
         } mesh;
 
         struct

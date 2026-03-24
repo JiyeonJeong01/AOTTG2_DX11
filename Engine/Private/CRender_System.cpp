@@ -333,7 +333,7 @@ void CRender_System::Execute_Draw_Mesh(const DRAW_CMD& cmd)
     if (!SYS_RESOURCE.Is_ModelHandle(cmd.mesh.hMesh))
     {
         Execute_Draw_Mesh_Inner(cmd.mesh.hMesh, cmd.mesh.hMaterial, cmd.mesh.hTransform, cmd.mesh.hAnimator, cmd.mesh.hPerObjectParams,
-            cmd.mesh.firstIndex, cmd.mesh.indexCount);
+            cmd.mesh.firstIndex, cmd.mesh.indexCount, cmd.mesh.pSkinningMatrices);
         return;
     }
 
@@ -350,7 +350,7 @@ void CRender_System::Execute_Draw_Mesh(const DRAW_CMD& cmd)
             continue;
 
         Execute_Draw_Mesh_Inner(part.hMesh, hMat, cmd.mesh.hTransform, cmd.mesh.hAnimator, cmd.mesh.hPerObjectParams,
-            cmd.mesh.firstIndex, cmd.mesh.indexCount);
+            cmd.mesh.firstIndex, cmd.mesh.indexCount, cmd.mesh.pSkinningMatrices);
     }
 }
 
@@ -459,7 +459,7 @@ void CRender_System::Render()
 
 
 void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, COMPONENT_HANDLE hAnimator,
-    uint32_t hPerObjectParams, uint32_t iFirstIdx, uint32_t iNumIdx)
+    uint32_t hPerObjectParams, uint32_t iFirstIdx, uint32_t iNumIdx, const std::vector<_float4x4>* pSkinningMatrices)
 {
     /* 메쉬 + 머테리얼 + 셰이더 리소스 가져오기 */
     const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(hMesh);
@@ -519,15 +519,25 @@ void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial,
 
     Apply_Block_To_Shader(pShader, pMat->materialParams);
 
-    if (hAnimator.Is_Valid())
+    if (pMat->pBoneMatrices != nullptr)                                     /* AnimMesh 인 경우 */
     {
-        ANIMATOR_DATA* pAnim = To<ANIMATOR_DATA*>(m_pAnimator_Processor->Get_DataPtr(COMPONENT_TYPE::ANIMATOR, hAnimator));
-        if (pAnim && !pAnim->finalBoneMatrices.empty() && pMat->pBoneMatrices != nullptr)
+        if (pSkinningMatrices != nullptr && !pSkinningMatrices->empty())    /* 파츠 메쉬 */
         {
             pMat->pBoneMatrices->SetMatrixArray(
-                reinterpret_cast<const float*>(pAnim->finalBoneMatrices.data()),
+                reinterpret_cast<const float*>(pSkinningMatrices->data()),
                 0,
-                static_cast<UINT>(pAnim->finalBoneMatrices.size()));
+                static_cast<UINT>(pSkinningMatrices->size()));
+        } 
+        else if (hAnimator.Is_Valid())                                      /* 부모 메쉬 */
+        {
+            ANIMATOR_DATA* pAnim = To<ANIMATOR_DATA*>(m_pAnimator_Processor->Get_DataPtr(COMPONENT_TYPE::ANIMATOR, hAnimator));
+            if (pAnim && !pAnim->finalBoneMatrices.empty())
+            {
+                pMat->pBoneMatrices->SetMatrixArray(
+                    reinterpret_cast<const float*>(pAnim->finalBoneMatrices.data()),
+                    0,
+                    static_cast<UINT>(pAnim->finalBoneMatrices.size()));
+            }
         }
     }
 
