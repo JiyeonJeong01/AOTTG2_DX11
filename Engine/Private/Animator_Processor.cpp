@@ -172,6 +172,8 @@ void CAnimator_Processor::Update_Animator(ANIMATOR_DATA* pData, _float fDT)
 
     Evaluate_AnimationChannels(pData, *pModel, *pCurClip);
     Build_BoneCombinedMatrices(pData, pModel->tSkeleton);
+
+    /* 매 프레임 각 Bone이 어디로 움직였는지 finalBoneMatrices에 계산해둔다. */
     Build_FinalBoneMatrices(pData, *pModel);
 
     if (pData->bIsBlending && pData->fBlendElapsed >= pData->fBlendDuration)

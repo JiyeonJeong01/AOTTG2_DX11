@@ -119,7 +119,10 @@ typedef struct ENGINE_DLL tagDrawCmd final
             uint32_t        indexCount = INVALID_HANDLE_UINT;
             uint32_t        hPerObjectParams = INVALID_HANDLE_UINT;
 
-            const std::vector<_float4x4>* pSkinningMatrices = nullptr;
+            const std::vector<_float4x4>*   pSkinningMatrices = nullptr;
+
+            MESH_MODE                       eMode = MESH_MODE::NONE;
+            _float4x4                       matAttach{};
         } mesh;
 
         struct

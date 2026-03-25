@@ -333,7 +333,7 @@ void CRender_System::Execute_Draw_Mesh(const DRAW_CMD& cmd)
     if (!SYS_RESOURCE.Is_ModelHandle(cmd.mesh.hMesh))
     {
         Execute_Draw_Mesh_Inner(cmd.mesh.hMesh, cmd.mesh.hMaterial, cmd.mesh.hTransform, cmd.mesh.hAnimator, cmd.mesh.hPerObjectParams,
-            cmd.mesh.firstIndex, cmd.mesh.indexCount, cmd.mesh.pSkinningMatrices);
+            cmd.mesh.firstIndex, cmd.mesh.indexCount, cmd.mesh.pSkinningMatrices, cmd.mesh.matAttach, cmd.mesh.eMode);
         return;
     }
 
@@ -350,7 +350,7 @@ void CRender_System::Execute_Draw_Mesh(const DRAW_CMD& cmd)
             continue;
 
         Execute_Draw_Mesh_Inner(part.hMesh, hMat, cmd.mesh.hTransform, cmd.mesh.hAnimator, cmd.mesh.hPerObjectParams,
-            cmd.mesh.firstIndex, cmd.mesh.indexCount, cmd.mesh.pSkinningMatrices);
+            cmd.mesh.firstIndex, cmd.mesh.indexCount, cmd.mesh.pSkinningMatrices, cmd.mesh.matAttach, cmd.mesh.eMode);
     }
 }
 
@@ -459,7 +459,7 @@ void CRender_System::Render()
 
 
 void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, COMPONENT_HANDLE hAnimator,
-    uint32_t hPerObjectParams, uint32_t iFirstIdx, uint32_t iNumIdx, const std::vector<_float4x4>* pSkinningMatrices)
+    uint32_t hPerObjectParams, uint32_t iFirstIdx, uint32_t iNumIdx, const std::vector<_float4x4>* pSkinningMatrices, const _float4x4& matAttach, MESH_MODE eMode)
 {
     /* 메쉬 + 머테리얼 + 셰이더 리소스 가져오기 */
     const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(hMesh);
@@ -478,12 +478,17 @@ void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial,
     /* 행렬 설정하기 : 월드, 뷰, 투영 */
     const auto tr = m_pTransform_Processor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, hComponent);
     IF_TRUE_RETURN_MSG_BREAK(!tr.Is_Valid(), , "Transform proxy invalid.");
-
-    const _matrix matWorld = Engine::Math::Load(tr->matWorld);
-
     IF_NULL_RETURN_MSG_BREAK(pMat->pWorld, , "pWorld is nullptr.");
     IF_NULL_RETURN_MSG_BREAK(pMat->pView, , "pView is nullptr.");
     IF_NULL_RETURN_MSG_BREAK(pMat->pProj, , "pProj is nullptr.");
+
+
+    _matrix matWorld;
+
+    if (eMode == MESH_MODE::ATTACH)
+        matWorld = Math::Load(matAttach);
+    else
+        matWorld = Engine::Math::Load(tr->matWorld);
 
     pMat->pWorld->SetMatrix(reinterpret_cast<const float*>(&matWorld));
     pMat->pView->SetMatrix(reinterpret_cast<const float*>(&m_matView));     /* TODO : 렌더링 최적화 !! 프레임 당 한 번으로 수정 */
@@ -519,25 +524,42 @@ void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial,
 
     Apply_Block_To_Shader(pShader, pMat->materialParams);
 
-    if (pMat->pBoneMatrices != nullptr)                                     /* AnimMesh 인 경우 */
+    /* AnimMesh 인 경우 */
+    if (pMat->pBoneMatrices != nullptr)
     {
-        if (pSkinningMatrices != nullptr && !pSkinningMatrices->empty())    /* 파츠 메쉬 */
+        /* PARTS 메쉬인 경우 */
+        if (eMode == MESH_MODE::PARTS)
         {
-            pMat->pBoneMatrices->SetMatrixArray(
-                reinterpret_cast<const float*>(pSkinningMatrices->data()),
-                0,
-                static_cast<UINT>(pSkinningMatrices->size()));
-        } 
-        else if (hAnimator.Is_Valid())                                      /* 부모 메쉬 */
-        {
-            ANIMATOR_DATA* pAnim = To<ANIMATOR_DATA*>(m_pAnimator_Processor->Get_DataPtr(COMPONENT_TYPE::ANIMATOR, hAnimator));
-            if (pAnim && !pAnim->finalBoneMatrices.empty())
+            if (pSkinningMatrices != nullptr && !pSkinningMatrices->empty())
             {
                 pMat->pBoneMatrices->SetMatrixArray(
-                    reinterpret_cast<const float*>(pAnim->finalBoneMatrices.data()),
+                    reinterpret_cast<const float*>(pSkinningMatrices->data()),
                     0,
-                    static_cast<UINT>(pAnim->finalBoneMatrices.size()));
+                    static_cast<UINT>(pSkinningMatrices->size()));
             }
+            else
+            {
+                _DEBUG_WARN("PARTS mode but pSkinningMatrices is empty.");
+            }
+        }
+        /* 부모 메쉬인 경우 */
+        else if (eMode == MESH_MODE::NONE)
+        {
+            if (hAnimator.Is_Valid())
+            {
+                ANIMATOR_DATA* pAnim = To<ANIMATOR_DATA*>(m_pAnimator_Processor->Get_DataPtr(COMPONENT_TYPE::ANIMATOR, hAnimator));
+                if (pAnim && !pAnim->finalBoneMatrices.empty())
+                {
+                    pMat->pBoneMatrices->SetMatrixArray(
+                        reinterpret_cast<const float*>(pAnim->finalBoneMatrices.data()),
+                        0,
+                        static_cast<UINT>(pAnim->finalBoneMatrices.size()));
+                }
+            }
+        }
+        else if (eMode == MESH_MODE::ATTACH)
+        {
+            /* NOTE : attach는 bone matrix를 쓰지 않음 */
         }
     }
 

@@ -36,6 +36,8 @@ namespace Engine
     enum class VERTEX_DECL : uint8_t        { VTXCOL = 0, VTXTEX, VTXNORTEX, VTXMESH, VTXANIMMESH, END };
     enum class PARAM_TYPE : uint8_t         { FLOAT, FLOAT4, FLOAT4X4, TEXTURE_HANDLE };
     enum class MODEL_TYPE : uint8_t         { NONANIM = 0, ANIM, };
+    enum class MESH_MODE : uint8_t          { NONE = 0, PARTS, ATTACH };
+
 
     /* --- Physics --- */
 	enum class SHAPE : uint8_t              { BOX, SPHERE, PLANE, CAPSULE, END };

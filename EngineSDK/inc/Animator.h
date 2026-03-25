@@ -28,7 +28,7 @@ typedef struct ENGINE_DLL tagAnimatorData
     /* local -> combined -> final -> [ SHADER ] */
     std::vector<_float4x4>   boneLocalMatrices;         /* 현재 프레임에서 각 Bone의 local transform 결과 */
     std::vector<_float4x4>   boneCombinedMatrices;      
-    std::vector<_float4x4>   finalBoneMatrices;
+    std::vector<_float4x4>   finalBoneMatrices;         /* 실제 스키닝에 쓰이는 행렬 = offsetMatrix[i] * currentCombinedMatrix[i]*/
 
     std::unordered_map<uint64_t, _float, ANIMATION_CLIP_INDEX_HASHER>   BlendMap;
     std::unordered_map<std::string, uint32_t>                           NameToClipIndex;

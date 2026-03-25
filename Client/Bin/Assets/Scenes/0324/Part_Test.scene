@@ -1,0 +1,282 @@
+{
+  "objects": [
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Character",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              0.009999999776482582,
+              0.009999999776482582,
+              0.009999999776482582
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "5B684C79-3BC0-4C70-ACED-B9E527EAEF01",
+            "MeshGUID": "2237F81A-EB0D-466E-96A1-CB15617EA3BA",
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        },
+        {
+          "data": {
+            "AnimationClip": 0,
+            "BlendDuration": 0.019999999552965164,
+            "BlendMap": [],
+            "Enabled": true,
+            "Loop": false,
+            "PlaySpeed": 1.0,
+            "Playing": false,
+            "Type": 6
+          },
+          "type": 6
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "2C6B05A9-44D0-485B-B311-884705A51AC2"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Arm_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "BD5DE46D-9C79-495E-8F0D-C1B650FA714E",
+            "MeshGUID": "0A9BD37B-4D62-4D2A-82E3-1C8A888B93FD",
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "2C6B05A9-44D0-485B-B311-884705A51AC2",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "2F429C48-CEF2-4FED-B916-E4C2C195E4B9"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Arm_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "B74D4A58-5679-44A2-BB4D-D21D70E95284",
+            "MeshGUID": "F9297C88-DF0F-4D7C-B605-D39C81AB7488",
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "2C6B05A9-44D0-485B-B311-884705A51AC2",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "DEAAE6CE-1324-450D-9A3C-61CF4BB9205F"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Uniform",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "4881E05B-0896-47D4-9D72-5234C7F3C71D",
+            "MeshGUID": "8AABB2C6-82DD-4CAA-9E7B-CAF9329FBCDE",
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "2C6B05A9-44D0-485B-B311-884705A51AC2",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "402BA10F-0D02-4798-8611-80CF10B52101"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Hand_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "CE8C3249-DB79-4F3C-81EC-BFAA11B54CE5",
+            "MeshGUID": "79A7FEF3-6CB7-424E-A8C9-04B7AAAD3AA9",
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "2C6B05A9-44D0-485B-B311-884705A51AC2",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "65142679-8951-4800-A210-5DE90BC415B4"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Hand_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "3EF30489-462A-45FD-B0A4-571FBF6212E2",
+            "MeshGUID": "AA5C3A5D-4991-4573-9A7F-050805AEA46C",
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "2C6B05A9-44D0-485B-B311-884705A51AC2",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "47B5D6C1-8C92-4076-8698-CB93BCED2972"
+    }
+  ],
+  "version": 1
+}

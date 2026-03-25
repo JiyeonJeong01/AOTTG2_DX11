@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <MeshRenderer.h>
+
 #include "EditorPanel.h"
 #include "ProjectPanel.h"
 
@@ -6,6 +8,7 @@ NS_BEGIN(Engine)
 class CGameObject;
 class CScript_Processor;
 class IScript;
+class CMeshRenderer_Processor;
 NS_END
 
 NS_BEGIN(Editor)
@@ -90,6 +93,16 @@ private:
     Engine::COMPONENT_HANDLE m_hPendingScript{};
     _bool m_bOpenCreateScriptPopup = false;
     std::string m_newScriptName;
+    
+    /* Mesh Renderer */
+    Engine::CMeshRenderer_Processor*    m_pMeshRenderer_Processor = nullptr;
+    _bool                               m_bAttachModeInitialized = false;
+
+    bool            m_bAttachInputActive = false;
+    bool            m_bEditUseAttach = false;
+    MESH_MODE       m_eEditMode = MESH_MODE::NONE;
+    _bool           m_bEditModeInitialized = false;
+    std::string     m_strEditAttachBoneName = "";
 
 public:
     static std::unique_ptr<CInspectorPanel> Create(const std::string& strPanelName, CHierarchyPanel* pHierarchy, CProjectPanel* pProject);

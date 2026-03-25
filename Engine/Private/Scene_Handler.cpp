@@ -7,7 +7,9 @@
 #include "Event_System.h"
 #include "Scene.h"
 #include "Asset_Registry.h"
+#include "MeshRenderer.h"
 #include "SceneChange_Event.h"
+#include "MeshRenderer_Processor.h"
 #include "Script_Processor.h"
 
 NS_BEGIN(Engine)
@@ -402,8 +404,24 @@ HRESULT CScene_Handler::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& 
         itChild->second->Set_Parent(itParent->second);
     }
 
-    /* 스크립트 컴포넌트가 저장한 UUID <-> 런타임 게임오브젝트 간 연결 */
+    CMeshRenderer_Processor* pMeshrenderer_Processor = SYS_COMPONENT.Bind_Processor<CMeshRenderer_Processor>();
+    IF_NULL_RETURN_MSG_BREAK(pMeshrenderer_Processor, E_FAIL, "can't bind with script processor");
 
+    for (auto pObj : stagingObjects)
+    {
+        if ((pObj->Get_ComponentMask() & Component::To_Bit(COMPONENT_TYPE::MESH_RENDERER)) == 0)
+            continue;
+
+        auto meshRenderer = pObj->Get_Component<CMeshRenderer>();
+        if (!meshRenderer.Is_Valid())
+            continue;
+        if (meshRenderer->eMode == MESH_MODE::PARTS)   
+            pMeshrenderer_Processor->Resolve_AttachReference(meshRenderer.Get_Handle());
+        else
+           pMeshrenderer_Processor->Resolve_AttachReference(meshRenderer.Get_Handle());
+    }
+
+    /* 스크립트 컴포넌트가 저장한 UUID <-> 런타임 게임오브젝트 간 연결 */
     CScript_Processor* pScriptProcessor = SYS_COMPONENT.Bind_Processor<CScript_Processor>();
     IF_NULL_RETURN_MSG_BREAK(pScriptProcessor, E_FAIL, "can't bind with script processor");
 

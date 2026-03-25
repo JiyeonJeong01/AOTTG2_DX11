@@ -29,6 +29,7 @@
 
 #include "Material.h"
 #include "UI_Processor.h"
+#include "MeshRenderer_Processor.h"
 
 #pragma endregion
 
@@ -50,6 +51,9 @@ HRESULT CInspectorPanel::Initialize(CHierarchyPanel* pPanel, CProjectPanel* pPro
     m_pScript_Processor = SYS_COMPONENT.Bind_Processor<CScript_Processor>();
     IF_NULL_RETURN_MSG_BREAK(m_pScript_Processor, E_FAIL, "Transform processor bind failed");
 
+    m_pMeshRenderer_Processor = SYS_COMPONENT.Bind_Processor<CMeshRenderer_Processor>();
+    IF_NULL_RETURN_MSG_BREAK(m_pMeshRenderer_Processor, E_FAIL, "MeshRenderer_Processor processor bind failed");
+
     return S_OK;
 }
 
@@ -69,6 +73,13 @@ void CInspectorPanel::Set_Target(Engine::CGameObject* pObj)
 
     m_selectedAsset = ASSET_SELECTION{};
     m_eMode = (pObj ? InspectMode::GameObject : InspectMode::None);
+
+    /* 편집 관련 초기화  */
+    m_bAttachInputActive = false;
+    m_bEditUseAttach = false;
+    m_strEditAttachBoneName = "";
+    m_bEditModeInitialized = false;
+    m_eEditMode = MESH_MODE::NONE;
 }
 
 void CInspectorPanel::Set_Selected_Asset(const ASSET_SELECTION& sel)
@@ -888,6 +899,74 @@ void CInspectorPanel::Draw_MeshRenderer()
 
                 ImGui::PopID();
             }
+        }
+    }
+
+    if (m_pTarget->Get_Parent() != nullptr)
+    {
+        const char* items[] = { "None", "Parts", "Attach" };
+
+        if (!m_bEditModeInitialized)
+        {
+            m_eEditMode = pData->eMode;
+            m_strEditAttachBoneName = pData->strAttachBoneName;
+            m_bEditModeInitialized = true;
+        }
+
+        int current = static_cast<int>(m_eEditMode);
+        ImGui::Combo("##MeshMode", &current, items, IM_ARRAYSIZE(items));
+        m_eEditMode = static_cast<MESH_MODE>(current);
+
+        if (m_eEditMode == MESH_MODE::ATTACH)
+        {
+            ImGui::SetNextItemWidth(200.f);
+            ImGui::InputTextWithHint(
+                "##AttachBoneInput",
+                "Please input bone name",
+                &m_strEditAttachBoneName
+            );
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Save"))
+        {
+            auto* pMRData = mr._Data();
+            if (!pMRData)
+                return;
+
+            pData->eMode = m_eEditMode;
+
+            switch (m_eEditMode)
+            {
+            case MESH_MODE::NONE:
+            {
+                pData->strAttachBoneName.clear();
+
+                m_pMeshRenderer_Processor->Clear_AttachReference(pMRData);
+                m_pMeshRenderer_Processor->Clear_SkinningReference(pMRData);
+
+                pData->eMode = MESH_MODE::NONE;
+            }
+            break;
+
+            case MESH_MODE::PARTS:
+            {
+                m_pMeshRenderer_Processor->Resolve_SkinningReference(mr.Get_Handle());
+            }
+            break;
+
+            case MESH_MODE::ATTACH:
+            {
+                pData->strAttachBoneName = m_strEditAttachBoneName;
+
+                if (!pData->strAttachBoneName.empty())
+                    m_pMeshRenderer_Processor->Resolve_AttachReference(mr.Get_Handle());
+            }
+            break;
+            }
+
+            m_bAttachInputActive = false;
         }
     }
 

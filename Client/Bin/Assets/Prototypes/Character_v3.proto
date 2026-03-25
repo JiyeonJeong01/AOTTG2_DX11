@@ -1,0 +1,366 @@
+{
+  "prototype": {
+    "children": [
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "BD5DE46D-9C79-495E-8F0D-C1B650FA714E",
+                "MeshGUID": "0A9BD37B-4D62-4D2A-82E3-1C8A888B93FD",
+                "Mode": 1,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Arm_Left"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "B74D4A58-5679-44A2-BB4D-D21D70E95284",
+                "MeshGUID": "F9297C88-DF0F-4D7C-B605-D39C81AB7488",
+                "Mode": 1,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Arm_Right"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "6622D9B1-7BEB-4433-8920-2490E73778E9",
+                "MeshGUID": "19EB57BC-C2F1-49B5-9DF2-DCA902D44FE4",
+                "Mode": 1,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Uniform"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "CE8C3249-DB79-4F3C-81EC-BFAA11B54CE5",
+                "MeshGUID": "79A7FEF3-6CB7-424E-A8C9-04B7AAAD3AA9",
+                "Mode": 1,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Hand_Left"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "3EF30489-462A-45FD-B0A4-571FBF6212E2",
+                "MeshGUID": "AA5C3A5D-4991-4573-9A7F-050805AEA46C",
+                "Mode": 1,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Hand_Right"
+      }
+    ],
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              0.009999999776482582,
+              0.009999999776482582,
+              0.009999999776482582
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "5B684C79-3BC0-4C70-ACED-B9E527EAEF01",
+            "MeshGUID": "2237F81A-EB0D-466E-96A1-CB15617EA3BA",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "AnimationClip": 4,
+            "BlendDuration": 0.0,
+            "BlendMap": [],
+            "Enabled": true,
+            "Loop": true,
+            "PlaySpeed": 1.0,
+            "Playing": true,
+            "Type": 6
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "isUI": false,
+    "name": "Character_v3"
+  },
+  "version": 1
+}

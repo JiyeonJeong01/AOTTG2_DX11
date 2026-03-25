@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Physics_Struct.h"
 #include "Spec_Util.h"
+#include "Logger.h"
 
 NS_BEGIN(Engine)
 
@@ -213,12 +214,15 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::MESH_RENDERER)
 
-    ASSET_GUID  meshGUID{};
-    ASSET_GUID  materialGUID{};
-    uint32_t    flags = RF_NONE;
-    RENDER_LAYER layer = RENDER_LAYER::NONBLEND;
-    _float      sortZ = 0.f;
-    _bool       bEnable = true;
+    ASSET_GUID      meshGUID{};
+    ASSET_GUID      materialGUID{};
+    uint32_t        flags = RF_NONE;
+    RENDER_LAYER    layer = RENDER_LAYER::NONBLEND;
+    _float          sortZ = 0.f;
+    _bool           bEnable = true;
+
+    MESH_MODE       eMode = MESH_MODE::NONE;
+    std::string     strAttachBoneName;
 
     std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
     {
@@ -234,6 +238,9 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
         j["Layer"] = SCAST(uint32_t, layer);
         j["SortZ"] = sortZ;
         j["Enabled"] = bEnable;
+
+        j["Mode"] = SCAST(uint32_t, eMode);
+        j["AttachBoneName"] = strAttachBoneName;
     }
 
     _bool FromJson(const json& j) override
@@ -257,8 +264,21 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
         if (!Read_Bool(j, "Enabled", bEnable))
             return false;
         sortZ = Clamp01(sortZ);
+
+        /* Mesh Mode */
+        eMode = MESH_MODE::NONE;
+        uint32_t modeValue = To<uint32_t>(eMode);
+        if (Read_UInt(j, "Mode", modeValue))
+            eMode = SCAST(MESH_MODE, modeValue);
+
+        strAttachBoneName.clear();
+        auto it = j.find("AttachBoneName");
+        if (it != j.end() && it->is_string())
+            strAttachBoneName = it->get<std::string>();
+
         return true;
     }
+
 } MESH_RENDERER_SPEC;
 
 typedef struct tagScriptSpec final : public COMPONENT_SPEC_BASE

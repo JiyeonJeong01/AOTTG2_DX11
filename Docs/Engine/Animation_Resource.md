@@ -352,8 +352,24 @@ converter 단계에서는 bone name 기반 매핑이 편하고,  런타임에서
 
 
 ---
+## 12. 부모 캐릭터와 스킨드 파츠가 함께 움직이는 원리
+스킨드 파츠가 부모 캐릭터의 애니메이션에 맞춰 움직일 수 있는 이유는 파츠 메쉬가 부모 캐릭터와 같은 skeleton 구조를 공유하고 있기 때문이다.
 
-## 12. 핵심 결론
+### 아트 리스소 측면
+- 애니메이터는 캐릭터용 뼈대(armature)를 만든다. 애니메이션도 이 뼈대를 기준으로 제작한다.
+- 그 다음 캐릭터 메쉬나 팔, 부츠 같은 파츠 메쉬를 만든다.
+- 파츠 메쉬가 별도 모델로 저장되더라도, **내부 skeleton의 bone 이름이 부모 캐릭터의 skeleton bone 이름과 일치하면 런타임에 bone name 기반 remap**을 만들 수 있다. 
+- 즉, 파츠는 자기 스켈레톤 기준으로 `vBlendIndex`를 가지고 있지만, 런타임에 해당 인덱스가 부모 skeleton에서는 몇 번 bone 인지 찾을 수 있다.
+
+### Skinned Parts 를 위한 값
+- `hSkinningSourceAnimator` : 파츠 오브젝트가 참조할 부모 캐릭터의 애니메이터 핸들이다.
+- `vecSkinningBoneRemap` : 파츠 오브젝트가 가진 로컬한 BoneIndex를 부모 skeleton에서의 BoneIndex로 매핑한다.
+- `vecSkinningBoneMatrices` : **파츠 오브젝트의 boneIndex 정렬에 맞춘 최종 boneMatrix 배열이다.**
+
+
+---
+
+## 13. 핵심 결론
 
 이 설계의 핵심 요약은 다음과 같다.
 

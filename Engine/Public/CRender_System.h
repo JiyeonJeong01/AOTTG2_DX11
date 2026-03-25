@@ -83,7 +83,7 @@ private:
     void     Execute_Draw_Line(const DRAW_CMD& tCmd);
 
     void     Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, COMPONENT_HANDLE hAnimator, uint32_t hPerObjectParams,
-        uint32_t iFirstIdx, uint32_t iNumIdx, const std::vector<_float4x4>* pSkinningMatrices);
+        uint32_t iFirstIdx, uint32_t iNumIdx, const std::vector<_float4x4>* pSkinningMatrices, const _float4x4& matAttach, MESH_MODE eMode);
 
 
     void    Apply_Pass_State_Priority();
