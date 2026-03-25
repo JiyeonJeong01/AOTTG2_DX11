@@ -2,16 +2,16 @@
 #pragma once
 #include "Component_Pool.h"
 #include "Component_Processor.h"
+#include "Component_System.h"
 #include "UIButton.h"
 #include "UIImage.h"
+#include "UIText.h"
 
 NS_BEGIN(Engine)
 
 class CCanvasRenderer_Processor;
 class CRectTransform_Processor;
-class CUIButton;
-class CUIImage;
-class CUIText;
+
 
 class ENGINE_DLL CUI_Processor final : public CComponent_Processor
 {
@@ -25,6 +25,7 @@ public:
     void    Update(_float fDT) override;
     void    LateUpdate(_float fDT) override;
     void    Render();
+    void    Build_RenderQueue(std::vector<DRAW_CMD>& outCmds);
 
     COMPONENT_HANDLE    Create_Component_Data(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject) override;
     void                Remove_Component(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) override;
@@ -41,6 +42,9 @@ public:
         }
         else if constexpr (std::is_same_v<TProxy, CUIImage>) {
             return m_ImagePool.Get_Proxy(hComponent);
+        }
+        else if constexpr (std::is_same_v<TProxy, CUIText>) {
+            return m_TextPool.Get_Proxy(hComponent);
         }
 
         IF_TRUE_RETURN_MSG_BREAK(true, TProxy{}, "Invalid Proxy Type for this Pool");
@@ -71,16 +75,19 @@ private:
         pool.Get_Data_By_Handle(hComponent)->bEnable = bEnable;
     }
 
-
+private :
     void Sync_Images_To_Canvas();
+
     void Update_Buttons(_float fDT);
     void Apply_ButtonVisual(const UI_BUTTON_DATA& tData);
 
-    static _bool HitTest_Rect(const RECT& rcScreen, const POINT& ptMouse) noexcept;
+    uint64_t        Make_Text_SortKey(const UI_TEXT_DATA& tData) const;
+    static _bool    HitTest_Rect(const RECT& rcScreen, const POINT& ptMouse) noexcept;
 
+private :
     HRESULT Initialize_From_Spec_UIButton(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
     HRESULT Initialize_From_Spec_UIImage(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
-    //HRESULT Initialize_From_Spec_UIText(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
+    HRESULT Initialize_From_Spec_UIText(COMPONENT_HANDLE h, const COMPONENT_SPEC_BASE* spec);
 
     HRESULT Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE h);
 
@@ -89,6 +96,7 @@ private :
     CRectTransform_Processor*   m_pRectTransformProcessor{};
     CComponent_Pool<CUIButton>  m_ButtonPool;
     CComponent_Pool<CUIImage>   m_ImagePool;
+    CComponent_Pool<CUIText>    m_TextPool;
 
 public :
     static std::unique_ptr<CUI_Processor> Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

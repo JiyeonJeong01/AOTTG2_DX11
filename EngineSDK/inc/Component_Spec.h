@@ -686,6 +686,144 @@ typedef struct tagUIButtonSpec final : public COMPONENT_SPEC_BASE
     }
 } UI_BUTTON_SPEC;
 
+typedef struct tagUITextSpec final : public COMPONENT_SPEC_BASE
+{
+    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::UI_TEXT)
+
+    ASSET_GUID                  fontGuid{};
+    std::basic_string<_tchar>   strText{};
+    _float4                     color{ 1,1,1,1 };
+    _float                      fScale = 1.f;
+    uint8_t                     visualPriority = 0;
+    _bool                       bEnable = false;
+    uint32_t                    flags = 0;
+    _float                      sortZ = 0.f;
+    RECT_F                      rcClip{};
+    uint8_t                     pad[2] = {};
+
+private:
+    static std::string To_UTF8_String(const std::basic_string<_tchar>& str)
+    {
+#ifdef UNICODE
+        if (str.empty())
+            return {};
+
+        const int iRequired = WideCharToMultiByte(CP_UTF8, 0, str.c_str(), -1, nullptr, 0, nullptr, nullptr);
+        if (iRequired <= 0)
+            return {};
+
+        std::string result;
+        result.resize(iRequired - 1);
+
+        WideCharToMultiByte(CP_UTF8, 0, str.c_str(), -1, result.data(), iRequired, nullptr, nullptr);
+        return result;
+#else
+        return str;
+#endif
+    }
+
+    static std::basic_string<_tchar> From_UTF8_String(const std::string& str)
+    {
+#ifdef UNICODE
+        if (str.empty())
+            return {};
+
+        const int iRequired = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+        if (iRequired <= 0)
+            return {};
+
+        std::wstring result;
+        result.resize(iRequired - 1);
+
+        MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, result.data(), iRequired);
+        return result;
+#else
+        return str;
+#endif
+    }
+
+public:
+    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
+    {
+        return std::make_unique<tagUITextSpec>(*this);
+    }
+
+    void ToJson(json& j) const override
+    {
+        j["Type"] = SCAST(_uint, Get_Type());
+        j["Enabled"] = bEnable;
+
+        j["FontGuid"] = fontGuid.To_String_Utf8();
+        j["Text"] = To_UTF8_String(strText);
+        j["Color"] = { color.x, color.y, color.z, color.w };
+        j["Scale"] = fScale;
+        j["VisualPriority"] = SCAST(_uint, visualPriority);
+
+        j["Flags"] = flags;
+        j["SortZ"] = sortZ;
+        j["ClipRect"] = { rcClip.fLeft, rcClip.fTop, rcClip.fRight, rcClip.fBottom };
+    }
+
+    _bool FromJson(const json& j) override
+    {
+        if (!Read_SpecType(j, Get_Type()))
+            return false;
+
+        if (!Read_Bool(j, "Enabled", bEnable))
+            return false;
+
+        if (!Read_GUID(j, "FontGuid", fontGuid))
+            return false;
+
+        {
+            if (!j.contains("Text") || !j["Text"].is_string())
+                return false;
+
+            strText = From_UTF8_String(j["Text"].get<std::string>());
+        }
+
+        if (!Read_Vec4(j, "Color", color))
+            return false;
+
+        if (!Read_Float(j, "Scale", fScale))
+            return false;
+
+        {
+            uint32_t iVisualPriority = 0;
+            if (!Read_UInt(j, "VisualPriority", iVisualPriority))
+                return false;
+
+            if (iVisualPriority > 255u)
+                return false;
+
+            visualPriority = SCAST(uint8_t, iVisualPriority);
+        }
+
+        if (!Read_UInt(j, "Flags", flags))
+            return false;
+
+        if (!Read_Float(j, "SortZ", sortZ))
+            return false;
+
+        if (!Read_RECTF(j, "ClipRect", rcClip))
+            return false;
+
+        Sanitize_Color(color);
+        Sanitize_ClipRect(rcClip);
+
+        if (fScale < 0.f)
+            fScale = 0.f;
+
+        if (sortZ < 0.f)
+            sortZ = 0.f;
+        if (sortZ > 1.f)
+            sortZ = 1.f;
+
+        return true;
+    }
+
+} UI_TEXT_SPEC;
+
 
 typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
 {

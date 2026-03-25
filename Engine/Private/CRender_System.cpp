@@ -20,6 +20,8 @@
 #include "Render_Context.h"
 #include "Texture.h"
 #include "Animator.h"
+#include "Font.h"
+#include "UIText.h"
 #pragma endregion
 
 IMPLEMENT_SINGLETON(CRender_System)
@@ -72,6 +74,8 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
         rs.ScissorEnable = FALSE;
         IF_FAIL_RETURN_MSG_BREAK(m_pDevice->CreateRasterizerState(&rs, m_rsNoScissor.GetAddressOf()),
             E_FAIL, "CreateRasterizerState(no scissor) failed");
+
+        m_pSpriteBatch = std::make_unique<DirectX::SpriteBatch>(m_pContext);
     }
 
     /* 렌더에 필요한 컴포넌트 프로세서 가져오기 */
@@ -323,6 +327,10 @@ void CRender_System::Execute_Draw(const DRAW_CMD& cmd)
         Execute_Draw_Line(cmd);
         break;
 
+    case DRAW_TYPE::TEXT:
+        Execute_Draw_Text(cmd);
+        break;
+
     default:
         break;
     }
@@ -449,6 +457,42 @@ void CRender_System::Execute_Draw_Line(const DRAW_CMD& tCmd)
     pMesh->Draw(m_pContext);
 }
 
+void CRender_System::Execute_Draw_Text(const DRAW_CMD& tCmd)
+{
+    if (tCmd.kind != DRAW_TYPE::TEXT)
+        return;
+
+    FONT_ENTRY* pFontEntry = SYS_RESOURCE.Get_Font(tCmd.text.hFont);
+    if (!pFontEntry || !pFontEntry->Is_Valid() || !pFontEntry->pFont)
+        return;
+
+    auto rt = m_pRectTransform_Processor->Get_Proxy(COMPONENT_TYPE::RECT_TRANSFORM, tCmd.text.hRectTransform);
+    if (!rt.Is_Valid())
+        return;
+
+    const _float2 vPos = rt->vPosPx;
+
+    DirectX::XMVECTOR vColor = DirectX::XMVectorSet(
+        tCmd.text.vColor.x,
+        tCmd.text.vColor.y,
+        tCmd.text.vColor.z,
+        tCmd.text.vColor.w
+    );
+
+    m_pSpriteBatch->Begin();
+
+    pFontEntry->pFont->DrawString(
+        m_pSpriteBatch.get(),
+        tCmd.text.pText ? tCmd.text.pText->c_str() : TEXT(""),
+        DirectX::XMFLOAT2(vPos.x, vPos.y),
+        vColor,
+        0.f,
+        DirectX::XMFLOAT2(0.f, 0.f),
+        tCmd.text.fScale
+    );
+
+    m_pSpriteBatch->End();
+}
 
 void CRender_System::Render()
 {

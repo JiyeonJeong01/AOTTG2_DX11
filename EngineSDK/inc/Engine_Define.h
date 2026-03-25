@@ -37,6 +37,8 @@ using namespace DirectX;
 #include <DirectXTK/Effects.h>
 #include "DirectXCollision.h"
 #include "DirectXColors.h"
+#include <DirectXTK/SpriteBatch.h>
+#include <DirectXTK/SpriteFont.h>
 
 #include "Fx11/d3dx11effect.h"
 

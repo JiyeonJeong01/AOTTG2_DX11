@@ -173,4 +173,13 @@ inline void Sanitize_UVRect(RECT_F& rc)
     if (rc.fTop > rc.fBottom) std::swap(rc.fTop, rc.fBottom);
 }
 
+inline void Sanitize_ClipRect(RECT_F& rc)
+{
+    if (rc.fLeft > rc.fRight)
+        std::swap(rc.fLeft, rc.fRight);
+
+    if (rc.fTop > rc.fBottom)
+        std::swap(rc.fTop, rc.fBottom);
+}
+
 NS_END

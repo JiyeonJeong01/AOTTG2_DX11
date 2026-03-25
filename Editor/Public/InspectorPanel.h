@@ -73,6 +73,7 @@ private:
     void Draw_ScriptFields(class Engine::IScript* pScript);
     void Draw_UIImage();
     void Draw_UIButton();
+    void Draw_UIText();
 
     void Draw_AnimatorBlendingView();
 

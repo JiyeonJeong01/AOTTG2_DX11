@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Identity.h"
 #include "Base.h"
+#include "Font.h"
 #include "Material.h"
 #include "Mesh.h"
 #include "Render_Struct.h"
@@ -29,14 +30,16 @@ public:
     uint32_t Load_Material(const MATERIAL_ENTRY& desc);
     uint32_t Load_Shader(const ASSET_GUID& tGUID);
     uint32_t Load_Texture(const ASSET_GUID& tGUID);
+    uint32_t Load_Font(const ASSET_GUID& tGUID);
 
     uint32_t Register_MeshEntry(MESH_ENTRY&& pEntry);
 
-    MESH_ENTRY*           Get_Mesh(uint32_t handle);
-    MODEL_ENTRY*          Get_Model(uint32_t handle);
-    MATERIAL_ENTRY*       Get_Material(uint32_t handle);
-    SHADER_ENTRY*         Get_Shader(uint32_t handle);
-    TEXTURE_ENTRY*        Get_Texture(uint32_t handle);
+    MESH_ENTRY*         Get_Mesh(uint32_t handle);
+    MODEL_ENTRY*        Get_Model(uint32_t handle);
+    MATERIAL_ENTRY*     Get_Material(uint32_t handle);
+    SHADER_ENTRY*       Get_Shader(uint32_t handle);
+    TEXTURE_ENTRY*      Get_Texture(uint32_t handle);
+    FONT_ENTRY*         Get_Font(uint32_t handle);
 
     const ASSET_GUID&       Find_GUID_By_Handle(ASSET_TYPE eType, _uint iHandle);
     const std::string&      Find_Name_By_GUID(const ASSET_GUID& tGUID);
@@ -76,6 +79,10 @@ private :
     /* ---- TEXTURE ---- */
     std::vector<TEXTURE_ENTRY> m_Textures;
     std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_TextureGUIDMap;
+
+    /* ---- FONT ---- */
+    std::vector<FONT_ENTRY> m_Fonts;
+    std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_FontGUIDMap;
 
     /* ---- Object Param ---- */
     CPerObjectParamPool m_PerObjectParamPool;

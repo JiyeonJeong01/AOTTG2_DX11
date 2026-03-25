@@ -37,8 +37,8 @@
                 "Enabled": true,
                 "Flags": 0,
                 "Layer": 1,
-                "MaterialGUID": "BD5DE46D-9C79-495E-8F0D-C1B650FA714E",
-                "MeshGUID": "0A9BD37B-4D62-4D2A-82E3-1C8A888B93FD",
+                "MaterialGUID": "FC959732-24D1-4DF4-B3C0-13A039CFEC04",
+                "MeshGUID": "56877A8C-AA63-4A66-AFC7-0C55D79AC35A",
                 "Mode": 1,
                 "SortZ": 0.0,
                 "Type": 5
@@ -95,8 +95,8 @@
                 "Enabled": true,
                 "Flags": 0,
                 "Layer": 1,
-                "MaterialGUID": "B74D4A58-5679-44A2-BB4D-D21D70E95284",
-                "MeshGUID": "F9297C88-DF0F-4D7C-B605-D39C81AB7488",
+                "MaterialGUID": "45C18129-F0EB-4E69-BD9A-B69B71B97A3B",
+                "MeshGUID": "E68EF54D-AFC3-43E1-8125-C74C9CC2F3C3",
                 "Mode": 1,
                 "SortZ": 0.0,
                 "Type": 5
@@ -153,8 +153,8 @@
                 "Enabled": true,
                 "Flags": 0,
                 "Layer": 1,
-                "MaterialGUID": "4881E05B-0896-47D4-9D72-5234C7F3C71D",
-                "MeshGUID": "8AABB2C6-82DD-4CAA-9E7B-CAF9329FBCDE",
+                "MaterialGUID": "D1B261CE-5FC0-4B03-97A3-4194D2E2EB22",
+                "MeshGUID": "9F7DFD06-2063-4CC4-814B-E3AA4AB811C1",
                 "Mode": 1,
                 "SortZ": 0.0,
                 "Type": 5
@@ -211,8 +211,8 @@
                 "Enabled": true,
                 "Flags": 0,
                 "Layer": 1,
-                "MaterialGUID": "CE8C3249-DB79-4F3C-81EC-BFAA11B54CE5",
-                "MeshGUID": "79A7FEF3-6CB7-424E-A8C9-04B7AAAD3AA9",
+                "MaterialGUID": "36F34DC4-EF65-482E-B108-D00B93192C24",
+                "MeshGUID": "A56AD4B8-E026-4045-AE33-78AB9A84374B",
                 "Mode": 1,
                 "SortZ": 0.0,
                 "Type": 5
@@ -269,8 +269,8 @@
                 "Enabled": true,
                 "Flags": 0,
                 "Layer": 1,
-                "MaterialGUID": "3EF30489-462A-45FD-B0A4-571FBF6212E2",
-                "MeshGUID": "AA5C3A5D-4991-4573-9A7F-050805AEA46C",
+                "MaterialGUID": "D0706350-E818-474B-BBA3-46D57B297C68",
+                "MeshGUID": "A8641BB0-E462-4776-B27D-92558A7829A1",
                 "Mode": 1,
                 "SortZ": 0.0,
                 "Type": 5
@@ -327,8 +327,8 @@
             "Enabled": true,
             "Flags": 0,
             "Layer": 1,
-            "MaterialGUID": "5B684C79-3BC0-4C70-ACED-B9E527EAEF01",
-            "MeshGUID": "2237F81A-EB0D-466E-96A1-CB15617EA3BA",
+            "MaterialGUID": "043DDDE0-023B-4BE8-899B-DB190AF56E01",
+            "MeshGUID": "AF29D8EC-8A4F-4272-BBB8-7D927B5C226C",
             "Mode": 0,
             "SortZ": 0.0,
             "Type": 5
@@ -338,13 +338,13 @@
       [
         {
           "data": {
-            "AnimationClip": 0,
-            "BlendDuration": 0.019999999552965164,
+            "AnimationClip": 1,
+            "BlendDuration": 0.0,
             "BlendMap": [],
             "Enabled": true,
-            "Loop": false,
+            "Loop": true,
             "PlaySpeed": 1.0,
-            "Playing": false,
+            "Playing": true,
             "Type": 6
           }
         }

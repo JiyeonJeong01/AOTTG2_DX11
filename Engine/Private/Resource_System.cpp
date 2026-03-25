@@ -28,12 +28,14 @@ HRESULT CResource_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext*
     m_Shaders.emplace_back();
     m_Textures.emplace_back();
     m_Models.emplace_back();
+    m_Fonts.emplace_back();
 
     return S_OK;
 }
 
 void CResource_System::Clear()
 {
+
 }
 
 uint32_t CResource_System::Load_Texture(const ASSET_GUID& tGUID)
@@ -68,6 +70,55 @@ uint32_t CResource_System::Load_Texture(const ASSET_GUID& tGUID)
     m_TextureGUIDMap[tGUID] = handle;
 
     return handle;
+}
+
+uint32_t CResource_System::Load_Font(const ASSET_GUID& tGUID)
+{
+    auto it = m_FontGUIDMap.find(tGUID);
+    if (it != m_FontGUIDMap.end())
+        return it->second;
+
+    auto pRec = SYS_ASSET.Find(tGUID);
+    if (!pRec || pRec->eType != ASSET_TYPE::FONT)
+    {
+        _DEBUG_ERROR_BREAK("such guid not exists");
+        return INVALID_HANDLE_UINT;
+    }
+
+    FONT_ENTRY entry{};
+    entry.tGUID = tGUID;
+
+    try
+    {
+#ifdef UNICODE
+        std::wstring wPath = pRec->path.wstring();
+        entry.pFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, wPath.c_str());
+#else
+        entry.pFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, pRec->path.c_str());
+#endif
+    }
+    catch (...)
+    {
+        _DEBUG_ERROR_BREAK("Load font failed");
+        return INVALID_HANDLE_UINT;
+    }
+
+    IF_TRUE_RETURN_MSG_BREAK(entry.Is_Valid() == false, INVALID_HANDLE_UINT, "Invalid font entry");
+
+    uint32_t handle = static_cast<uint32_t>(m_Fonts.size());
+    m_Fonts.push_back(std::move(entry));
+    m_FontGUIDMap[tGUID] = handle;
+
+    return handle;
+}
+
+FONT_ENTRY* CResource_System::Get_Font(uint32_t handle)
+{
+    const uint32_t iIndex = Handle_Index(handle);
+    if (handle == INVALID_HANDLE_UINT || iIndex >= m_Fonts.size())
+        return nullptr;
+
+    return &m_Fonts[iIndex];
 }
 
 uint32_t CResource_System::Register_MeshEntry(MESH_ENTRY&& pEntry)
@@ -382,6 +433,7 @@ uint32_t CResource_System::Load_Material(const MATERIAL_ENTRY& tDesc)
 
     return &m_Meshes[iIndex];
 }
+
 MODEL_ENTRY* CResource_System::Get_Model(uint32_t handle) 
 {
     const uint32_t iIndex = Handle_Index(handle);

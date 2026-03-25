@@ -98,9 +98,11 @@ void CComponent_System::Build_RenderQueue(vector<DRAW_CMD>& cmds)
 {
     IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)], , "m_pComProcessor is nullptr");
     IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)], , "m_pComProcessor is nullptr");
+    IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::UI)], , "m_pComProcessor is nullptr");
 
     To<CMeshRenderer_Processor*>(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)].get())->Build_RenderQueue(cmds);
     To<CCanvasRenderer_Processor*>(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)].get())->Build_RenderQueue(cmds);
+    To<CUI_Processor*>(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::UI)].get())->Build_RenderQueue(cmds);
 }
 
 void CComponent_System::Render()

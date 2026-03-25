@@ -143,6 +143,21 @@ typedef struct ENGINE_DLL tagDrawCmd final
             _float4         vColor = { 1.f, 1.f, 1.f, 1.f };// tint/alpha
             RECT_F          rcClip = { 0.f, 0.f, 0.f, 0.f };// clip on이면
         } canvas;
+
+        struct
+        {
+            uint32_t         hFont = INVALID_HANDLE_UINT;
+            COMPONENT_HANDLE hRectTransform{};
+
+            uint32_t         flags = 0;
+            _float           sortZ = 0.f;
+            _float4          vColor = { 1.f, 1.f, 1.f, 1.f };
+            uint8_t          visualPriority = 0;
+            uint8_t          pad1[3] = {};
+            _float          fScale = 1.f;
+            const std::basic_string<_tchar>* pText = nullptr;
+            RECT_F           rcClip = { 0.f, 0.f, 0.f, 0.f };
+        } text;
     };
 
 public:
@@ -182,6 +197,23 @@ public:
         c.canvas.rcUV = uv;
         c.canvas.vColor = color;
         c.canvas.rcClip = clip;
+        return c;
+    }
+    static tagDrawCmd Create_Text(uint32_t hFont, COMPONENT_HANDLE hRectTr, uint32_t flags,
+        float sortZ, const _float4& color, float fScale, uint8_t visualPriority,
+        const std::basic_string<_tchar>* pText, const RECT_F& clip)
+    {
+        tagDrawCmd c{};
+        c.kind = DRAW_TYPE::TEXT;
+        c.text.hFont = hFont;
+        c.text.hRectTransform = hRectTr;
+        c.text.flags = flags;
+        c.text.sortZ = sortZ;
+        c.text.vColor = color;
+        c.text.fScale = fScale;
+        c.text.visualPriority = visualPriority;
+        c.text.pText = pText;
+        c.text.rcClip = clip;
         return c;
     }
 

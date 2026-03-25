@@ -162,6 +162,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Animation_Clip.h" />
     <ClInclude Include="..\Public\Animator.h" />
     <ClInclude Include="..\Public\Animator_Processor.h" />
+    <ClInclude Include="..\Public\Font.h" />
     <ClInclude Include="..\Public\Line.h" />
     <ClInclude Include="..\Public\BuiltIn_GUID.h" />
     <ClInclude Include="..\Public\CanvasRenderer.h" />
@@ -196,6 +197,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\SpringJoint.h" />
     <ClInclude Include="..\Public\UIButton.h" />
     <ClInclude Include="..\Public\UIImage.h" />
+    <ClInclude Include="..\Public\UIText.h" />
     <ClInclude Include="..\Public\UI_Processor.h" />
     <ClInclude Include="..\Public\WindowResize_Event.h" />
     <ClInclude Include="..\Public\Identity.h" />
@@ -278,6 +280,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Script.cpp" />
     <ClCompile Include="..\Private\Solver.cpp" />
     <ClCompile Include="..\Private\SpringJoint.cpp" />
+    <ClCompile Include="..\Private\UIText.cpp" />
     <ClCompile Include="..\Public\Identity.cpp" />
     <ClCompile Include="..\Private\Asset_Registry.cpp" />
     <ClCompile Include="..\Private\Base.cpp" />

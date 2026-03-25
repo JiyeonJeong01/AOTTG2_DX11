@@ -578,6 +578,11 @@ void CInspectorPanel::Draw_AddComponentPopup()
             m_pTarget->Add_Component<CUIButton>();
             ImGui::CloseCurrentPopup();
         }
+        if (ImGui::MenuItem("Text"))
+        {
+            m_pTarget->Add_Component<CUIText>();
+            ImGui::CloseCurrentPopup();
+        }
     }
 
     /* ------------------------------ Common ----------------------------------*/
@@ -648,6 +653,9 @@ void CInspectorPanel::Draw_ComponentByType(COMPONENT_TYPE eComType)
         break;
     case COMPONENT_TYPE::UI_BUTTON:
         Draw_UIButton();
+        break;
+    case COMPONENT_TYPE::UI_TEXT:
+        Draw_UIText();
         break;
     }
 }
@@ -2832,6 +2840,227 @@ void CInspectorPanel::Draw_UIButton()
 
     ImGui::Text("OnHover Listeners: %zu", pData->OnHover.Get_ListenerCount());
     ImGui::Text("OnClick Listeners: %zu", pData->OnClick.Get_ListenerCount());
+
+    if (pData->bEnable == 0)
+        ImGui::EndDisabled();
+
+    ImGui::TreePop();
+}
+
+void CInspectorPanel::Draw_UIText()
+{
+    CUIText txt = m_pTarget->Get_Component<CUIText>();
+    if (!txt.Is_Valid())
+        return;
+
+    UI_TEXT_DATA* pData = txt._Data();
+    if (!pData)
+        return;
+
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    ImGuiWindow* w = ImGui::GetCurrentWindow();
+    const ImGuiID idHeader = w->GetID("UIText_Header");
+    ImGui::PushID(idHeader);
+
+    ImGui::AlignTextToFramePadding();
+
+    bool enabled = (pData->bEnable != 0);
+    if (ImGui::Checkbox("##Enable", &enabled))
+    {
+        pData->bEnable = enabled ? 1 : 0;
+        pData->dirty = true;
+    }
+
+    ImGui::SameLine();
+
+    const ImGuiTreeNodeFlags flags =
+        ImGuiTreeNodeFlags_DefaultOpen |
+        ImGuiTreeNodeFlags_Framed |
+        ImGuiTreeNodeFlags_SpanAvailWidth |
+        ImGuiTreeNodeFlags_AllowOverlap;
+
+    const bool open = ImGui::TreeNodeEx("UIText", flags);
+
+    ImGui::PopID();
+
+    if (!open)
+        return;
+
+    if (pData->bEnable == 0)
+        ImGui::BeginDisabled();
+
+    ImGui::TextUnformatted("Owner Object");
+    ImGui::SameLine();
+    ImGui::Text("%u", pData->hObject.raw);
+
+    ImGui::TextUnformatted("RectTransform");
+    ImGui::SameLine();
+    ImGui::Text("%u", pData->hRectTransform);
+
+    ImGui::TextUnformatted("CanvasRenderer");
+    ImGui::SameLine();
+    ImGui::Text("%u", pData->hCanvasRenderer);
+
+    ImGui::SeparatorText("Font");
+
+    {
+        uint32_t hFont = pData->hFont;
+        if (ImGui::InputScalar("Font", ImGuiDataType_U32, &hFont))
+        {
+            pData->hFont = hFont;
+            pData->dirty = true;
+        }
+
+        Editor_Util::Draw_DropTarget_GUID_Typed(
+            "Font",
+            "ASSET_GUID",
+            ASSET_TYPE::FONT,
+            [&](const ASSET_GUID& dropped)
+            {
+                const uint32_t newHandle = SYS_RESOURCE.Load_Font(dropped);
+                if (newHandle != INVALID_HANDLE_UINT && newHandle != pData->hFont)
+                {
+                    pData->hFont = newHandle;
+                    pData->dirty = true;
+                }
+            },
+            "Drop Font here"
+        );
+    }
+
+    ImGui::SeparatorText("Text");
+
+    {
+#ifdef UNICODE
+        std::string strUtf8;
+        if (!pData->strText.empty())
+        {
+            const int iRequired = WideCharToMultiByte(CP_UTF8, 0, pData->strText.c_str(), -1, nullptr, 0, nullptr, nullptr);
+            if (iRequired > 0)
+            {
+                strUtf8.resize(iRequired - 1);
+                WideCharToMultiByte(CP_UTF8, 0, pData->strText.c_str(), -1, strUtf8.data(), iRequired, nullptr, nullptr);
+            }
+        }
+
+        char buffer[1024] = {};
+        if (!strUtf8.empty())
+            strcpy_s(buffer, strUtf8.c_str());
+
+        if (ImGui::InputTextMultiline("Text", buffer, IM_ARRAYSIZE(buffer)))
+        {
+            const int iRequired = MultiByteToWideChar(CP_UTF8, 0, buffer, -1, nullptr, 0);
+            if (iRequired > 0)
+            {
+                std::wstring result;
+                result.resize(iRequired - 1);
+                MultiByteToWideChar(CP_UTF8, 0, buffer, -1, result.data(), iRequired);
+                pData->strText = result;
+                pData->dirty = true;
+            }
+        }
+#else
+        char buffer[1024] = {};
+        if (!pData->strText.empty())
+            strcpy_s(buffer, pData->strText.c_str());
+
+        if (ImGui::InputTextMultiline("Text", buffer, IM_ARRAYSIZE(buffer)))
+        {
+            pData->strText = buffer;
+            pData->dirty = true;
+        }
+#endif
+    }
+
+    ImGui::SeparatorText("Appearance");
+
+    {
+        float c[4] = { pData->color.x, pData->color.y, pData->color.z, pData->color.w };
+        if (ImGui::ColorEdit4("Color", c))
+        {
+            pData->color = { c[0], c[1], c[2], c[3] };
+            pData->dirty = true;
+        }
+    }
+
+    {
+        float fScale = pData->fScale;
+        if (ImGui::DragFloat("Scale", &fScale, 0.01f, 0.f, 100.f, "%.2f"))
+        {
+            if (fScale < 0.f)
+                fScale = 0.f;
+
+            pData->fScale = fScale;
+            pData->dirty = true;
+        }
+    }
+
+    {
+        int pr = static_cast<int>(pData->visualPriority);
+        if (ImGui::DragInt("VisualPriority", &pr, 1.f, 0, 255))
+        {
+            if (pr < 0) pr = 0;
+            if (pr > 255) pr = 255;
+            pData->visualPriority = static_cast<uint8_t>(pr);
+            pData->dirty = true;
+        }
+    }
+
+    ImGui::SeparatorText("Render");
+
+    {
+        uint32_t flagsValue = pData->flags;
+        if (ImGui::InputScalar("Flags", ImGuiDataType_U32, &flagsValue))
+        {
+            pData->flags = flagsValue;
+            pData->dirty = true;
+        }
+    }
+
+    {
+        float sortZ = pData->sortZ;
+        if (ImGui::DragFloat("SortZ", &sortZ, 0.001f, 0.f, 1.f, "%.3f"))
+        {
+            if (sortZ < 0.f) sortZ = 0.f;
+            if (sortZ > 1.f) sortZ = 1.f;
+            pData->sortZ = sortZ;
+            pData->dirty = true;
+        }
+    }
+
+    {
+        float clip[4] =
+        {
+            pData->rcClip.fLeft,
+            pData->rcClip.fTop,
+            pData->rcClip.fRight,
+            pData->rcClip.fBottom
+        };
+
+        if (ImGui::DragFloat4("ClipRect (L,T,R,B)", clip, 1.f))
+        {
+            pData->rcClip = { clip[0], clip[1], clip[2], clip[3] };
+
+            if (pData->rcClip.fLeft > pData->rcClip.fRight)
+                std::swap(pData->rcClip.fLeft, pData->rcClip.fRight);
+
+            if (pData->rcClip.fTop > pData->rcClip.fBottom)
+                std::swap(pData->rcClip.fTop, pData->rcClip.fBottom);
+
+            pData->dirty = true;
+        }
+    }
+
+    {
+        bool dirty = (pData->dirty != 0);
+        if (ImGui::Checkbox("Dirty", &dirty))
+        {
+            pData->dirty = dirty ? 1 : 0;
+        }
+    }
 
     if (pData->bEnable == 0)
         ImGui::EndDisabled();

@@ -67,10 +67,15 @@ HRESULT CUI_Processor::Initialize()
     {
         SYS_COMPONENT.Register_InitialSpecFactory<CUIButton, UI_BUTTON_SPEC>();
         SYS_COMPONENT.Register_InitialSpecFactory<CUIImage, UI_IMAGE_SPEC>();
+
         SYS_COMPONENT.Register_BuildSpecFacotry<CUIButton>();
         SYS_COMPONENT.Register_BuildSpecFacotry<CUIImage>();
+
+        SYS_COMPONENT.Register_InitialSpecFactory<CUIText, UI_TEXT_SPEC>();
+        SYS_COMPONENT.Register_BuildSpecFacotry<CUIText>();
     }
 
+    /* 프로세서 바인딩 */
     m_pRectTransformProcessor = SYS_COMPONENT.Bind_Processor<CRectTransform_Processor>();
     IF_NULL_RETURN_MSG_BREAK(m_pRectTransformProcessor, E_FAIL, "RectTransform processor bind failed");
 
@@ -82,8 +87,8 @@ HRESULT CUI_Processor::Initialize()
 
 void CUI_Processor::Update(_float fDT)
 {
-    Sync_Images_To_Canvas();   // PASS 1
-    Update_Buttons(fDT);       // PASS 2 
+    Sync_Images_To_Canvas();
+    Update_Buttons(fDT);     
 }
 
 void CUI_Processor::LateUpdate(_float fDT)
@@ -97,6 +102,48 @@ void CUI_Processor::Render()
 {
 }
 
+/* 텍스트 */
+void CUI_Processor::Build_RenderQueue(std::vector<DRAW_CMD>& outCmds)
+{
+    const auto& Pages = m_TextPool.GetPages();
+
+    for (const auto& upPage : Pages)
+    {
+        auto* pPage = upPage.get();
+        if (!pPage) continue;
+
+        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        {
+            if (!pPage->Is_Allocated(i))
+                continue;
+
+            auto* pData = pPage->Get_Ptr(i);
+            if (!pData || !pData->bEnable)
+                continue;
+
+            if (pData->hFont == INVALID_HANDLE_UINT)
+                continue;
+
+            DRAW_CMD tCmd = DRAW_CMD::Create_Text(
+                pData->hFont,
+                pData->hRectTransform,
+                pData->flags,
+                pData->sortZ,
+                pData->color,
+                pData->fScale,
+                pData->visualPriority,
+                &pData->strText,
+                pData->rcClip
+            );
+
+            tCmd.sortKey = Make_Text_SortKey(*pData);
+            tCmd.eLayer = RENDER_LAYER::UI;
+
+            outCmds.push_back(tCmd);
+        }
+    }
+}
+
 COMPONENT_HANDLE CUI_Processor::Create_Component_Data(COMPONENT_TYPE type, OBJECT_HANDLE hObject)
 {
     switch (type)
@@ -105,6 +152,8 @@ COMPONENT_HANDLE CUI_Processor::Create_Component_Data(COMPONENT_TYPE type, OBJEC
         return Create_Component_Data_Inner<CUIButton>(m_ButtonPool, hObject);
     case COMPONENT_TYPE::UI_IMAGE:
         return Create_Component_Data_Inner<CUIImage>(m_ImagePool, hObject);
+    case COMPONENT_TYPE::UI_TEXT:
+        return Create_Component_Data_Inner<CUIText>(m_TextPool, hObject);
     default:
         return COMPONENT_HANDLE{};
     }
@@ -120,6 +169,9 @@ void CUI_Processor::Remove_Component(COMPONENT_TYPE type, COMPONENT_HANDLE h)
     case COMPONENT_TYPE::UI_IMAGE:
         m_ImagePool.Deallocate(h);
         break;
+    case COMPONENT_TYPE::UI_TEXT:
+        m_TextPool.Deallocate(h);
+        break;
     default:
         break;
     }
@@ -133,6 +185,8 @@ HRESULT CUI_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_H
         return Initialize_From_Spec_UIButton(hComponent, pSpec);
     case COMPONENT_TYPE::UI_IMAGE :
         return Initialize_From_Spec_UIImage(hComponent, pSpec);
+    case COMPONENT_TYPE::UI_TEXT:
+        return Initialize_From_Spec_UIText(hComponent, pSpec);
     }
 
     return S_OK;
@@ -193,7 +247,28 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CUI_Processor::Build_Spec(COMPONENT_TYPE eC
 
         return std::make_unique<UI_BUTTON_SPEC>(spec);
     }
+    case COMPONENT_TYPE::UI_TEXT:
+    {
+        UI_TEXT_DATA* pData = m_TextPool.Get_Data_By_Handle(hComponent);
+        IF_NULL_RETURN_MSG_BREAK(pData, nullptr, "pData is nullptr");
 
+        UI_TEXT_SPEC spec{};
+        spec.bEnable = pData->bEnable;
+
+        /* Handle -> GUID (저장) */
+        const FONT_ENTRY* pEntry = SYS_RESOURCE.Get_Font(pData->hFont);
+        spec.fontGuid = pEntry ? pEntry->tGUID : DEFAULT_ASSET_GUID::FONT_UI_DEFAULT;
+
+        spec.strText = pData->strText;
+        spec.color = pData->color;
+        spec.fScale = pData->fScale;
+        spec.visualPriority = pData->visualPriority;
+        spec.flags = pData->flags;
+        spec.sortZ = pData->sortZ;
+        spec.rcClip = pData->rcClip;
+
+        return std::make_unique<UI_TEXT_SPEC>(spec);
+    }
     default:
         break;
     }
@@ -213,6 +288,10 @@ void CUI_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hCompon
         Set_Enable_Inner<CUIButton>(m_ButtonPool, hComponent, bEnable);
         return;
 
+    case COMPONENT_TYPE::UI_TEXT:
+        Set_Enable_Inner<CUIText>(m_TextPool, hComponent, bEnable);
+        return;
+
     default:
         break;
     }
@@ -224,8 +303,9 @@ void* CUI_Processor::Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComp
 {
     switch (eComType)
     {
-    case COMPONENT_TYPE::UI_IMAGE:  return m_ImagePool.Get_Data_By_Handle(hComponent);
-    case COMPONENT_TYPE::UI_BUTTON: return m_ButtonPool.Get_Data_By_Handle(hComponent);
+    case COMPONENT_TYPE::UI_IMAGE:      return m_ImagePool.Get_Data_By_Handle(hComponent);
+    case COMPONENT_TYPE::UI_BUTTON:     return m_ButtonPool.Get_Data_By_Handle(hComponent);
+    case COMPONENT_TYPE::UI_TEXT:       return m_TextPool.Get_Data_By_Handle(hComponent);
     default: return nullptr;
     }
 }
@@ -372,11 +452,32 @@ void CUI_Processor::Update_Buttons(_float fDT)
     }
 }
 
+uint64_t CUI_Processor::Make_Text_SortKey(const UI_TEXT_DATA& tData) const
+{
+    uint64_t key = 0;
+
+    const uint64_t layer = (uint64_t)((uint8_t)RENDER_LAYER::UI & 0xF);
+
+    _float z = tData.sortZ;
+    if (z < 0.f) z = 0.f;
+    if (z > 1.f) z = 1.f;
+    const uint64_t zq = (uint64_t)(z * 65535.f + 0.5f);
+
+    const uint64_t priority = (uint64_t)(tData.visualPriority & 0xFF);
+    const uint64_t font = (uint64_t)(tData.hFont & 0xFFFFF);
+
+    key |= (layer << 60);
+    key |= (zq << 44);
+    key |= (priority << 36);
+    key |= (font << 16);
+
+    return key;
+}
+
 _bool CUI_Processor::HitTest_Rect(const RECT& rcScreen, const POINT& ptMouse) noexcept
 {
     return PtInRect(&rcScreen, ptMouse) ? true : false;
 }
-
 
 HRESULT CUI_Processor::Initialize_From_Spec_UIButton(COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pSpec)
 {
@@ -431,6 +532,30 @@ HRESULT CUI_Processor::Initialize_From_Spec_UIImage(COMPONENT_HANDLE hComponent,
     pData->visualPriority = p->visualPriority;
 
     pData->dirty = true;
+
+    return S_OK;
+}
+
+HRESULT CUI_Processor::Initialize_From_Spec_UIText(COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pSpec)
+{
+    IF_NULL_RETURN_MSG_BREAK(pSpec, E_FAIL, "pSpec is nulptr");
+
+    const UI_TEXT_SPEC* p = static_cast<const UI_TEXT_SPEC*>(pSpec);
+
+    UI_TEXT_DATA* pData = m_TextPool.Get_Data_By_Handle(hComponent);
+    IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "pData is nulptr");
+
+    pData->bEnable = p->bEnable;
+    pData->hFont = SYS_RESOURCE.Load_Font(p->fontGuid);
+    pData->strText = p->strText;
+    pData->color = p->color;
+    pData->fScale = p->fScale;
+    pData->visualPriority = p->visualPriority;
+    pData->dirty = true;
+
+    pData->flags = p->flags;
+    pData->sortZ = p->sortZ;
+    pData->rcClip = p->rcClip;
 
     return S_OK;
 }
@@ -522,6 +647,35 @@ HRESULT CUI_Processor::Initialize_Component_Data(COMPONENT_TYPE eComType, COMPON
 
         // pData->visualPriority = 10;
         Apply_ButtonVisual(*pData);
+
+        return S_OK;
+    }
+
+    if (eComType == COMPONENT_TYPE::UI_TEXT)
+    {
+        auto* pData = SCAST(UI_TEXT_DATA*, pRaw);
+
+        CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
+        IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "Initialize_Component_Data(UI_TEXT) failed: invalid hObject");
+
+        /* RectTransform 보장 */
+        {
+            auto rt = pObj->Get_Component<CRectTransform>();
+            COMPONENT_HANDLE hRT = rt.Get_Handle();
+
+            if (!hRT.Is_Valid())
+            {
+                rt = pObj->Add_Component<CRectTransform>();
+                hRT = rt.Get_Handle();
+                IF_TRUE_RETURN_MSG_BREAK(!hRT.Is_Valid(), E_FAIL, "Initialize_Component_Data(UI_TEXT) failed: add RectTransform failed");
+            }
+            pData->hRectTransform = hRT;
+        }
+
+        pData->bEnable = true;
+        pData->fScale = 1.f;
+        pData->color = _float4{ 1.f, 1.f, 1.f, 1.f };
+        pData->dirty = true;
 
         return S_OK;
     }

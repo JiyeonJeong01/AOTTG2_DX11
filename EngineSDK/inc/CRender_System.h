@@ -34,10 +34,12 @@ public:
 
 private:
     /* COM 객체*/
-    ID3D11Device* m_pDevice{};
-    ID3D11DeviceContext* m_pContext{};
-    Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rsScissor;
-    Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rsNoScissor;
+    ID3D11Device*                                   m_pDevice{};
+    ID3D11DeviceContext*                            m_pContext{};
+
+    Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_rsScissor;
+    Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_rsNoScissor;
+    std::unique_ptr<DirectX::SpriteBatch>           m_pSpriteBatch;
 
     ID3D11BlendState*                               m_pBlendState_None = nullptr;
     ID3D11BlendState*                               m_pBlendState_Alpha = nullptr;
@@ -81,6 +83,7 @@ private:
     void     Execute_Draw_Mesh(const DRAW_CMD& cmd);
     void     Execute_Draw_Canvas(const DRAW_CMD& tCmd);
     void     Execute_Draw_Line(const DRAW_CMD& tCmd);
+    void     Execute_Draw_Text(const DRAW_CMD& tCmd);
 
     void     Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, COMPONENT_HANDLE hAnimator, uint32_t hPerObjectParams,
         uint32_t iFirstIdx, uint32_t iNumIdx, const std::vector<_float4x4>* pSkinningMatrices, const _float4x4& matAttach, MESH_MODE eMode);
@@ -101,6 +104,7 @@ private:
     void    Bind_RasterizerState_Default();
 
 };
+
 
 
 

@@ -189,6 +189,7 @@ uint64_t CCanvasRenderer_Processor::Make_SortKey(const CANVAS_RENDERER_DATA& tDa
 
     return key;
 }
+
 std::unique_ptr<CCanvasRenderer_Processor> CCanvasRenderer_Processor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CRectTransform_Processor* pProcessor)
 {
     auto pInstance = std::make_unique<CCanvasRenderer_Processor>(pDevice, pContext, pProcessor);

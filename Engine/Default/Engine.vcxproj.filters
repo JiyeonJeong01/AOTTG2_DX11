@@ -184,6 +184,9 @@
     <Filter Include="01. Utility\04. Component\05. Animator">
       <UniqueIdentifier>{423b8df5-5d12-4692-9654-40e47e83260d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\05. Resource\08. Font">
+      <UniqueIdentifier>{c9953fa1-59b8-4b2a-a56a-0ae379c4a0bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -495,6 +498,12 @@
     <ClInclude Include="..\Public\Animator_Processor.h">
       <Filter>01. Utility\04. Component\05. Animator</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UIText.h">
+      <Filter>01. Utility\04. Component\9. UI_Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Font.h">
+      <Filter>01. Utility\05. Resource\08. Font</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -685,6 +694,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Animator_Processor.cpp">
       <Filter>01. Utility\04. Component\05. Animator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIText.cpp">
+      <Filter>01. Utility\04. Component\9. UI_Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
