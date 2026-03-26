@@ -188,7 +188,7 @@ int Convert_By_InputPath()
     return iResult;
 }
 
-int main()
+int Convert_All_Files()
 {
     std::filesystem::path fbxPath = L"../../Converter/Bin/FBXs";
     std::filesystem::path modelPath = Engine::ProjectConfig::PATH + Engine::ProjectConfig::MESH;
@@ -321,4 +321,10 @@ int main()
 
     system("pause");
     return (iFailCount == 0) ? 0 : 1;
+}
+
+int main()
+{
+    // Convert_By_InputPath();
+    Convert_All_Files();
 }

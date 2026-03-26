@@ -1933,7 +1933,7 @@ void CInspectorPanel::Draw_Animator()
         ImGui::Text("Tick Per Second : %.3f", curClip.fTickPerSecond);
 
         int iCurrentClip = SCAST(int, pData->iAnimationClip);
-        if (ImGui::BeginCombo("Animation Clip", curClip.strName.c_str()))
+        if (ImGui::BeginCombo("##Animation Clip", curClip.strName.c_str()))
         {
             for (int i = 0; i < SCAST(int, pModel->vecAnimClips.size()); ++i)
             {
@@ -1945,18 +1945,33 @@ void CInspectorPanel::Draw_Animator()
                 if (ImGui::Selectable(pClipName, bSelected))
                 {
                     animator.Set_NextAnimationClip(pClipName);
-
-                    //pData->iAnimationClip = SCAST(uint32_t, i);
-                    //pData->fTrackPosition = 0.f;
-                    //const ANIMATION_CLIP_ENTRY& newClip = pModel->vecAnimClips[i];
-                    //pData->currentKeyFrameIndices.assign(newClip.channels.size(), 0);
-                    //bChanged = true;
                 }
 
                 if (bSelected)
                     ImGui::SetItemDefaultFocus();
             }
             ImGui::EndCombo();
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Copy"))
+        {
+            std::string strClipNames;
+
+            for (int i = 0; i < SCAST(int, pModel->vecAnimClips.size()); ++i)
+            {
+                const char* pClipName = pModel->vecAnimClips[i].strName.empty()
+                    ? "<Unnamed Clip>"
+                    : pModel->vecAnimClips[i].strName.c_str();
+
+                strClipNames += pClipName;
+
+                if (i + 1 < SCAST(int, pModel->vecAnimClips.size()))
+                    strClipNames += "\n";
+            }
+
+            ImGui::SetClipboardText(strClipNames.c_str());
         }
 
         float fTrackPosition = pData->fTrackPosition;
