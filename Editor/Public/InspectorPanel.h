@@ -105,6 +105,10 @@ private:
     _bool           m_bEditModeInitialized = false;
     std::string     m_strEditAttachBoneName = "";
 
+    /* Transform */
+    _float3      m_vCachedRotationEuler{};
+    CGameObject* m_pCachedTransformTarget = nullptr;
+
     static constexpr const char* m_layerNames[5] = {
         "PRIORITY",
         "NONBLEND",

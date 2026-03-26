@@ -137,17 +137,17 @@ inline static _bool Load_Anim_Mesh_Body(
     ifs.read(reinterpret_cast<char*>(vertices.data()), sizeof(VTXANIMMESH) * hdr.vertexCount);
     ifs.read(reinterpret_cast<char*>(indices.data()), sizeof(uint32_t) * hdr.indexCount);
 
-    for (size_t v = 0; v < std::min<size_t>(5, vertices.size()); ++v)
-    {
-        const auto& vert = vertices[v];
+    //for (size_t v = 0; v < std::min<size_t>(5, vertices.size()); ++v)
+    //{
+    //    const auto& vert = vertices[v];
 
-        std::cout
-            << "[RUNTIME VTX] v=" << v
-            << " pos=(" << vert.vPosition.x << "," << vert.vPosition.y << "," << vert.vPosition.z << ")"
-            << " idx=(" << vert.vBlendIndex.x << "," << vert.vBlendIndex.y << "," << vert.vBlendIndex.z << "," << vert.vBlendIndex.w << ")"
-            << " w=(" << vert.vBlendWeight.x << "," << vert.vBlendWeight.y << "," << vert.vBlendWeight.z << "," << vert.vBlendWeight.w << ")"
-            << "\n";
-    }
+    //    std::cout
+    //        << "[RUNTIME VTX] v=" << v
+    //        << " pos=(" << vert.vPosition.x << "," << vert.vPosition.y << "," << vert.vPosition.z << ")"
+    //        << " idx=(" << vert.vBlendIndex.x << "," << vert.vBlendIndex.y << "," << vert.vBlendIndex.z << "," << vert.vBlendIndex.w << ")"
+    //        << " w=(" << vert.vBlendWeight.x << "," << vert.vBlendWeight.y << "," << vert.vBlendWeight.z << "," << vert.vBlendWeight.w << ")"
+    //        << "\n";
+    //}
 
     IF_TRUE_RETURN_MSG_BREAK(ifs.fail(), false, "Load_Anim_Mesh_Body failed : file read failed");
 

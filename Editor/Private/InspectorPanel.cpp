@@ -667,39 +667,55 @@ void CInspectorPanel::Draw_Transform()
 
     CTransform transform = m_pTarget->Get_Component<CTransform>();
     TRANSFORM_DATA* pData = transform._Data();
+    if (!pData)
+        return;
 
-    /* Transform is not implemented yet */
+    /* 타겟이 바뀐 경우에만 1회 동기화 */
+    if (m_pCachedTransformTarget != m_pTarget)
+    {
+        m_vCachedRotationEuler = transform.Get_Rotation_Euler();
+        m_pCachedTransformTarget = m_pTarget;
+    }
+
     _float vPos[3] = { pData->vPosition.x, pData->vPosition.y, pData->vPosition.z };
     _float vScl[3] = { pData->vScale.x, pData->vScale.y, pData->vScale.z };
-    _float3 f3Rot = transform.Get_Rotation_Euler();
+    _float vRot[3] = { m_vCachedRotationEuler.x, m_vCachedRotationEuler.y, m_vCachedRotationEuler.z };
 
-    _float vRot[3] = { f3Rot.x, f3Rot.y, f3Rot.z };
-
-    /* Need to call to read Transform data */
-    _bool bChanged = false;
+    _bool bPosChanged = false;
+    _bool bRotChanged = false;
+    _bool bSclChanged = false;
 
     ImGui::TextUnformatted("Position ");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(-1.f);
-    bChanged |= ImGui::DragFloat3("##Pos", vPos, 0.1f);
+    bPosChanged = ImGui::DragFloat3("##Pos", vPos, 0.1f);
 
     ImGui::TextUnformatted("Rotation");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(-1.f);
-    bChanged |= ImGui::DragFloat3("##Rot", vRot, 0.1f);
+    bRotChanged = ImGui::DragFloat3("##Rot", vRot, 0.1f);
 
     ImGui::TextUnformatted("Scale     ");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(-1.f);
-    bChanged |= ImGui::DragFloat3("##Scl", vScl, 0.01f);
+    bSclChanged = ImGui::DragFloat3("##Scl", vScl, 0.01f);
 
-    if (bChanged)
+    if (bPosChanged)
     {
         pData->vPosition = { vPos[0], vPos[1], vPos[2] };
-        pData->vScale = { vScl[0], vScl[1], vScl[2] };
-        _float3 newEulerDeg{ vRot[0], vRot[1], vRot[2] };
-        transform.Set_Rotation_Euler(newEulerDeg);
+        pData->bDirty = true;
+    }
 
+    if (bSclChanged)
+    {
+        pData->vScale = { vScl[0], vScl[1], vScl[2] };
+        pData->bDirty = true;
+    }
+
+    if (bRotChanged)
+    {
+        m_vCachedRotationEuler = { vRot[0], vRot[1], vRot[2] };
+        transform.Set_Rotation_Euler(m_vCachedRotationEuler);
         pData->bDirty = true;
     }
 }
