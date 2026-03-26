@@ -979,10 +979,10 @@ void CInspectorPanel::Draw_MeshRenderer()
     }
 
     // --- Layer ---
-    int layer = (int)pData->layer;
-    if (ImGui::DragInt("Layer", &layer, 1, 0, 10))
+    int layer = static_cast<int>(pData->layer);
+    if (ImGui::Combo("Layer", &layer, m_layerNames, IM_ARRAYSIZE(m_layerNames)))
     {
-        pData->layer = (RENDER_LAYER)layer;
+        pData->layer = static_cast<RENDER_LAYER>(layer);
         bChanged = true;
     }
 

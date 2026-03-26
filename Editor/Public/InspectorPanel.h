@@ -105,6 +105,14 @@ private:
     _bool           m_bEditModeInitialized = false;
     std::string     m_strEditAttachBoneName = "";
 
+    static constexpr const char* m_layerNames[5] = {
+        "PRIORITY",
+        "NONBLEND",
+        "BLEND",
+        "UI",
+        "SKY"
+    };
+
 public:
     static std::unique_ptr<CInspectorPanel> Create(const std::string& strPanelName, CHierarchyPanel* pHierarchy, CProjectPanel* pProject);
 };

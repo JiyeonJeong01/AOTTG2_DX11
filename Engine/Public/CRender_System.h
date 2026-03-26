@@ -49,6 +49,7 @@ private:
     ID3D11DepthStencilState*                        m_pDepthState_Disabled = nullptr;
 
     ID3D11RasterizerState* m_pRasterizerState_Default = nullptr;
+    ID3D11RasterizerState* m_pRasterizerState_CullCw = nullptr;
 
     /* Render Context */
     std::unique_ptr<CRender_Context>        m_upRenderContext{};
@@ -89,6 +90,7 @@ private:
         uint32_t iFirstIdx, uint32_t iNumIdx, const std::vector<_float4x4>* pSkinningMatrices, const _float4x4& matAttach, MESH_MODE eMode);
 
 
+    void    Apply_Pass_State_Skybox();
     void    Apply_Pass_State_Priority();
     void    Apply_Pass_State_NonBlend();
     void    Apply_Pass_State_Blend();
@@ -102,10 +104,9 @@ private:
     void    Bind_DepthState_Disabled();
 
     void    Bind_RasterizerState_Default();
+    void    Bind_RasterizerState_CullCw();
 
 };
-
-
 
 
 NS_END

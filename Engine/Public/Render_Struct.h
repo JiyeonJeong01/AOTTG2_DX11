@@ -82,6 +82,18 @@ typedef struct tagVertexAnimMesh
     };
 } VTXANIMMESH;
 
+typedef struct tagVertexCube
+{
+    XMFLOAT3    vPosition;
+    XMFLOAT3    vTexcoord;
+
+    static const unsigned int iNumElements = 2;
+    static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+    };
+} VTXCUBE;
+
 typedef struct ENGINE_DLL tagILDesc
 {
     const D3D11_INPUT_ELEMENT_DESC* pDesc;
@@ -94,7 +106,8 @@ static constexpr IL_DESC g_IL_TABLE[] = {
     { VTXTEX::Elements, VTXTEX::iNumElements },
     { VTXNORTEX::Elements, VTXNORTEX::iNumElements },
     { VTXMESH::Elements, VTXMESH::iNumElements },
-    { VTXANIMMESH::Elements, VTXANIMMESH::iNumElements }
+    { VTXANIMMESH::Elements, VTXANIMMESH::iNumElements },
+    { VTXCUBE::Elements, VTXCUBE::iNumElements }
 };
 
 typedef struct ENGINE_DLL tagDrawCmd final

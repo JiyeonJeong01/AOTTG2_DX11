@@ -7,6 +7,7 @@ NS_BEGIN(Engine)
 typedef struct ENGINE_DLL DefaultAssetGuid
 {
     static ASSET_GUID MESH_CUBE;
+    static ASSET_GUID MESH_CUBE_TEX;
     static ASSET_GUID MESH_RECT;
     static ASSET_GUID MESH_SPHERE;
     static ASSET_GUID MESH_LINE;
@@ -23,6 +24,7 @@ typedef struct ENGINE_DLL DefaultAssetGuid
     static ASSET_GUID SHADER_VTXTEX;
     static ASSET_GUID SHADER_VTXMESH;
     static ASSET_GUID SHADER_VTXANIMMESH;
+    static ASSET_GUID SHADER_VTXCUBE;
 
     static ASSET_GUID FONT_UI_DEFAULT;
 } DEFAULT_ASSET_GUID;

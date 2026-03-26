@@ -222,6 +222,24 @@ HRESULT CRender_System::Create_RenderState()
             return hr;
     }
 
+    /* -------------------------------------------------
+       RasterizerState : CullCw
+    ------------------------------------------------- */
+    {
+        D3D11_RASTERIZER_DESC desc{};
+        desc.FillMode = D3D11_FILL_SOLID;
+        desc.CullMode = D3D11_CULL_FRONT;
+        desc.FrontCounterClockwise = FALSE;
+        desc.DepthClipEnable = TRUE;
+        desc.ScissorEnable = FALSE;
+        desc.MultisampleEnable = FALSE;
+        desc.AntialiasedLineEnable = FALSE;
+
+        hr = m_pDevice->CreateRasterizerState(&desc, &m_pRasterizerState_CullCw);
+        if (FAILED(hr))
+            return hr;
+    }
+
     return S_OK;
 }
 
@@ -281,6 +299,9 @@ void CRender_System::Build_RenderQueue()
 
 void CRender_System::Execute_RenderQueue()
 {
+    Apply_Pass_State_Skybox();
+    Execute_Pass(RENDER_LAYER::SKY);
+
     Apply_Pass_State_Priority();
     Execute_Pass(RENDER_LAYER::PRIORITY);
 
@@ -705,6 +726,13 @@ void CRender_System::Apply_Block_To_Shader(SHADER_ENTRY* pShader, const NAME_VAL
     }
 }
 
+void CRender_System::Apply_Pass_State_Skybox()
+{
+    Bind_BlendState_None();
+    Bind_DepthState_Disabled();
+    Bind_RasterizerState_CullCw();
+}
+
 void CRender_System::Apply_Pass_State_Priority()
 {
     Bind_BlendState_None();
@@ -763,5 +791,10 @@ void CRender_System::Bind_DepthState_Disabled()
 void CRender_System::Bind_RasterizerState_Default()
 {
     m_pContext->RSSetState(m_pRasterizerState_Default);
+}
+
+void CRender_System::Bind_RasterizerState_CullCw()
+{
+    m_pContext->RSSetState(m_pRasterizerState_CullCw);
 }
 

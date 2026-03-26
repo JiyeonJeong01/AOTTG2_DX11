@@ -92,6 +92,7 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             tCmd.mesh.hPerObjectParams = pData->hPerObjectParams;
             tCmd.sortKey = Make_SortKey(*pData);
             tCmd.mesh.eMode = pData->eMode;
+            tCmd.eLayer = pData->layer;
 
             if (pData->hSkinningSourceAnimator.Is_Valid())
             {
