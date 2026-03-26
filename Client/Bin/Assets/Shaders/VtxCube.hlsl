@@ -50,8 +50,7 @@ VS_OUT VS_MAIN(VS_IN In)
 float4 PS_MAIN(VS_OUT In) : SV_TARGET
 {
     float4 vTextureColor = g_BaseMap.Sample(DefaultSampler, normalize(In.vTexcoord));
-    return vTextureColor;
-    //return vTextureColor * g_BaseColor;
+    return vTextureColor * g_BaseColor;
 }
 
 technique11 DefaultTechnique

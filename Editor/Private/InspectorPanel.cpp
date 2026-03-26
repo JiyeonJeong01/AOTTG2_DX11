@@ -712,7 +712,7 @@ void CInspectorPanel::Draw_Transform()
         pData->bDirty = true;
     }
 
-    if (bRotChanged)
+    if (bRotChanged) /* NOTE !! 멤버 변수를 두어 UI <-> 실제 회전값 변경 시 오류 해결 */
     {
         m_vCachedRotationEuler = { vRot[0], vRot[1], vRot[2] };
         transform.Set_Rotation_Euler(m_vCachedRotationEuler);
@@ -878,13 +878,15 @@ void CInspectorPanel::Draw_MeshRenderer()
         );
     }
 
+    MODEL_ENTRY* pModel = nullptr;
+
     if (bIsModel)
     {
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
 
-        const MODEL_ENTRY* pModel = SYS_RESOURCE.Get_Model(pData->hMesh);
+        pModel = SYS_RESOURCE.Get_Model(pData->hMesh);
         if (!pModel)
         {
             ImGui::TextUnformatted("Model Parts: <invalid model>");
@@ -943,13 +945,67 @@ void CInspectorPanel::Draw_MeshRenderer()
 
         if (m_eEditMode == MESH_MODE::ATTACH)
         {
-            ImGui::SetNextItemWidth(200.f);
-            ImGui::InputTextWithHint(
-                "##AttachBoneInput",
-                "Please input bone name",
-                &m_strEditAttachBoneName
-            );
+            CGameObject* pParent = m_pTarget->Get_Parent();
+            if (pParent != nullptr)
+            {
+                CMeshRenderer parentMR = pParent->Get_Component<CMeshRenderer>();
+                auto* pParentMRData = parentMR._Data();
+
+                if (pParentMRData != nullptr)
+                {
+                    MODEL_ENTRY* pParentModel = nullptr;
+                    if (SYS_RESOURCE.Is_ModelHandle(pParentMRData->hMesh))
+                        pParentModel = SYS_RESOURCE.Get_Model(pParentMRData->hMesh);
+
+                    if (pParentModel != nullptr && pParentModel->Has_Skeleton())
+                    {
+                        std::vector<const char*> vecBoneItems;
+                        vecBoneItems.reserve(pParentModel->tSkeleton.bones.size());
+
+                        int iCurrentBone = -1;
+
+                        for (_uint i = 0; i < (_uint)pParentModel->tSkeleton.bones.size(); ++i)
+                        {
+                            const auto& bone = pParentModel->tSkeleton.bones[i];
+                            vecBoneItems.push_back(bone.strName.c_str());
+
+                            if (bone.strName == m_strEditAttachBoneName)
+                                iCurrentBone = static_cast<int>(i);
+                        }
+
+                        ImGui::SetNextItemWidth(200.f);
+
+                        const char* pPreview = (iCurrentBone >= 0 && iCurrentBone < (int)vecBoneItems.size())
+                            ? vecBoneItems[iCurrentBone]
+                            : "Select Bone";
+
+                        if (ImGui::BeginCombo("##AttachBoneCombo", pPreview))
+                        {
+                            for (int i = 0; i < (int)vecBoneItems.size(); ++i)
+                            {
+                                const bool bSelected = (iCurrentBone == i);
+
+                                if (ImGui::Selectable(vecBoneItems[i], bSelected))
+                                {
+                                    m_strEditAttachBoneName = vecBoneItems[i];
+                                    iCurrentBone = i;
+                                }
+
+                                if (bSelected)
+                                    ImGui::SetItemDefaultFocus();
+                            }
+
+                            ImGui::EndCombo();
+                        }
+                    }
+                    else
+                    {
+                        ImGui::TextDisabled("Parent model has no skeleton");
+                    }
+                }
+            }
         }
+
 
         ImGui::SameLine();
 
@@ -991,6 +1047,43 @@ void CInspectorPanel::Draw_MeshRenderer()
             }
 
             m_bAttachInputActive = false;
+        }
+    }
+    else /* 내가 모델 / 부모 인 경우 스켈레톤의 뼈 목록 보여주기 */
+    {
+        if (bIsModel)
+        {
+            if (!pModel)
+                pModel = SYS_RESOURCE.Get_Model(pData->hMesh);
+            if (pModel != nullptr && pModel->Has_Skeleton())
+            {
+                ImGui::Spacing();
+                ImGui::Separator();
+                ImGui::Spacing();
+
+                std::string strBoneHeader = "Skeleton Bones (" + std::to_string(pModel->tSkeleton.bones.size()) + ")";
+                if (ImGui::TreeNode(strBoneHeader.c_str()))
+                {
+                    for (_uint i = 0; i < (_uint)pModel->tSkeleton.bones.size(); ++i)
+                    {
+                        const auto& bone = pModel->tSkeleton.bones[i];
+
+                        ImGui::PushID((int)i);
+
+                        std::string strBoneLabel = bone.strName + "##BoneName";
+                        if (ImGui::TreeNode(strBoneLabel.c_str()))
+                        {
+                            ImGui::Text("Index: %u", i);
+                            ImGui::Text("Parent Index: %d", bone.iParentBoneIndex);
+                            ImGui::TreePop();
+                        }
+
+                        ImGui::PopID();
+                    }
+
+                    ImGui::TreePop();
+                }
+            }
         }
     }
 

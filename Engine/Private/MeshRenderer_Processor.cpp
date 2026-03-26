@@ -156,6 +156,7 @@ CMeshRenderer_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hC
     spec->flags = pData->flags;
     spec->layer = pData->layer;
     spec->sortZ = pData->sortZ;
+
     spec->bEnable = pData->bEnable;
 
     spec->eMode = pData->eMode;

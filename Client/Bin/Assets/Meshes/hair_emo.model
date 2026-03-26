@@ -1,0 +1,5 @@
+source=../../Converter/Bin/FBXs/hair_emo.fbx
+meshCount=1
+part0Name=EmoHair1
+part0MeshGuid=4C657BF7-8154-4D42-B088-3613A9E97E87
+part0MaterialGuid=D25E3A79-953E-49E4-B8D9-D6851ED52127

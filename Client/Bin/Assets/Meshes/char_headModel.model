@@ -1,0 +1,5 @@
+source=../../Converter/Bin/FBXs/char_headModel.fbx
+meshCount=1
+part0Name=Mesh.006
+part0MeshGuid=CA4BBB38-5370-4F94-A238-5B0A9A4A8A8F
+part0MaterialGuid=D5153B62-ACB4-4A22-AB64-874B10DA9AA1

@@ -1,0 +1,5 @@
+source=../../Converter/Bin/FBXs/3dmgModel.fbx
+meshCount=1
+part0Name=Mesh.010
+part0MeshGuid=3ADE3A8A-0177-43F6-BEBC-FF88E63691BD
+part0MaterialGuid=F3CE0944-B675-4D3C-8C95-2D093C73F590
