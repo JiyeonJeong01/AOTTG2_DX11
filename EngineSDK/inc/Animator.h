@@ -21,7 +21,7 @@ typedef struct ENGINE_DLL tagAnimatorData
     _float              fTrackPosition = 0.f;
     _float              fPlaySpeed = 1.f;
     _float              fBlendElapsed = 0.f;
-    _float              fBlendDuration = 0.02f;         /* CURRENT VALUE!! 전부 기본 0.02초 보간 진행 */
+    _float              fBlendDuration = 0.2f;         /* CURRENT VALUE!! 전부 기본 0.02초 보간 진행 */
         
     std::vector<uint32_t>   currentKeyFrameIndices;     /* 현재 애니메이션 클립에 대해 각 채널에 대응하는 키 프레임 인덱스 */
 

@@ -2,6 +2,7 @@
 #include "AnimationClip_Player.h"
 #include "PlayerStateMachine.h"
 #include "ODM_Gear.h"
+#include "GroundChecker.h"
 
 CPlayerState_AirborneMove::CPlayerState_AirborneMove(Engine::CGameObject* goPlayer, CPlayer* scPlayer)
     : CPlayerState(goPlayer, scPlayer)
@@ -17,6 +18,13 @@ HRESULT CPlayerState_AirborneMove::Initialize()
     return CPlayerState::Initialize();
 }
 
+void CPlayerState_AirborneMove::Setup_CachedPlayerInfos()
+{
+    CPlayerState::Setup_CachedPlayerInfos();
+
+    m_tComponents.animator->OnAnimationFinished.Add_Listener(&CPlayerState_AirborneMove::On_AnimFinished, this);
+}
+
 void CPlayerState_AirborneMove::Priority_Update(_float fDT)
 {
     CPlayerState::Priority_Update(fDT);
@@ -27,13 +35,13 @@ void CPlayerState_AirborneMove::Update(_float fDT)
     _uint iFlag = m_tRef.pGear->Get_UsingFlag();
 
     /* 그래플링 끝 */
-    if (m_tInputCmd.bLeftAnchorHeld == false && m_tInputCmd.bRightAnchorHeld == false)
+    if (m_eState != AIRBORNE_STATE::AIR_FALL
+        && (m_tInputCmd.bLeftAnchorHeld == false && m_tInputCmd.bRightAnchorHeld == false))
     {
         m_eState = AIRBORNE_STATE::AIR_FALL;
         m_tRef.pGear->Finish_Grappling();
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
     }
-
 }
 
 void CPlayerState_AirborneMove::Late_Update(_float fDT)
@@ -44,7 +52,19 @@ void CPlayerState_AirborneMove::Late_Update(_float fDT)
 
 void CPlayerState_AirborneMove::Decide_NextState()
 {
-    
+    if (m_eState == AIRBORNE_STATE::AIR_FALL && m_tRef.pGroundChecker->Get_OnGround())
+    {
+        const float THREASHOLD = 10.f;
+
+        _float3 fLinearVel = m_tComponents.rigidbody.Get_LinearVel();
+
+        const _float fLinearVelSq = fLinearVel.x * fLinearVel.x + fLinearVel.z * fLinearVel.z;
+
+        if (fLinearVelSq > THREASHOLD)
+            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::SLIDE));
+        else
+            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::DASH));
+    }
 }
 
 void CPlayerState_AirborneMove::Enter(_uint iDetailFlag)
@@ -71,8 +91,8 @@ void CPlayerState_AirborneMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DA
 
     if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::AIR])
         On_AirFinished(tData);
-    else if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::AIR_FALL])
-        On_AirFallFinished(tData);
+    else if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::DASH_LAND])
+        On_DashLandFinished(tData);
 }
 
 void CPlayerState_AirborneMove::On_AirFinished(const Engine::ANIMATION_EVENT_DATA& tData)
@@ -85,9 +105,16 @@ void CPlayerState_AirborneMove::On_AirFinished(const Engine::ANIMATION_EVENT_DAT
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_RIGHT);
 }
 
-void CPlayerState_AirborneMove::On_AirFallFinished(const Engine::ANIMATION_EVENT_DATA& tData)
+void CPlayerState_AirborneMove::On_DashLandFinished(const Engine::ANIMATION_EVENT_DATA& tData)
 {
-
+    if (XMVector3Equal(XMLoadFloat3(&m_tInputCmd.vMove), XMVectorZero()))
+    {
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::DASH_LAND);
+    }
+    else
+    {
+        m_pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE));
+    }
 }
 
 std::shared_ptr<CPlayerState_AirborneMove> CPlayerState_AirborneMove::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer)

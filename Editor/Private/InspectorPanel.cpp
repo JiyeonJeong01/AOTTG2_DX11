@@ -1328,6 +1328,13 @@ void CInspectorPanel::Draw_Collider()
     if (pData->bEnable == 0)
         ImGui::BeginDisabled();
 
+    bool bTrigger = (pData->bTrigger);
+    if (ImGui::Checkbox("bTrigger", &bTrigger))
+    {
+        pData->bTrigger = bTrigger ? 1 : 0;
+        pData->bDirty = true;
+    }
+
     ImGui::TextUnformatted("Shape");
     ImGui::SameLine();
 
@@ -3280,7 +3287,7 @@ void CInspectorPanel::Draw_AnimatorBlendingView()
 
         static int32_t s_iFromClip = 0;
         static int32_t s_iToClip = 0;
-        static _float s_fBlendDuration = 0.02f;
+        static _float s_fBlendDuration = 0.2f;
 
         if (s_iFromClip >= static_cast<int32_t>(vecAnimClips.size()))
             s_iFromClip = 0;

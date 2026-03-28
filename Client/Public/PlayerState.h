@@ -22,8 +22,9 @@ public :
 
     virtual void    Control_Camera();
     virtual void    Update_PlayerInput(const PLAYER_INPUT_COMMAND& tInputCmd);
+    virtual void    Setup_CachedPlayerInfos();
 
-    void Cache_PlayerInfos(const PLAYER_COMPONENTS& tComponents, const PLAYER_RUNTIME_REF& tRef);
+    void Cache_PlayerInfos(const PLAYER_COMPONENTS& tComponents, const PLAYER_RUNTIME_REF& tRef, PLAYER_INFO* pInfo);
     void Bind_PlayerRef(const PLAYER_RUNTIME_REF& tRef);
 
 private :
@@ -37,6 +38,7 @@ protected:
     PLAYER_INPUT_COMMAND    m_tInputCmd{};
     PLAYER_COMPONENTS       m_tComponents{};
     PLAYER_RUNTIME_REF      m_tRef{};
+    PLAYER_INFO*            m_pInfo{};           
 };
 
 NS_END

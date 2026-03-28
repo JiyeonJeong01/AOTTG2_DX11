@@ -10,6 +10,7 @@
 
 #include "CameraController.h"
 #include "ODM_Gear.h"
+#include "GroundChecker.h"
 
 
 NS_BEGIN(Client)
@@ -52,14 +53,13 @@ void CPlayer::Start(void* pCtx)
     /* 런타임 정보 참조 */
     {
         m_tRef.pGear = m_goPlayer->Get_Script_InChildren<CODM_Gear>();
-        m_tRef.pGroundChecker = nullptr; /* TODO */
+        m_tRef.pGroundChecker = m_goPlayer->Get_Script_InChildren<CGroundChecker>();
         m_tRef.pFSM = m_upStateMachine.get();
         m_tRef.pCameraController = m_goPlayer->Get_Script<CCameraController>();
-        m_tRef.pInfo = &m_tInfo;
     }
 
     /* 플레이어 상태에게 전달 */
-    m_upStateMachine->Cache_PlayerInfos(m_tComponents, m_tRef);
+    m_upStateMachine->Cache_PlayerInfos(m_tComponents, m_tRef, &m_tInfo);
 
     /* 이벤트 등록 */
     //m_tComponents.collider->OnCollisionEnter.Add_Listener(&CPlayer::On_CollisionEnter, this);

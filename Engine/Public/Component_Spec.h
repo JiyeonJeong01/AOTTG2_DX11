@@ -832,6 +832,8 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
     _bool       bEnable = false;
     _bool       bOnCol{ false };
 
+    _bool       bTrigger = false;
+
     SHAPE       eShape{ SHAPE::END };
     _float3     vOffset{ 0.f, 0.f, 0.f };
     _float3     vRotationOffset{ 0.f, 0.f, 0.f };
@@ -853,6 +855,7 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
         j["Type"] = SCAST(_uint, Get_Type());
         j["Enabled"] = bEnable;
         j["OnCol"] = bOnCol;
+        j["Trigger"] = bTrigger;
         j["Shape"] = SCAST(_uint, eShape);
         j["Offset"] = { vOffset.x, vOffset.y, vOffset.z };
         j["RotationOffset"] = { vRotationOffset.x, vRotationOffset.y, vRotationOffset.z };
@@ -888,6 +891,9 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
 
         if (!Read_Bool(j, "OnCol", bOnCol))
             return false;
+
+        if (!Read_Bool(j, "Trigger", bTrigger))
+            bTrigger = false;
 
         {
             uint32_t iShape = 0;
@@ -1151,7 +1157,7 @@ typedef struct ENGINE_DLL tagAnimatorSpec final : public COMPONENT_SPEC_BASE
     uint32_t    iAnimationClip = INVALID_ANIM_CLIP_INDEX;
 
     _float      fPlaySpeed = 1.f;
-    _float      fBlendDuration = 0.02f;
+    _float      fBlendDuration = 0.2f;
 
     std::unordered_map<uint64_t, _float, ANIMATION_CLIP_INDEX_HASHER>   BlendMap;
     std::unordered_map<uint32_t, _bool>                                 LoopMap;
@@ -1264,7 +1270,7 @@ typedef struct ENGINE_DLL tagAnimatorSpec final : public COMPONENT_SPEC_BASE
             fPlaySpeed = 0.f;
 
         if (fBlendDuration < 0.f)
-            fBlendDuration = 0.02f;
+            fBlendDuration = 0.2f;
 
         return true;
     }

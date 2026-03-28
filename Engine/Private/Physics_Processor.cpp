@@ -65,8 +65,14 @@ void CPhysics_Processor::Fixed_Update(_float fDT)
 
     /* 충돌 해결하기 */
     for (_uint i = 0; i < 1; ++i)
+    {
         for (auto& contact : outContacts)
+        {
+            if (contact.pColA->bTrigger || contact.pColB->bTrigger)
+                continue;
             m_upSolver->Solve_Contacts(&contact);
+        }
+    }
 
     /* kinematic 해당 프레임 속도 초기화 */
     Reset_Kinematic_Velocities();
@@ -374,6 +380,17 @@ void CPhysics_Processor::Process_Collision(vector<CONTACT_DESC>& outContacts)
             pData->bDirty = false;
 
             m_ActivatedColliders.push_back(std::move(outData));
+
+            {/* TEST +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  */
+                CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
+                if (pObj)
+                {
+                    if (pObj->Get_Label() == "GroundChecker")
+                    {
+                        int a = 10;
+                    }
+                }
+            }
         }
     }
 
@@ -405,17 +422,58 @@ void CPhysics_Processor::Invoke_CollisionEvent()
         tB.hObject = pA->hObject;
         tB.pCounterCollider = pA;
 
-        if (m_prevPair.find(k) == m_prevPair.end()) 
+        const _bool bTriggerPair = pA->bTrigger || pB->bTrigger;
+        const _bool bEnter = (m_prevPair.find(k) == m_prevPair.end()); /* 이전에 충돌한 적이 없다면 Enter */
+
+        CGameObject* pObjA = nullptr;
+        CGameObject* pObjB = nullptr;
+        {/* TEST +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  */
+             pObjA = SYS_GAMEOBJECT.Get_Wrapper(pA->hObject);
+            if (pObjA)
+            {
+                if (pObjA->Get_Label() == "GroundChecker")
+                {
+                    int a = 10;
+                }
+            }
+        }
+        {/* TEST +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  */
+            pObjB = SYS_GAMEOBJECT.Get_Wrapper(pB->hObject);
+            if (pObjB)
+            {
+                if (pObjB->Get_Label() == "GroundChecker")
+                {
+                    int a = 10;
+                }
+            }
+        }
+
+        if (bEnter)
         {
-            /* 이전에 충돌한 적이 없다면 Enter */
-            pA->OnCollisionEnter.Invoke(tA);
-            pB->OnCollisionEnter.Invoke(tB);
+            if (bTriggerPair)
+            {
+                pA->OnTriggerEnter.Invoke(tA);
+                pB->OnTriggerEnter.Invoke(tB);
+            }
+            else
+            {
+                pA->OnCollisionEnter.Invoke(tA);
+                pB->OnCollisionEnter.Invoke(tB);
+            }
         }
         else
         {
             /* 이전에 충돌한 적이 있다면 Stay */
-            pA->OnCollisionStay.Invoke(tA);
-            pB->OnCollisionStay.Invoke(tB);
+            if (bTriggerPair)
+            {
+                pA->OnTriggerStay.Invoke(tA);
+                pB->OnTriggerStay.Invoke(tB);
+            }
+            else
+            {
+                pA->OnCollisionStay.Invoke(tA);
+                pB->OnCollisionStay.Invoke(tB);
+            }
         }
     }
 
@@ -440,8 +498,17 @@ void CPhysics_Processor::Invoke_CollisionEvent()
         tB.hObject = pA->hObject;
         tB.pCounterCollider = pA;
 
-        pA->OnCollisionExit.Invoke(tA);
-        pB->OnCollisionExit.Invoke(tB);
+        const _bool bTriggerPair = pA->bTrigger || pB->bTrigger;
+        if (bTriggerPair)
+        {
+            pA->OnTriggerExit.Invoke(tA);
+            pB->OnTriggerExit.Invoke(tB);
+        }
+        else
+        {
+            pA->OnCollisionExit.Invoke(tA);
+            pB->OnCollisionExit.Invoke(tB);
+        }
     }
 
     /* prev <-> cur 교체 */
@@ -603,6 +670,7 @@ HRESULT CPhysics_Processor::Initialize_From_Spec_Collider(COMPONENT_HANDLE h, co
     pData->hSelf = h;
     pData->bEnable = pSpec->bEnable;
     pData->bOnCol = pSpec->bOnCol;
+    pData->bTrigger = pSpec->bTrigger;
     pData->eShape = pSpec->eShape;
     pData->vOffset = pSpec->vOffset;
     pData->vRotationOffset = pSpec->vRotationOffset;
@@ -707,6 +775,7 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec_Collider(COM
 
     pSpec->bEnable = pData->bEnable;
     pSpec->bOnCol = pData->bOnCol;
+    pSpec->bTrigger = pData->bTrigger;
     pSpec->eShape = pData->eShape;
     pSpec->vOffset = pData->vOffset;
     pSpec->vRotationOffset = pData->vRotationOffset;

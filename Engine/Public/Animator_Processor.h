@@ -30,7 +30,7 @@ private:
 
 private :
     class CMeshRenderer_Processor*  m_pMeshRenderer_Processor = nullptr;
-    const _float                    m_fEnsureBlendingTime = 0.02f;
+    const _float                    m_fEnsureBlendingTime = 0.2f;
 
 private:
     void Update_Animator(ANIMATOR_DATA* pData, _float fDT);

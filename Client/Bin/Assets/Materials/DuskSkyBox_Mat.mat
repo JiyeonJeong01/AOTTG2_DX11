@@ -1,0 +1,14 @@
+{
+    "BaseColor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+    ],
+    "BaseMapGUID": "EF418435-D99D-4283-B576-77994D1D14FC",
+    "GUID": "47C0DEB6-0F88-4B81-B8E7-63D27C6EAAF7",
+    "NormalMapGUID": "77777777-7777-7777-7777-777777777773",
+    "PassIndex": 0,
+    "ShaderGUID": "FA9F00D0-9F1B-4014-A3FA-AAA5A31F7333",
+    "Shininess": 32.0
+}

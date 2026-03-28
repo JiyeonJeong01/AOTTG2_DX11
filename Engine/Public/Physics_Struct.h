@@ -12,6 +12,8 @@ typedef struct tagColliderData COLLIDER_DATA;
 struct tagObjectHandle;
 typedef struct tagObjectHandle OBJECT_HANDLE;
 
+class CGameObject;
+
 typedef struct tagAABB
 {
     _float3 vMin{ 0.f,0.f,0.f };

@@ -19,15 +19,19 @@ void CGroundChecker::Awake(void* pCtx)
     IF_TRUE_RETURN_MSG_BREAK(m_trOwner.Is_Valid() == false, , "transform is invalid");
 
     /* 체커 오브젝트 */
-    m_trChecker = m_pOwner->Get_Component<CTransform>();
+
+    m_pChecker = GAME_INSTANCE.Find_GameObject(m_hObject);
+    IF_NULL_RETURN_MSG_BREAK(m_pChecker, , "pChecker is nullptr");
+
+    m_trChecker = m_pChecker->Get_Component<CTransform>();
     IF_TRUE_RETURN_MSG_BREAK(m_trChecker.Is_Valid() == false, , "transform is invalid");
 
     m_colChecker = m_pChecker->Get_Component<CCollider>();
     IF_TRUE_RETURN_MSG_BREAK(m_colChecker.Is_Valid() == false, , "collider is invalid");
 
     /* 충돌 이벤트 등록 */
-    m_colChecker->OnCollisionEnter.Add_Listener(&CGroundChecker::OnCollisionEnter, this);
-    m_colChecker->OnCollisionExit.Add_Listener(&CGroundChecker::OnCollisionExit, this);
+    m_colChecker->OnTriggerEnter.Add_Listener(&CGroundChecker::OnTriggerEnter, this);
+    m_colChecker->OnTriggerExit.Add_Listener(&CGroundChecker::OnTriggerExit, this);
 }
 
 void CGroundChecker::Start(void* pCtx)
@@ -52,14 +56,14 @@ void CGroundChecker::Late_Update(void* pCtx, _float fDT)
     m_trChecker->vRotationQuat = m_trOwner->vRotationQuat;
 }
 
-void CGroundChecker::OnCollisionEnter(const COLLISION_DESC& tDesc)
+void CGroundChecker::OnTriggerEnter(const COLLISION_DESC& tDesc)
 {
     CGameObject* pCounter = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
     if (pCounter && pCounter->Has_Mask(WALKABLE))
         m_iGroundContactCount++;
 }
 
-void CGroundChecker::OnCollisionExit(const COLLISION_DESC& tDesc)
+void CGroundChecker::OnTriggerExit(const COLLISION_DESC& tDesc)
 {
     CGameObject* pCounter = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
     if (pCounter && pCounter->Has_Mask(WALKABLE))

@@ -21,9 +21,6 @@ public :
     void Enter(_uint iDetailFlag) override;
 
 private :
-    CRigidbody      m_rbPlayer;
-
-private :
     void Move(_float fDT);
 
 public :

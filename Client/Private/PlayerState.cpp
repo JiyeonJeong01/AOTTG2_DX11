@@ -33,9 +33,14 @@ void CPlayerState::Update_PlayerInput(const PLAYER_INPUT_COMMAND& tInputCmd)
     m_tInputCmd = tInputCmd;
 }
 
-void CPlayerState::Cache_PlayerInfos(const PLAYER_COMPONENTS& tComponents, const PLAYER_RUNTIME_REF& tRef)
+void CPlayerState::Setup_CachedPlayerInfos()
+{
+}
+
+void CPlayerState::Cache_PlayerInfos(const PLAYER_COMPONENTS& tComponents, const PLAYER_RUNTIME_REF& tRef, PLAYER_INFO* pInfo)
 {
     m_tComponents = tComponents;
     m_tRef = tRef;
     m_pFSM = tRef.pFSM;
+    m_pInfo = pInfo;
 }

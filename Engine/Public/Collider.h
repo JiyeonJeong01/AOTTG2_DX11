@@ -11,6 +11,7 @@ typedef struct ENGINE_DLL tagColliderData final
 {
     OBJECT_HANDLE       hObject{};
     _bool               bEnable = false;
+    _bool               bTrigger = false;
 
     COMPONENT_HANDLE    hSelf{ INVALID_HANDLE }; /* self */
     COMPONENT_HANDLE    hTransform{ INVALID_HANDLE };
@@ -28,6 +29,10 @@ typedef struct ENGINE_DLL tagColliderData final
     CEvent<const COLLISION_DESC&> OnCollisionEnter;
     CEvent<const COLLISION_DESC&> OnCollisionStay;
     CEvent<const COLLISION_DESC&> OnCollisionExit;
+
+    CEvent<const COLLISION_DESC&> OnTriggerEnter;
+    CEvent<const COLLISION_DESC&> OnTriggerStay;
+    CEvent<const COLLISION_DESC&> OnTriggerExit;
 
     /* Shape params : Local
        - 에디터/직렬화에서 보관하는 원본 로컬 값

@@ -257,7 +257,7 @@ _bool CScene_Handler::Deserialize_SceneObjectSpec(const json& j, SCENE_OBJECT_SP
     if (!ASSET_GUID::Try_Utf8_To_GUID(j.value("protoGuid", ""), out.protoGuid))
         out.protoGuid = ASSET_GUID{};
 
-    out.isUI = j.value("isUI", false);
+    out.name = j.value("name", "");
     out.isUI = j.value("isUI", false);
     out.layer = (Layer::LAYER_ID)j.value("layer", (uint32_t)Layer::DEFAULT_LAYER);
     out.iObjMask = j.value("iObjMask", 0);

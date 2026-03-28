@@ -38,8 +38,8 @@ public:
     void Late_Update(void* pCtx, _float fDT) override;
 
 private :
-    void OnCollisionEnter(const COLLISION_DESC& tDesc);
-    void OnCollisionExit(const COLLISION_DESC& tDesc);
+    void OnTriggerEnter(const COLLISION_DESC& tDesc);
+    void OnTriggerExit(const COLLISION_DESC& tDesc);
 };
 
 NS_END;

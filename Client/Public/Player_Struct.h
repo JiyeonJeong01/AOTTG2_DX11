@@ -52,16 +52,19 @@ typedef struct tagPlayerInfo
 
 typedef struct tagPlayerRuntimeRef
 {
-    CGameObject*                pGroundChecker = nullptr;
+    class CGroundChecker*       pGroundChecker = nullptr;
     class CODM_Gear*            pGear = nullptr;
     class CCameraController*    pCameraController = nullptr;
     class CPlayerStateMachine*  pFSM = nullptr;
-    PLAYER_INFO*                pInfo = nullptr;
 } PLAYER_RUNTIME_REF;
 
 
 
 
 enum class PLAYER_STATE { IDLE = 0, GROUNDED_MOVE, JUMP, AIRBORNE_MOVE, HOOK, GROUNDED_ATTACK, AIRBORNE_ATTACK, SHOOT, RELOAD, DODGE, RESUPPLY, GRABBED, EMOTE, END };
+
+enum class AIRBORNE_STATE : uint8_t { AIR_BEGIN, AIR_LEFT, AIR_RIGHT, AIR_FRONT, AIR_BACK, AIR_FALL, END };
+enum class GROUNDED_MOVE : uint8_t { RUN, SLIDE, DASH, END };
+
 
 NS_END
