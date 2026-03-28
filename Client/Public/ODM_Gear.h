@@ -1,9 +1,7 @@
 ﻿#pragma once
 #include "Client_Define.h"
 #include "Rope.h"
-#include "Script.h"
-#include "SpringJoint.h"
-#include "Transform.h"
+#include "Event.h"
 
 #pragma region FD
 NS_BEGIN(Engine)
@@ -12,18 +10,24 @@ NS_END
 
 NS_BEGIN(Client)
 class CRope;
+typedef struct tagTryGrapplingInfo
+{
+    _float3 vPoint{};
+    _float3 vCamOrigin{};
+    _float3 vRayDir{};
+    _float  fDist{};
+} TYR_GRAPPLING_INFO;
+
 NS_END
 #pragma endregion
 
 NS_BEGIN(Client)
 
-
 class CODM_Gear : public IScript
 {
-
-
 private :
-    std::unique_ptr<CRope>  m_upRope;
+    std::unique_ptr<CRope>  m_upLeftRope;
+    std::unique_ptr<CRope>  m_upRightRope;
     Engine::CGameObject*    m_pOwner{};
     Engine::CTransform      m_tr;
     Engine::CSpringJoint    m_sj;
@@ -32,16 +36,29 @@ private :
     _float                  m_fSpring = 10.f;
     _float                  m_fDamper = 5.f;
 
-private :
-    void            Handle_RopeState(CRope::ROPE_STATE eState);
+    _float                  m_fRopeMaxDist = 150.f;
+
+    _uint                   m_flagUsingSide = 0;
 
 private :
-    void            Is_Anchorable();
+    void            Handle_RopeState(CRope::ROPE_STATE eState, SIDE eSide);
     CGameObject*    Find_Owner();
+    CEvent<_uint>   m_OnSuccessAnchored;
 
 public :
-    void Try_Grappling();
+    void Try_Grappling(SIDE eSide);
     void Finish_Grappling();
+
+    _bool           Detect_GrapplingPoint(TYR_GRAPPLING_INFO& tInfo);
+    static _bool    Detect_GrapplingDist(_float* fDist);
+
+    _uint           Get_UsingFlag();
+
+    template <typename T>
+    ListenerID Subscribe_On_Success_Anchored(void(T::* func)(_uint), T* pInstance)
+    {
+        return m_OnSuccessAnchored.Add_Listener(func, pInstance);
+    }
 
 public:
     void Awake(void* pCtx) override;

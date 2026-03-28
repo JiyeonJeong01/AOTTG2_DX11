@@ -20,12 +20,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Publict\Equipment_Struct.h" />
+    <ClInclude Include="..\Public\AnimationClip_Player.h" />
     <ClInclude Include="..\Public\CameraController.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Easing_Function.h" />
     <ClInclude Include="..\Public\FreeCam.h" />
     <ClInclude Include="..\Public\GameManager.h" />
+    <ClInclude Include="..\Public\GroundChecker.h" />
     <ClInclude Include="..\Public\Hello.h" />
+    <ClInclude Include="..\Public\PlayerState_Idle.h" />
+    <ClInclude Include="..\Public\PlayerState_Jump.h" />
     <ClInclude Include="..\Public\Rope.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MainMenu_Controller.h" />
@@ -46,7 +50,10 @@
     <ClCompile Include="..\Private\CameraController.cpp" />
     <ClCompile Include="..\Private\FreeCam.cpp" />
     <ClCompile Include="..\Private\GameManager.cpp" />
+    <ClCompile Include="..\Private\GroundChecker.cpp" />
     <ClCompile Include="..\Private\Hello.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Jump.cpp" />
     <ClCompile Include="..\Private\Rope.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MainMenu_Controller.cpp" />

@@ -115,7 +115,7 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
 HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
 {
     MESH_RENDERER_DATA* pData = m_Pool.Get_Data_By_Handle(handle);
-    _DEBUG_ENGINE_ASSERT_MSG(pData != nullptr, "Invalid MeshRenderer handle in Initialize_From_Spec");
+    IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "Invalid MeshRenderer handle in Initialize_From_Spec");
 
     const auto* pMeshSpec = SCAST(const MESH_RENDERER_SPEC*, pSpec);
 
@@ -129,12 +129,16 @@ HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, C
     pData->eMode = pMeshSpec->eMode;
     pData->strAttachBoneName = pMeshSpec->strAttachBoneName;
 
-    if (pData->eMode == MESH_MODE::PARTS)
-        return Resolve_SkinningReference(handle) ? S_OK : E_FAIL;
-    if (pData->eMode == MESH_MODE::ATTACH)
-        return Resolve_AttachReference(handle) ? S_OK : E_FAIL;
+    HRESULT hr = S_OK;
 
-    return S_OK;
+    if (pData->eMode == MESH_MODE::PARTS)
+        hr = Resolve_SkinningReference(handle) ? S_OK : E_FAIL;
+    if (pData->eMode == MESH_MODE::ATTACH)
+        hr = Resolve_AttachReference(handle) ? S_OK : E_FAIL;
+
+    IF_FAIL_RETURN_MSG_BREAK(hr, hr, "mesh renderer failed to initialie spec");
+
+    return hr;
 }
 
 std::unique_ptr<COMPONENT_SPEC_BASE>

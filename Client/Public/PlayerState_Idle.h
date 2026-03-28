@@ -1,15 +1,16 @@
-﻿#include "PlayerState.h"
+﻿#pragma once
+#include "PlayerState.h"
 #include "Animator.h"
 
 NS_BEGIN(Client)
 
 /* MOVE, RELOAD, ATTACK */
 
-class CPlayerState_Airborne final : public CPlayerState
+class CPlayerState_Idle final : public CPlayerState
 {
 public:
-    CPlayerState_Airborne(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
-    ~CPlayerState_Airborne();
+    CPlayerState_Idle(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
+    ~CPlayerState_Idle();
 
 public:
     HRESULT Initialize() override;
@@ -21,7 +22,7 @@ public:
     void Enter() override;
 
 public:
-    static std::shared_ptr<CPlayerState_Airborne> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
+    static std::shared_ptr<CPlayerState_Idle> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
 };
 
 NS_END

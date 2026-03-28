@@ -10,7 +10,10 @@ NS_BEGIN(Client)
 class CRope final
 {
 public:
-    enum class ROPE_STATE : uint8_t { IDLE, EXTENDING, ANCHORED, RETURNING };
+    enum class ROPE_STATE : uint8_t { IDLE, EXTENDING_FAIL, EXTENDING_SUCCESS, ANCHORED, RETURNING };
+
+    CRope(SIDE eSide);
+    ~CRope();
 
 public:
     void Initialize();
@@ -18,12 +21,12 @@ public:
     void Render();
 
 public:
-    void Set_StartPoint(const _float3& vStartPoint);
-    void Set_EndPoint(const _float3& vEndPoint);
-
-    void Start_Extending(const _float3& vStartPoint, const _float3& vAnchorPoint);
-    void Set_Anchored(const _float3& vStartPoint, const _float3& vAnchorPoint);
+    void Start_Extending_Success(_fvector vStartPoint, _fvector vAnchorPoint);
+    void Start_Extending_Fail(_fvector vStartPoint, _fvector vRopeDir);
     void Start_Returning(const _float3& vStartPoint);
+
+    void Set_StartPoint(const _float3& vStartPoint);
+    void Set_Anchored(const _float3& vStartPoint, const _float3& vAnchorPoint);
     void Stop();
 
     ROPE_STATE Get_State() const { return m_State; }
@@ -31,7 +34,7 @@ public:
     void Set_RopeAmplitueInfo(const AMPLITUDE_VALUE& tInfo);
 
     template <typename T>
-    ListenerID Subscribe_On_RopeState_Changed(void(T::* func)(ROPE_STATE), T* pInstance)
+    ListenerID Subscribe_On_RopeState_Changed(void(T::* func)(ROPE_STATE, SIDE), T* pInstance)
     {
         return m_OnChanged_RopeState.Add_Listener(func, pInstance);
     }
@@ -52,8 +55,11 @@ private:
     _int                            m_iNumWave = 2;
     _int                            m_iNumPoints = 30;
     _float                          m_fExtendVel = 200.f;
+    _float                          m_fRopMaxLength = 200.f;
 
-    CEvent<ROPE_STATE>              m_OnChanged_RopeState;
+    CEvent<ROPE_STATE, SIDE>        m_OnChanged_RopeState;
+
+    SIDE                            m_eSide = {};
     
 
 private:
@@ -66,7 +72,7 @@ private:
     void Upload_Line();
 
 public:
-    static std::unique_ptr<CRope> Create();
+    static std::unique_ptr<CRope> Create(SIDE eSide);
 };
 
 NS_END

@@ -1,26 +1,20 @@
 ﻿#pragma once
 
 #include "Client_Define.h"
-#include "Script.h"
-#include "Transform.h"
-#include "Rigidbody.h"
-#include "SpringJoint.h"
-
-namespace Engine
-{
-    class CGameObject;
-}
+#include "Player_Struct.h"
 
 NS_BEGIN(Client)
-
 class CPlayer_InputController;
 class CPlayerStateMachine;
 class CPlayerState;
 class CCameraController;
 class CODM_Gear;
+NS_END
 
+NS_BEGIN(Client)
 class CPlayer : public IScript
 {
+
 public:
     _float  m_fSpeed = 0;
 
@@ -42,7 +36,9 @@ public:
     void Late_Update(void* pCtx, _float fDT) override;
 
 private:
-    CGameObject*    m_goPlayer = nullptr;
+    CGameObject*        m_goPlayer = nullptr;
+    PLAYER_COMPONENTS   m_tComponents{};
+    PLAYER_RUNTIME_REF  m_tRef{};
 
     std::unique_ptr<CPlayer_InputController>    m_upInputController{};
     std::unique_ptr<CPlayerStateMachine>        m_upStateMachine{};

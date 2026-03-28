@@ -504,6 +504,9 @@
     <ClInclude Include="..\Public\Font.h">
       <Filter>01. Utility\05. Resource\08. Font</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Engine_Component.h">
+      <Filter>99. Defines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">

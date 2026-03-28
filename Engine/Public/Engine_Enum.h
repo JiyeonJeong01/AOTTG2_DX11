@@ -42,6 +42,7 @@ namespace Engine
     /* --- Physics --- */
 	enum class SHAPE : uint8_t              { BOX, SPHERE, PLANE, CAPSULE, END };
 	enum class BODY_TYPE : uint8_t          { DYNAMIC, KINEMATIC, END };
+	enum class COLLISION : uint8_t          { ENTER, STAY, EXIT, END };
 
     /* --- UI --- */
 	enum class UI_TYPE : uint8_t            { BUTTON, IMAGE, PANEL, SLOT, END };

@@ -13,6 +13,7 @@ typedef struct tagScriptTypeInfo
 class ENGINE_DLL CScript_Processor : public CComponent_Processor_Impl<CScript, COMPONENT_TYPE::SCRIPT>
 {
     DEF_PROCESSOR_ID(PROCESSOR_ID::SCRIPT)
+
 public:
     HRESULT Initialize() override;
     void Update(_float fDT) override;
@@ -38,9 +39,17 @@ private :
         ScriptTickFn        fn{};
     }TICK_CALL;
 
+    typedef struct tagPendingScript
+    {
+        COMPONENT_HANDLE    hScript{};
+        size_t              iTypeIndex;
+    } PENDING_SCRIPT;
+
     std::vector<SCRIPT_TYPE_INFO>   m_Types;
     std::vector<TICK_CALL>          m_Ticks[SCAST(uint8_t, SCRIPT_TICK::END)];
     SCRIPT_CTX m_ctx{};
+
+    std::vector<PENDING_SCRIPT>             m_PendingAwake_Script; /* 에디터 런타임 등록 시, 즉시 Awake 실행 되는 문제 */
 
     std::unordered_map<ASSET_GUID, TypeID, ASSET_GUID_HASHER>   m_GuidToTypeID;
     std::vector<ASSET_GUID>                                     m_TypeIDToGUID;
@@ -57,6 +66,7 @@ private :
     void Create_State_If_Needed(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData);
     void Reset_Data(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData);
     void Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData);
+    void Flush_PendingAwake();
 
 public:
     static std::unique_ptr<CScript_Processor> Create();

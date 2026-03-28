@@ -41,6 +41,9 @@
     <Filter Include="Equipment">
       <UniqueIdentifier>{40feaf96-3321-4f82-ba73-03f504c31bfd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\GroundChecker">
+      <UniqueIdentifier>{740f9326-30cf-4a81-88e0-f0ebfa3edea2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -109,6 +112,18 @@
     <ClInclude Include="..\Publict\Equipment_Struct.h">
       <Filter>Equipment</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Idle.h">
+      <Filter>Player\PlayerState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AnimationClip_Player.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Jump.h">
+      <Filter>Player\PlayerState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GroundChecker.h">
+      <Filter>Common\GroundChecker</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -164,6 +179,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Rope.cpp">
       <Filter>Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Idle.cpp">
+      <Filter>Player\PlayerState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Jump.cpp">
+      <Filter>Player\PlayerState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GroundChecker.cpp">
+      <Filter>Common\GroundChecker</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

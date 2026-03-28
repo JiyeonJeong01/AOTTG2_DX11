@@ -113,6 +113,11 @@ void CAsset_Registry::Rebuild()
             /* Registry Logging */
             m_byPathUtf8.emplace(strKeyPath, tGUID);
             m_byGUID.emplace(tGUID, std::move(tRec));
+
+            // ASSET_GUID goal = ASSET_GUID("92C78FAF-2BC8-4626-B369-67CC1B68556C");
+            // 
+            // if (goal == tGUID)
+            //     DEBUG_BREAK();
         };
 
     addOne(m_assetRoot);

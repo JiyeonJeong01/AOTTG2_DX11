@@ -1,6 +1,5 @@
 ﻿#include "Player_InputController.h"
 #include "Input_System.h"
-#include "Engine_Math.h"
 
 CPlayer_InputController::CPlayer_InputController()
 {
@@ -15,12 +14,16 @@ const PLAYER_INPUT_COMMAND& CPlayer_InputController::Update_InputCommand()
     /* 사용자의 입력을 받아 구조체를 채운다 */
     m_tInputCommand = {};
 
+    /* 마우스 */
     long iMove = 0;
     if (iMove = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::HORIZONTAL))
         m_tInputCommand.vMouseDelta.x = To<_float>(iMove);
     if (iMove = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::VERTICAL))
         m_tInputCommand.vMouseDelta.y = To<_float>(iMove);
+    if (iMove = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::DEPTH))
+        m_tInputCommand.iSwitchSkillDir = iMove;
 
+    /* 플레이어 이동 방향 */
     _float3 vMove{};
     if (SYS_INPUT.Get_Key('W'))
         vMove.z = 1.f;
@@ -51,10 +54,19 @@ const PLAYER_INPUT_COMMAND& CPlayer_InputController::Update_InputCommand()
     if (SYS_INPUT.Get_Key(VK_SHIFT))
         m_tInputCommand.bBoostHeld = true;
 
+    if (SYS_INPUT.Get_Key(VK_SPACE))
+        m_tInputCommand.bRopeReelHeld = true;
+
     if (SYS_INPUT.Get_KeyDown(VK_LBUTTON))
         m_tInputCommand.bNormalAttackPressed = true;
     if (SYS_INPUT.Get_KeyDown(VK_RBUTTON))
         m_tInputCommand.bStrongAttackPressed = true;
+
+    if (SYS_INPUT.Get_KeyDown('F'))
+        m_tInputCommand.bNormalAttackPressed = true;
+    if (SYS_INPUT.Get_KeyDown('R'))
+        m_tInputCommand.bInteract = true;
+
 
     return m_tInputCommand;
 }

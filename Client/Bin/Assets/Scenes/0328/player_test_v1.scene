@@ -1,0 +1,3551 @@
+{
+  "objects": [
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Tower11",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              20.000574111938477,
+              11.91827392578125
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "DBE73B41-B463-4744-B1C1-04BF6463C5E2",
+            "MeshGUID": "5A3523BF-8EE4-4630-95DB-4CFF79DBF6E1",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76BAE939-61AB-4E05-9C72-39C69E0C1C60",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "C0F11999-3FB1-496B-B25E-D42EB5A3CFFB"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "CanaWater",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              8.413055419921875,
+              -1.1886546611785889,
+              0.004009254276752472
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "1F40A4FF-F6EF-40D7-9FF6-F07376BE92DD",
+            "MeshGUID": "EC713B83-19A6-428E-88FA-4EB8C92FAC84",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "0D259223-7696-4700-9E01-0B76B1CDC2D3"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "House17",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -29.739444732666016,
+              -12.640000343322754,
+              12.875082969665527
+            ],
+            "Rotation": [
+              0.700910747051239,
+              0.0,
+              0.0,
+              0.7132489681243896
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "F8D76AC4-4535-4080-BD8C-85CBEED2C92B",
+            "MeshGUID": "AE7ED893-D90A-464B-9F45-F7322186D799",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "738310D1-3D0C-4C00-8F44-F19A81ECEB90"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "House18",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -13.230209350585938,
+              -12.339985847473145,
+              12.875082969665527
+            ],
+            "Rotation": [
+              0.7009093761444092,
+              0.0,
+              -0.0,
+              0.7132503986358643
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "F8D76AC4-4535-4080-BD8C-85CBEED2C92B",
+            "MeshGUID": "915AB0D9-42B5-4503-8E06-F7617FA134CE",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "A1C0664E-C8ED-458E-BE90-5F1318AAB482"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "ShiganHouse1_1",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              36.977508544921875,
+              8.46151065826416,
+              7.559385776519775
+            ],
+            "Rotation": [
+              0.5000000596046448,
+              0.4999999403953552,
+              0.49999991059303284,
+              -0.5000001192092896
+            ],
+            "Scale": [
+              1.0,
+              0.9999990463256836,
+              0.9999990463256836
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              5.0,
+              5.409999847412109,
+              10.819999694824219
+            ],
+            "Offset": [
+              0.38999998569488525,
+              -1.9500000476837158,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9C1E4ACF-903A-44DF-808B-CBFEF5FF8359",
+            "MeshGUID": "142FB234-4C8C-41B7-BDEF-E87701E3DAA2",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "BC7D347E-009B-4942-951E-E4EED8206CCD",
+      "protoGuid": "6D29042C-E0F1-4C2B-996F-C804E726A3B0",
+      "uuid": "2D5E8D3D-7EB5-4AF8-BEA2-2A5E8D274A20"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "ShiganHouse2",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -13.441863059997559,
+              1.873276710510254,
+              -45.22333526611328
+            ],
+            "Rotation": [
+              2.528055347283953e-07,
+              0.707740843296051,
+              0.7064721584320068,
+              -2.532590031023574e-07
+            ],
+            "Scale": [
+              1.0,
+              0.9999896287918091,
+              0.9999896287918091
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "A9802DDB-A459-4119-8634-7BB32553E362",
+            "MeshGUID": "0E97F0E9-6B2D-4E9E-B4A4-818C2BE8D41E",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "D405838C-A632-4656-8D4B-C00B1239EF3C",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "00E7C3BF-D1D5-4719-8EE9-CB9357AE8423"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "ShiganHouse3",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -49.48335647583008,
+              4.37945556640625,
+              1.2023576498031616
+            ],
+            "Rotation": [
+              -0.6908833384513855,
+              0.0,
+              -0.0,
+              0.7229663133621216
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "4836BC35-7732-416B-B0FC-80B6667A151F",
+            "MeshGUID": "7B323DC8-3F98-409B-8987-13A52DC3A40E",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "508F347C-27E4-43CD-A951-9B851477C01F",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "8A55E832-EE79-4D65-AF4E-95B4C6C7C8D0"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "ShiganHouse4",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              6.181818962097168,
+              1.629072904586792,
+              10.386429786682129
+            ],
+            "Rotation": [
+              0.7104419469833374,
+              -2.7056692488258705e-05,
+              -2.7312120437272824e-05,
+              -0.7037558555603027
+            ],
+            "Scale": [
+              0.9999997615814209,
+              0.9999525547027588,
+              0.9999525547027588
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "C3234E40-F035-423D-8047-B13C9FADBEA2",
+            "MeshGUID": "08AEC2FA-7698-4E0F-B1EA-C68216F8D86D",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "40B4BD30-F3C2-4B0D-A79C-BB964D668E1B",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "AFD4B7A0-FADA-44A2-83AC-58A822CFCB4B"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "CanalTower",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -141.8610382080078,
+              9.999899864196777,
+              52.70000076293945
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9106E5C0-FC02-4799-A4D6-E851EAA58010",
+            "MeshGUID": "5E7F0127-4EFF-4A36-BCD7-585D1F43D309",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "",
+      "protoGuid": "64E99904-301F-4D84-B3A5-67081FBAC702",
+      "uuid": "C346C889-14BF-421D-B7A3-41182A03F31D"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Tree_Oak1",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              26.219379425048828,
+              -30.506338119506836,
+              0.0
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "1B968E1B-896F-469B-A6EB-1D3DEF2919C4",
+            "MeshGUID": "0FAD8326-120F-4292-A90B-A8C5E73019E1",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "",
+      "protoGuid": "EDF6AA8A-02C9-4310-9CBA-1077C54F6F45",
+      "uuid": "A257F0D1-4E16-4DE4-8CBA-C70B47C5BE2F"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Tree_Oak1_Clone",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              3.4412641525268555,
+              -25.58159065246582,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "7DAC693D-CCF5-4B4A-B648-1E94F985495E",
+            "MeshGUID": "F7179574-471E-4BEE-ACB8-906183C4EB8B",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "",
+      "protoGuid": "EDF6AA8A-02C9-4310-9CBA-1077C54F6F45",
+      "uuid": "5A3118D5-0FF1-410C-8717-AE005D4066FF"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Stall1",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              -36.73700714111328,
+              0.0
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "587A58B2-1951-466F-AFF9-334FD128273B",
+            "MeshGUID": "E77F27DE-30B0-4C0A-8D5D-D4A6A9F874B8",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "",
+      "protoGuid": "B27CD023-916C-42D5-86D2-2EF55CA1048E",
+      "uuid": "D39E22F7-8449-4644-93F7-B9F6727BD639"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Stall2",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              1.6860843896865845,
+              0.0
+            ],
+            "Rotation": [
+              0.7009093165397644,
+              0.0,
+              0.0,
+              0.713250458240509
+            ],
+            "Scale": [
+              10.0,
+              10.0,
+              10.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "901B74F5-B6B8-4E54-A144-F03B20230FFA",
+            "MeshGUID": "632B9BC1-62A8-4FF6-AFBB-BA0BE8EA2545",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "",
+      "protoGuid": "E98C6E22-2F9B-4ACE-813D-232D5D836A7F",
+      "uuid": "5F5F9E37-9DA3-4E65-9111-E766A8A49473"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Lantern1",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "2C51353D-912E-4E0F-B1DB-AC9B11552CF0",
+            "MeshGUID": "A238C7FB-1339-423C-B994-F7CFD469E3AE",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "",
+      "protoGuid": "B6E5022A-9753-48DD-9116-647216E1A53E",
+      "uuid": "1E42AEC0-2DAB-4D09-8ADD-78D5170FFADA"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "TrostTerrain",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              800.0,
+              800.0,
+              800.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Dimension": [
+              500.0,
+              500.0
+            ],
+            "Enabled": true,
+            "Infinite": false,
+            "NormalLocal": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Offset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              90.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 2,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "71E2E1AC-8715-44EB-BD22-4E9E141C7268",
+            "MeshGUID": "33333334-3334-3334-3334-333333333334",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00359E54-B060-49DB-BE2C-94ECC75ED936",
+      "uuid": "507D348C-90D0-467E-B719-AB4FE5D2582A"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "==ShiganHouse1==",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "BC7D347E-009B-4942-951E-E4EED8206CCD"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "ShiganHouse1_2",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              36.977508544921875,
+              8.399999618530273,
+              -37.7669792175293
+            ],
+            "Rotation": [
+              0.5000000596046448,
+              0.4999999403953552,
+              0.49999991059303284,
+              -0.5000001192092896
+            ],
+            "Scale": [
+              1.0,
+              0.9999990463256836,
+              0.9999990463256836
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9C1E4ACF-903A-44DF-808B-CBFEF5FF8359",
+            "MeshGUID": "142FB234-4C8C-41B7-BDEF-E87701E3DAA2",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "BC7D347E-009B-4942-951E-E4EED8206CCD",
+      "protoGuid": "6D29042C-E0F1-4C2B-996F-C804E726A3B0",
+      "uuid": "94671C91-4538-4764-9458-D88E692D0E24"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "ShiganHouse1_3",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              36.977508544921875,
+              8.46151065826416,
+              -15.089664459228516
+            ],
+            "Rotation": [
+              0.5000000596046448,
+              0.4999999403953552,
+              0.49999988079071045,
+              -0.5000001192092896
+            ],
+            "Scale": [
+              1.0,
+              0.9999990463256836,
+              0.9999990463256836
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9C1E4ACF-903A-44DF-808B-CBFEF5FF8359",
+            "MeshGUID": "142FB234-4C8C-41B7-BDEF-E87701E3DAA2",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "BC7D347E-009B-4942-951E-E4EED8206CCD",
+      "protoGuid": "6D29042C-E0F1-4C2B-996F-C804E726A3B0",
+      "uuid": "FDBE37FA-2645-47F2-B1E4-738FA6BC5775"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall1",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              168.1077423095703,
+              0.0,
+              25.833641052246094
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.3499999940395355
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "24A5F10B-7800-494E-9666-2B040554E8F3"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "==Wall1_Right==",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "ShiganHouse1_4",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              45.70652770996094,
+              8.46151065826416,
+              7.559383869171143
+            ],
+            "Rotation": [
+              0.5000000596046448,
+              0.4999999403953552,
+              0.49999988079071045,
+              -0.5000001192092896
+            ],
+            "Scale": [
+              1.0,
+              0.9999990463256836,
+              0.9999990463256836
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              5.0,
+              5.409999847412109,
+              10.819999694824219
+            ],
+            "Offset": [
+              0.38999998569488525,
+              -1.9500000476837158,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9C1E4ACF-903A-44DF-808B-CBFEF5FF8359",
+            "MeshGUID": "142FB234-4C8C-41B7-BDEF-E87701E3DAA2",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "BC7D347E-009B-4942-951E-E4EED8206CCD",
+      "protoGuid": "6D29042C-E0F1-4C2B-996F-C804E726A3B0",
+      "uuid": "EA892727-F5B3-45B8-B076-C068A2FE2D68"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "ShiganHouse1_5",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              45.70652770996094,
+              8.46151065826416,
+              -15.110671997070313
+            ],
+            "Rotation": [
+              0.5000000596046448,
+              0.4999999403953552,
+              0.49999988079071045,
+              -0.5000001192092896
+            ],
+            "Scale": [
+              1.0,
+              0.9999990463256836,
+              0.9999990463256836
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              5.0,
+              5.409999847412109,
+              10.819999694824219
+            ],
+            "Offset": [
+              0.38999998569488525,
+              -1.9500000476837158,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9C1E4ACF-903A-44DF-808B-CBFEF5FF8359",
+            "MeshGUID": "142FB234-4C8C-41B7-BDEF-E87701E3DAA2",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "BC7D347E-009B-4942-951E-E4EED8206CCD",
+      "protoGuid": "6D29042C-E0F1-4C2B-996F-C804E726A3B0",
+      "uuid": "A3F54E95-5550-4264-A21B-3F818304E146"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "ShiganHouse1_6",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              45.70652770996094,
+              8.46151065826416,
+              -37.774436950683594
+            ],
+            "Rotation": [
+              0.5000000596046448,
+              0.4999999403953552,
+              0.49999988079071045,
+              -0.5000001192092896
+            ],
+            "Scale": [
+              1.0,
+              0.9999990463256836,
+              0.9999990463256836
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              5.0,
+              5.409999847412109,
+              10.819999694824219
+            ],
+            "Offset": [
+              0.38999998569488525,
+              -1.9500000476837158,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9C1E4ACF-903A-44DF-808B-CBFEF5FF8359",
+            "MeshGUID": "142FB234-4C8C-41B7-BDEF-E87701E3DAA2",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "BC7D347E-009B-4942-951E-E4EED8206CCD",
+      "protoGuid": "6D29042C-E0F1-4C2B-996F-C804E726A3B0",
+      "uuid": "92237E11-768B-4EB0-BF44-D823156D5048"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "ShiganHouse1_7",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              54.51484298706055,
+              8.46151065826416,
+              -37.8114128112793
+            ],
+            "Rotation": [
+              0.5000000596046448,
+              0.4999999403953552,
+              0.49999988079071045,
+              -0.5000001192092896
+            ],
+            "Scale": [
+              1.0,
+              0.9999990463256836,
+              0.9999990463256836
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              5.0,
+              5.409999847412109,
+              10.819999694824219
+            ],
+            "Offset": [
+              0.38999998569488525,
+              -1.9500000476837158,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9C1E4ACF-903A-44DF-808B-CBFEF5FF8359",
+            "MeshGUID": "142FB234-4C8C-41B7-BDEF-E87701E3DAA2",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "BC7D347E-009B-4942-951E-E4EED8206CCD",
+      "protoGuid": "6D29042C-E0F1-4C2B-996F-C804E726A3B0",
+      "uuid": "EC3068FD-A7E0-44D2-B518-13FFD6D83E81"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "==Tower11==",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "76BAE939-61AB-4E05-9C72-39C69E0C1C60"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Tower11_Clone",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              41.89480972290039,
+              20.000574111938477,
+              -2.3629558086395264
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "DBE73B41-B463-4744-B1C1-04BF6463C5E2",
+            "MeshGUID": "5A3523BF-8EE4-4630-95DB-4CFF79DBF6E1",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76BAE939-61AB-4E05-9C72-39C69E0C1C60",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "97788F3D-2648-4443-900C-A04CD899D495"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "ShiganHouse1_8",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              54.51484298706055,
+              8.46151065826416,
+              -15.147417068481445
+            ],
+            "Rotation": [
+              0.5000000596046448,
+              0.4999999403953552,
+              0.49999988079071045,
+              -0.5000001192092896
+            ],
+            "Scale": [
+              1.0,
+              0.9999990463256836,
+              0.9999990463256836
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              5.0,
+              5.409999847412109,
+              10.819999694824219
+            ],
+            "Offset": [
+              0.38999998569488525,
+              -1.9500000476837158,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9C1E4ACF-903A-44DF-808B-CBFEF5FF8359",
+            "MeshGUID": "142FB234-4C8C-41B7-BDEF-E87701E3DAA2",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "BC7D347E-009B-4942-951E-E4EED8206CCD",
+      "protoGuid": "6D29042C-E0F1-4C2B-996F-C804E726A3B0",
+      "uuid": "A22ECC42-A45A-46AE-94A6-7E073D1A0BA2"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "ShiganHouse1_9",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              54.51484298706055,
+              8.46151065826416,
+              7.514134407043457
+            ],
+            "Rotation": [
+              0.5000000596046448,
+              0.4999999403953552,
+              0.49999988079071045,
+              -0.5000001192092896
+            ],
+            "Scale": [
+              1.0,
+              0.9999990463256836,
+              0.9999990463256836
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              5.0,
+              5.409999847412109,
+              10.819999694824219
+            ],
+            "Offset": [
+              0.38999998569488525,
+              -1.9500000476837158,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9C1E4ACF-903A-44DF-808B-CBFEF5FF8359",
+            "MeshGUID": "142FB234-4C8C-41B7-BDEF-E87701E3DAA2",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "BC7D347E-009B-4942-951E-E4EED8206CCD",
+      "protoGuid": "6D29042C-E0F1-4C2B-996F-C804E726A3B0",
+      "uuid": "C502ED52-699B-45FC-92BE-93B70DD08E4E"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "==ShiganHouse2==",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "D405838C-A632-4656-8D4B-C00B1239EF3C"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "==ShiganHouse3==",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "508F347C-27E4-43CD-A951-9B851477C01F"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "==ShiganHouse4==",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "40B4BD30-F3C2-4B0D-A79C-BB964D668E1B"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "==Wall1_Back==",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "F3B452D8-11D6-4609-B975-BA4897D35232"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall2",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              166.41912841796875,
+              0.0,
+              -8.165332794189453
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.3499999940395355
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "C05AF0CB-1C3E-47D9-BE13-A38DDBAB07F6"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall3",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              166.41912841796875,
+              0.0,
+              -42.458534240722656
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.3499999940395355
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "6903FC37-3E48-40F7-913A-4E2D30ABE231"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall4",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              164.0362548828125,
+              0.0,
+              59.66969680786133
+            ],
+            "Rotation": [
+              -0.0,
+              -0.08715575188398361,
+              -0.0,
+              0.9961947798728943
+            ],
+            "Scale": [
+              0.4999990165233612,
+              0.5,
+              0.3499999940395355
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "CE5EE9B4-4DB3-417E-BBC5-8595F3F1ECD0"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall5",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              153.8151092529297,
+              0.0,
+              91.97816467285156
+            ],
+            "Rotation": [
+              0.0,
+              -0.2164396196603775,
+              0.0,
+              0.9762960076332092
+            ],
+            "Scale": [
+              0.4999990165233612,
+              0.5,
+              0.3499999940395355
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "B088FC83-5B38-4DB6-92B2-2218AD5CC67D"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall7",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              104.90401458740234,
+              0.0,
+              147.2284698486328
+            ],
+            "Rotation": [
+              -0.0,
+              -0.537299633026123,
+              -0.0,
+              0.8433914184570313
+            ],
+            "Scale": [
+              0.4999990463256836,
+              0.5,
+              0.3499999940395355
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "15361712-48BC-4AB6-B147-D3C1EF122431"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall6",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              134.9127960205078,
+              0.0,
+              123.04446411132813
+            ],
+            "Rotation": [
+              -0.0,
+              -0.342020183801651,
+              -0.0,
+              0.9396926164627075
+            ],
+            "Scale": [
+              0.4999990463256836,
+              0.5,
+              0.3500000238418579
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "A1BA5809-3890-4110-B1FB-A1E29C6C45FC"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall8",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              71.5568618774414,
+              0.0,
+              159.01852416992188
+            ],
+            "Rotation": [
+              -0.0,
+              -0.6427875757217407,
+              -0.0,
+              0.7660444974899292
+            ],
+            "Scale": [
+              0.4999990463256836,
+              0.5,
+              0.35000079870224
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "7D610F13-2C99-4A2C-93E7-51B073452EC7"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall9",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              41.24764633178711,
+              -9.053517260326771e-07,
+              163.25448608398438
+            ],
+            "Rotation": [
+              1.0628271596146988e-08,
+              -0.7009091973304749,
+              1.0444418663269062e-08,
+              0.7132505774497986
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.3500042259693146
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "4046712D-6564-4222-868B-FB3B0FB9456B"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall10",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              166.41912841796875,
+              0.0,
+              -76.20989227294922
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.3499999940395355
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "4A57CF8A-BF95-420A-B61A-AD7F348C28FE"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall11",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              166.41912841796875,
+              0.0,
+              -110.06407165527344
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.3499999940395355
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "493E588F-1E12-40B5-8423-5AA82A8F695B"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall_B_1",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              131.39234924316406,
+              0.0,
+              -274.2760314941406
+            ],
+            "Rotation": [
+              -0.0,
+              -0.7009090781211853,
+              -0.0,
+              0.7132506370544434
+            ],
+            "Scale": [
+              0.4999999403953552,
+              0.5,
+              0.3500061631202698
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "F3B452D8-11D6-4609-B975-BA4897D35232",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "C0A723A8-29B3-42ED-A359-FFBEC88B051B"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall12",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              166.41912841796875,
+              0.0,
+              -143.9807891845703
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.3499999940395355
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "99E0D0E2-AA38-44CF-AC44-04AC66AA67B5"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Walf13",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              168.1077423095703,
+              0.0,
+              25.833641052246094
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.3499999940395355
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "A81BA0BE-6CC7-48D5-A303-398ABF22CC18"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall_B_2",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              98.6134262084961,
+              0.0,
+              -274.2669982910156
+            ],
+            "Rotation": [
+              0.0,
+              -0.7009089589118958,
+              0.0,
+              0.7132507562637329
+            ],
+            "Scale": [
+              0.4999999403953552,
+              0.5,
+              0.3500078320503235
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "F3B452D8-11D6-4609-B975-BA4897D35232",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "FCF81B7D-7121-4177-93F7-B0AE18A6B6AA"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall_B_3",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              64.90276336669922,
+              0.0,
+              -274.70458984375
+            ],
+            "Rotation": [
+              -0.0,
+              -0.7009090781211853,
+              -0.0,
+              0.7132506370544434
+            ],
+            "Scale": [
+              0.4999999403953552,
+              0.5,
+              0.3500106632709503
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "F3B452D8-11D6-4609-B975-BA4897D35232",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "394344DA-8B2F-4617-8DBF-F111B4D8E7DD"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall_B_4",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              32.546775817871094,
+              0.0,
+              -274.0
+            ],
+            "Rotation": [
+              0.0,
+              -0.7009091377258301,
+              0.0,
+              0.7132506370544434
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.35001134872436523
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "F3B452D8-11D6-4609-B975-BA4897D35232",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "2D630870-41E1-4BA8-A7B4-B0B14C5B829F"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Walf14",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              168.1077423095703,
+              0.0,
+              -243.4164581298828
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.3499999940395355
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "81D507E0-8458-4695-AA39-582B27EA1946"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Walf15",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              168.1077423095703,
+              0.0,
+              -209.83660888671875
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.3499999940395355
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "F3CAC9E4-9B2C-4539-B9AB-8C1845FDF413"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Walf16",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              168.1077423095703,
+              0.0,
+              -177.20603942871094
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.3499999940395355
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "A80CFF70-E0CE-4E73-BF88-5C2F4C5D5125",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "C080A8BB-FF05-4E72-996B-4A91A6815FEB"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall_B_5",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -1.3192131519317627,
+              0.0,
+              -273.4088134765625
+            ],
+            "Rotation": [
+              -0.0,
+              -0.7009090781211853,
+              -0.0,
+              0.7132506370544434
+            ],
+            "Scale": [
+              0.4999999403953552,
+              0.5,
+              0.35001134872436523
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "F3B452D8-11D6-4609-B975-BA4897D35232",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "9D46071F-5F4E-4C45-8786-B0C5A1D67730"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall_B_6",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -35.25069046020508,
+              0.0,
+              -272.8165588378906
+            ],
+            "Rotation": [
+              -0.0,
+              -0.7009090781211853,
+              -0.0,
+              0.7132506370544434
+            ],
+            "Scale": [
+              0.4999999403953552,
+              0.5,
+              0.35001134872436523
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "F3B452D8-11D6-4609-B975-BA4897D35232",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "43FE6324-4936-40DD-ABA2-209B2CBDAC5A"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall_B_7",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -69.2522964477539,
+              0.0,
+              -272.2230224609375
+            ],
+            "Rotation": [
+              -0.0,
+              -0.7009090781211853,
+              -0.0,
+              0.7132506370544434
+            ],
+            "Scale": [
+              0.4999999403953552,
+              0.5,
+              0.35001134872436523
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "F3B452D8-11D6-4609-B975-BA4897D35232",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "C30DF548-2D74-456D-9004-2F44A3C293F4"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Wall_B_8",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -103.0996322631836,
+              0.0,
+              -271.6322021484375
+            ],
+            "Rotation": [
+              -0.0,
+              -0.7009090781211853,
+              -0.0,
+              0.7132506370544434
+            ],
+            "Scale": [
+              0.4999999403953552,
+              0.5,
+              0.35001134872436523
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "50FCA85C-840C-456A-8012-DD51D6652262",
+            "MeshGUID": "92DDA4BE-3016-4381-B32B-FC2AD6317B73",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "F3B452D8-11D6-4609-B975-BA4897D35232",
+      "protoGuid": "58A621B3-97DA-45E0-AFC7-E8397581426E",
+      "uuid": "2891E783-88C4-4AF6-BABD-F40AEC44A6E3"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Character_0327_v2_Proto",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              -310.0081787109375,
+              -0.0858282595872879
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.009999999776482582,
+              0.009999999776482582,
+              0.009999999776482582
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "Offset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "AngularDrag": 0.0,
+            "BodyType": 0,
+            "Drag": 0.0,
+            "Enabled": true,
+            "Friction": 1.0,
+            "Gravity": true,
+            "Mass": 1.0,
+            "PositionLock": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Restitution": 0.0,
+            "RotationLock": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Type": 2
+          },
+          "type": 2
+        },
+        {
+          "data": {
+            "Anchor": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Damper": 0.0,
+            "Enabled": true,
+            "MaxLength": 0.0,
+            "MinLength": 0.0,
+            "RestLength": 0.0,
+            "Spring": 0.0,
+            "Type": 3,
+            "UseMaxLength": false,
+            "UseMinLength": false,
+            "UseSpring": false
+          },
+          "type": 3
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CPlayer",
+              "Fields": [
+                {
+                  "Name": "m_fSpeed",
+                  "Type": 1,
+                  "Value": 0.0
+                }
+              ]
+            },
+            "ScriptGuid": "9A2112D9-2803-4492-B4F0-E005A55C4545",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CCameraController",
+              "Fields": [
+                {
+                  "Name": "m_vOffsetToPlayer",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    5.0,
+                    -15.0
+                  ]
+                },
+                {
+                  "Name": "m_fMouseSensor",
+                  "Type": 1,
+                  "Value": 0.05000000074505806
+                },
+                {
+                  "Name": "m_refCamera",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "7449D15D-B227-413B-98DD-B2889CC6A4A2"
+                  }
+                },
+                {
+                  "Name": "m_refTarget",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "92BA61D7-59D3-443C-AE07-B78E800B80A5"
+                  }
+                }
+              ]
+            },
+            "ScriptGuid": "2F86460A-1D08-4772-B176-DB4B55411D86",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "043DDDE0-023B-4BE8-899B-DB190AF56E01",
+            "MeshGUID": "AF29D8EC-8A4F-4272-BBB8-7D927B5C226C",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        },
+        {
+          "data": {
+            "AnimationClip": 29,
+            "BlendDuration": 0.0,
+            "BlendMap": [],
+            "Enabled": true,
+            "Loop": true,
+            "PlaySpeed": 1.0,
+            "Playing": true,
+            "Type": 6
+          },
+          "type": 6
+        }
+      ],
+      "parent": "",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "92BA61D7-59D3-443C-AE07-B78E800B80A5"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Arm_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "FC959732-24D1-4DF4-B3C0-13A039CFEC04",
+            "MeshGUID": "56877A8C-AA63-4A66-AFC7-0C55D79AC35A",
+            "Mode": 1,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "1C450E54-F3EC-4C91-A40D-859FEBF20051"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Arm_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "45C18129-F0EB-4E69-BD9A-B69B71B97A3B",
+            "MeshGUID": "E68EF54D-AFC3-43E1-8125-C74C9CC2F3C3",
+            "Mode": 1,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "EFA53E87-DE19-4816-A5A8-F2B8E7B742B9"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Uniform",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "D1B261CE-5FC0-4B03-97A3-4194D2E2EB22",
+            "MeshGUID": "9F7DFD06-2063-4CC4-814B-E3AA4AB811C1",
+            "Mode": 1,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "02D4E80E-06FB-47A5-9C17-7EE26B8E9528"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Hand_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "36F34DC4-EF65-482E-B108-D00B93192C24",
+            "MeshGUID": "A56AD4B8-E026-4045-AE33-78AB9A84374B",
+            "Mode": 1,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "1357FECA-BCEE-4D86-B713-5B23D6A76D34"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Hand_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "D0706350-E818-474B-BBA3-46D57B297C68",
+            "MeshGUID": "A8641BB0-E462-4776-B27D-92558A7829A1",
+            "Mode": 1,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "37D210E3-FA5D-45BB-B5CC-E8C5F2C872F6"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Head",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -1.1084050299814407e-07,
+              -0.4526940882205963,
+              0.004272959660738707
+            ],
+            "Rotation": [
+              8.429372400087232e-08,
+              -0.7071065902709961,
+              0.7071069478988647,
+              8.429371689544496e-08
+            ],
+            "Scale": [
+              9.99915599822998,
+              9.999156951904297,
+              9.999156951904297
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "ACF11179-CE93-4239-95F1-96AA5A9684FC",
+            "MeshGUID": "8949521E-D499-44AF-B239-B24840A11F0C",
+            "Mode": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "E65A26DF-5005-4CB1-90A6-ACE0F0B4CEB9"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Hair",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -6.704083066466637e-09,
+              -0.4565916061401367,
+              0.03330454230308533
+            ],
+            "Rotation": [
+              -8.226933090327293e-08,
+              -0.6901249289512634,
+              0.7236903309822083,
+              -8.627061731658614e-08
+            ],
+            "Scale": [
+              0.9999317526817322,
+              0.9999489784240723,
+              0.9999499320983887
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "2518F57D-0160-435E-BC74-2803AD1786D2",
+            "MeshGUID": "F73811B9-C471-4AFF-A6FE-E0FDBCD5BC0E",
+            "Mode": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "7C418D6F-676B-4E87-86BB-02CBD6CE7EA5"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Blade_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -0.002960225800052285,
+              0.004157936666160822,
+              0.39752599596977234
+            ],
+            "Rotation": [
+              -0.19522035121917725,
+              0.1940014511346817,
+              0.6404352784156799,
+              0.7170042395591736
+            ],
+            "Scale": [
+              0.9999536871910095,
+              0.999941349029541,
+              0.9999596476554871
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hand_L",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "3376B10E-974E-4124-AA37-654D0B02848B",
+            "MeshGUID": "A78F05A9-B3E6-4E93-AEE8-31B58F01C689",
+            "Mode": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "6580C50E-380D-42FF-BA8C-D58E19D1C766"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Blade_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -0.0635114386677742,
+              -0.051987070590257645,
+              0.39507463574409485
+            ],
+            "Rotation": [
+              0.14111727476119995,
+              0.17849302291870117,
+              0.7530937790870667,
+              -0.6173135042190552
+            ],
+            "Scale": [
+              0.9999496340751648,
+              0.9998422265052795,
+              0.9999592900276184
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hand_R",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "30A2F8D8-D82F-4652-91DB-0DA4E726129F",
+            "MeshGUID": "23C6D211-6848-438D-8049-7CDE32B49ADE",
+            "Mode": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "911E6601-36F4-40F8-A0CE-271B69C0A649"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Eye",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -1.5428369692926935e-07,
+              -0.45544999837875366,
+              0.007602137513458729
+            ],
+            "Rotation": [
+              8.429864095660378e-08,
+              -0.7071065902709961,
+              0.7071069478988647,
+              8.42986196403217e-08
+            ],
+            "Scale": [
+              0.9999452233314514,
+              0.999945342540741,
+              0.999945342540741
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9D69E97C-1544-428B-825C-63448150F072",
+            "MeshGUID": "58E87C6D-8062-4843-A9F1-010F95828E4D",
+            "Mode": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "6CEB19A3-4766-4491-B2F1-B26AC9CA4758"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "BladeKeeper",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -8.147254249024627e-08,
+              0.07697601616382599,
+              -0.3417205214500427
+            ],
+            "Rotation": [
+              0.0,
+              1.0,
+              0.0,
+              -1.1920930376163597e-07
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "701E9B21-40B1-4D46-BA4E-058DC2E442B9",
+            "MeshGUID": "78C089B3-C458-4D90-8C2F-266CE1053956",
+            "Mode": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "46400C19-D05E-4AF1-A702-AFD0C279234B"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "DMG",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              -0.012969084084033966,
+              0.18344935774803162
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "F3CE0944-B675-4D3C-8C95-2D093C73F590",
+            "MeshGUID": "6BF314FB-5574-4D72-99C6-D318485FC472",
+            "Mode": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "9905C514-C598-487F-8930-CE2EC9E7A65D"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Scabbard_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -0.2082422971725464,
+              0.03324108570814133,
+              -0.12694098055362701
+            ],
+            "Rotation": [
+              1.0,
+              0.0,
+              0.0,
+              -1.1920930376163597e-07
+            ],
+            "Scale": [
+              0.9999998807907104,
+              0.9999993443489075,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "2694B57E-5771-4DD9-942D-1B9484DFDE0C",
+            "MeshGUID": "E815657E-FDD6-4E74-81CE-631163BB04B8",
+            "Mode": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "9EC8341F-3C51-41CA-BE2B-86D9503A8AB2"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Scabbard_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.20741751790046692,
+              0.03742123395204544,
+              -0.13531380891799927
+            ],
+            "Rotation": [
+              0.9999996423721313,
+              -1.0402905620265912e-10,
+              -0.0008726637461222708,
+              -1.1920840847778891e-07
+            ],
+            "Scale": [
+              0.9999964237213135,
+              1.000007152557373,
+              1.000007152557373
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "926AE4BD-9C98-4332-877E-EF50EDB9AAA9",
+            "MeshGUID": "2CCB16A0-B81D-4CA4-B9FD-E8AC216D0E78",
+            "Mode": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "E4B3A2A1-56B4-48AC-AE79-BCD5CBC8BE40"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "ODM_Gear",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ScriptGuid": "C349C310-2C82-40D2-96F0-9A35BEF5A981",
+            "Type": 4
+          },
+          "type": 4
+        }
+      ],
+      "parent": "92BA61D7-59D3-443C-AE07-B78E800B80A5",
+      "protoGuid": "8996B658-CB7E-4FC3-AA67-BEC41A490453",
+      "uuid": "C5AB8D85-850B-4E69-9BE6-F3C4787485B1"
+    },
+    {
+      "isUI": false,
+      "layer": 0,
+      "name": "Camera_Proto",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              -297.1530456542969,
+              -14.31607723236084
+            ],
+            "Rotation": [
+              0.16018199920654297,
+              0.0,
+              -0.0,
+              0.9870875477790833
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Aspect": 1.7777777910232544,
+            "Enabled": 1,
+            "Far": 1000.0,
+            "Fovy": 60.0,
+            "LayerMask": 4294967295,
+            "Near": 0.10000000149011612,
+            "Ortho": false,
+            "OrthoSize": 5.0,
+            "Type": 7
+          },
+          "type": 7
+        }
+      ],
+      "parent": "",
+      "protoGuid": "5059ED01-129B-4C4A-9B1A-5C2132013378",
+      "uuid": "7449D15D-B227-413B-98DD-B2889CC6A4A2"
+    }
+  ],
+  "version": 1
+}

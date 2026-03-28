@@ -3,6 +3,15 @@
 
 NS_BEGIN(Client)
 
+CRope::CRope(SIDE eSide)
+    : m_eSide(eSide)
+{
+}
+
+CRope::~CRope()
+{
+}
+
 void CRope::Initialize()
 {
     m_upLine = GAME_INSTANCE.Load_LineMesh(m_iNumPoints, 0.3f);
@@ -23,7 +32,7 @@ void CRope::Update(_float fTimeDelta)
         m_RopePoints.clear();
         break;
 
-    case ROPE_STATE::EXTENDING:
+    case ROPE_STATE::EXTENDING_SUCCESS: case ROPE_STATE::EXTENDING_FAIL :
         Process_Extending(fTimeDelta);
         break;
 
@@ -53,32 +62,45 @@ void CRope::Render()
     m_upLine->Submit();
 }
 
-void CRope::Set_StartPoint(const _float3& vStartPoint)
+void CRope::Start_Extending_Success(_fvector vStartPoint, _fvector vAnchorPoint)
 {
-    m_vStartPoint = vStartPoint;
-}
+    XMStoreFloat3(&m_vStartPoint, vStartPoint);
+    XMStoreFloat3(&m_vCurDynamicPos, vStartPoint);
+    XMStoreFloat3(&m_vEndPoint, vAnchorPoint);
 
-void CRope::Set_EndPoint(const _float3& vEndPoint)
-{
-    m_vEndPoint = vEndPoint;
-}
-
-void CRope::Start_Extending(const _float3& vStartPoint, const _float3& vAnchorPoint)
-{
-    m_vStartPoint = vStartPoint;
-    m_vEndPoint = vAnchorPoint;
-    m_vCurDynamicPos = vStartPoint;
-
-    _vector vDir = Math::Load(vAnchorPoint) - Math::Load(vStartPoint);
-    if (Math::Get_X(XMVector3LengthSq(vDir)) <= 1e-6f)
+    _vector vDir = vAnchorPoint - vStartPoint;
+    if (XMVectorGetX(XMVector3LengthSq(vDir)) <= 1e-6f)
         vDir = Math::Set_Vec(0.f, 0.f, 1.f, 0.f);
 
-    Math::Store(m_vTrialDir, Math::Normalize(vDir));
+    XMStoreFloat3(&m_vTrialDir, XMVector4Normalize(vDir));
 
     m_tDynamicValue.Reset();
     m_tDynamicValue.fTarget = 1.f;
 
-    m_State = ROPE_STATE::EXTENDING;
+    m_State = ROPE_STATE::EXTENDING_SUCCESS;
+}
+
+void CRope::Start_Extending_Fail(_fvector vStartPoint, _fvector vRopeDir)
+{
+    XMStoreFloat3(&m_vStartPoint, vStartPoint);
+    XMStoreFloat3(&m_vCurDynamicPos, vStartPoint);
+    XMStoreFloat3(&m_vEndPoint, vStartPoint + vRopeDir * m_fRopMaxLength);
+
+    _vector vDir = XMLoadFloat3(&m_vEndPoint) - vStartPoint;
+    if (XMVectorGetX(XMVector3LengthSq(vDir)) <= 1e-6f)
+        vDir = Math::Set_Vec(0.f, 0.f, 1.f, 0.f);
+
+    XMStoreFloat3(&m_vTrialDir, XMVector4Normalize(vDir));
+
+    m_tDynamicValue.Reset();
+    m_tDynamicValue.fTarget = 1.f;
+
+    m_State = ROPE_STATE::EXTENDING_FAIL;
+}
+
+void CRope::Set_StartPoint(const _float3& vStartPoint)
+{
+    m_vStartPoint = vStartPoint;
 }
 
 void CRope::Set_Anchored(const _float3& vStartPoint, const _float3& vAnchorPoint)
@@ -90,15 +112,18 @@ void CRope::Set_Anchored(const _float3& vStartPoint, const _float3& vAnchorPoint
     m_State = ROPE_STATE::ANCHORED;
 }
 
-void CRope::Start_Returning(const _float3& vStartPoint)
+void CRope::Start_Returning(const _float3& vReturnTarget)
 {
-    m_vStartPoint = vStartPoint;
+    const _vector vCur = Math::Load(m_vCurDynamicPos);   /* 지금 줄 끝 */ 
+    const _vector vTarget = Math::Load(vReturnTarget);   /* 돌아갈 원래 시작점 */ 
 
-    _vector vDir = Math::Load(vStartPoint) - Math::Load(m_vCurDynamicPos);
+    m_vEndPoint = vReturnTarget;
+
+    _vector vDir = vTarget - vCur;
     if (Math::Get_X(XMVector3LengthSq(vDir)) <= 1e-6f)
         vDir = Math::Set_Vec(0.f, 0.f, 1.f, 0.f);
 
-    Math::Store(m_vTrialDir, Math::Normalize(vDir));
+    XMStoreFloat3(&m_vTrialDir, Math::Normalize(vDir));
 
     m_tDynamicValue.Reset();
     m_tDynamicValue.fTarget = 1.f;
@@ -129,12 +154,21 @@ void CRope::Process_Extending(_float fTimeDelta)
     const _vector vCurDir = vAnchor - vCurDynamicPos;
     const _float fDot = Math::Get_X(XMVector3Dot(vCurDir, vTrialDir));
 
+    /* 목표 지점 도달 */
     if (fDist < 1.f || fDot < 0.f)
     {
         m_vCurDynamicPos = m_vEndPoint;
-        m_State = ROPE_STATE::ANCHORED;
-
-        m_OnChanged_RopeState.Invoke(ROPE_STATE::ANCHORED);
+        if (m_State == ROPE_STATE::EXTENDING_SUCCESS)
+        {
+            m_State = ROPE_STATE::ANCHORED;
+            m_OnChanged_RopeState.Invoke(ROPE_STATE::ANCHORED, m_eSide);
+            return;
+        }
+        if (m_State == ROPE_STATE::EXTENDING_FAIL)
+        {
+            Start_Returning(m_vStartPoint);
+            m_OnChanged_RopeState.Invoke(ROPE_STATE::RETURNING, m_eSide);
+        }
     }
 }
 
@@ -154,7 +188,7 @@ void CRope::Process_Retuning(_float fTimeDelta)
         m_State = ROPE_STATE::IDLE;
         m_RopePoints.clear();
 
-        m_OnChanged_RopeState.Invoke(ROPE_STATE::IDLE);
+        m_OnChanged_RopeState.Invoke(ROPE_STATE::IDLE, m_eSide);
     }
 }
 
@@ -240,13 +274,13 @@ void CRope::Upload_Line()
     if (m_RopePoints.size() < 2)
         return;
 
-    m_upLine->Update(m_RopePoints.data(), static_cast<_uint>(m_RopePoints.size()));
+    m_upLine->Update(m_RopePoints.data(), To<_uint>(m_RopePoints.size()));
     m_upLine->Submit();
 }
 
-std::unique_ptr<CRope> CRope::Create()
+std::unique_ptr<CRope> CRope::Create(SIDE eSide)
 {
-    std::unique_ptr<CRope> upRope = std::make_unique<CRope>();
+    std::unique_ptr<CRope> upRope = std::make_unique<CRope>(eSide);
     upRope->Initialize();
     return upRope;
 }

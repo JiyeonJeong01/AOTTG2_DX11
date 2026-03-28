@@ -3,10 +3,11 @@
 #include "Input_System.h"
 #include "Raycast.h"
 #include "Rope.h"
+#include "Player_Struct.h"
 
 NS_BEGIN(Client)
 
-void CODM_Gear::Handle_RopeState(CRope::ROPE_STATE eState)
+void CODM_Gear::Handle_RopeState(CRope::ROPE_STATE eState, SIDE eSide)
 {
     if (eState == CRope::ROPE_STATE::ANCHORED)
     {
@@ -15,11 +16,15 @@ void CODM_Gear::Handle_RopeState(CRope::ROPE_STATE eState)
         m_sj.Set_UseSpring(true);
         m_sj.Set_Spring(m_fSpring);
         m_sj.Set_Spring(m_fDamper);
-    }
-}
 
-void CODM_Gear::Is_Anchorable()
-{
+        m_OnSuccessAnchored.Invoke(To<_uint>(PLAYER_STATE::AIRBORNE));
+    }
+
+    /* 사용 상태 갱신 */
+    if (eState == CRope::ROPE_STATE::ANCHORED)
+        m_flagUsingSide |= To<_uint>(eSide);
+    else if (eState == CRope::ROPE_STATE::RETURNING)
+        m_flagUsingSide &= ~To<_uint>(eSide);
 }
 
 Engine::CGameObject* CODM_Gear::Find_Owner()
@@ -36,7 +41,7 @@ Engine::CGameObject* CODM_Gear::Find_Owner()
     return m_pOwner;
 }
 
-void CODM_Gear::Try_Grappling()
+void CODM_Gear::Try_Grappling(SIDE eSide)
 {
     if (!m_pOwner)
     {
@@ -44,9 +49,60 @@ void CODM_Gear::Try_Grappling()
         return;
     }
 
+    TYR_GRAPPLING_INFO tInfo{};
+
+    /* 성공한 경우 */
+    if (m_upLeftRope && Detect_GrapplingPoint(tInfo))
+    {
+        m_vAnchor = tInfo.vPoint;
+        m_upLeftRope->Start_Extending_Success(XMLoadFloat3(&m_tr->vPosition), XMLoadFloat3(&m_vAnchor));
+
+        m_flagUsingSide |= To<_uint>(eSide);
+    }
+    /* 실패한 경우 */
+    else
+    {
+        /* 실패하여 앵커 위치가 없는 경우 발사 방향을 찾아 넘기기 */
+        _vector vTryPos = XMLoadFloat3(&tInfo.vCamOrigin) + XMLoadFloat3(&tInfo.vRayDir) * m_fRopeMaxDist;
+        _vector vTryDir = XMVector4Normalize(vTryPos - XMLoadFloat3(&m_tr->vPosition));
+
+        m_upLeftRope->Start_Extending_Fail(XMLoadFloat3(&m_tr->vPosition), vTryDir);
+    }
+}
+
+void CODM_Gear::Finish_Grappling()
+{
+    m_upLeftRope->Stop();
+    m_sj.Set_UseSpring(false);
+}
+
+_bool CODM_Gear::Detect_GrapplingPoint(TYR_GRAPPLING_INFO& tInfo)
+{
     POINT pt = SYS_INPUT.Get_GameCenterPos();
     RAY tRay{ };
-    tRay.fMaxDist = 1000.f;
+    tRay.fMaxDist = m_fRopeMaxDist;
+    tRay.fMinDist = 0.f;
+    RAYCAST_HITS allHits;
+
+    GAME_INSTANCE.RaycastAll(pt, tRay, allHits);
+
+    tInfo.vCamOrigin = tRay.vOrigin;
+    tInfo.vRayDir = tRay.vDir;
+
+    if (allHits.iNumHits > 0)
+    {
+        tInfo.vPoint = allHits.primaryHit.vHitPos;
+        tInfo.fDist = allHits.primaryHit.fDist;
+        return true;
+    }
+    return false;
+}
+
+_bool CODM_Gear::Detect_GrapplingDist(_float* fDist)
+{
+    POINT pt = SYS_INPUT.Get_GameCenterPos();
+    RAY tRay{ };
+    tRay.fMaxDist = 200.f;
     tRay.fMinDist = 0.f;
     RAYCAST_HITS allHits;
 
@@ -54,15 +110,15 @@ void CODM_Gear::Try_Grappling()
 
     if (allHits.iNumHits > 0)
     {
-        m_vAnchor = allHits.primaryHit.vHitPos;
-        m_upRope->Start_Extending(m_tr->vPosition, m_vAnchor);
+        *fDist = allHits.primaryHit.fDist;
+        return true;
     }
+    return false;
 }
 
-void CODM_Gear::Finish_Grappling()
+_uint CODM_Gear::Get_UsingFlag()
 {
-    m_upRope->Stop();
-    m_sj.Set_UseSpring(false);
+    return m_flagUsingSide;
 }
 
 void CODM_Gear::Awake(void* pCtx)
@@ -73,9 +129,10 @@ void CODM_Gear::Start(void* pCtx)
 {
     Find_Owner();
 
-    m_upRope = CRope::Create();
-
-    m_upRope->Subscribe_On_RopeState_Changed(&CODM_Gear::Handle_RopeState, this);
+    m_upLeftRope = CRope::Create(SIDE::LEFT);
+    m_upLeftRope->Subscribe_On_RopeState_Changed(&CODM_Gear::Handle_RopeState, this);
+    m_upLeftRope = CRope::Create(SIDE::RIGHT);
+    m_upLeftRope->Subscribe_On_RopeState_Changed(&CODM_Gear::Handle_RopeState, this);
 }
 
 void CODM_Gear::Priority_Update(void* pCtx, _float fDT)
@@ -84,10 +141,11 @@ void CODM_Gear::Priority_Update(void* pCtx, _float fDT)
 
 void CODM_Gear::Update(void* pCtx, _float fDT)
 {
-    if (m_upRope)
+    /* 로프 시작 위치 갱신 */
+    if (m_upLeftRope)
     {
-        m_upRope->Set_StartPoint(m_tr->vPosition);
-        m_upRope->Update(fDT);
+        m_upLeftRope->Set_StartPoint(m_tr->vPosition);
+        m_upLeftRope->Update(fDT);
     }
 }
 

@@ -3,7 +3,8 @@
 #include "Engine_Log.h"
 
 NS_BEGIN(Engine)
-    inline std::filesystem::path Make_MetaPath(const std::filesystem::path& assetPath)
+
+inline std::filesystem::path Make_MetaPath(const std::filesystem::path& assetPath)
 {
     return assetPath.string() + ".meta";
 }

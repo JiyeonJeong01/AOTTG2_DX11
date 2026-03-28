@@ -1,0 +1,1015 @@
+{
+  "prototype": {
+    "children": [
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "FC959732-24D1-4DF4-B3C0-13A039CFEC04",
+                "MeshGUID": "56877A8C-AA63-4A66-AFC7-0C55D79AC35A",
+                "Mode": 1,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Arm_Left"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "45C18129-F0EB-4E69-BD9A-B69B71B97A3B",
+                "MeshGUID": "E68EF54D-AFC3-43E1-8125-C74C9CC2F3C3",
+                "Mode": 1,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Arm_Right"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "D1B261CE-5FC0-4B03-97A3-4194D2E2EB22",
+                "MeshGUID": "9F7DFD06-2063-4CC4-814B-E3AA4AB811C1",
+                "Mode": 1,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Uniform"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "36F34DC4-EF65-482E-B108-D00B93192C24",
+                "MeshGUID": "A56AD4B8-E026-4045-AE33-78AB9A84374B",
+                "Mode": 1,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Hand_Left"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "D0706350-E818-474B-BBA3-46D57B297C68",
+                "MeshGUID": "A8641BB0-E462-4776-B27D-92558A7829A1",
+                "Mode": 1,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Hand_Right"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  -1.1084050299814407e-07,
+                  -0.4526940882205963,
+                  0.004272959660738707
+                ],
+                "Rotation": [
+                  8.429372400087232e-08,
+                  -0.7071065902709961,
+                  0.7071069478988647,
+                  8.429371689544496e-08
+                ],
+                "Scale": [
+                  9.99915599822998,
+                  9.999156951904297,
+                  9.999156951904297
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "head",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "ACF11179-CE93-4239-95F1-96AA5A9684FC",
+                "MeshGUID": "8949521E-D499-44AF-B239-B24840A11F0C",
+                "Mode": 2,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Head"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  -6.704083066466637e-09,
+                  -0.4565916061401367,
+                  0.03330454230308533
+                ],
+                "Rotation": [
+                  -8.226933090327293e-08,
+                  -0.6901249289512634,
+                  0.7236903309822083,
+                  -8.627061731658614e-08
+                ],
+                "Scale": [
+                  0.9999317526817322,
+                  0.9999489784240723,
+                  0.9999499320983887
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "head",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "2518F57D-0160-435E-BC74-2803AD1786D2",
+                "MeshGUID": "F73811B9-C471-4AFF-A6FE-E0FDBCD5BC0E",
+                "Mode": 2,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Hair"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  -0.002960225800052285,
+                  0.004157936666160822,
+                  0.39752599596977234
+                ],
+                "Rotation": [
+                  -0.19522035121917725,
+                  0.1940014511346817,
+                  0.6404352784156799,
+                  0.7170042395591736
+                ],
+                "Scale": [
+                  0.9999536871910095,
+                  0.999941349029541,
+                  0.9999596476554871
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "hand_L",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "3376B10E-974E-4124-AA37-654D0B02848B",
+                "MeshGUID": "A78F05A9-B3E6-4E93-AEE8-31B58F01C689",
+                "Mode": 2,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Blade_Left"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  -0.0635114386677742,
+                  -0.051987070590257645,
+                  0.39507463574409485
+                ],
+                "Rotation": [
+                  0.14111727476119995,
+                  0.17849302291870117,
+                  0.7530937790870667,
+                  -0.6173135042190552
+                ],
+                "Scale": [
+                  0.9999496340751648,
+                  0.9998422265052795,
+                  0.9999592900276184
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "hand_R",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "30A2F8D8-D82F-4652-91DB-0DA4E726129F",
+                "MeshGUID": "23C6D211-6848-438D-8049-7CDE32B49ADE",
+                "Mode": 2,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Blade_Right"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  -1.5428369692926935e-07,
+                  -0.45544999837875366,
+                  0.007602137513458729
+                ],
+                "Rotation": [
+                  8.429864095660378e-08,
+                  -0.7071065902709961,
+                  0.7071069478988647,
+                  8.42986196403217e-08
+                ],
+                "Scale": [
+                  0.9999452233314514,
+                  0.999945342540741,
+                  0.999945342540741
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "head",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "9D69E97C-1544-428B-825C-63448150F072",
+                "MeshGUID": "58E87C6D-8062-4843-A9F1-010F95828E4D",
+                "Mode": 2,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Eye"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  -8.147254249024627e-08,
+                  0.07697601616382599,
+                  -0.3417205214500427
+                ],
+                "Rotation": [
+                  0.0,
+                  1.0,
+                  0.0,
+                  -1.1920930376163597e-07
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "hip",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "701E9B21-40B1-4D46-BA4E-058DC2E442B9",
+                "MeshGUID": "78C089B3-C458-4D90-8C2F-266CE1053956",
+                "Mode": 2,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "BladeKeeper"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  -0.012969084084033966,
+                  0.18344935774803162
+                ],
+                "Rotation": [
+                  -0.0,
+                  0.0,
+                  -0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "hip",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "F3CE0944-B675-4D3C-8C95-2D093C73F590",
+                "MeshGUID": "6BF314FB-5574-4D72-99C6-D318485FC472",
+                "Mode": 2,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "DMG"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  -0.2082422971725464,
+                  0.03324108570814133,
+                  -0.12694098055362701
+                ],
+                "Rotation": [
+                  1.0,
+                  0.0,
+                  0.0,
+                  -1.1920930376163597e-07
+                ],
+                "Scale": [
+                  0.9999998807907104,
+                  0.9999993443489075,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "hip",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "2694B57E-5771-4DD9-942D-1B9484DFDE0C",
+                "MeshGUID": "E815657E-FDD6-4E74-81CE-631163BB04B8",
+                "Mode": 2,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Scabbard_Left"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.20741751790046692,
+                  0.03742123395204544,
+                  -0.13531380891799927
+                ],
+                "Rotation": [
+                  0.9999996423721313,
+                  -1.0402905620265912e-10,
+                  -0.0008726637461222708,
+                  -1.1920840847778891e-07
+                ],
+                "Scale": [
+                  0.9999964237213135,
+                  1.000007152557373,
+                  1.000007152557373
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "hip",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "926AE4BD-9C98-4332-877E-EF50EDB9AAA9",
+                "MeshGUID": "2CCB16A0-B81D-4CA4-B9FD-E8AC216D0E78",
+                "Mode": 2,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "isUI": false,
+        "name": "Scabbard_Right"
+      }
+    ],
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              -0.0858282595872879
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.009999999776482582,
+              0.009999999776482582,
+              0.009999999776482582
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "Offset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Type": 1
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "AngularDrag": 0.0,
+            "BodyType": 0,
+            "Drag": 0.0,
+            "Enabled": true,
+            "Friction": 1.0,
+            "Gravity": true,
+            "Mass": 1.0,
+            "PositionLock": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Restitution": 0.0,
+            "RotationLock": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Type": 2
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "Anchor": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Damper": 0.0,
+            "Enabled": true,
+            "MaxLength": 0.0,
+            "MinLength": 0.0,
+            "RestLength": 0.0,
+            "Spring": 0.0,
+            "Type": 3,
+            "UseMaxLength": false,
+            "UseMinLength": false,
+            "UseSpring": false
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CPlayer",
+              "Fields": [
+                {
+                  "Name": "m_fSpeed",
+                  "Type": 1,
+                  "Value": 0.0
+                }
+              ]
+            },
+            "ScriptGuid": "9A2112D9-2803-4492-B4F0-E005A55C4545",
+            "Type": 4
+          }
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CCameraController",
+              "Fields": [
+                {
+                  "Name": "m_vOffsetToPlayer",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    5.0,
+                    -15.0
+                  ]
+                },
+                {
+                  "Name": "m_fMouseSensor",
+                  "Type": 1,
+                  "Value": 0.05000000074505806
+                },
+                {
+                  "Name": "m_refCamera",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "0EDD1A03-3B89-4ABF-AA97-4716C7306A8A"
+                  }
+                },
+                {
+                  "Name": "m_refTarget",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "4395304D-FAC4-4C5C-AC3F-7E9548568138"
+                  }
+                }
+              ]
+            },
+            "ScriptGuid": "2F86460A-1D08-4772-B176-DB4B55411D86",
+            "Type": 4
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "043DDDE0-023B-4BE8-899B-DB190AF56E01",
+            "MeshGUID": "AF29D8EC-8A4F-4272-BBB8-7D927B5C226C",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "AnimationClip": 29,
+            "BlendDuration": 0.0,
+            "BlendMap": [],
+            "Enabled": true,
+            "Loop": true,
+            "PlaySpeed": 1.0,
+            "Playing": true,
+            "Type": 6
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "isUI": false,
+    "name": "Character_0327_v1"
+  },
+  "version": 1
+}

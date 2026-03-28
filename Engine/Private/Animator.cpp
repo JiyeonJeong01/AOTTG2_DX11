@@ -3,7 +3,8 @@
 #include "Animator_Processor.h"
 
 NS_BEGIN(Engine)
-    void CAnimator::Set_Loop(_bool bLoop)
+
+void CAnimator::Set_Loop(_bool bLoop)
 {
     if (!m_pData)
         return;
@@ -47,6 +48,8 @@ void CAnimator::Stop()
 {
     if (!m_pData)
         return;
+
+    int a = 1;
 
     m_pData->bPlaying = false;
     m_pData->fTrackPosition = 0.f;

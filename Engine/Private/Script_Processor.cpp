@@ -8,18 +8,21 @@ HRESULT CScript_Processor::Initialize()
 {
     /* 팩토리 등록 */
     {
-        SYS_COMPONENT.Register_InitialSpecFactory<CScript, SCRIPT_DATA>();
+        SYS_COMPONENT.Register_InitialSpecFactory<CScript, SCRIPT_SPEC>();
         SYS_COMPONENT.Register_BuildSpecFacotry<CScript>();
     }
 
     m_Pool.Subscribe_OnDeallocate(&CScript_Processor::Reset_Data_On_Deallocate, this);
 
     if (m_Types.empty()) m_Types.resize(1); // typeId=0 invalid
+
     return S_OK;
 }
 
 void CScript_Processor::Update(_float fDT)
 {
+    Flush_PendingAwake();
+
     /* Priority_Update */
     {
         auto& ticks = m_Ticks[SCAST(uint8_t, SCRIPT_TICK::PRIORITY)];
@@ -33,7 +36,6 @@ void CScript_Processor::Update(_float fDT)
             if (iTypeID == 0 || iTypeID >= m_Types.size())
                 continue;
 
-            Ensure_Awake(*pData, m_Types[iTypeID]);
             Ensure_Start(*pData, m_Types[iTypeID]);
 
             if (ticks[i].fn)
@@ -119,6 +121,7 @@ HRESULT CScript_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONE
     if (pScriptInstance && false == spec->exposedFields.is_null() && false == spec->exposedFields.empty())
         pScriptInstance->Load_Exposed_Fields(spec->exposedFields);
 
+
     return S_OK;
 }
 
@@ -174,8 +177,8 @@ void CScript_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hCo
 
         if (!pData->pState) /* State가 없으면 만들어주기 */
             Create_State_If_Needed(hComponent, pData);
-
-        Add_To_TickLists(hComponent, *pData);
+        else
+            Add_To_TickLists(hComponent, *pData);
     }
     else
     {
@@ -352,18 +355,14 @@ void CScript_Processor::Create_State_If_Needed(COMPONENT_HANDLE hScript, SCRIPT_
 
     const _bool created = (pData->pState == nullptr);
 
-    if (created) /* 비어있다면 State(TScript) 생성 */
+    if (created)
     {
         pData->pState = vt.Create();
         SCAST(IScript*, pData->pState)->Set_Owner(pData->hObject);
 
         if (vt.Awake)
-        {
-            vt.Awake(pData->pState, m_ctx);
-            pData->iFlags |= SCRIPT_FLAG_AWOKEN;
-        }
+            m_PendingAwake_Script.push_back(PENDING_SCRIPT{ hScript, typeId });
 
-        /* state를 처음 만들었고, Enable 상태라면 최초 1회만 TickList 등록 */
         if (pData->bEnable)
             Add_To_TickLists(hScript, *pData);
     }
@@ -394,6 +393,33 @@ void CScript_Processor::Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, SCRIP
     pData->bEnable = false;
     pData->iTypeID = 0;
     pData->iFlags = 0;
+}
+
+void CScript_Processor::Flush_PendingAwake()
+{
+    for (auto script : m_PendingAwake_Script)
+    {
+        if (script.iTypeIndex >= m_Types.size())
+            continue;
+
+        SCRIPT_DATA* pData = m_Pool.Get_Data_By_Handle(script.hScript);
+        if (!pData)
+            continue;
+
+        if (!pData->pState)
+            continue;
+
+        if (!m_Types[script.iTypeIndex].vt.Awake)
+            continue;
+
+        auto& vt = m_Types[script.iTypeIndex].vt;
+        if (!vt.Awake)
+            continue;
+
+        vt.Awake(pData->pState, m_ctx);
+        pData->iFlags |= SCRIPT_FLAG_AWOKEN;
+    }
+    m_PendingAwake_Script.clear();
 }
 
 
