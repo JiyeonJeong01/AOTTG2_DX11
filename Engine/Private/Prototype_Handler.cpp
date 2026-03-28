@@ -120,6 +120,7 @@ void CPrototype_Handler::Build_PrototypeSpec_From_Object(CGameObject* pObj, PROT
 {
     outSpec.strName = pObj->Get_Label();
     outSpec.isUI = pObj->Get_Handle().Is_UI();
+    outSpec.iObjMask = pObj->Get_Mask();
     outSpec.tComponentBundle.Clear_All();
     outSpec.vecChildren.clear();
 
@@ -206,6 +207,8 @@ json CPrototype_Handler::Serialize_PrototypeSpec(const PROTOTYPE_SPEC& tSpec)
         jComponents.push_back(std::move(jSlot)); // 이게 핵심
     }
 
+    j["iObjMask"] = tSpec.iObjMask;
+
     j["components"] = std::move(jComponents);
 
     if (!tSpec.vecChildren.empty())
@@ -267,6 +270,7 @@ _bool CPrototype_Handler::Deserialize_PrototypeSpec(const json& j, PROTOTYPE_SPE
 {
     outSpec.strName = j.value("name", "Prototype");
     outSpec.isUI = j.value("isUI", false);
+    outSpec.iObjMask = j.value("iObjMask", 0);
 
     /* 컴포넌트 번들 초기화 */
     outSpec.tComponentBundle.Clear_All();

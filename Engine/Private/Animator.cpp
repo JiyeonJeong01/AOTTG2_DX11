@@ -4,12 +4,30 @@
 
 NS_BEGIN(Engine)
 
-void CAnimator::Set_Loop(_bool bLoop)
+void CAnimator::Set_Loop(_bool bLoop, const std::string& strAnimClip)
 {
     if (!m_pData)
         return;
 
-    m_pData->bLoop = bLoop;
+    if (m_pData->NameToClipIndex.size() == 0 && m_pData->pAnimator_Processor)
+        m_pData->pAnimator_Processor->Try_Build_ClipNameMap(m_pData);
+
+    if (m_pData->NameToClipIndex.size() == 0)
+        return;
+
+    auto it = m_pData->NameToClipIndex.find(strAnimClip);
+    if (it == m_pData->NameToClipIndex.end())
+        return;
+
+    uint32_t iClip = it->second;
+
+    Set_Loop(bLoop, iClip);
+}
+
+void CAnimator::Set_Loop(_bool bLoop, uint32_t iAnimClip)
+{
+    if (m_pData->pAnimator_Processor)
+        m_pData->pAnimator_Processor->Set_Loop(m_pData, iAnimClip, bLoop);
 }
 
 _bool CAnimator::Is_Playing() const
@@ -147,7 +165,6 @@ void CAnimator::Set_NextAnimationClip(uint32_t iNextAnimClip)
 
     m_pData->fBlendElapsed = 0.f;
     m_pData->iNextAnimationClip = iNextAnimClip;
-    m_pData->bIsBlending = true;
 
     m_pData->fBlendDuration = m_pData->pAnimator_Processor->Get_BlendDuration(
         m_pData,

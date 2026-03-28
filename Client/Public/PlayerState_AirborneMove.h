@@ -23,8 +23,15 @@ public:
 
     AIRBORNE_STATE          m_eState = AIRBORNE_STATE::AIR_BEGIN;
 
+private :
+    void On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData);
+    void On_AirFinished(const Engine::ANIMATION_EVENT_DATA& tData);
+    void On_AirFallFinished(const Engine::ANIMATION_EVENT_DATA& tData);
+
 public:
     static std::shared_ptr<CPlayerState_AirborneMove> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
 };
+
+
 
 NS_END

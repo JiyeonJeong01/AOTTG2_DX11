@@ -17,7 +17,8 @@ public:
     void Render();
 
 protected:
-    OBJECT_HANDLE     m_hSelf{};
+    OBJECT_HANDLE       m_hSelf{};
+    uint32_t            m_iMask{};
 
 public:
     /* Components */
@@ -53,6 +54,16 @@ public:
     /* etc */
     void                        Set_Enable(_bool bActive);
     _bool                       Get_Enabled() const;
+
+    template <typename T>
+    void                        Add_Mask(T eMask);
+    template <typename T>
+    void                        Remove_Mask(T eMask);
+    template <typename T>
+    bool                        Has_Mask(T eMask) const;
+    template <typename T>
+    void                        Set_Mask(T eMask);
+    uint32_t                    Get_Mask() const;
 
     void                        Set_ComponentMask(Component::COMPONENT_MASK mask);
     Component::COMPONENT_MASK   Get_ComponentMask() const;

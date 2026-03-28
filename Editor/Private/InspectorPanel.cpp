@@ -31,6 +31,9 @@
 #include "UI_Processor.h"
 #include "MeshRenderer_Processor.h"
 
+#include "Client_Define.h"
+#include "magic_enum.hpp"
+
 #pragma endregion
 
 NS_BEGIN(Editor)
@@ -208,6 +211,45 @@ void CInspectorPanel::Draw_Basic_Info()
 
         m_pTarget->Set_Label(m_nameBuffer.c_str());
         return;
+    }
+
+    ImGui::Spacing();
+
+    if (ImGui::TreeNodeEx("Object Mask", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        struct MASK_ITEM
+        {
+            const char* szName;
+            uint32_t    iMask;
+        };
+
+        std::string_view svSeverity = magic_enum::enum_name(Client::PLAYER);
+
+        
+
+        const MASK_ITEM arrMaskItems[] =
+        {
+            { "PLAYER",   Client::PLAYER },
+            { "TITAN",    Client::TITAN },
+            { "NPC",      Client::NPC },
+            { "ALLY",     Client::ALLY },
+            { "WALKABLE", Client::WALKABLE },
+        };
+
+        for (const auto& tItem : arrMaskItems)
+        {
+            bool bChecked = m_pTarget->Has_Mask(tItem.iMask);
+
+            if (ImGui::Checkbox(tItem.szName, &bChecked))
+            {
+                if (bChecked)
+                    m_pTarget->Add_Mask(tItem.iMask);
+                else
+                    m_pTarget->Remove_Mask(tItem.iMask);
+            }
+        }
+
+        ImGui::TreePop();
     }
 }
 
@@ -1857,14 +1899,23 @@ void CInspectorPanel::Draw_Animator()
     if (!open)
         return;
 
-    ImGui::SameLine(ImGui::GetCursorPosX() + 100.0f);
+    ImGui::SameLine(ImGui::GetCursorPosX() + 170.0f);
 
     if (ImGui::Button("Blend"))
     {
         ImGui::OpenPopup("Animator Blend Editor");
     }
 
+    ImGui::SameLine(0.0f, 10.0f);
+
     Draw_AnimatorBlendingView();
+
+    if (ImGui::Button("Loop"))
+    {
+        ImGui::OpenPopup("Animator Loop Editor");
+    }
+
+    Draw_AnimatorLoopView();
 
     const bool bDisabledScope = (pData->bEnable == 0);
     if (bDisabledScope)
@@ -1876,13 +1927,6 @@ void CInspectorPanel::Draw_Animator()
     if (ImGui::Checkbox("Playing", &bPlaying))
     {
         pData->bPlaying = bPlaying ? 1 : 0;
-        bChanged = true;
-    }
-
-    bool bLoop = (pData->bLoop != 0);
-    if (ImGui::Checkbox("Loop", &bLoop))
-    {
-        pData->bLoop = bLoop ? 1 : 0;
         bChanged = true;
     }
 
@@ -3334,6 +3378,97 @@ void CInspectorPanel::Draw_AnimatorBlendingView()
 
         for (uint64_t iKey : vecRemoveKeys)
             pData->BlendMap.erase(iKey);
+
+        ImGui::EndPopup();
+    }
+}
+
+void CInspectorPanel::Draw_AnimatorLoopView()
+{
+    CAnimator animator = m_pTarget->Get_Component<CAnimator>();
+    if (!animator.Is_Valid())
+        return;
+
+    ANIMATOR_DATA* pData = animator._Data();
+    if (!pData)
+        return;
+
+    CMeshRenderer meshRenderer = m_pTarget->Get_Component<CMeshRenderer>();
+    if (!meshRenderer.Is_Valid())
+        return;
+
+    MESH_RENDERER_DATA* pMrData = meshRenderer._Data();
+    if (!pMrData)
+        return;
+
+    if (pMrData->hMesh == INVALID_HANDLE_UINT)
+        return;
+
+    if (!SYS_RESOURCE.Is_ModelHandle(pMrData->hMesh))
+        return;
+
+    MODEL_ENTRY* pModel = SYS_RESOURCE.Get_Model(pMrData->hMesh);
+    if (!pModel)
+        return;
+
+    const auto& vecAnimClips = pModel->vecAnimClips;
+
+    if (ImGui::BeginPopup("Animator Loop Editor", ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        if (vecAnimClips.empty())
+        {
+            ImGui::TextDisabled("No animation clips.");
+            if (ImGui::Button("Close"))
+                ImGui::CloseCurrentPopup();
+
+            ImGui::EndPopup();
+            return;
+        }
+
+        ImGui::Text("Loop setting per clip");
+        ImGui::Separator();
+
+        for (uint32_t i = 0; i < static_cast<uint32_t>(vecAnimClips.size()); ++i)
+        {
+            const std::string& strClipName = vecAnimClips[i].strName;
+
+            _bool bLoop = false;
+            auto it = pData->LoopMap.find(i);
+            if (it != pData->LoopMap.end())
+                bLoop = it->second;
+
+            ImGui::PushID(static_cast<int>(i));
+
+            bool bLoopImGui = (bLoop != false);
+            if (ImGui::Checkbox(strClipName.c_str(), &bLoopImGui))
+            {
+                pData->LoopMap[i] = bLoopImGui;
+            }
+
+            ImGui::PopID();
+        }
+
+        ImGui::Spacing();
+        ImGui::Separator();
+
+        if (ImGui::Button("All Loop On"))
+        {
+            for (uint32_t i = 0; i < static_cast<uint32_t>(vecAnimClips.size()); ++i)
+                pData->LoopMap[i] = true;
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("All Loop Off"))
+        {
+            for (uint32_t i = 0; i < static_cast<uint32_t>(vecAnimClips.size()); ++i)
+                pData->LoopMap[i] = false;
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Close"))
+            ImGui::CloseCurrentPopup();
 
         ImGui::EndPopup();
     }

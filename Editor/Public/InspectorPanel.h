@@ -76,6 +76,7 @@ private:
     void Draw_UIText();
 
     void Draw_AnimatorBlendingView();
+    void Draw_AnimatorLoopView();
 
     void Validate_Target();
 

@@ -507,6 +507,9 @@
     <ClInclude Include="..\Public\Engine_Component.h">
       <Filter>99. Defines</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Animation_Event.h">
+      <Filter>00. System\11. Event\Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">

@@ -68,12 +68,12 @@ HRESULT CAnimator_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPO
     IF_NULL_RETURN_MSG_BREAK(pAnimatorSpec, E_FAIL, "pAnimatorSpec is nullptr");
 
     pData->bEnable = pAnimatorSpec->bEnable;
-    pData->bLoop = pAnimatorSpec->bLoop;
     pData->bPlaying = pAnimatorSpec->bPlaying;
     pData->iAnimationClip = pAnimatorSpec->iAnimationClip;
     pData->fPlaySpeed = pAnimatorSpec->fPlaySpeed;
     pData->fBlendDuration = pAnimatorSpec->fBlendDuration;
     pData->BlendMap = pAnimatorSpec->BlendMap;
+    pData->LoopMap = pAnimatorSpec->LoopMap;
 
     return S_OK;
 }
@@ -86,12 +86,12 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CAnimator_Processor::Build_Spec(COMPONENT_T
     auto pSpec = std::make_unique<ANIMATOR_SPEC>();
 
     pSpec->bEnable = pData->bEnable;
-    pSpec->bLoop = pData->bLoop;
     pSpec->bPlaying = pData->bPlaying;
     pSpec->iAnimationClip = pData->iAnimationClip;
     pSpec->fPlaySpeed = pData->fPlaySpeed;
     pSpec->fBlendDuration = pData->fBlendDuration;
     pSpec->BlendMap = pData->BlendMap;
+    pSpec->LoopMap = pData->LoopMap;
 
     return pSpec;
 }
@@ -113,7 +113,6 @@ void CAnimator_Processor::Initialize_Component_Data(COMPONENT_HANDLE hComponent)
     pData->NameToClipIndex.clear();
     pData->bPlaying = true;
     pData->iNextAnimationClip = INVALID_ANIM_CLIP_INDEX;
-    pData->bIsBlending = false;
     pData->fTrackPosition = 0.f;
     pData->fBlendElapsed = 0.f;
 }
@@ -176,7 +175,7 @@ void CAnimator_Processor::Update_Animator(ANIMATOR_DATA* pData, _float fDT)
     /* 매 프레임 각 Bone이 어디로 움직였는지 finalBoneMatrices에 계산해둔다. */
     Build_FinalBoneMatrices(pData, *pModel);
 
-    if (pData->bIsBlending && pData->fBlendElapsed >= pData->fBlendDuration)
+    if (pData->iNextAnimationClip != INVALID_ANIM_CLIP_INDEX && pData->fBlendElapsed >= pData->fBlendDuration)
     {
         ANIMATION_CLIP_ENTRY* pNextClip = Resolve_Next_AnimationClip(pData, pModel);
         if (pNextClip)
@@ -185,8 +184,8 @@ void CAnimator_Processor::Update_Animator(ANIMATOR_DATA* pData, _float fDT)
             pData->fTrackPosition = Get_NextClipTrackPosition(pData, *pNextClip);
             pData->currentKeyFrameIndices.assign(pNextClip->channels.size(), 0);
         }
+
         pData->iNextAnimationClip = INVALID_ANIM_CLIP_INDEX;
-        pData->bIsBlending = false;
         pData->fBlendElapsed = 0.f;
         pData->fBlendDuration = 0.f;
     }
@@ -206,15 +205,24 @@ void CAnimator_Processor::Update_TrackPosition(ANIMATOR_DATA* pData, const ANIMA
     if (pData->fTrackPosition >= tClip.fDuration)
     {
         /* 반복 재생하지 않는 경우  */
-        if (!pData->bLoop)
+        ANIMATION_EVENT_DATA tEventData{ pData->iAnimationClip, tClip.strName };
+        if (!Is_LoopClip(pData, pData->iAnimationClip))
         {
             pData->fTrackPosition = tClip.fDuration;
             pData->bPlaying = false;
             bOutFinished = true;
+
+            /* 이벤트 발생 */
+            pData->OnAnimationFinished.Invoke(tEventData);
+
             return;
         }
 
-        pData->fTrackPosition = fmodf(pData->fTrackPosition, tClip.fDuration); /* 초과 시간 버리지 않고 유지 */
+        /* 이벤트 발생 */
+        pData->OnAnimationLooped.Invoke(tEventData);
+
+        /* 초과 시간 버리지 않고 유지 */
+        pData->fTrackPosition = fmodf(pData->fTrackPosition, tClip.fDuration); 
 
         /* 반복 재생하는 경우 */
         for (uint32_t& iKeyFrameIndex : pData->currentKeyFrameIndices) 
@@ -224,7 +232,7 @@ void CAnimator_Processor::Update_TrackPosition(ANIMATOR_DATA* pData, const ANIMA
 
 void CAnimator_Processor::Update_BlendState(ANIMATOR_DATA* pData, _float fDT)
 {
-    if (!pData->bIsBlending)
+    if (pData->iNextAnimationClip == INVALID_ANIM_CLIP_INDEX)
         return;
 
     pData->fBlendElapsed += fDT;
@@ -332,7 +340,8 @@ void CAnimator_Processor::Evaluate_AnimationChannels(ANIMATOR_DATA* pData, const
 
         Evaluate_Channel_LocalTransform(pData, tChannel, (_uint)i, matLocal);
 
-        if (pData->bIsBlending && pData->iNextAnimationClip != INVALID_ANIM_CLIP_INDEX)
+        if (pData->iNextAnimationClip != INVALID_ANIM_CLIP_INDEX
+            && pData->iNextAnimationClip != INVALID_ANIM_CLIP_INDEX)
             Apply_Blend_To_LocalTransform(pData, tModel, (_uint)i, matLocal);
 
         pData->boneLocalMatrices[tChannel.iBoneIndex] = matLocal;
@@ -391,7 +400,7 @@ void CAnimator_Processor::Evaluate_Channel_LocalTransform(ANIMATOR_DATA* pData, 
 /* 애니메이션 전환 시 각 채널에 대한 블렌딩 */
 void CAnimator_Processor::Apply_Blend_To_LocalTransform(ANIMATOR_DATA* pData, const MODEL_ENTRY& tModel, _uint iChannelIndex, _float4x4& inOutLocalMatrix)
 {
-    if (!pData->bIsBlending)
+    if (pData->fBlendElapsed >= pData->fBlendDuration)
         return;
 
     if (pData->iNextAnimationClip == INVALID_ANIM_CLIP_INDEX)
@@ -409,7 +418,7 @@ void CAnimator_Processor::Apply_Blend_To_LocalTransform(ANIMATOR_DATA* pData, co
     if (iBoneIndex < 0)
         return;
 
-    /* 다음 애니메이션의 특정 채널 찾기 */
+    /* 다음 애니메이션의 보간할 채널 찾기 */
     const ANIMATION_CLIP_ENTRY& tNextClip = tModel.vecAnimClips[pData->iNextAnimationClip];
     const ANIMATION_CHANNEL_ENTRY* pNextChannel = tNextClip.Find_Channel_ByBoneIndex(iBoneIndex);
 
@@ -425,7 +434,7 @@ void CAnimator_Processor::Apply_Blend_To_LocalTransform(ANIMATOR_DATA* pData, co
     /* 블렌딩할 키 프레임을 구하기 */
     const _float fNextTrackPosition = Get_NextClipTrackPosition(pData, tNextClip);
 
-    if (vecKeyFrames.size() == 1)
+    if (vecKeyFrames.size() == 1) /* 키프레임이 하나면 유지 */
     {
         Math::Store(matNextLocal, Make_AffineMatrix(vecKeyFrames[0]));
     }
@@ -439,7 +448,7 @@ void CAnimator_Processor::Apply_Blend_To_LocalTransform(ANIMATOR_DATA* pData, co
         {
             const ANIM_KEYFRAME& tLast = vecKeyFrames.back();
 
-            if (fNextTrackPosition >= tLast.fTrackPosition)
+            if (fNextTrackPosition >= tLast.fTrackPosition) /* 루프가 아니라면 마지막 키프레임 이후 해당 트랙 포지션 상태 유지 */
             {
                 Math::Store(matNextLocal, Make_AffineMatrix(tLast));
             }
@@ -612,10 +621,26 @@ _float CAnimator_Processor::Get_NextClipTrackPosition(const ANIMATOR_DATA* pData
 
 _float CAnimator_Processor::Get_BlendAlpha(const ANIMATOR_DATA* pData) const
 {
+    if (pData->iNextAnimationClip == INVALID_ANIM_CLIP_INDEX)
+        return 1.f;
+
     if (pData->fBlendDuration <= 0.f)
         return 1.f;
 
     return std::clamp(pData->fBlendElapsed / pData->fBlendDuration, 0.f, 1.f);
+}
+
+_bool CAnimator_Processor::Is_LoopClip(const ANIMATOR_DATA* pData, uint32_t iClipIndex) const
+{
+    if (!pData)
+        return false;
+
+    auto it = pData->LoopMap.find(iClipIndex);
+    if (it != pData->LoopMap.end())
+        return it->second;
+
+    /* NOTE : 지정되지 않았으면 루프 Off */
+    return false;
 }
 
 uint64_t CAnimator_Processor::Make_AnimationClipBlendKey(uint32_t iFromClip, uint32_t iToClip) const
@@ -651,12 +676,42 @@ _float CAnimator_Processor::Get_BlendDuration(const ANIMATOR_DATA* pData, uint32
     if (!pData)
         return 0.f;
 
+    MESH_RENDERER_DATA* pMrData = To<MESH_RENDERER_DATA*>(m_pMeshRenderer_Processor->Get_DataPtr(COMPONENT_TYPE::MESH_RENDERER, pData->hMeshRenderer));
+    if (!pMrData)
+        return 0.f;
+
+    MODEL_ENTRY* pModel = SYS_RESOURCE.Get_Model(pMrData->hMesh);
+    if (!pModel)
+        return 0.f;
+
+    if (iToClip >= pModel->vecAnimClips.size())
+        return 0.f;
+
+    _float fBlendDuration = m_fEnsureBlendingTime;
+
     const uint64_t iBlendKey = Make_AnimationClipBlendKey(iFromClip, iToClip);
     auto it = pData->BlendMap.find(iBlendKey);
-    if (it == pData->BlendMap.end())
-        return pData->fBlendDuration;
+    if (it != pData->BlendMap.end())
+        fBlendDuration = it->second;
 
-    return it->second;
+    if (fBlendDuration < 0.f)
+        fBlendDuration = 0.f;
+
+    const auto& toClip = pModel->vecAnimClips[iToClip];
+    if (toClip.fDuration > 0.f)
+        fBlendDuration = std::fminf(fBlendDuration, toClip.fDuration);
+    else
+        fBlendDuration = 0.f;
+
+    return fBlendDuration;
+}
+
+void CAnimator_Processor::Set_Loop(ANIMATOR_DATA* pData, uint32_t iCurClip, _bool bLoop)
+{
+    if (!pData)
+        return ;
+
+    pData->LoopMap[iCurClip] = bLoop;
 }
 
 std::unique_ptr<CAnimator_Processor> CAnimator_Processor::Create()

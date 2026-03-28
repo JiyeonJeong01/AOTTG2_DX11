@@ -216,6 +216,7 @@ json CScene_Handler::Serialize_SceneObjectSpec(const SCENE_OBJECT_SPEC& tSpec)
     j["isUI"] = tSpec.isUI;
     j["name"] = tSpec.name;
     j["layer"] = (uint32_t)tSpec.layer;
+    j["iObjMask"] = (uint32_t)tSpec.iObjMask;
     j["parent"] = tSpec.parent.Is_Valid() ? tSpec.parent.To_String_Utf8() : "";
 
     /* overrides sparse flat list */ 
@@ -257,8 +258,9 @@ _bool CScene_Handler::Deserialize_SceneObjectSpec(const json& j, SCENE_OBJECT_SP
         out.protoGuid = ASSET_GUID{};
 
     out.isUI = j.value("isUI", false);
-    out.name = j.value("name", "");
+    out.isUI = j.value("isUI", false);
     out.layer = (Layer::LAYER_ID)j.value("layer", (uint32_t)Layer::DEFAULT_LAYER);
+    out.iObjMask = j.value("iObjMask", 0);
 
     /* 부모 UUID는 비어있을 수 있다. */
     const std::string parentStr = j.value("parent", "");
@@ -378,6 +380,7 @@ HRESULT CScene_Handler::LoadScene_Runtime(const std::vector<SCENE_OBJECT_SPEC>& 
         IF_NULL_RETURN_MSG_BREAK(pObj, E_FAIL, "Create_Object failed.");
 
         pObj->Set_ProtoGUID(spec.protoGuid);
+        pObj->Set_Mask(spec.iObjMask);
 
         auto [it, inserted] = objectMap.emplace(spec.uuid, pObj);
         stagingObjects.push_back(pObj);

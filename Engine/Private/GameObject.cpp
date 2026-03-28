@@ -222,6 +222,11 @@ _bool CGameObject::Get_Enabled() const
     return SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).bEnable;
 }
 
+uint32_t CGameObject::Get_Mask() const
+{
+    return m_iMask;
+}
+
 void CGameObject::Set_ComponentMask(Component::COMPONENT_MASK mask)
 {
     SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf).componentMask = mask;

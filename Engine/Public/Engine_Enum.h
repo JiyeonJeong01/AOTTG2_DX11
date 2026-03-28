@@ -75,7 +75,7 @@ namespace Engine
     enum class EVENT_TYPE : uint8_t
     {
         None, GameObject, On_GameObject_Created, On_GameObject_Destroyed, On_Scene_Changed, On_Window_Resize,
-        BUTTON
+        BUTTON, ANIMATION
     };
 }
 #endif // Engine_Enum_h__

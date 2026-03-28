@@ -22,6 +22,12 @@ private :
     CGameObject*        m_pChecker{};
     CTransform          m_trOwner;
     CTransform          m_trChecker;
+    CCollider           m_colChecker;
+
+    _int                m_iGroundContactCount = 0;
+
+public :
+    _bool               Get_OnGround() const;
 
 public:
     void Awake(void* pCtx) override;
@@ -30,6 +36,10 @@ public:
     void Priority_Update(void* pCtx, _float fDT) override;
     void Update(void* pCtx, _float fDT) override;
     void Late_Update(void* pCtx, _float fDT) override;
+
+private :
+    void OnCollisionEnter(const COLLISION_DESC& tDesc);
+    void OnCollisionExit(const COLLISION_DESC& tDesc);
 };
 
 NS_END;

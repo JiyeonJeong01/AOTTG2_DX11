@@ -29,7 +29,8 @@ private:
     void Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, ANIMATOR_DATA* pData);
 
 private :
-    class CMeshRenderer_Processor* m_pMeshRenderer_Processor = nullptr;
+    class CMeshRenderer_Processor*  m_pMeshRenderer_Processor = nullptr;
+    const _float                    m_fEnsureBlendingTime = 0.02f;
 
 private:
     void Update_Animator(ANIMATOR_DATA* pData, _float fDT);
@@ -65,16 +66,17 @@ private:
     _float Get_NextClipTrackPosition(const ANIMATOR_DATA* pData, const ANIMATION_CLIP_ENTRY& tNextClip) const;
     _float Get_BlendAlpha(const ANIMATOR_DATA* pData) const;
 
-public :
-    uint64_t Make_AnimationClipBlendKey(uint32_t iFromClip, uint32_t iToClip) const;
-    void Try_Build_ClipNameMap(ANIMATOR_DATA* pData);
-    uint32_t Find_AnimationClip_By_Name(COMPONENT_HANDLE hComponent, const std::string& strClipName);
-    _float Get_BlendDuration(const ANIMATOR_DATA* pData, uint32_t iFromClip, uint32_t iToClip) const;
+    _bool Is_LoopClip(const ANIMATOR_DATA* pData, uint32_t iClipIndex) const;
 
+public :
+    uint64_t    Make_AnimationClipBlendKey(uint32_t iFromClip, uint32_t iToClip) const;
+    void        Try_Build_ClipNameMap(ANIMATOR_DATA* pData);
+    uint32_t    Find_AnimationClip_By_Name(COMPONENT_HANDLE hComponent, const std::string& strClipName);
+    _float      Get_BlendDuration(const ANIMATOR_DATA* pData, uint32_t iFromClip, uint32_t iToClip) const;
+    void        Set_Loop(ANIMATOR_DATA* pData, uint32_t iCurClip, _bool bLoop);
 
 public:
     static std::unique_ptr<CAnimator_Processor> Create();
 };
-
 
 NS_END

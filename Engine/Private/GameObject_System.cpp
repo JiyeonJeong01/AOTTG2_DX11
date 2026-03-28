@@ -555,6 +555,7 @@ HRESULT CGameObject_System::Build_SceneSpecs(std::vector<SCENE_OBJECT_SPEC>& out
         spec.parent = pObj->Get_Parent() == nullptr ? INSTANCE_UUID{} : Get_UUID(pObj->Get_Parent());
         spec.layer = pObj->Get_Layer();
         spec.protoGuid = tData.tProtoGUID;
+        spec.iObjMask = pObj->Get_Mask();
         Component::COMPONENT_MASK mask = pObj->Get_ComponentMask();
 
         spec.hasMask = 0;

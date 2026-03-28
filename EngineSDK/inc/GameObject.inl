@@ -166,3 +166,27 @@ TScript* CGameObject::Get_Script_InChildren()
 
     return nullptr;
 }
+
+template <typename T>
+void CGameObject::Add_Mask(T eMask)
+{
+    m_iMask |= static_cast<uint32_t>(eMask);
+}
+
+template <typename T>
+void CGameObject::Remove_Mask(T eMask)
+{
+    m_iMask &= ~static_cast<uint32_t>(eMask);
+}
+
+template <typename T>
+void CGameObject::Set_Mask(T eMask)
+{
+    m_iMask = static_cast<uint32_t>(eMask);
+}
+
+template <typename T>
+bool CGameObject::Has_Mask(T eMask) const
+{
+    return (m_iMask & static_cast<uint32_t>(eMask)) != 0;
+}

@@ -87,9 +87,11 @@ typedef struct tagComponentSpecBundle
 
 typedef struct ENGINE_DLL tagPrototypeSpec
 {
-    std::string  strName;
-    _bool           isUI = false;
-    COMPONENT_SPEC_BUNDLE tComponentBundle;
+    std::string             strName;
+    _bool                   isUI = false;
+    uint32_t                iObjMask = 0;
+
+    COMPONENT_SPEC_BUNDLE   tComponentBundle;
 
     std::vector<struct tagPrototypeSpec> vecChildren;
 
@@ -103,14 +105,15 @@ typedef struct ENGINE_DLL tagPrototypeSpec
 
 typedef struct tagSceneObjecSpec
 {
-    INSTANCE_UUID uuid;
-    ASSET_GUID protoGuid;
+    INSTANCE_UUID       uuid;
+    ASSET_GUID          protoGuid;
 
-    _bool       isUI;
+    _bool               isUI;
 
-    std::string name;
-    Layer::LAYER_ID layer;
-    INSTANCE_UUID parent;
+    std::string         name;
+    Layer::LAYER_ID     layer;
+    INSTANCE_UUID       parent;
+    uint32_t            iObjMask = 0;
 
     Component::COMPONENT_MASK hasMask;
     COMPONENT_SPEC_BUNDLE overrides;
@@ -128,6 +131,7 @@ typedef struct tagSceneObjecSpec
         const std::string& _name,
         Layer::LAYER_ID _layer,
         const INSTANCE_UUID& _parent,
+        uint32_t _iObjMask,
         COMPONENT_SPEC_BUNDLE&& _overrides
     )
         : uuid(_uuid)
@@ -136,6 +140,7 @@ typedef struct tagSceneObjecSpec
         , isUI(false)
         , layer(_layer)
         , parent(_parent)
+        , iObjMask(_iObjMask)
         , hasMask(0)
         , overrides(std::move(_overrides))
     {

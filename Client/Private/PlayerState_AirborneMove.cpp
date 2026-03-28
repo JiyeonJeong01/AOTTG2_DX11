@@ -39,10 +39,12 @@ void CPlayerState_AirborneMove::Update(_float fDT)
 void CPlayerState_AirborneMove::Late_Update(_float fDT)
 {
     CPlayerState::Late_Update(fDT);
+    Decide_NextState();
 }
 
 void CPlayerState_AirborneMove::Decide_NextState()
 {
+    
 }
 
 void CPlayerState_AirborneMove::Enter(_uint iDetailFlag)
@@ -59,6 +61,33 @@ void CPlayerState_AirborneMove::Enter(_uint iDetailFlag)
     {
         /* Falling or Normal Jump */
     }
+}
+
+void CPlayerState_AirborneMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
+{
+    _uint iIndex = tData.iAnimationClip;
+    if (iIndex != INVALID_ANIM_CLIP_INDEX || tData.iAnimationClip == INVALID_ANIM_CLIP_INDEX)
+        return;
+
+    if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::AIR])
+        On_AirFinished(tData);
+    else if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::AIR_FALL])
+        On_AirFallFinished(tData);
+}
+
+void CPlayerState_AirborneMove::On_AirFinished(const Engine::ANIMATION_EVENT_DATA& tData)
+{
+    if ((m_tRef.pGear->Get_UsingFlag() & To<_uint>(SIDE::BOTH)) == (To<_uint>(SIDE::BOTH)))
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_RIGHT);
+    else if (m_tRef.pGear->Get_UsingFlag() & To<_uint>(SIDE::LEFT))
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_LEFT);
+    else if (m_tRef.pGear->Get_UsingFlag() & To<_uint>(SIDE::RIGHT))
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_RIGHT);
+}
+
+void CPlayerState_AirborneMove::On_AirFallFinished(const Engine::ANIMATION_EVENT_DATA& tData)
+{
+
 }
 
 std::shared_ptr<CPlayerState_AirborneMove> CPlayerState_AirborneMove::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer)

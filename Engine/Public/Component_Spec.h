@@ -1145,7 +1145,6 @@ typedef struct ENGINE_DLL tagAnimatorSpec final : public COMPONENT_SPEC_BASE
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::ANIMATOR)
 
     _bool       bEnable = true;
-    _bool       bLoop = false;
     _bool       bPlaying = true;
     uint8_t     pad0[1] = {};
 
@@ -1154,7 +1153,8 @@ typedef struct ENGINE_DLL tagAnimatorSpec final : public COMPONENT_SPEC_BASE
     _float      fPlaySpeed = 1.f;
     _float      fBlendDuration = 0.02f;
 
-    std::unordered_map<uint64_t, _float, ANIMATION_CLIP_INDEX_HASHER> BlendMap;
+    std::unordered_map<uint64_t, _float, ANIMATION_CLIP_INDEX_HASHER>   BlendMap;
+    std::unordered_map<uint32_t, _bool>                                 LoopMap;
 
     std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
     {
@@ -1165,7 +1165,6 @@ typedef struct ENGINE_DLL tagAnimatorSpec final : public COMPONENT_SPEC_BASE
     {
         j["Type"] = SCAST(_uint, Get_Type());
         j["Enabled"] = bEnable;
-        j["Loop"] = bLoop;
         j["Playing"] = bPlaying;
         j["AnimationClip"] = iAnimationClip;
         j["PlaySpeed"] = fPlaySpeed;
@@ -1186,6 +1185,18 @@ typedef struct ENGINE_DLL tagAnimatorSpec final : public COMPONENT_SPEC_BASE
             item["Duration"] = fDuration;
             j["BlendMap"].push_back(item);
         }
+
+        j["LoopMap"] = json::array();
+        for (const auto& pair : LoopMap)
+        {
+            const uint32_t iClip = pair.first;
+            const _bool bLoop = pair.second;
+
+            json item;
+            item["Clip"] = iClip;
+            item["Loop"] = bLoop;
+            j["LoopMap"].push_back(item);
+        }
     }
 
     _bool FromJson(const json& j) override
@@ -1193,8 +1204,6 @@ typedef struct ENGINE_DLL tagAnimatorSpec final : public COMPONENT_SPEC_BASE
         if (!Read_SpecType(j, Get_Type()))
             return false;
         if (!Read_Bool(j, "Enabled", bEnable))
-            return false;
-        if (!Read_Bool(j, "Loop", bLoop))
             return false;
         if (!Read_Bool(j, "Playing", bPlaying))
             return false;
@@ -1206,6 +1215,7 @@ typedef struct ENGINE_DLL tagAnimatorSpec final : public COMPONENT_SPEC_BASE
             return false;
 
         BlendMap.clear();
+        LoopMap.clear();
 
         auto it = j.find("BlendMap");
         if (it != j.end() && it->is_array())
@@ -1233,11 +1243,28 @@ typedef struct ENGINE_DLL tagAnimatorSpec final : public COMPONENT_SPEC_BASE
             }
         }
 
+        it = j.find("LoopMap");
+        if (it != j.end() && it->is_array())
+        {
+            for (const auto& item : *it)
+            {
+                uint32_t iClip = INVALID_ANIM_CLIP_INDEX;
+                _bool bLoop = false;
+
+                if (!Read_UInt(item, "Clip", iClip))
+                    continue;
+                if (!Read_Bool(item, "Loop", bLoop))
+                    continue;
+
+                LoopMap[iClip] = bLoop;
+            }
+        }
+
         if (fPlaySpeed < 0.f)
             fPlaySpeed = 0.f;
 
         if (fBlendDuration < 0.f)
-            fBlendDuration = 0.f;
+            fBlendDuration = 0.02f;
 
         return true;
     }

@@ -23,6 +23,17 @@ namespace Client
         RIGHT = 1 << 1, // 2
         BOTH = To<_uint>(LEFT) | To<_uint>(RIGHT) // 3
     };
+
+    enum OBJECT_MASK
+    {
+        PLAYER      = 1 << 0,
+        TITAN       = 1 << 1,
+        NPC         = 1 << 2,
+        ALLY        = 1 << 3, 
+        WALKABLE    = 1 << 4,
+
+    };
+
 }
 
 

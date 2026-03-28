@@ -23,7 +23,9 @@ typedef struct tagGameObjectData
 
     /* For layer access in O(1) */
     Layer::LAYER_ID layer = Layer::INVALID_LAYER;
-    uint32_t iIndexInLayer = 0;
+    uint32_t    iIndexInLayer = 0;
+
+    uint32_t    iMask = 0;
 
     /* Components */
     uint32_t iComponentSlots[COMPONENT_MAX] = { 0, };
@@ -42,6 +44,7 @@ typedef struct tagGameObjectData
         bPendingDestroy = false;
         iIndexInLayer = 0;
         std::fill(std::begin(iComponentSlots), std::end(iComponentSlots), 0);
+        iMask = 0;
         componentMask = 0;
         hParent = {};
         hChildren.clear();

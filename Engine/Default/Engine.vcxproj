@@ -164,6 +164,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
   <ItemGroup>
     <ClInclude Include="..\..\ThirdParty\magic_enum.hpp" />
     <ClInclude Include="..\Public\Animation_Clip.h" />
+    <ClInclude Include="..\Public\Animation_Event.h" />
     <ClInclude Include="..\Public\Animator.h" />
     <ClInclude Include="..\Public\Animator_Processor.h" />
     <ClInclude Include="..\Public\Engine_Component.h" />

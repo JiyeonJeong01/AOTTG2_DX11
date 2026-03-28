@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "CComponent_Proxy_Base.h"
+#include "Event.h"
+#include "Animation_Event.h"
 
 NS_BEGIN(Engine)
 
@@ -14,14 +16,12 @@ typedef struct ENGINE_DLL tagAnimatorData
     uint32_t            iAnimationClip = INVALID_ANIM_CLIP_INDEX;
     uint32_t            iNextAnimationClip = INVALID_ANIM_CLIP_INDEX;
 
-    _bool               bLoop = false;
     _bool               bPlaying = true;
-    _bool               bIsBlending = false;
 
     _float              fTrackPosition = 0.f;
     _float              fPlaySpeed = 1.f;
     _float              fBlendElapsed = 0.f;
-    _float              fBlendDuration = 0.02f;         /* 전부 기본 0.02초 보간 진행 */
+    _float              fBlendDuration = 0.02f;         /* CURRENT VALUE!! 전부 기본 0.02초 보간 진행 */
         
     std::vector<uint32_t>   currentKeyFrameIndices;     /* 현재 애니메이션 클립에 대해 각 채널에 대응하는 키 프레임 인덱스 */
 
@@ -30,7 +30,11 @@ typedef struct ENGINE_DLL tagAnimatorData
     std::vector<_float4x4>   boneCombinedMatrices;      
     std::vector<_float4x4>   finalBoneMatrices;         /* 실제 스키닝에 쓰이는 행렬 = offsetMatrix[i] * currentCombinedMatrix[i]*/
 
+    CEvent<const ANIMATION_EVENT_DATA&> OnAnimationFinished;
+    CEvent<const ANIMATION_EVENT_DATA&> OnAnimationLooped;
+
     std::unordered_map<uint64_t, _float, ANIMATION_CLIP_INDEX_HASHER>   BlendMap;
+    std::unordered_map<uint32_t, _bool>                                 LoopMap;
     std::unordered_map<std::string, uint32_t>                           NameToClipIndex;
 
 } ANIMATOR_DATA;
@@ -45,7 +49,8 @@ public:
     ~CAnimator() override = default;
 
 
-    void                Set_Loop(_bool bLoop);
+    void                Set_Loop(_bool bLoop, const std::string& strAnimClip);
+    void                Set_Loop(_bool bLoop, uint32_t iAnimClip);
 
     _bool               Is_Playing() const;
     void                Set_Playing(_bool bPlaying);
