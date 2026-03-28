@@ -73,10 +73,10 @@
     <ClInclude Include="..\Public\PlayerState.h">
       <Filter>Player\PlayerState</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\PlayerState_Grounded.h">
+    <ClInclude Include="..\Public\PlayerState_GroundedMove.h">
       <Filter>Player\PlayerState</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\PlayerState_Airborne.h">
+    <ClInclude Include="..\Public\PlayerState_AirborneMove.h">
       <Filter>Player\PlayerState</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Player_Struct.h">
@@ -153,10 +153,10 @@
     <ClCompile Include="..\Private\PlayerState.cpp">
       <Filter>Player\PlayerState</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\PlayerState_Grounded.cpp">
+    <ClCompile Include="..\Private\PlayerState_GroundedMove.cpp">
       <Filter>Player\PlayerState</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\PlayerState_Airborne.cpp">
+    <ClCompile Include="..\Private\PlayerState_AirborneMove.cpp">
       <Filter>Player\PlayerState</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Player_InputController.cpp">

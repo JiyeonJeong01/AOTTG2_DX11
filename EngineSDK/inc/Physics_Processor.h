@@ -93,7 +93,9 @@ private:
     CComponent_Pool<CRigidbody>         m_RigidbodyPool;
     CComponent_Pool<CSpringJoint>       m_SpringJointPool;
 
-    std::vector<COLLIDER_PROXY_DATA>    m_ActivatedColliders; /* Transient */
+    std::vector<COLLIDER_PROXY_DATA>    m_ActivatedColliders;   /* Transient */
+    std::unordered_set<PAIR_KEY, PAIR_KEY_HASHER> m_CurPair;    /* 충돌 이벤트 */
+    std::unordered_set<PAIR_KEY, PAIR_KEY_HASHER> m_prevPair;
 
     CTransform_Processor*                       m_pTransformProcessor{};
     std::unique_ptr<CCollision_Detector>        m_upCollision_Detector{};
@@ -116,6 +118,7 @@ private :
     void    Process_Collision(vector<CONTACT_DESC>& outContacts);
     void    Reset_Kinematic_Velocities();
 
+    void    Invoke_CollisionEvent();
     void    Apply_RotationLock(RIGIDBODY_DATA& data);
     void    Apply_PositionLock(RIGIDBODY_DATA& data);
 

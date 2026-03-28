@@ -35,10 +35,20 @@ typedef struct tagPlayerComponents
 {
     CTransform      transform;
     CAnimator       animator;
+    CCollider       collider;
     CRigidbody      rigidbody;
     CSpringJoint    springJoint;
     CMeshRenderer   meshRenderer;
 } PLAYER_COMPONENTS;
+
+typedef struct tagPlayerInfo
+{
+    _float                      fCurSpeed = 10.f;
+    _float                      fMaxSpeed = 13.f;
+
+    uint32_t                    iAnimFlag = 0;
+
+} PLAYER_INFO;
 
 typedef struct tagPlayerRuntimeRef
 {
@@ -46,9 +56,12 @@ typedef struct tagPlayerRuntimeRef
     class CODM_Gear*            pGear = nullptr;
     class CCameraController*    pCameraController = nullptr;
     class CPlayerStateMachine*  pFSM = nullptr;
+    PLAYER_INFO*                pInfo = nullptr;
 } PLAYER_RUNTIME_REF;
 
 
-enum class PLAYER_STATE { IDLE = 0, MOVE, JUMP, AIRBORNE, HOOK, ATTACK, SHOOT, RELOAD, DODGE, RESUPPLY, GRABBED, EMOTE, END };
+
+
+enum class PLAYER_STATE { IDLE = 0, GROUNDED_MOVE, JUMP, AIRBORNE_MOVE, HOOK, GROUNDED_ATTACK, AIRBORNE_ATTACK, SHOOT, RELOAD, DODGE, RESUPPLY, GRABBED, EMOTE, END };
 
 NS_END

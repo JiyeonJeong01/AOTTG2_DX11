@@ -16,7 +16,7 @@ public:
     void Late_Update(_float fDT) override;
 
     void Decide_NextState() override;
-    void Enter() override;
+    void Enter(_uint iDetailFlag) override;
 
 
 

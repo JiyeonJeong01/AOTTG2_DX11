@@ -5,11 +5,11 @@
 
 NS_BEGIN(Client)
 
-class CPlayerState_Grounded final : public CPlayerState
+class CPlayerState_GroundedMove final : public CPlayerState
 {
 public :
-    CPlayerState_Grounded(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
-    ~CPlayerState_Grounded();
+    CPlayerState_GroundedMove(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
+    ~CPlayerState_GroundedMove();
 
 public :
     HRESULT Initialize() override;
@@ -18,16 +18,16 @@ public :
     void Late_Update(_float fDT) override;
 
     void Decide_NextState() override;
-    void Enter() override;
+    void Enter(_uint iDetailFlag) override;
 
 private :
     CRigidbody      m_rbPlayer;
 
 private :
-    void Walk(_float fDT);
+    void Move(_float fDT);
 
 public :
-    static std::shared_ptr<CPlayerState_Grounded> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
+    static std::shared_ptr<CPlayerState_GroundedMove> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
 };
 
 NS_END

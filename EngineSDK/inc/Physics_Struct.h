@@ -21,8 +21,8 @@ typedef struct tagAABB
 
 typedef struct ENGINE_DLL tagColliderProxyData final
 {
-    COLLIDER_DATA*  pCol = nullptr;
-    _float3         vCenterWorld{};                 /* 월드 기준 충돌 중심점
+    COLLIDER_DATA*      pCol = nullptr;
+    _float3             vCenterWorld{};                 /* 월드 기준 충돌 중심점
                                                         - BOX    : 박스 중심
                                                         - SPHERE : 구 중심
                                                         - PLANE  : 평면 중심점
@@ -82,38 +82,42 @@ typedef struct tagContactInfo
     float		fDepth{};
 }CONTACT_DESC;
 
-typedef struct tagPairKey
+typedef struct tagPairKey final
 {
-    uint32_t aKey;
-    uint32_t bKey;
+    COMPONENT_HANDLE aKey{};
+    COMPONENT_HANDLE bKey{};
 
-    explicit tagPairKey(uint32_t a, uint32_t b)
+    tagPairKey() = default;
+
+    tagPairKey(COMPONENT_HANDLE _a, COMPONENT_HANDLE _b)
     {
-        if (a > b)
+        if (_a.iHandle < _b.iHandle)
         {
-            aKey = b;
-            bKey = a;
+            aKey = _a;
+            bKey = _b;
         }
         else
         {
-            aKey = a;
-            bKey = b;
+            aKey = _b;
+            bKey = _a;
         }
     }
 
-    bool operator==(const tagPairKey& other) const
+    _bool operator==(const tagPairKey& rhs) const noexcept
     {
-        return aKey == other.aKey && bKey == other.bKey;
+        return aKey == rhs.aKey && bKey == rhs.bKey;
     }
-}PAIR_KEY;
+} PAIR_KEY;
 
-typedef struct PairKeyHash
+typedef struct tagPairKeyHasher final
 {
-    size_t operator()(const PAIR_KEY& k) const
+    size_t operator()(const PAIR_KEY& k) const noexcept
     {
-        return (static_cast<size_t>(k.aKey) << 32) ^ k.bKey;
+        const size_t h1 = std::hash<uint32_t>{}(k.aKey.iHandle);
+        const size_t h2 = std::hash<uint32_t>{}(k.bKey.iHandle);
+        return h1 ^ (h2 << 1);
     }
-}PAIR_KEY_HASH;
+} PAIR_KEY_HASHER;
 
 typedef struct tagAxisMask
 {

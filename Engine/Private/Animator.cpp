@@ -153,6 +153,7 @@ void CAnimator::Set_NextAnimationClip(uint32_t iNextAnimClip)
         m_pData,
         m_pData->iAnimationClip,
         iNextAnimClip);
+    int a = 10;
 }
 
 void CAnimator::Reset_CurrentKeyFrameIndices()

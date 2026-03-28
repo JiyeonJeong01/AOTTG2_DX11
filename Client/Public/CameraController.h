@@ -13,7 +13,7 @@ NS_BEGIN(Client)
 class CCameraController : public IScript
 {
 public :
-    _float3             m_vOffsetToPlayer = { 0.f, 5.f, -15.f };
+    _float3             m_vOffsetToPlayer = { 0.f, 4.f, -8.f };
     _float              m_fMouseSensor = 0.05f;
     SCRIPT_OBJECT_REF   m_refCamera{};
     SCRIPT_OBJECT_REF   m_refTarget{};

@@ -43,7 +43,7 @@ private :
 private :
     void            Handle_RopeState(CRope::ROPE_STATE eState, SIDE eSide);
     CGameObject*    Find_Owner();
-    CEvent<_uint>   m_OnSuccessAnchored;
+    CEvent<_uint, _uint>   m_OnSuccessAnchored;
 
 public :
     void Try_Grappling(SIDE eSide);
@@ -55,7 +55,7 @@ public :
     _uint           Get_UsingFlag();
 
     template <typename T>
-    ListenerID Subscribe_On_Success_Anchored(void(T::* func)(_uint), T* pInstance)
+    ListenerID Subscribe_On_Success_Anchored(void(T::* func)(_uint, _uint), T* pInstance)
     {
         return m_OnSuccessAnchored.Add_Listener(func, pInstance);
     }

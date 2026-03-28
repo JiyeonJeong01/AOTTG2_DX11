@@ -25,7 +25,10 @@ public :
     void    Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_DATA>& allColliders, _Out_ vector< COLLIDER_PAIR>& outPair);
 
     /* Narrow Phase */
-    void	Process_NarrowPhase(const vector<COLLIDER_PAIR>& pairs, vector<CONTACT_DESC>& outContacts);
+    void	Process_NarrowPhase(
+        const vector<COLLIDER_PAIR>& pairs,
+        vector<CONTACT_DESC>& outContacts,
+        std::unordered_set<PAIR_KEY, PAIR_KEY_HASHER>& outCollisionPairs);
 
     /* Raycast */
     _bool   Detect_Raycast(RAY& tRay,

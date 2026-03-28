@@ -2,8 +2,8 @@
 
 #include "PlayerState_Idle.h"
 #include "PlayerState_Jump.h"
-#include "PlayerState_Grounded.h"
-#include "PlayerState_Airborne.h"
+#include "PlayerState_GroundedMove.h"
+#include "PlayerState_AirborneMove.h"
 
 #include "ODM_Gear.h"
 
@@ -22,10 +22,11 @@ HRESULT CPlayerStateMachine::Initialize(CGameObject* goPlayer, CPlayer* scPlayer
 
     m_States.resize(To<_uint>(PLAYER_STATE::END));
 
-    /* { IDLE = 0, MOVE, JUMP, AIRBORNE, HOOK, ATTACK, SHOOT, RELOAD, DODGE, RESUPPLY, GRABBED, EMOTE, END } */
+    /* { IDLE = 0, GROUNDED_MOVE, JUMP, AIRBORNE_MOVE, HOOK, ATTACK, SHOOT, RELOAD, DODGE, RESUPPLY, GRABBED, EMOTE, END } */
     m_States[To<_uint>(PLAYER_STATE::IDLE)] = CPlayerState_Idle::Create(goPlayer, scPlayer);
+    m_States[To<_uint>(PLAYER_STATE::GROUNDED_MOVE)] = CPlayerState_GroundedMove::Create(goPlayer, scPlayer);
     m_States[To<_uint>(PLAYER_STATE::JUMP)] = CPlayerState_Jump::Create(goPlayer, scPlayer);
-    m_States[To<_uint>(PLAYER_STATE::AIRBORNE)] = CPlayerState_Airborne::Create(goPlayer, scPlayer);
+    m_States[To<_uint>(PLAYER_STATE::AIRBORNE_MOVE)] = CPlayerState_AirborneMove::Create(goPlayer, scPlayer);
 
     m_spCurState = m_States[To<_uint>(PLAYER_STATE::IDLE)];
 
@@ -54,16 +55,19 @@ void CPlayerStateMachine::Cache_PlayerInfos(const PLAYER_COMPONENTS& tComponents
             pState->Cache_PlayerInfos(tComponents, tRef);
 
     /* 그래플링/앵커 고정 성공 시 Airborne 상태로 전환하는 이벤트 등록 */
-    tRef.pGear->Subscribe_On_Success_Anchored(&CPlayerStateMachine::Change_State, this);
+    if (tRef.pGear)
+        tRef.pGear->Subscribe_On_Success_Anchored(&CPlayerStateMachine::Change_State, this);
 }
 
 
-void CPlayerStateMachine::Change_State(_uint iStateKey)
+void CPlayerStateMachine::Change_State(_uint iStateKey, _uint iDetailFlag)
 {
     if (iStateKey >= m_States.size())
         return;
 
     m_spCurState = m_States[iStateKey];
+    m_spCurState->Enter(iDetailFlag);
+
     m_OnChanged_CurState.Invoke(m_spCurState);
 }
 

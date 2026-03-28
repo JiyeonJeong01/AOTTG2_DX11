@@ -378,9 +378,75 @@ void CPhysics_Processor::Process_Collision(vector<CONTACT_DESC>& outContacts)
     }
 
     vector<COLLIDER_PAIR> outPair;
-    m_upCollision_Detector->Generate_BroadPhase_Pairs(m_ActivatedColliders, outPair);
+    m_CurPair.clear();
 
-    m_upCollision_Detector->Process_NarrowPhase(outPair, outContacts);
+    m_upCollision_Detector->Generate_BroadPhase_Pairs(m_ActivatedColliders, outPair);
+    m_upCollision_Detector->Process_NarrowPhase(outPair, outContacts, m_CurPair);
+
+    Invoke_CollisionEvent();
+}
+
+void CPhysics_Processor::Invoke_CollisionEvent()
+{
+    /* Enter / Stay */
+    for (const PAIR_KEY& k : m_CurPair)
+    {
+        auto* pA = m_ColliderPool.Get_Data_By_Handle(COMPONENT_HANDLE{ k.aKey });
+        auto* pB = m_ColliderPool.Get_Data_By_Handle(COMPONENT_HANDLE{ k.bKey });
+        if (!pA || !pB)
+            continue;
+
+        COLLISION_DESC tA{};
+        COLLISION_DESC tB{};
+
+        tA.hObject = pB->hObject;
+        tA.pCounterCollider = pB;
+
+        tB.hObject = pA->hObject;
+        tB.pCounterCollider = pA;
+
+        if (m_prevPair.find(k) == m_prevPair.end()) 
+        {
+            /* 이전에 충돌한 적이 없다면 Enter */
+            pA->OnCollisionEnter.Invoke(tA);
+            pB->OnCollisionEnter.Invoke(tB);
+        }
+        else
+        {
+            /* 이전에 충돌한 적이 있다면 Stay */
+            pA->OnCollisionStay.Invoke(tA);
+            pB->OnCollisionStay.Invoke(tB);
+        }
+    }
+
+    /* Exit */
+    for (const PAIR_KEY& k : m_prevPair)
+    {
+        /* 현재 충돌 중이라면 continue */
+        if (m_CurPair.find(k) != m_CurPair.end())
+            continue;
+
+        auto* pA = m_ColliderPool.Get_Data_By_Handle(COMPONENT_HANDLE{ k.aKey });
+        auto* pB = m_ColliderPool.Get_Data_By_Handle(COMPONENT_HANDLE{ k.bKey });
+        if (!pA || !pB)
+            continue;
+
+        COLLISION_DESC tA{};
+        COLLISION_DESC tB{};
+
+        tA.hObject = pB->hObject;
+        tA.pCounterCollider = pB;
+
+        tB.hObject = pA->hObject;
+        tB.pCounterCollider = pA;
+
+        pA->OnCollisionExit.Invoke(tA);
+        pB->OnCollisionExit.Invoke(tB);
+    }
+
+    /* prev <-> cur 교체 */
+    m_prevPair.swap(m_CurPair);
+    m_CurPair.clear();
 }
 
 void CPhysics_Processor::Reset_Kinematic_Velocities()
@@ -534,7 +600,7 @@ HRESULT CPhysics_Processor::Initialize_From_Spec_Collider(COMPONENT_HANDLE h, co
     _DEBUG_ENGINE_ASSERT_MSG(spec != nullptr, "spec is nullptr in Initialize_From_Spec_Collider");
 
     const COLLIDER_SPEC* pSpec = SCAST(const COLLIDER_SPEC*, spec);
-
+    pData->hSelf = h;
     pData->bEnable = pSpec->bEnable;
     pData->bOnCol = pSpec->bOnCol;
     pData->eShape = pSpec->eShape;

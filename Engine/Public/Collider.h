@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CComponent_Proxy_Base.h"
+#include "Event.h"
 #include "Physics_Struct.h"
 
 NS_BEGIN(Engine)
@@ -11,6 +12,7 @@ typedef struct ENGINE_DLL tagColliderData final
     OBJECT_HANDLE       hObject{};
     _bool               bEnable = false;
 
+    COMPONENT_HANDLE    hSelf{ INVALID_HANDLE }; /* self */
     COMPONENT_HANDLE    hTransform{ INVALID_HANDLE };
     COMPONENT_HANDLE    hRigidbody{ INVALID_HANDLE };
 
@@ -22,6 +24,10 @@ typedef struct ENGINE_DLL tagColliderData final
     _float3             vRotationOffset{ 0.f, 0.f, 0.f };       /* collider local euler rotation offset in degrees */
 
     _bool               bDirty{ true };
+
+    CEvent<const COLLISION_DESC&> OnCollisionEnter;
+    CEvent<const COLLISION_DESC&> OnCollisionStay;
+    CEvent<const COLLISION_DESC&> OnCollisionExit;
 
     /* Shape params : Local
        - 에디터/직렬화에서 보관하는 원본 로컬 값

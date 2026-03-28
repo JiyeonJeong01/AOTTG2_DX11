@@ -61,9 +61,14 @@ void CPlayerState_Idle::Decide_NextState()
             m_tRef.pGear->Try_Grappling(SIDE::RIGHT);
         }
     }
+
+    if (!XMVector3Equal(XMLoadFloat3(&m_tInputCmd.vMove), XMVectorZero()))
+    {
+        m_pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE));
+    }
 }
 
-void CPlayerState_Idle::Enter()
+void CPlayerState_Idle::Enter(_uint iDetailFlag)
 {
     m_tComponents.animator.Set_NextAnimationClip(IDLE_F);
 }

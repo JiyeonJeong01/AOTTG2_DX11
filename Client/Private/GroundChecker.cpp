@@ -19,10 +19,7 @@ void CGroundChecker::Start(void* pCtx)
 
 void CGroundChecker::Priority_Update(void* pCtx, _float fDT)
 {
-    /* transform 동기화 */
-    m_trChecker->vPosition = m_trOwner->vPosition;
-    m_trChecker->vScale = m_trOwner->vScale;
-    m_trChecker->vRotationQuat = m_trOwner->vRotationQuat;
+
 }
 
 void CGroundChecker::Update(void* pCtx, _float fDT)
@@ -31,6 +28,10 @@ void CGroundChecker::Update(void* pCtx, _float fDT)
 
 void CGroundChecker::Late_Update(void* pCtx, _float fDT)
 {
+    /* transform 동기화 */
+    m_trChecker->vPosition = m_trOwner->vPosition;
+    m_trChecker->vScale = m_trOwner->vScale;
+    m_trChecker->vRotationQuat = m_trOwner->vRotationQuat;
 }
 
 NS_END;

@@ -26,7 +26,7 @@ public :
     void Late_Update(_float fDT);
 
     void Cache_PlayerInfos(const PLAYER_COMPONENTS& tComponents, const PLAYER_RUNTIME_REF& tRef);
-    void Change_State(_uint iStateKey) override;
+    void Change_State(_uint iStateKey, _uint iDetailFlag = 0) override;
     void Update_PlayerInput(const PLAYER_INPUT_COMMAND& tInputCmd);
 
     template <typename T>

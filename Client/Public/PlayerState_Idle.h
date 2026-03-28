@@ -4,7 +4,7 @@
 
 NS_BEGIN(Client)
 
-/* MOVE, RELOAD, ATTACK */
+/* GROUNDED_MOVE, RELOAD, ATTACK */
 
 class CPlayerState_Idle final : public CPlayerState
 {
@@ -19,7 +19,7 @@ public:
     void Late_Update(_float fDT) override;
 
     void Decide_NextState() override;
-    void Enter() override;
+    void Enter(_uint iDetailFlag) override;
 
 public:
     static std::shared_ptr<CPlayerState_Idle> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer);

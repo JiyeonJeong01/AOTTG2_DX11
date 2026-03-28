@@ -10,7 +10,7 @@ public :
     CState() = default;
     ~CState() = default;
 
-    virtual void Enter() = 0;
+    virtual void Enter(_uint iDetailFlag) = 0;
 };
 
 NS_END

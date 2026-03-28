@@ -88,7 +88,10 @@ void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_
     }
 }
 
-void CCollision_Detector::Process_NarrowPhase(const vector<COLLIDER_PAIR>& pairs, vector<CONTACT_DESC>& outContacts)
+void CCollision_Detector::Process_NarrowPhase(
+    const vector<COLLIDER_PAIR>& pairs,
+    vector<CONTACT_DESC>& outContacts,
+    std::unordered_set<PAIR_KEY, PAIR_KEY_HASHER>& outCollisionPairs)
 {
     for (const auto& pair : pairs)
     {
@@ -113,6 +116,10 @@ void CCollision_Detector::Process_NarrowPhase(const vector<COLLIDER_PAIR>& pairs
         {
             Fill_ContactInfo(tContact);
             outContacts.push_back(tContact);
+
+            outCollisionPairs.emplace(PAIR_KEY(
+                pColA->pCol->hSelf,
+                pColB->pCol->hSelf));
         }
     }
 }

@@ -36,7 +36,7 @@ void CPlayerState_Jump::Decide_NextState()
 {
 }
 
-void CPlayerState_Jump::Enter()
+void CPlayerState_Jump::Enter(_uint iDetailFlag)
 {
     m_tComponents.animator.Set_NextAnimationClip(JUMP);
 }

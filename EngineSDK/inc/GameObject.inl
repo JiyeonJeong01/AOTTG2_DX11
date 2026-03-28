@@ -68,7 +68,6 @@ TProxy CGameObject::Get_Component()
     /* A slot data value of 0 means the component does not exist */
     if (iSlotData == Component::INVALID_COMPONENT_SLOT)
     {
-        _DEBUG_INFO("INVALID COMPONENT HANDLE : GameObject can't get such component!");
         return TProxy{};
     }
 
@@ -104,7 +103,6 @@ std::vector<TProxy> CGameObject::Get_Components()
     /* A slot data value of 0 means the component does not exist */
     if (iSlotData == Component::INVALID_COMPONENT_SLOT)
     {
-        _DEBUG_INFO("GameObject can't get such component!");
         return std::vector<TProxy>{};
     }
 

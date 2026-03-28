@@ -3290,7 +3290,12 @@ void CInspectorPanel::Draw_AnimatorBlendingView()
                 static_cast<uint32_t>(s_iFromClip),
                 static_cast<uint32_t>(s_iToClip));
 
-            pData->BlendMap[iBlendKey] = std::fmaxf(0.f, s_fBlendDuration);
+            _float fBlendDuration = std::fmaxf(0.f, s_fBlendDuration);
+
+            if (fBlendDuration > pModel->vecAnimClips[s_iToClip].fDuration)
+                fBlendDuration = pModel->vecAnimClips[s_iToClip].fDuration;
+
+            pData->BlendMap[iBlendKey] = fBlendDuration;
         }
         ImGui::EndDisabled();
 

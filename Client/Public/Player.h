@@ -39,6 +39,7 @@ private:
     CGameObject*        m_goPlayer = nullptr;
     PLAYER_COMPONENTS   m_tComponents{};
     PLAYER_RUNTIME_REF  m_tRef{};
+    PLAYER_INFO         m_tInfo{};
 
     std::unique_ptr<CPlayer_InputController>    m_upInputController{};
     std::unique_ptr<CPlayerStateMachine>        m_upStateMachine{};
@@ -49,6 +50,10 @@ private:
 
 private :
     void OnChange_CurState(std::shared_ptr<CPlayerState> spNewState);
+
+    void On_CollisionEnter(const COLLISION_DESC& tDesc);
+    void On_CollisionStay(const COLLISION_DESC& tDesc);
+    void On_CollisionExit(const COLLISION_DESC& tDesc);
 };
 
 NS_END;

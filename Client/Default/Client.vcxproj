@@ -35,8 +35,8 @@
     <ClInclude Include="..\Public\MainMenu_Controller.h" />
     <ClInclude Include="..\Public\ODM_Gear.h" />
     <ClInclude Include="..\Public\Player.h" />
-    <ClInclude Include="..\Public\PlayerState_Airborne.h" />
-    <ClInclude Include="..\Public\PlayerState_Grounded.h" />
+    <ClInclude Include="..\Public\PlayerState_AirborneMove.h" />
+    <ClInclude Include="..\Public\PlayerState_GroundedMove.h" />
     <ClInclude Include="..\Public\PlayerState.h" />
     <ClInclude Include="..\Public\PlayerStateMachine.h" />
     <ClInclude Include="..\Public\Player_InputController.h" />
@@ -59,8 +59,8 @@
     <ClCompile Include="..\Private\MainMenu_Controller.cpp" />
     <ClCompile Include="..\Private\ODM_Gear.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
-    <ClCompile Include="..\Private\PlayerState_Airborne.cpp" />
-    <ClCompile Include="..\Private\PlayerState_Grounded.cpp" />
+    <ClCompile Include="..\Private\PlayerState_AirborneMove.cpp" />
+    <ClCompile Include="..\Private\PlayerState_GroundedMove.cpp" />
     <ClCompile Include="..\Private\PlayerState.cpp" />
     <ClCompile Include="..\Private\PlayerStateMachine.cpp" />
     <ClCompile Include="..\Private\Player_InputController.cpp" />

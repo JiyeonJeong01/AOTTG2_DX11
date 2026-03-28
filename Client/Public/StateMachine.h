@@ -11,7 +11,7 @@ public :
     ~CStateMachine() = default;
 
 public :
-    virtual void Change_State(_uint iStateKey) = 0;
+    virtual void Change_State(_uint iStateKey, _uint iDetailFlag) = 0;
 
 protected :
     _uint                   m_iCurStateKey{};
