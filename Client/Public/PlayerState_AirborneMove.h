@@ -8,7 +8,7 @@ NS_BEGIN(Client)
 class CPlayerState_AirborneMove final : public CPlayerState
 {
 public:
-    CPlayerState_AirborneMove(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
+    CPlayerState_AirborneMove(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
     ~CPlayerState_AirborneMove();
 
 public:
@@ -29,7 +29,7 @@ private :
     void On_DashLandFinished(const Engine::ANIMATION_EVENT_DATA& tData);
 
 public:
-    static std::shared_ptr<CPlayerState_AirborneMove> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
+    static std::shared_ptr<CPlayerState_AirborneMove> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
 };
 
 

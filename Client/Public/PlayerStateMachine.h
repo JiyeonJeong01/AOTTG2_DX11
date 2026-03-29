@@ -30,7 +30,7 @@ public :
     void Update_PlayerInput(const PLAYER_INPUT_COMMAND& tInputCmd);
 
     template <typename T>
-    ListenerID Subscribe_OnChangedCurState(void(T::* func)(std::shared_ptr<CPlayerStateMachine>), T* pInstance)
+    ListenerID Subscribe_OnChangedCurState(void(T::* func)(std::shared_ptr<CPlayerState>), T* pInstance)
     {
         return m_OnChanged_CurState.Add_Listener(func, pInstance);
     }

@@ -5,6 +5,7 @@
 #include "Engine_Component.h"
 #include "Engine_Math.h"
 #include "GameInstance.h"
+#include "magic_enum.hpp"
 
 extern HWND g_hWnd;
 extern HINSTANCE g_hInst;

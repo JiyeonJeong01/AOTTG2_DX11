@@ -79,6 +79,16 @@ void CTransform::Set_Rotation_Euler(_float3 vEulerDegree)
     m_pData->bDirty = true;
 }
 
+void CTransform::Set_Rotation_Quaternion(_fvector vQuat)
+{
+    IF_NULL_RETURN_MSG_BREAK(m_pData, , "m_pData is nullptr.");
+
+    const _vector vNormQuat = XMQuaternionNormalize(vQuat);
+    MathDX::Store(m_pData->vRotationQuat, vNormQuat);
+
+    m_pData->bDirty = true;
+}
+
 void CTransform::Look_At(_fvector vTargetPos)
 {
     IF_NULL_RETURN_MSG_BREAK(m_pData, , "m_pData is nullptr.");

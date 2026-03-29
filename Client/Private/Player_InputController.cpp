@@ -69,6 +69,8 @@ const PLAYER_INPUT_COMMAND& CPlayer_InputController::Update_InputCommand()
     if (!XMVector3Equal(vMove, XMVectorZero()))
         XMStoreFloat3(&m_tInputCommand.vMove, XMVector3Normalize(vMove));
 
+    XMStoreFloat3(&m_tInputCommand.vLook, vMove);
+
     if (SYS_INPUT.Get_KeyDown('Q'))
         m_tInputCommand.bLeftAnchorPressed = true;
     else if (SYS_INPUT.Get_Key('Q'))

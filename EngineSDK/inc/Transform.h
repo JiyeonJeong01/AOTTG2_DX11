@@ -44,6 +44,7 @@ public:
 
     _float3             Get_Rotation_Euler() const;
     void                Set_Rotation_Euler(_float3 vEulerDegree);
+    void                Set_Rotation_Quaternion(_fvector vQuat);
     _float4             Get_Rotation_Quaternion() const;
 
     _float3             Get_Scale() const;

@@ -4,8 +4,8 @@
 #include "ODM_Gear.h"
 #include "GroundChecker.h"
 
-CPlayerState_AirborneMove::CPlayerState_AirborneMove(Engine::CGameObject* goPlayer, CPlayer* scPlayer)
-    : CPlayerState(goPlayer, scPlayer)
+CPlayerState_AirborneMove::CPlayerState_AirborneMove(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
+    : CPlayerState(goPlayer, scPlayer, eState)
 {
 }
 
@@ -27,7 +27,8 @@ void CPlayerState_AirborneMove::Setup_CachedPlayerInfos()
 
 void CPlayerState_AirborneMove::Priority_Update(_float fDT)
 {
-    CPlayerState::Priority_Update(fDT);
+    Control_Camera();
+    LookTo_InputDir(fDT);
 }
 
 void CPlayerState_AirborneMove::Update(_float fDT)
@@ -117,9 +118,9 @@ void CPlayerState_AirborneMove::On_DashLandFinished(const Engine::ANIMATION_EVEN
     }
 }
 
-std::shared_ptr<CPlayerState_AirborneMove> CPlayerState_AirborneMove::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer)
+std::shared_ptr<CPlayerState_AirborneMove> CPlayerState_AirborneMove::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
 {
-    auto pInstance = std::make_shared<CPlayerState_AirborneMove>(goPlayer, scPlayer);
+    auto pInstance = std::make_shared<CPlayerState_AirborneMove>(goPlayer, scPlayer, eState);
 
     IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "pInstance create faild");
     return pInstance;

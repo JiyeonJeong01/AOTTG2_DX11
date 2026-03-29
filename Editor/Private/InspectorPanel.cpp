@@ -2575,7 +2575,13 @@ void CInspectorPanel::Draw_ScriptFields(Engine::IScript* pScript)
             ImGui::InputFloat4(tDesc.strName.c_str(), &pValue->x);
             break;
         }
-
+        case SCRIPT_FIELD_TYPE::DEBUG_CHAR:
+        {
+            const _char* pValue = reinterpret_cast<const _char*>(pField);
+            if (pValue) {
+                ImGui::LabelText(tDesc.strName.c_str(), "%s", pValue);
+            }            break;
+        }
         case SCRIPT_FIELD_TYPE::OBJECT_REF:
         {
             SCRIPT_OBJECT_REF* pValue = reinterpret_cast<SCRIPT_OBJECT_REF*>(pField);

@@ -168,6 +168,9 @@ public :                                                                \
 #define SCRIPT_FIELD_OBJECT_REF(Member)                                 \
             s_Info.vecFields.push_back({ #Member, SCRIPT_FIELD_TYPE::OBJECT_REF, offsetof(SelfType, Member) });
 
+#define SCRIPT_FIELD_DEBUG_CHAR(Member)                                 \
+            s_Info.vecFields.push_back({ #Member, SCRIPT_FIELD_TYPE::DEBUG_CHAR, offsetof(SelfType, Member) });
+
 #define SCRIPT_FIELDS_END(ClassName)                                    \
         }                                                               \
         return s_Info;                                                  \

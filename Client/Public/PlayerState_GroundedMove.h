@@ -8,7 +8,7 @@ NS_BEGIN(Client)
 class CPlayerState_GroundedMove final : public CPlayerState
 {
 public :
-    CPlayerState_GroundedMove(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
+    CPlayerState_GroundedMove(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
     ~CPlayerState_GroundedMove();
 
 public :
@@ -24,7 +24,7 @@ private :
     void Move(_float fDT);
 
 public :
-    static std::shared_ptr<CPlayerState_GroundedMove> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
+    static std::shared_ptr<CPlayerState_GroundedMove> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
 };
 
 NS_END

@@ -6,8 +6,8 @@
 #include "AnimationClip_Player.h"
 #include "ODM_Gear.h"
 
-CPlayerState_GroundedMove::CPlayerState_GroundedMove(Engine::CGameObject* goPlayer, CPlayer* scPlayer)
-    : CPlayerState(goPlayer, scPlayer)
+CPlayerState_GroundedMove::CPlayerState_GroundedMove(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
+    : CPlayerState(goPlayer, scPlayer, eState)
 {
 }
 
@@ -24,7 +24,8 @@ HRESULT CPlayerState_GroundedMove::Initialize()
 
 void CPlayerState_GroundedMove::Priority_Update(_float fDT)
 {
-    CPlayerState::Priority_Update(fDT);
+    Control_Camera();
+    LookTo_InputDir(fDT);
 }
 
 void CPlayerState_GroundedMove::Update(_float fDT)
@@ -107,9 +108,9 @@ void CPlayerState_GroundedMove::Move(_float fDT)
     }
 }
 
-std::shared_ptr<CPlayerState_GroundedMove> CPlayerState_GroundedMove::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer)
+std::shared_ptr<CPlayerState_GroundedMove> CPlayerState_GroundedMove::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
 {
-    auto pInstance = std::make_shared<CPlayerState_GroundedMove>(goPlayer, scPlayer);
+    auto pInstance = std::make_shared<CPlayerState_GroundedMove>(goPlayer, scPlayer, eState);
 
     IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "pInstance create faild");
     return pInstance;

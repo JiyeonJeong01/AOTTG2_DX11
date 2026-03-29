@@ -25,6 +25,10 @@ void CPlayer::Awake(void* pCtx)
 
     m_upStateMachine = CPlayerStateMachine::Create(m_goPlayer, this);
     m_upInputController = CPlayer_InputController::Create();
+    IF_NULL_RETURN_MSG_BREAK(m_upStateMachine, , "m_upStateMachine is nullptr");
+    IF_NULL_RETURN_MSG_BREAK(m_upInputController, , "m_upInputController is nullptr");
+
+    m_upStateMachine->Subscribe_OnChangedCurState(&CPlayer::OnChange_CurState, this);
 }
 
 void CPlayer::Start(void* pCtx)
@@ -89,6 +93,7 @@ void CPlayer::OnChange_CurState(std::shared_ptr<CPlayerState> spNewState)
     IF_NULL_RETURN_MSG_BREAK(spNewState, , "spNewState is nullptr");
 
     m_spCurState = spNewState;
+    strncpy_s(m_szState, sizeof(m_szState), spNewState->Get_StateName(), _TRUNCATE);
 }
 
 void CPlayer::On_CollisionEnter(const COLLISION_DESC& tDesc)

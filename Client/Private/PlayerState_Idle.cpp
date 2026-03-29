@@ -7,8 +7,8 @@
 
 using namespace ANIM_PLAYER;
 
-CPlayerState_Idle::CPlayerState_Idle(Engine::CGameObject* goPlayer, CPlayer* scPlayer)
-    : CPlayerState(goPlayer, scPlayer)
+CPlayerState_Idle::CPlayerState_Idle(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
+    : CPlayerState(goPlayer, scPlayer, eState)
 {
 }
 
@@ -25,7 +25,8 @@ HRESULT CPlayerState_Idle::Initialize()
 
 void CPlayerState_Idle::Priority_Update(_float fDT)
 {
-    CPlayerState::Priority_Update(fDT);
+    Control_Camera();
+    LookTo_InputDir(fDT);
 }
 
 void CPlayerState_Idle::Update(_float fDT)
@@ -73,9 +74,9 @@ void CPlayerState_Idle::Enter(_uint iDetailFlag)
     m_tComponents.animator.Set_NextAnimationClip(IDLE_F);
 }
 
-std::shared_ptr<CPlayerState_Idle> CPlayerState_Idle::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer)
+std::shared_ptr<CPlayerState_Idle> CPlayerState_Idle::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
 {
-    auto pInstance = std::make_shared<CPlayerState_Idle>(goPlayer, scPlayer);
+    auto pInstance = std::make_shared<CPlayerState_Idle>(goPlayer, scPlayer, eState);
 
     IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "pInstance create faild");
     return pInstance;

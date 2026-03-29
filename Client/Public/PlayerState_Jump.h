@@ -6,7 +6,7 @@ NS_BEGIN(Client)
 class CPlayerState_Jump final : public CPlayerState
 {
 public:
-    CPlayerState_Jump(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
+    CPlayerState_Jump(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
     ~CPlayerState_Jump();
 
 public:
@@ -21,7 +21,7 @@ public:
 
 
 public:
-    static std::shared_ptr<CPlayerState_Jump> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
+    static std::shared_ptr<CPlayerState_Jump> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
 };
 
 NS_END

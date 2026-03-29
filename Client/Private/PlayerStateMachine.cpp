@@ -23,10 +23,10 @@ HRESULT CPlayerStateMachine::Initialize(CGameObject* goPlayer, CPlayer* scPlayer
     m_States.resize(To<_uint>(PLAYER_STATE::END));
 
     /* { IDLE = 0, GROUNDED_MOVE, JUMP, AIRBORNE_MOVE, HOOK, ATTACK, SHOOT, RELOAD, DODGE, RESUPPLY, GRABBED, EMOTE, END } */
-    m_States[To<_uint>(PLAYER_STATE::IDLE)] = CPlayerState_Idle::Create(goPlayer, scPlayer);
-    m_States[To<_uint>(PLAYER_STATE::GROUNDED_MOVE)] = CPlayerState_GroundedMove::Create(goPlayer, scPlayer);
-    m_States[To<_uint>(PLAYER_STATE::JUMP)] = CPlayerState_Jump::Create(goPlayer, scPlayer);
-    m_States[To<_uint>(PLAYER_STATE::AIRBORNE_MOVE)] = CPlayerState_AirborneMove::Create(goPlayer, scPlayer);
+    m_States[To<_uint>(PLAYER_STATE::IDLE)] = CPlayerState_Idle::Create(goPlayer, scPlayer, PLAYER_STATE::IDLE);
+    m_States[To<_uint>(PLAYER_STATE::GROUNDED_MOVE)] = CPlayerState_GroundedMove::Create(goPlayer, scPlayer, PLAYER_STATE::GROUNDED_MOVE);
+    m_States[To<_uint>(PLAYER_STATE::JUMP)] = CPlayerState_Jump::Create(goPlayer, scPlayer, PLAYER_STATE::JUMP);
+    m_States[To<_uint>(PLAYER_STATE::AIRBORNE_MOVE)] = CPlayerState_AirborneMove::Create(goPlayer, scPlayer, PLAYER_STATE::AIRBORNE_MOVE);
 
     m_spCurState = m_States[To<_uint>(PLAYER_STATE::IDLE)];
 

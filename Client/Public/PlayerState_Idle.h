@@ -9,7 +9,7 @@ NS_BEGIN(Client)
 class CPlayerState_Idle final : public CPlayerState
 {
 public:
-    CPlayerState_Idle(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
+    CPlayerState_Idle(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
     ~CPlayerState_Idle();
 
 public:
@@ -22,7 +22,7 @@ public:
     void Enter(_uint iDetailFlag) override;
 
 public:
-    static std::shared_ptr<CPlayerState_Idle> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer);
+    static std::shared_ptr<CPlayerState_Idle> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
 };
 
 NS_END

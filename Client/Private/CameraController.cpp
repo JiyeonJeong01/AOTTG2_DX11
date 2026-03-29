@@ -1,4 +1,6 @@
 ﻿#include "CameraController.h"
+
+#include "Easing_Function.h"
 #include "GameObject.h"
 
 NS_BEGIN(Client)
@@ -6,14 +8,6 @@ NS_BEGIN(Client)
 
 void CCameraController::Awake(void* pCtx)
 {
-    //m_goNormalCam = SYS_GAMEOBJECT.Get_Wrapper(m_refCamera.hObject);
-    //IF_NULL_RETURN_MSG_BREAK(m_goNormalCam, , "m_goNormalCam is nullptr");
-    //m_trNormalCam = m_goNormalCam->Get_Component<CTransform>();
-
-    //m_goTarget = SYS_GAMEOBJECT.Get_Wrapper(m_refTarget.hObject);
-    //IF_NULL_RETURN_MSG_BREAK(m_goTarget, , "m_goTarget is nullptr");
-    //m_trTarget = m_goTarget->Get_Component<CTransform>();
-
     m_fHeight = m_vOffsetToPlayer.y;
 
     const _float fXZLenSq =
@@ -27,6 +21,9 @@ void CCameraController::Awake(void* pCtx)
 
     m_fYawDegree = XMConvertToDegrees(atan2f(m_vOffsetToPlayer.x, -m_vOffsetToPlayer.z));
     m_fPitchDegree = XMConvertToDegrees(atan2f(m_vOffsetToPlayer.y, m_fDistance));
+
+    m_fTargetYawDegree = m_fYawDegree;
+    m_fTargetPitchDegree = m_fPitchDegree;
 }
 
 void CCameraController::Start(void* pCtx)
@@ -46,13 +43,43 @@ void CCameraController::Update(void* pCtx, _float fDT)
             m_trNormalCam = m_goNormalCam->Get_Component<CTransform>();
     }
 
-    if (!m_goTarget && m_refCamera.Is_Valid())
+    if (!m_goTarget && m_refTarget.Is_Valid())
     {
         m_goTarget = SYS_GAMEOBJECT.Get_Wrapper(m_refTarget.hObject);
         if (m_goTarget)
             m_trTarget = m_goTarget->Get_Component<CTransform>();
-
     }
+
+    if (!m_trNormalCam.Is_Valid() || !m_trTarget.Is_Valid())
+        return;
+
+    const _float fYawInputAlpha =
+        CEasingFunction::SmoothDampAlpha(m_fInputResponseSharpness, fDT);
+
+    const _float fAppliedYawInput =
+        CEasingFunction::Lerp(0.f, m_fYawInputAccum, fYawInputAlpha);
+    const _float fAppliedPitchInput =
+        CEasingFunction::Lerp(0.f, m_fPitchInputAccum, fYawInputAlpha);
+
+    m_fYawInputAccum -= fAppliedYawInput;
+    m_fPitchInputAccum -= fAppliedPitchInput;
+
+    m_fTargetYawDegree += fAppliedYawInput * m_fMouseSensor;
+    m_fTargetPitchDegree += fAppliedPitchInput * m_fMouseSensor;
+
+    if (m_fTargetPitchDegree > 75.f)
+        m_fTargetPitchDegree = 75.f;
+    else if (m_fTargetPitchDegree < -30.f)
+        m_fTargetPitchDegree = -30.f;
+
+    if (m_fTargetYawDegree > 360.f || m_fTargetYawDegree < -360.f)
+        m_fTargetYawDegree = fmodf(m_fTargetYawDegree, 360.f);
+
+    m_fYawDegree = CEasingFunction::DampedLerp(
+        m_fYawDegree, m_fTargetYawDegree, m_fYawSharpness, fDT);
+
+    m_fPitchDegree = CEasingFunction::DampedLerp(
+        m_fPitchDegree, m_fTargetPitchDegree, m_fPitchSharpness, fDT);
 }
 
 void CCameraController::Late_Update(void* pCtx, _float fDT)
@@ -60,10 +87,10 @@ void CCameraController::Late_Update(void* pCtx, _float fDT)
     if (!m_trNormalCam.Is_Valid() || !m_trTarget.Is_Valid())
         return;
 
-    Follow_Target();
+    Follow_Target(fDT);
 }
 
-void CCameraController::Follow_Target()
+void CCameraController::Follow_Target(_float fDT)
 {
     _float3 vTargetPos{};
     XMStoreFloat3(&vTargetPos, m_trTarget.Get_StateXM(STATE::POSITION));
@@ -86,16 +113,43 @@ void CCameraController::Follow_Target()
     vOffset.y = m_fDistance * fSinPitch;
     vOffset.z = -m_fDistance * fCosPitch * fCosYaw;
 
-    _vector vNewPos = Math::Load(vLookTargetPos) + Math::Load(vOffset);
+    _float3 vDesiredCamPos{};
+    vDesiredCamPos.x = vLookTargetPos.x + vOffset.x;
+    vDesiredCamPos.y = vLookTargetPos.y + vOffset.y;
+    vDesiredCamPos.z = vLookTargetPos.z + vOffset.z;
 
-    vNewPos = XMVectorSet(
-        Math::Get_X(vNewPos),
-        fmaxf(fLimitY, Math::Get_Y(vNewPos)),
-        Math::Get_Z(vNewPos),
-        1.f);
+    if (vDesiredCamPos.y < fLimitY)
+        vDesiredCamPos.y = fLimitY;
 
-    m_trNormalCam.Set_Position(vNewPos);
-    m_trNormalCam.Look_At(Math::Load(vLookTargetPos));
+    if (!m_bCameraInitialized)
+    {
+        m_trNormalCam.Set_Position(Math::Load(vDesiredCamPos));
+        m_vCurrentLookTargetPos = vLookTargetPos;
+        m_bCameraInitialized = true;
+    }
+    else
+    {
+        _float3 vCurrentCamPos{};
+        XMStoreFloat3(&vCurrentCamPos, m_trNormalCam.Get_StateXM(STATE::POSITION));
+
+        vCurrentCamPos.x = CEasingFunction::DampedLerp(
+            vCurrentCamPos.x, vDesiredCamPos.x, m_fFollowSharpness, fDT);
+        vCurrentCamPos.y = CEasingFunction::DampedLerp(
+            vCurrentCamPos.y, vDesiredCamPos.y, m_fFollowSharpness, fDT);
+        vCurrentCamPos.z = CEasingFunction::DampedLerp(
+            vCurrentCamPos.z, vDesiredCamPos.z, m_fFollowSharpness, fDT);
+
+        m_vCurrentLookTargetPos.x = CEasingFunction::DampedLerp(
+            m_vCurrentLookTargetPos.x, vLookTargetPos.x, m_fLookSharpness, fDT);
+        m_vCurrentLookTargetPos.y = CEasingFunction::DampedLerp(
+            m_vCurrentLookTargetPos.y, vLookTargetPos.y, m_fLookSharpness, fDT);
+        m_vCurrentLookTargetPos.z = CEasingFunction::DampedLerp(
+            m_vCurrentLookTargetPos.z, vLookTargetPos.z, m_fLookSharpness, fDT);
+
+        m_trNormalCam.Set_Position(Math::Load(vCurrentCamPos));
+    }
+
+    m_trNormalCam.Look_At(Math::Load(m_vCurrentLookTargetPos));
 }
 
 void CCameraController::Pitch(_float fDegree)
@@ -114,6 +168,16 @@ void CCameraController::Yaw(_float fDegree)
 
     if (m_fYawDegree > 360.f || m_fYawDegree < -360.f)
         m_fYawDegree = fmodf(m_fYawDegree, 360.f);
+}
+
+void CCameraController::Add_Yaw_Input(_float fDegree)
+{
+    m_fYawInputAccum += fDegree;
+}
+
+void CCameraController::Add_Pitch_Input(_float fDegree)
+{
+    m_fPitchInputAccum += fDegree;
 }
 
 NS_END;

@@ -16,10 +16,12 @@ class CPlayer : public IScript
 {
 
 public:
-    _float  m_fSpeed = 0;
+    _float      m_fSpeed = 0;
+    char        m_szState[32];
 
 public:
     SCRIPT_FIELDS_BEGIN(CPlayer)
+        SCRIPT_FIELD_DEBUG_CHAR(m_szState)
         SCRIPT_FIELD_FLOAT(m_fSpeed)
     SCRIPT_FIELDS_END(CPlayer)
 

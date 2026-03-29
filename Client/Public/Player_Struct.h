@@ -8,6 +8,7 @@ typedef struct tagPlayerInputCommand
 {
     _float2 vMouseDelta{};
     _float3 vMove{};
+    _float3 vLook{};
 
     _bool bLeftAnchorPressed = false;   /* Q */
     _bool bLeftAnchorHeld = false;      /* Q */
