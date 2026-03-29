@@ -2,7 +2,7 @@
 
 NS_BEGIN(Client)
 
-_bool CGroundChecker::Get_OnGround() const
+_bool CGroundChecker::Get_OnWalkable() const
 {
     return m_iGroundContactCount > 0;
 }

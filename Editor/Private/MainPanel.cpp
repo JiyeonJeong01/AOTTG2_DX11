@@ -478,6 +478,11 @@ void CMainPanel::Draw_Toolbar()
 
         ImGui::SameLine();
 
+        ImGui::PushItemWidth(45.f);
+        ImGui::DragFloat("##Speed", &g_fPlaySpeed, 0.01f, 0.1f, 5.f);
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
+
         if (ImGui::Button("Reload", ImVec2(button_size, 35)))
         {
             m_bPlaying = false;

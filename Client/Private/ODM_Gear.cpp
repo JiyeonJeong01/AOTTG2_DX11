@@ -33,7 +33,6 @@ Engine::CGameObject* CODM_Gear::Find_Owner()
 
     if (m_pOwner)
     {
-        LOG_INFO("owner exist!");
         m_tr = m_pOwner->Get_Component<CTransform>();
         m_sj = m_pOwner->Get_Component<CSpringJoint>();
     }

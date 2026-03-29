@@ -26,6 +26,9 @@ public :
     virtual void    Update(_float fDT);
     virtual void    Late_Update(_float fDT);;
 
+    void            Enter(_uint iDetailFlag) override;
+    void            Exit() override;
+
     virtual void    Control_Camera();
     virtual void    Update_PlayerInput(const PLAYER_INPUT_COMMAND& tInputCmd);
     virtual void    Setup_CachedPlayerInfos();
@@ -39,18 +42,19 @@ public :
 
 private :
     virtual void    Decide_NextState() {};
+    virtual void    Decide_NextAnim() {};
 
 protected:
     Engine::CGameObject*    m_goPlayer{};
     CPlayer*                m_scPlayer{};
-    CPlayerStateMachine*    m_pFSM{};
 
     PLAYER_INPUT_COMMAND    m_tInputCmd{};
     PLAYER_COMPONENTS       m_tComponents{};
     PLAYER_RUNTIME_REF      m_tRef{};
     PLAYER_INFO*            m_pInfo{};
 
-private :
+protected :
+    _bool                   m_bAcivated = false;
     _float3                 m_vPrevLook{};
     _float                  m_fRotateSharpness = 10.f;
     _float                  m_fCurrentYaw = 0.f;

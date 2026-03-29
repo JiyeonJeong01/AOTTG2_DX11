@@ -48,20 +48,6 @@ void CRope::Update(_float fTimeDelta)
     Upload_Line();
 }
 
-void CRope::Render()
-{
-    if (!m_upLine)
-        return;
-
-    if (m_State == ROPE_STATE::IDLE)
-        return;
-
-    if (m_RopePoints.size() < 2)
-        return;
-
-    m_upLine->Submit();
-}
-
 void CRope::Start_Extending_Success(_fvector vStartPoint, _fvector vAnchorPoint)
 {
     XMStoreFloat3(&m_vStartPoint, vStartPoint);

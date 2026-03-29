@@ -61,6 +61,7 @@ private:
     uint32_t                m_hUIRectMesh{};
     uint32_t                m_hDefaultBaseMap{};
     uint32_t                m_hDefaultNormalMap{};
+    uint32_t                m_hVtxColShader{};
 
     /* Draw Calls */
     vector<DRAW_CMD>        m_AllDrawCmds;

@@ -150,7 +150,7 @@ void CLine::Submit()
     if (!pEntry)
         return;
 
-    pEntry->iVertexCount = m_iCurPoints;
+    pEntry->iVertexCount = m_iCurPoints * 2;
 
     DRAW_CMD cmd = DRAW_CMD::Create_Line(m_hMesh, DRAW_TYPE::LINE, RENDER_LAYER::NONBLEND);
     SYS_RENDER.Submit_LineMesh(cmd);

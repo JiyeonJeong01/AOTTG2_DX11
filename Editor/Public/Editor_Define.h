@@ -39,6 +39,7 @@ namespace Editor
 
 extern HWND g_hWnd;
 extern HINSTANCE g_hInst;
+extern _float g_fPlaySpeed;
 
 #define GET_INSTANCE(CLASSNAME) CLASSNAME::GetInstance()
 #define SYS_GUI			    	GET_INSTANCE(Editor::CGUI_System)

@@ -11,6 +11,7 @@ public :
     ~CState() = default;
 
     virtual void Enter(_uint iDetailFlag) = 0;
+    virtual void Exit() = 0;
 };
 
 NS_END

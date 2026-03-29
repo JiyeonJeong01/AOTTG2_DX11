@@ -18,7 +18,6 @@ public:
 public:
     void Initialize();
     void Update(_float fTimeDelta);
-    void Render();
 
 public:
     void Start_Extending_Success(_fvector vStartPoint, _fvector vAnchorPoint);

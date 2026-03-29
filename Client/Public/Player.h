@@ -17,7 +17,7 @@ class CPlayer : public IScript
 
 public:
     _float      m_fSpeed = 0;
-    char        m_szState[32];
+    char        m_szState[32] = {};
 
 public:
     SCRIPT_FIELDS_BEGIN(CPlayer)

@@ -121,28 +121,6 @@ void CAnimator_Processor::Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, ANI
 {
 }
 
-uint32_t CAnimator_Processor::Find_AnimationClip_By_Name(COMPONENT_HANDLE hComponent, const std::string& strClipName)
-{
-    auto pData = m_Pool.Get_Data_By_Handle(hComponent);
-    IF_NULL_RETURN_MSG_BREAK(pData, INVALID_ANIM_CLIP_INDEX, "pData is nullptr");
-
-    MESH_RENDERER_DATA* pMeshRenderer = nullptr;
-    MODEL_ENTRY* pModel = nullptr;
-
-    if (!Resolve_Model_Entry(pData, pMeshRenderer, pModel))
-        return INVALID_ANIM_CLIP_INDEX;
-
-    const auto& animClips = pModel->vecAnimClips;
-
-    for (uint32_t i = 0; i < static_cast<uint32_t>(animClips.size()); ++i)
-    {
-        if (animClips[i].strName == strClipName)
-            return i;
-    }
-
-    return INVALID_ANIM_CLIP_INDEX;
-}
-
 /* 컴포넌트 하나에 대한 전체 업데이트 진입점 */
 void CAnimator_Processor::Update_Animator(ANIMATOR_DATA* pData, _float fDT)
 {
@@ -169,13 +147,8 @@ void CAnimator_Processor::Update_Animator(ANIMATOR_DATA* pData, _float fDT)
     Update_TrackPosition(pData, *pCurClip, fDT, bFinished);
     Update_BlendState(pData, fDT);
 
-    Evaluate_AnimationChannels(pData, *pModel, *pCurClip);
-    Build_BoneCombinedMatrices(pData, pModel->tSkeleton);
-
-    /* 매 프레임 각 Bone이 어디로 움직였는지 finalBoneMatrices에 계산해둔다. */
-    Build_FinalBoneMatrices(pData, *pModel);
-
-    if (pData->iNextAnimationClip != INVALID_ANIM_CLIP_INDEX && pData->fBlendElapsed >= pData->fBlendDuration)
+    if (pData->iNextAnimationClip != INVALID_ANIM_CLIP_INDEX
+        && pData->fBlendElapsed >= pData->fBlendDuration)
     {
         ANIMATION_CLIP_ENTRY* pNextClip = Resolve_Next_AnimationClip(pData, pModel);
         if (pNextClip)
@@ -183,19 +156,30 @@ void CAnimator_Processor::Update_Animator(ANIMATOR_DATA* pData, _float fDT)
             pData->iAnimationClip = pData->iNextAnimationClip;
             pData->fTrackPosition = Get_NextClipTrackPosition(pData, *pNextClip);
             pData->currentKeyFrameIndices.assign(pNextClip->channels.size(), 0);
+            pData->bPlaying = true;
+            pCurClip = pNextClip;
+
+            Ensure_RuntimeBuffers(pData, *pModel, *pCurClip);
         }
 
         pData->iNextAnimationClip = INVALID_ANIM_CLIP_INDEX;
         pData->fBlendElapsed = 0.f;
         pData->fBlendDuration = 0.f;
     }
+
+    Evaluate_AnimationChannels(pData, *pModel, *pCurClip);
+    Build_BoneCombinedMatrices(pData, pModel->tSkeleton);
+
+    /* 매 프레임 각 Bone이 어디로 움직였는지 finalBoneMatrices에 계산해둔다. */
+    Build_FinalBoneMatrices(pData, *pModel);
 }
 
 void CAnimator_Processor::Update_TrackPosition(ANIMATOR_DATA* pData, const ANIMATION_CLIP_ENTRY& tClip, _float fDT, _bool& bOutFinished)
 {
     bOutFinished = false;
 
-    if (!pData->bPlaying) return;
+    if (!pData->bPlaying)
+        return;
 
     /* 초당 누적되는 틱 */
     const _float fTickPerSecond = (tClip.fTickPerSecond <= 0.f) ? 1.f : tClip.fTickPerSecond;
@@ -400,7 +384,7 @@ void CAnimator_Processor::Evaluate_Channel_LocalTransform(ANIMATOR_DATA* pData, 
 /* 애니메이션 전환 시 각 채널에 대한 블렌딩 */
 void CAnimator_Processor::Apply_Blend_To_LocalTransform(ANIMATOR_DATA* pData, const MODEL_ENTRY& tModel, _uint iChannelIndex, _float4x4& inOutLocalMatrix)
 {
-    if (pData->fBlendElapsed >= pData->fBlendDuration)
+    if (pData->fBlendElapsed > pData->fBlendDuration)
         return;
 
     if (pData->iNextAnimationClip == INVALID_ANIM_CLIP_INDEX)
@@ -669,6 +653,29 @@ void CAnimator_Processor::Try_Build_ClipNameMap(ANIMATOR_DATA* pData)
     for (const auto& clip : pModel->vecAnimClips)
         pData->NameToClipIndex.insert({ clip.strName, iIndex++ });
 }
+
+uint32_t CAnimator_Processor::Find_AnimationClip_By_Name(COMPONENT_HANDLE hComponent, const std::string& strClipName)
+{
+    auto pData = m_Pool.Get_Data_By_Handle(hComponent);
+    IF_NULL_RETURN_MSG_BREAK(pData, INVALID_ANIM_CLIP_INDEX, "pData is nullptr");
+
+    MESH_RENDERER_DATA* pMeshRenderer = nullptr;
+    MODEL_ENTRY* pModel = nullptr;
+
+    if (!Resolve_Model_Entry(pData, pMeshRenderer, pModel))
+        return INVALID_ANIM_CLIP_INDEX;
+
+    const auto& animClips = pModel->vecAnimClips;
+
+    for (uint32_t i = 0; i < static_cast<uint32_t>(animClips.size()); ++i)
+    {
+        if (animClips[i].strName == strClipName)
+            return i;
+    }
+
+    return INVALID_ANIM_CLIP_INDEX;
+}
+
 
 /* 설정한 블렌딩 시간 넣기 */
 _float CAnimator_Processor::Get_BlendDuration(const ANIMATOR_DATA* pData, uint32_t iFromClip, uint32_t iToClip) const

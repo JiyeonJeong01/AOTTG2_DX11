@@ -154,13 +154,23 @@ void CAnimator::Set_NextAnimationClip(uint32_t iNextAnimClip)
     if (!m_pData->pAnimator_Processor)
         return;
 
-    if (m_pData->iAnimationClip == iNextAnimClip)
-        return;
-
     if (m_pData->NameToClipIndex.size() == 0)
         m_pData->pAnimator_Processor->Try_Build_ClipNameMap(m_pData);
 
     if (m_pData->NameToClipIndex.size() == 0)
+        return;
+
+    /* 현재 클립으로 돌아가려는 요청이면, 남아 있던 예약을 취소한다 */
+    if (m_pData->iAnimationClip == iNextAnimClip)
+    {
+        m_pData->iNextAnimationClip = INVALID_ANIM_CLIP_INDEX;
+        m_pData->fBlendElapsed = 0.f;
+        m_pData->fBlendDuration = 0.f;
+        return;
+    }
+
+    /* 이미 같은 예약이 걸려 있으면 무시 */
+    if (m_pData->iNextAnimationClip == iNextAnimClip)
         return;
 
     m_pData->fBlendElapsed = 0.f;
@@ -170,6 +180,39 @@ void CAnimator::Set_NextAnimationClip(uint32_t iNextAnimClip)
         m_pData,
         m_pData->iAnimationClip,
         iNextAnimClip);
+
+    DEBUG_POINT;
+}
+
+
+
+_uint CAnimator::Get_CurAnimaionClipIdx() const
+{
+    if (!m_pData)
+        return INVALID_ANIM_CLIP_INDEX;
+
+    return m_pData->iAnimationClip;
+}
+
+_uint CAnimator::Get_AnimationClipIdx_By_Name(const std::string& strName) const
+{
+    if (!m_pData)
+        return INVALID_ANIM_CLIP_INDEX;
+
+    if (!m_pData->pAnimator_Processor)
+        return INVALID_ANIM_CLIP_INDEX;
+
+    if (m_pData->NameToClipIndex.size() == 0)
+        m_pData->pAnimator_Processor->Try_Build_ClipNameMap(m_pData);
+
+    if (m_pData->NameToClipIndex.size() == 0)
+        return INVALID_ANIM_CLIP_INDEX;
+
+    auto it = m_pData->NameToClipIndex.find(strName);
+    if (it == m_pData->NameToClipIndex.end())
+        return INVALID_ANIM_CLIP_INDEX;
+
+    return it->second;
     int a = 10;
 }
 

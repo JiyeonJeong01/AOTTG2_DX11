@@ -27,7 +27,7 @@ private :
     _int                m_iGroundContactCount = 0;
 
 public :
-    _bool               Get_OnGround() const;
+    _bool               Get_OnWalkable() const;
 
 public:
     void Awake(void* pCtx) override;

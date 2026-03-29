@@ -68,6 +68,9 @@ public:
     void                Set_NextAnimationClip(const std::string& strNextAnimClip);
     void                Set_NextAnimationClip(uint32_t iNextAnimClip);
 
+    _uint               Get_CurAnimaionClipIdx() const;
+    _uint               Get_AnimationClipIdx_By_Name(const std::string& strName) const;
+
     void                Reset_CurrentKeyFrameIndices();
     void                Reset_CurrentKeyFrameIndices(size_t iChannelCount);
 };

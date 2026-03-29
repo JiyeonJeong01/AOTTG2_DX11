@@ -15,9 +15,20 @@ public:
     void Update(_float fDT) override;
     void Late_Update(_float fDT) override;
 
-    void Decide_NextState() override;
     void Enter(_uint iDetailFlag) override;
+    void Exit() override;
 
+    void Setup_CachedPlayerInfos() override;
+
+private :
+    JUMP    m_eJumpState = JUMP::JUMP_BEGIN;
+
+private :
+    void Decide_NextAnim() override;
+    void Decide_NextState() override;
+
+    void On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData);
+    void On_JumpFinished(const Engine::ANIMATION_EVENT_DATA& tData);
 
 
 public:

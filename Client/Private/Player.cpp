@@ -91,9 +91,6 @@ void CPlayer::Late_Update(void* pCtx, _float fDT)
 void CPlayer::OnChange_CurState(std::shared_ptr<CPlayerState> spNewState)
 {
     IF_NULL_RETURN_MSG_BREAK(spNewState, , "spNewState is nullptr");
-
-    m_spCurState = spNewState;
-    strncpy_s(m_szState, sizeof(m_szState), spNewState->Get_StateName(), _TRUNCATE);
 }
 
 void CPlayer::On_CollisionEnter(const COLLISION_DESC& tDesc)

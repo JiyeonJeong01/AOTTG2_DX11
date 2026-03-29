@@ -69,6 +69,8 @@ void CPlayerStateMachine::Change_State(_uint iStateKey, _uint iDetailFlag)
     if (iStateKey >= m_States.size())
         return;
 
+    m_spCurState->Exit();
+
     m_spCurState = m_States[iStateKey];
     m_spCurState->Enter(iDetailFlag);
 

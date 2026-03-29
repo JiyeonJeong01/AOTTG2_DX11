@@ -92,6 +92,7 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 
     m_upRenderContext = CRender_Context::Create(iWidth, iHeight);
 
+    m_hVtxColShader = SYS_RESOURCE.Load_Shader(DEFAULT_ASSET_GUID::SHADER_VTXCOL);
     return S_OK;
 }
 
@@ -473,6 +474,39 @@ void CRender_System::Execute_Draw_Line(const DRAW_CMD& tCmd)
 {
     const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(tCmd.line.hMesh);
     IF_NULL_RETURN_MSG_BREAK(pMesh, , "pMesh is nullptr.");
+
+    SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(m_hVtxColShader);
+    IF_NULL_RETURN_MSG_BREAK(pShader, , "pShader is nullptr");
+
+    ID3D11InputLayout* pIL = pShader->pPasses[0].pInputLayout.Get();
+    m_pContext->IASetInputLayout(pIL);
+
+    ID3DX11EffectPass* pPass = pShader->pPasses[0].pPass;
+    if (!pPass)
+        return;
+
+  
+
+    ID3DX11Effect* pFx = pShader->pEffect.Get();
+    ID3DX11EffectMatrixVariable* pWorld = nullptr;
+    ID3DX11EffectMatrixVariable* pView = nullptr;
+    ID3DX11EffectMatrixVariable* pProj = nullptr;
+    pWorld = pFx->GetVariableByName("g_WorldMatrix")->AsMatrix();
+    pView = pFx->GetVariableByName("g_ViewMatrix")->AsMatrix();
+    pProj = pFx->GetVariableByName("g_ProjMatrix")->AsMatrix();
+
+    _matrix matWorld = XMMatrixIdentity();
+
+    if (pWorld)
+        pWorld->SetMatrix(reinterpret_cast<const float*>(&matWorld));
+
+    if (pView)
+        pView->SetMatrix(reinterpret_cast<const float*>(&SYS_RENDER.Contexts()->Get_View()));
+
+    if (pProj)
+        pProj->SetMatrix(reinterpret_cast<const float*>(&SYS_RENDER.Contexts()->Get_Proj()));
+
+    pPass->Apply(0, m_pContext);
 
     pMesh->Bind_IA(m_pContext);
     pMesh->Draw(m_pContext);

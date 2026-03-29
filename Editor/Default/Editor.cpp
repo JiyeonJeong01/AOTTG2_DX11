@@ -21,6 +21,7 @@ HINSTANCE g_hInst;                                // 현재 인스턴스입니�
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 FILE* debug;
+_float  g_fPlaySpeed = 1.f;
 
 constexpr float FRAME_DT = 1.f / 60.f;
 constexpr float FIXED_DT = 0.02f;
@@ -102,13 +103,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
 
         const _float fDT = SYS_CORE.Compute_SystemDT();
-        fTimeAcc += fDT;
+        fTimeAcc += fDT * g_fPlaySpeed;
 
         if (fTimeAcc >= FRAME_DT)
         {
             static auto s_prev = Editor::CProfilerPanel::clock::now();
 
-            _float fDT = SYS_CORE.Compute_FrameDT();
+            _float fDT = SYS_CORE.Compute_FrameDT() * g_fPlaySpeed;
 
             {   /* 월드 갱신 */
                 Editor::CProfilerPanel::CScope _update("World::Update");

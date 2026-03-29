@@ -51,26 +51,10 @@ void CPlayerState_AirborneMove::Late_Update(_float fDT)
     Decide_NextState();
 }
 
-void CPlayerState_AirborneMove::Decide_NextState()
-{
-    if (m_eState == AIRBORNE_STATE::AIR_FALL && m_tRef.pGroundChecker->Get_OnGround())
-    {
-        const float THREASHOLD = 10.f;
-
-        _float3 fLinearVel = m_tComponents.rigidbody.Get_LinearVel();
-
-        const _float fLinearVelSq = fLinearVel.x * fLinearVel.x + fLinearVel.z * fLinearVel.z;
-
-        if (fLinearVelSq > THREASHOLD)
-            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::SLIDE));
-        else
-            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::DASH));
-    }
-}
-
 void CPlayerState_AirborneMove::Enter(_uint iDetailFlag)
 {
-    LOG_INFO("[ ENTER PLAYERSTATE_AIRBORNEMOVE ]");
+    CPlayerState::Enter(iDetailFlag);
+
     _uint iFlag = m_tRef.pGear->Get_UsingFlag();
 
     if ((iFlag & To<_uint>(SIDE::BOTH)) != 0)
@@ -84,10 +68,35 @@ void CPlayerState_AirborneMove::Enter(_uint iDetailFlag)
     }
 }
 
+void CPlayerState_AirborneMove::Exit()
+{
+    CPlayerState::Exit();
+}
+
+void CPlayerState_AirborneMove::Decide_NextState()
+{
+    if (m_eState == AIRBORNE_STATE::AIR_FALL && m_tRef.pGroundChecker->Get_OnWalkable())
+    {
+        const float THREASHOLD = 10.f;
+
+        _float3 fLinearVel = m_tComponents.rigidbody.Get_LinearVel();
+
+        const _float fLinearVelSq = fLinearVel.x * fLinearVel.x + fLinearVel.z * fLinearVel.z;
+
+        if (fLinearVelSq > THREASHOLD)
+            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::SLIDE));
+        else
+            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::DASH_LAND));
+    }
+}
+
 void CPlayerState_AirborneMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
 {
+    if (!m_bAcivated)
+        return;
+
     _uint iIndex = tData.iAnimationClip;
-    if (iIndex != INVALID_ANIM_CLIP_INDEX || tData.iAnimationClip == INVALID_ANIM_CLIP_INDEX)
+    if (iIndex == INVALID_ANIM_CLIP_INDEX)
         return;
 
     if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::AIR])
@@ -114,7 +123,7 @@ void CPlayerState_AirborneMove::On_DashLandFinished(const Engine::ANIMATION_EVEN
     }
     else
     {
-        m_pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE));
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE));
     }
 }
 

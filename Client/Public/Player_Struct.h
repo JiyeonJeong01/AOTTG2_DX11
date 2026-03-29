@@ -47,6 +47,8 @@ typedef struct tagPlayerInfo
     _float                      fCurSpeed = 10.f;
     _float                      fMaxSpeed = 13.f;
 
+    _float                      fJump = 12.f;
+
     uint32_t                    iAnimFlag = 0;
 
 } PLAYER_INFO;
@@ -64,8 +66,9 @@ typedef struct tagPlayerRuntimeRef
 
 enum class PLAYER_STATE { IDLE = 0, GROUNDED_MOVE, JUMP, AIRBORNE_MOVE, HOOK, GROUNDED_ATTACK, AIRBORNE_ATTACK, SHOOT, RELOAD, DODGE, RESUPPLY, GRABBED, EMOTE, END };
 
-enum class AIRBORNE_STATE : uint8_t { AIR_BEGIN, AIR_LEFT, AIR_RIGHT, AIR_FRONT, AIR_BACK, AIR_FALL, END };
-enum class GROUNDED_MOVE : uint8_t { RUN, SLIDE, DASH, END };
+enum class AIRBORNE_STATE   : uint8_t { AIR_BEGIN, AIR_LEFT, AIR_RIGHT, AIR_FRONT, AIR_BACK, AIR_FALL, END };
+enum class GROUNDED_MOVE    : uint8_t { RUN, SLIDE, DASH_LAND, END };
+enum class JUMP             : uint8_t { JUMP_BEGIN, RISE, FALL, END };
 
 
 NS_END

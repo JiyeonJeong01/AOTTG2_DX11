@@ -17,16 +17,20 @@ public:
     void Update(_float fDT) override;
     void Late_Update(_float fDT) override;
 
-    void Setup_CachedPlayerInfos() override;
-    void Decide_NextState() override;
     void Enter(_uint iDetailFlag) override;
+    void Exit() override;
 
-    AIRBORNE_STATE          m_eState = AIRBORNE_STATE::AIR_BEGIN;
+    void Setup_CachedPlayerInfos() override;
 
 private :
+    void Decide_NextState() override;
+
     void On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData);
     void On_AirFinished(const Engine::ANIMATION_EVENT_DATA& tData);
     void On_DashLandFinished(const Engine::ANIMATION_EVENT_DATA& tData);
+
+private :
+    AIRBORNE_STATE          m_eState = AIRBORNE_STATE::AIR_BEGIN;
 
 public:
     static std::shared_ptr<CPlayerState_AirborneMove> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);

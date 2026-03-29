@@ -40,34 +40,92 @@ void CPlayerState_GroundedMove::Late_Update(_float fDT)
     Decide_NextState();
 }
 
+void CPlayerState_GroundedMove::Enter(_uint iDetailFlag)
+{
+    CPlayerState::Enter(iDetailFlag);
+
+    if (iDetailFlag == To<_uint>(GROUNDED_MOVE::RUN))
+    {
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);
+    }
+    else if (iDetailFlag == To<_uint>(GROUNDED_MOVE::DASH_LAND))
+    {
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::DASH_LAND);
+    }
+}
+
+void CPlayerState_GroundedMove::Exit()
+{
+    CPlayerState::Exit();
+}
+
+void CPlayerState_GroundedMove::Setup_CachedPlayerInfos()
+{
+    CPlayerState::Setup_CachedPlayerInfos();
+
+    m_tComponents.animator->OnAnimationFinished.Add_Listener(&CPlayerState_GroundedMove::On_AnimFinished, this);
+}
+
 void CPlayerState_GroundedMove::Decide_NextState()
 {
     if (m_tInputCmd.bBoostPressed)
     {
         /* 점프 */
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::JUMP), To<_uint>(JUMP::JUMP_BEGIN));
+        return;
     }
 
     if (XMVector3Equal(XMLoadFloat3(&m_tInputCmd.vMove), XMVectorZero()))
     {
+        _bool bShouldPlayAnim /* 아직 상태 전환하지 않고 애니메이션을 마저 재생해야 하는 경우 */
+            = m_tComponents.animator->iAnimationClip == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::DASH_LAND)
+            || m_tComponents.animator->iNextAnimationClip == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::DASH_LAND);
+        if (bShouldPlayAnim)
+            return;
+
         m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::IDLE));
+        return;
     }
 
     if (m_tInputCmd.bLeftAnchorPressed)
     {
         /* 앵커 고정 가능한지 판단 */
         m_tRef.pGear->Try_Grappling(SIDE::LEFT);
+        return;
     }
     if (m_tInputCmd.bRightAnchorPressed)
     {
         /* 앵커 고정 가능한지 판단 */
         m_tRef.pGear->Try_Grappling(SIDE::RIGHT);
+        return;
     }
 }
 
-void CPlayerState_GroundedMove::Enter(_uint iDetailFlag)
+void CPlayerState_GroundedMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
 {
-    LOG_INFO("[ ENTER PLAYERSTATE_GROUNDEMOVE ]");
-    m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);
+    if (!m_bAcivated)
+        return;
+
+    const _uint iIndex = tData.iAnimationClip;
+    if (iIndex == INVALID_ANIM_CLIP_INDEX)
+        return;
+
+    if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::DASH_LAND])
+        On_DashLandFinished(tData);
+}
+
+void CPlayerState_GroundedMove::On_DashLandFinished(const Engine::ANIMATION_EVENT_DATA& tData)
+{
+    /* 입력이 없는 경우 -> IDLE */
+    if (XMVector3Equal(XMVectorZero(), XMLoadFloat3(&m_tInputCmd.vMove)))
+    {
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::IDLE), 0);
+    }
+    /* 입력이 있는 경우 RUN */
+    else
+    {
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);   
+    }
 }
 
 void CPlayerState_GroundedMove::Move(_float fDT)
