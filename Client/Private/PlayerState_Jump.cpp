@@ -34,6 +34,7 @@ void CPlayerState_Jump::Late_Update(_float fDT)
 
     Decide_NextAnim();
     Decide_NextState();
+    Try_Grappling();
 }
 
 void CPlayerState_Jump::Enter(_uint iDetailFlag)
@@ -44,7 +45,7 @@ void CPlayerState_Jump::Enter(_uint iDetailFlag)
     m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::JUMP);
 
     /* 위로 가속 */
-    _float3 vWorldUp = { 0.f, m_pInfo->fJump, 0.f };
+    _float3 vWorldUp = { 0.f, m_pStats->fJump, 0.f };
     m_tComponents.rigidbody.Add_LinearImpulse(vWorldUp);
 }
 
@@ -65,7 +66,14 @@ void CPlayerState_Jump::Decide_NextState()
     _bool bFalling = m_tComponents.animator.Get_CurAnimaionClipIdx() == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::AIR_FALL);
     if (m_tRef.pGroundChecker->Get_OnWalkable() && bFalling)
     {
-        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::DASH_LAND));
+        _float3 vVelocity = m_tComponents.rigidbody.Get_LinearVel();
+        _float fVelSq = XMVectorGetX(XMVector3LengthSq(XMLoadFloat3(&vVelocity)));
+        const _float fThreshold = 25.f;
+
+        if (fVelSq < 25.f)
+            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::DASH_LAND));
+        else
+            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::SLIDE));
     }
 }
 

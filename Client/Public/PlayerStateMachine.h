@@ -25,7 +25,7 @@ public :
     void Update(_float fDT);
     void Late_Update(_float fDT);
 
-    void Cache_PlayerInfos(const PLAYER_COMPONENTS& tComponents, const PLAYER_RUNTIME_REF& tRef, PLAYER_INFO* pInfo);
+    void Cache_PlayerInfos(const PLAYER_CONTEXT& tContext);
     void Change_State(_uint iStateKey, _uint iDetailFlag = 0) override;
     void Update_PlayerInput(const PLAYER_INPUT_COMMAND& tInputCmd);
 

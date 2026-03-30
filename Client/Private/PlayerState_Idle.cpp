@@ -28,6 +28,7 @@ void CPlayerState_Idle::Priority_Update(_float fDT)
 {
     Control_Camera();
     LookTo_InputDir(fDT);
+    Try_Grappling();
 }
 
 void CPlayerState_Idle::Update(_float fDT)
@@ -68,19 +69,6 @@ void CPlayerState_Idle::Decide_NextState()
         && m_tRef.pFSM)
     {
         m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::JUMP));
-    }
-
-    if (m_tRef.pGear)
-    {
-        /* 앵커 고정 가능한지 판단 */
-        if (m_tInputCmd.bLeftAnchorPressed)
-        {
-            m_tRef.pGear->Try_Grappling(SIDE::LEFT);
-        }
-        if (m_tInputCmd.bLeftAnchorPressed)
-        {
-            m_tRef.pGear->Try_Grappling(SIDE::RIGHT);
-        }
     }
 
     if (!XMVector3Equal(XMLoadFloat3(&m_tInputCmd.vMove), XMVectorZero()))

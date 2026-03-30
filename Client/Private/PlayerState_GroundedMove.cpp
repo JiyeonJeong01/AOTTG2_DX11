@@ -26,6 +26,7 @@ void CPlayerState_GroundedMove::Priority_Update(_float fDT)
 {
     Control_Camera();
     LookTo_InputDir(fDT);
+    Try_Grappling();
 }
 
 void CPlayerState_GroundedMove::Update(_float fDT)
@@ -44,6 +45,8 @@ void CPlayerState_GroundedMove::Enter(_uint iDetailFlag)
 {
     CPlayerState::Enter(iDetailFlag);
 
+    m_eGroundedMoveState = To<GROUNDED_MOVE>(iDetailFlag);
+
     if (iDetailFlag == To<_uint>(GROUNDED_MOVE::RUN))
     {
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);
@@ -51,6 +54,10 @@ void CPlayerState_GroundedMove::Enter(_uint iDetailFlag)
     else if (iDetailFlag == To<_uint>(GROUNDED_MOVE::DASH_LAND))
     {
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::DASH_LAND);
+    }
+    else if (iDetailFlag == To<_uint>(GROUNDED_MOVE::SLIDE))
+    {
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::SLIDE);
     }
 }
 
@@ -68,36 +75,43 @@ void CPlayerState_GroundedMove::Setup_CachedPlayerInfos()
 
 void CPlayerState_GroundedMove::Decide_NextState()
 {
+    /* -> JUMP */
     if (m_tInputCmd.bBoostPressed)
     {
-        /* 점프 */
         m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::JUMP), To<_uint>(JUMP::JUMP_BEGIN));
         return;
     }
 
+    /* -> IDLE */
     if (XMVector3Equal(XMLoadFloat3(&m_tInputCmd.vMove), XMVectorZero()))
     {
-        _bool bShouldPlayAnim /* 아직 상태 전환하지 않고 애니메이션을 마저 재생해야 하는 경우 */
-            = m_tComponents.animator->iAnimationClip == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::DASH_LAND)
-            || m_tComponents.animator->iNextAnimationClip == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::DASH_LAND);
-        if (bShouldPlayAnim)
+        /* 아직 상태 전환하지 않고 애니메이션을 마저 재생해야 하는 경우 */
+        /* - 공중에서 바닥으로 착지 후 착지/슬라이딩 애니메이션을 재생하는 경우 */
+        {        //_uint iCurIdx = m_tComponents.animator->iAnimationClip;
+                //_uint iNextIdx = m_tComponents.animator->iAnimationClip;
+
+                //_bool bShouldStay = false;
+                //bShouldStay = iCurIdx == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::DASH_LAND)
+                //              || iNextIdx == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::DASH_LAND);
+                //if (bShouldStay)
+                //    return;
+
+                //bShouldStay = iCurIdx == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::SLIDE)
+                //              || iNextIdx == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::SLIDE);
+                //if (bShouldStay)
+                //    return;
+        }
+
+        if (m_eGroundedMoveState == GROUNDED_MOVE::DASH_LAND)
             return;
+        if (m_eGroundedMoveState == GROUNDED_MOVE::SLIDE)
+        {
+            const _float3 vLinearVel = m_tComponents.rigidbody.Get_LinearVel();
+            _float fLinearVelSq = vLinearVel.x * vLinearVel.x + vLinearVel.z * vLinearVel.z;
+            if (fLinearVelSq > 5.f) return; /* 슬라이딩 속도가 일정 이하인 경우 IDLE로 전환 */
+        }
 
         m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::IDLE));
-        return;
-    }
-
-    if (m_tInputCmd.bLeftAnchorPressed)
-    {
-        /* 앵커 고정 가능한지 판단 */
-        m_tRef.pGear->Try_Grappling(SIDE::LEFT);
-        return;
-    }
-    if (m_tInputCmd.bRightAnchorPressed)
-    {
-        /* 앵커 고정 가능한지 판단 */
-        m_tRef.pGear->Try_Grappling(SIDE::RIGHT);
-        return;
     }
 }
 
@@ -124,14 +138,15 @@ void CPlayerState_GroundedMove::On_DashLandFinished(const Engine::ANIMATION_EVEN
     /* 입력이 있는 경우 RUN */
     else
     {
+        m_eGroundedMoveState = GROUNDED_MOVE::RUN;
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);   
     }
 }
 
 void CPlayerState_GroundedMove::Move(_float fDT)
 {
-    const _float fMaxSpeed = m_pInfo->fMaxSpeed;
-    const _float fCurSpeed = m_pInfo->fCurSpeed;
+    const _float fMaxSpeed = m_pStats->fMaxSpeed;
+    const _float fCurSpeed = m_pStats->fCurSpeed;
 
     /* 플레이어의 현재 속도 */
     _float3 vLinearVel = m_tComponents.rigidbody.Get_LinearVel();
@@ -145,7 +160,6 @@ void CPlayerState_GroundedMove::Move(_float fDT)
     /* 입력 없음 */
     if (fMoveLenSq <= 0.f)
         return;
-
 
     _float3 vHorizontalVel{};
     vHorizontalVel.x = vLinearVel.x;

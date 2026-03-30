@@ -28,8 +28,10 @@
     <ClInclude Include="..\Public\GameManager.h" />
     <ClInclude Include="..\Public\GroundChecker.h" />
     <ClInclude Include="..\Public\Hello.h" />
+    <ClInclude Include="..\Public\HUDController.h" />
     <ClInclude Include="..\Public\PlayerState_Idle.h" />
     <ClInclude Include="..\Public\PlayerState_Jump.h" />
+    <ClInclude Include="..\Public\Player_SkillController.h" />
     <ClInclude Include="..\Public\Rope.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MainMenu_Controller.h" />
@@ -45,6 +47,9 @@
     <ClInclude Include="..\Public\State.h" />
     <ClInclude Include="..\Public\StateMachine.h" />
     <ClInclude Include="..\Public\Tester.h" />
+    <ClInclude Include="..\Public\UI_BladeController.h" />
+    <ClInclude Include="..\Public\UI_GasController.h" />
+    <ClInclude Include="..\Public\UI_SkillController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\CameraController.cpp" />
@@ -52,8 +57,10 @@
     <ClCompile Include="..\Private\GameManager.cpp" />
     <ClCompile Include="..\Private\GroundChecker.cpp" />
     <ClCompile Include="..\Private\Hello.cpp" />
+    <ClCompile Include="..\Private\HUDController.cpp" />
     <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
     <ClCompile Include="..\Private\PlayerState_Jump.cpp" />
+    <ClCompile Include="..\Private\Player_SkillController.cpp" />
     <ClCompile Include="..\Private\Rope.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MainMenu_Controller.cpp" />
@@ -68,6 +75,9 @@
     <ClCompile Include="..\Private\State.cpp" />
     <ClCompile Include="..\Private\StateMachine.cpp" />
     <ClCompile Include="..\Private\Tester.cpp" />
+    <ClCompile Include="..\Private\UI_BladeController.cpp" />
+    <ClCompile Include="..\Private\UI_GasController.cpp" />
+    <ClCompile Include="..\Private\UI_SkillController.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

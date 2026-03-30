@@ -48,15 +48,15 @@ void CPlayerStateMachine::Late_Update(_float fDT)
     m_spCurState->Late_Update(fDT);
 }
 
-void CPlayerStateMachine::Cache_PlayerInfos(const PLAYER_COMPONENTS& tComponents, const PLAYER_RUNTIME_REF& tRef, PLAYER_INFO* pInfo)
+void CPlayerStateMachine::Cache_PlayerInfos(const PLAYER_CONTEXT& tContext)
 {
     for (auto& pState : m_States)
         if (pState)
-            pState->Cache_PlayerInfos(tComponents, tRef, pInfo);
+            pState->Cache_PlayerContext(tContext);
 
     /* 그래플링/앵커 고정 성공 시 Airborne 상태로 전환하는 이벤트 등록 */
-    if (tRef.pGear)
-        tRef.pGear->Subscribe_On_Success_Anchored(&CPlayerStateMachine::Change_State, this);
+    if (tContext.tRef.pGear)
+        tContext.tRef.pGear->Subscribe_On_Success_Anchored(&CPlayerStateMachine::Change_State, this);
 
     for (auto& pState : m_States)
         if (pState)

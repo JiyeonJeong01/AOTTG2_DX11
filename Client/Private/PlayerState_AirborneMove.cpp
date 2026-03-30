@@ -3,6 +3,7 @@
 #include "PlayerStateMachine.h"
 #include "ODM_Gear.h"
 #include "GroundChecker.h"
+#include "Player_SkillController.h"
 
 CPlayerState_AirborneMove::CPlayerState_AirborneMove(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
     : CPlayerState(goPlayer, scPlayer, eState)
@@ -29,19 +30,43 @@ void CPlayerState_AirborneMove::Priority_Update(_float fDT)
 {
     Control_Camera();
     LookTo_InputDir(fDT);
+    Try_Grappling();
 }
 
 void CPlayerState_AirborneMove::Update(_float fDT)
 {
-    _uint iFlag = m_tRef.pGear->Get_UsingFlag();
+    _bool bLeftHook = m_tInputCmd.bLeftAnchorHeld;
+    _bool bRightHook = m_tInputCmd.bRightAnchorHeld;
 
     /* 그래플링 끝 */
-    if (m_eState != AIRBORNE_STATE::AIR_FALL
-        && (m_tInputCmd.bLeftAnchorHeld == false && m_tInputCmd.bRightAnchorHeld == false))
+    if (m_eAirborneState != AIRBORNE_STATE::AIR_FALL
+        && (bLeftHook == false && bRightHook == false))
     {
-        m_eState = AIRBORNE_STATE::AIR_FALL;
+        m_eAirborneState = AIRBORNE_STATE::AIR_FALL;
         m_tRef.pGear->Finish_Grappling();
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
+
+        return;
+    }
+
+    /* 그래플링 좌/우/정면 적용 */
+    /* -> 정면 */
+    if (m_eAirborneState != AIRBORNE_STATE::AIR_FRONT && bLeftHook == true && bRightHook == true)
+    {
+        m_eAirborneState = AIRBORNE_STATE::AIR_FRONT;
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_HOOK);
+    }
+    /* -> 좌측 앵커 사용 */
+    else if (m_eAirborneState != AIRBORNE_STATE::AIR_LEFT && bLeftHook == true && bRightHook == false)
+    {
+        m_eAirborneState = AIRBORNE_STATE::AIR_LEFT;
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_LEFT);
+    }
+    /* -> 우측 앵커 사용 */
+    else if (m_eAirborneState != AIRBORNE_STATE::AIR_RIGHT && bLeftHook == false && bRightHook == true)
+    {
+        m_eAirborneState = AIRBORNE_STATE::AIR_RIGHT;
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_RIGHT);
     }
 }
 
@@ -60,7 +85,8 @@ void CPlayerState_AirborneMove::Enter(_uint iDetailFlag)
     if ((iFlag & To<_uint>(SIDE::BOTH)) != 0)
     {
         /* Grapple Action (Left, Right, or Both) */
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR);
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_HOOK);
+        m_eAirborneState = AIRBORNE_STATE::AIR_BEGIN;
     }
     else
     {
@@ -75,7 +101,8 @@ void CPlayerState_AirborneMove::Exit()
 
 void CPlayerState_AirborneMove::Decide_NextState()
 {
-    if (m_eState == AIRBORNE_STATE::AIR_FALL && m_tRef.pGroundChecker->Get_OnWalkable())
+    /* -> GROUNDED_MOVE(착지/슬라이딩) */
+    if (m_eAirborneState == AIRBORNE_STATE::AIR_FALL && m_tRef.pGroundChecker->Get_OnWalkable())
     {
         const float THREASHOLD = 10.f;
 
@@ -88,6 +115,15 @@ void CPlayerState_AirborneMove::Decide_NextState()
         else
             m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::DASH_LAND));
     }
+
+
+    _bool bNormalAtk = m_tInputCmd.bNormalAttackPressed;
+    _bool bStrongAtk = m_tInputCmd.bStrongAttackPressed;
+
+    //if (bNormalAtk)
+    //{
+    //    m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::AIRBORNE_ATTACK), )
+    //}
 }
 
 void CPlayerState_AirborneMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
@@ -100,31 +136,17 @@ void CPlayerState_AirborneMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DA
         return;
 
     if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::AIR])
-        On_AirFinished(tData);
-    else if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::DASH_LAND])
-        On_DashLandFinished(tData);
+        On_AirHookFinished(tData);
 }
 
-void CPlayerState_AirborneMove::On_AirFinished(const Engine::ANIMATION_EVENT_DATA& tData)
+void CPlayerState_AirborneMove::On_AirHookFinished(const Engine::ANIMATION_EVENT_DATA& tData)
 {
     if ((m_tRef.pGear->Get_UsingFlag() & To<_uint>(SIDE::BOTH)) == (To<_uint>(SIDE::BOTH)))
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_RIGHT);
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_HOOK);
     else if (m_tRef.pGear->Get_UsingFlag() & To<_uint>(SIDE::LEFT))
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_LEFT);
     else if (m_tRef.pGear->Get_UsingFlag() & To<_uint>(SIDE::RIGHT))
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_RIGHT);
-}
-
-void CPlayerState_AirborneMove::On_DashLandFinished(const Engine::ANIMATION_EVENT_DATA& tData)
-{
-    if (XMVector3Equal(XMLoadFloat3(&m_tInputCmd.vMove), XMVectorZero()))
-    {
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::DASH_LAND);
-    }
-    else
-    {
-        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE));
-    }
 }
 
 std::shared_ptr<CPlayerState_AirborneMove> CPlayerState_AirborneMove::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)

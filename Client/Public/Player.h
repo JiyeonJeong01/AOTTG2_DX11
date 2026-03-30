@@ -5,6 +5,7 @@
 
 NS_BEGIN(Client)
 class CPlayer_InputController;
+class CPlayer_SkillController;
 class CPlayerStateMachine;
 class CPlayerState;
 class CCameraController;
@@ -41,9 +42,11 @@ private:
     CGameObject*        m_goPlayer = nullptr;
     PLAYER_COMPONENTS   m_tComponents{};
     PLAYER_RUNTIME_REF  m_tRef{};
-    PLAYER_INFO         m_tInfo{};
+    PLAYER_STATS        m_tStats{};
+    PLAYER_SKILLSET     m_tSkillSet{};
 
     std::unique_ptr<CPlayer_InputController>    m_upInputController{};
+    std::unique_ptr<CPlayer_SkillController>    m_upSkillController{};
     std::unique_ptr<CPlayerStateMachine>        m_upStateMachine{};
     std::shared_ptr<CPlayerState>               m_spCurState{};
 
@@ -56,6 +59,10 @@ private :
     void On_CollisionEnter(const COLLISION_DESC& tDesc);
     void On_CollisionStay(const COLLISION_DESC& tDesc);
     void On_CollisionExit(const COLLISION_DESC& tDesc);
+
+private :
+    /* TODO : 이후에 json 등으로 로드 */
+    
 };
 
 NS_END;

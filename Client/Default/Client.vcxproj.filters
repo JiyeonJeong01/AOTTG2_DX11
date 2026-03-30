@@ -44,6 +44,12 @@
     <Filter Include="Common\GroundChecker">
       <UniqueIdentifier>{740f9326-30cf-4a81-88e0-f0ebfa3edea2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{b49b425a-ee91-407f-90bf-ed24769cf2d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\HUD">
+      <UniqueIdentifier>{f049f1a7-e261-4a2b-8b72-41d034685f69}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -124,6 +130,21 @@
     <ClInclude Include="..\Public\GroundChecker.h">
       <Filter>Common\GroundChecker</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UI_BladeController.h">
+      <Filter>UI\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_GasController.h">
+      <Filter>UI\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_SkillController.h">
+      <Filter>UI\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HUDController.h">
+      <Filter>UI\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player_SkillController.h">
+      <Filter>Player\PlayerController</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -188,6 +209,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\GroundChecker.cpp">
       <Filter>Common\GroundChecker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_BladeController.cpp">
+      <Filter>UI\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_GasController.cpp">
+      <Filter>UI\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_SkillController.cpp">
+      <Filter>UI\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HUDController.cpp">
+      <Filter>UI\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Player_SkillController.cpp">
+      <Filter>Player\PlayerController</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

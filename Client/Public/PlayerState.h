@@ -33,10 +33,11 @@ public :
     virtual void    Update_PlayerInput(const PLAYER_INPUT_COMMAND& tInputCmd);
     virtual void    Setup_CachedPlayerInfos();
 
+    /* commons */
     void            LookTo_InputDir(_float fDT);
+    void            Try_Grappling();
 
-    void            Cache_PlayerInfos(const PLAYER_COMPONENTS& tComponents, const PLAYER_RUNTIME_REF& tRef, PLAYER_INFO* pInfo);
-    void            Bind_PlayerRef(const PLAYER_RUNTIME_REF& tRef);
+    void            Cache_PlayerContext(const PLAYER_CONTEXT& tContext);
     PLAYER_STATE    Get_State() const;
     const char*     Get_StateName() const;
 
@@ -51,10 +52,14 @@ protected:
     PLAYER_INPUT_COMMAND    m_tInputCmd{};
     PLAYER_COMPONENTS       m_tComponents{};
     PLAYER_RUNTIME_REF      m_tRef{};
-    PLAYER_INFO*            m_pInfo{};
+    PLAYER_STATS*           m_pStats{};
+
+    class CPlayer_SkillController*  m_pSkillController{};
 
 protected :
     _bool                   m_bAcivated = false;
+
+    /* direction by camera */
     _float3                 m_vPrevLook{};
     _float                  m_fRotateSharpness = 10.f;
     _float                  m_fCurrentYaw = 0.f;

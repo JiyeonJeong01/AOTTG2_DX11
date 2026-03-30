@@ -14,7 +14,7 @@ CRope::~CRope()
 
 void CRope::Initialize()
 {
-    m_upLine = GAME_INSTANCE.Load_LineMesh(m_iNumPoints, 0.3f);
+    m_upLine = GAME_INSTANCE.Load_LineMesh(m_iNumPoints, 0.15f);
     m_RopePoints.reserve(m_iNumPoints);
 
     m_tDynamicValue.fGain = 18.f;

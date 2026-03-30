@@ -8,10 +8,14 @@
 #include "FreeCam.h"
 #include "GameManager.h"
 #include "GroundChecker.h"
+#include "HUDController.h"
 #include "Hello.h"
 #include "MainMenu_Controller.h"
 #include "ODM_Gear.h"
 #include "Player.h"
+#include "UI_BladeController.h"
+#include "UI_GasController.h"
+#include "UI_SkillController.h"
 
 NS_BEGIN(Client)
 void Register_AllScripts()
@@ -34,6 +38,10 @@ void Register_AllScripts()
         handler.Register_VTable(guid, ScriptBinder<CGroundChecker>::Build());
     }
     {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\HUDController.script");
+        handler.Register_VTable(guid, ScriptBinder<CHUDController>::Build());
+    }
+    {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Hello.script");
         handler.Register_VTable(guid, ScriptBinder<CHello>::Build());
     }
@@ -48,6 +56,18 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Player.script");
         handler.Register_VTable(guid, ScriptBinder<CPlayer>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\UI_BladeController.script");
+        handler.Register_VTable(guid, ScriptBinder<CUI_BladeController>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\UI_GasController.script");
+        handler.Register_VTable(guid, ScriptBinder<CUI_GasController>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\UI_SkillController.script");
+        handler.Register_VTable(guid, ScriptBinder<CUI_SkillController>::Build());
     }
 }
 NS_END

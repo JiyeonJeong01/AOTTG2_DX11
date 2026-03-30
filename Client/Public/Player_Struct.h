@@ -4,6 +4,17 @@
 
 NS_BEGIN(Client)
 
+enum class PLAYER_STATE { IDLE = 0, GROUNDED_MOVE, JUMP, AIRBORNE_MOVE, HOOK, GROUNDED_ATTACK, AIRBORNE_ATTACK, SHOOT, RELOAD, DODGE, RESUPPLY, GRABBED, EMOTE, END };
+
+enum class AIRBORNE_STATE : uint8_t { AIR_BEGIN, AIR_LEFT, AIR_RIGHT, AIR_FRONT, AIR_BACK, AIR_FALL, END };
+enum class GROUNDED_MOVE : uint8_t { RUN, SLIDE, DASH_LAND, END };
+enum class JUMP : uint8_t { JUMP_BEGIN, RISE, FALL, END };
+
+
+
+enum class SKILL : uint8_t { SPIN_H, THROW, SPIN_V, END };
+
+
 typedef struct tagPlayerInputCommand
 {
     _float2 vMouseDelta{};
@@ -42,16 +53,13 @@ typedef struct tagPlayerComponents
     CMeshRenderer   meshRenderer;
 } PLAYER_COMPONENTS;
 
-typedef struct tagPlayerInfo
+typedef struct tagPlayerStats
 {
     _float                      fCurSpeed = 10.f;
     _float                      fMaxSpeed = 13.f;
 
     _float                      fJump = 12.f;
-
-    uint32_t                    iAnimFlag = 0;
-
-} PLAYER_INFO;
+} PLAYER_STATS;
 
 typedef struct tagPlayerRuntimeRef
 {
@@ -61,14 +69,35 @@ typedef struct tagPlayerRuntimeRef
     class CPlayerStateMachine*  pFSM = nullptr;
 } PLAYER_RUNTIME_REF;
 
+typedef struct tagPlayerSkill
+{
+    SKILL           eSkill = SKILL::END;
+    _float          fCoolDown{};
+    _float          fElapsedCoolDown{};
+    ASSET_GUID      tSpriteGUID{};
+    std::string     strName{};
+} PLAYER_SKILL;
 
+typedef struct tagPlayerSkillSET
+{
+    static constexpr _uint      iNumSkills = 3;
 
+    SKILL                       eSkill = SKILL::END;
+    PLAYER_SKILL                skills[3];
+} PLAYER_SKILLSET;
 
-enum class PLAYER_STATE { IDLE = 0, GROUNDED_MOVE, JUMP, AIRBORNE_MOVE, HOOK, GROUNDED_ATTACK, AIRBORNE_ATTACK, SHOOT, RELOAD, DODGE, RESUPPLY, GRABBED, EMOTE, END };
+typedef struct tagPlayerContext
+{
+    /* 포인터 자체를 소유한 구조체들 */
+    PLAYER_COMPONENTS       tComponents{};
+    PLAYER_RUNTIME_REF      tRef{};
 
-enum class AIRBORNE_STATE   : uint8_t { AIR_BEGIN, AIR_LEFT, AIR_RIGHT, AIR_FRONT, AIR_BACK, AIR_FALL, END };
-enum class GROUNDED_MOVE    : uint8_t { RUN, SLIDE, DASH_LAND, END };
-enum class JUMP             : uint8_t { JUMP_BEGIN, RISE, FALL, END };
+    /* 플레이어가 소유한 변수의 포인터를 가진 구조체들 */
+    PLAYER_STATS*           pStats = nullptr;
 
+    /* 헬퍼 */
+    class CPlayer_SkillController*  pSkillController = nullptr;
+
+} PLAYER_CONTEXT;
 
 NS_END

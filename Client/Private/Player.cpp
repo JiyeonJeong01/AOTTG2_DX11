@@ -1,12 +1,11 @@
 ﻿#include "Player.h"
-
-#include "GameObject_System.h"
-#include "GameObject.h"
 #include "Input_System.h"
 
-#include "PlayerState.h"
-#include "PlayerStateMachine.h"
 #include "Player_InputController.h"
+#include "Player_SkillController.h"
+
+#include "PlayerStateMachine.h"
+#include "PlayerState.h"
 
 #include "CameraController.h"
 #include "ODM_Gear.h"
@@ -25,8 +24,11 @@ void CPlayer::Awake(void* pCtx)
 
     m_upStateMachine = CPlayerStateMachine::Create(m_goPlayer, this);
     m_upInputController = CPlayer_InputController::Create();
+    m_upSkillController = CPlayer_SkillController::Create(&m_tSkillSet);
+
     IF_NULL_RETURN_MSG_BREAK(m_upStateMachine, , "m_upStateMachine is nullptr");
     IF_NULL_RETURN_MSG_BREAK(m_upInputController, , "m_upInputController is nullptr");
+    IF_NULL_RETURN_MSG_BREAK(m_upSkillController, , "m_upSkillController is nullptr");
 
     m_upStateMachine->Subscribe_OnChangedCurState(&CPlayer::OnChange_CurState, this);
 }
@@ -62,8 +64,21 @@ void CPlayer::Start(void* pCtx)
         m_tRef.pCameraController = m_goPlayer->Get_Script<CCameraController>();
     }
 
+    /* 플레이어 스킬 정보 */
+    {
+        m_upSkillController->SetUp_SkillSet();
+    }
+
     /* 플레이어 상태에게 전달 */
-    m_upStateMachine->Cache_PlayerInfos(m_tComponents, m_tRef, &m_tInfo);
+    PLAYER_CONTEXT tContext;
+    tContext.tComponents = m_tComponents;
+    tContext.tRef = m_tRef;
+    tContext.pStats = &m_tStats;
+
+    /* 컨트롤러 */
+    tContext.pSkillController = m_upSkillController.get();
+
+    m_upStateMachine->Cache_PlayerInfos(tContext);
 
     /* 이벤트 등록 */
     //m_tComponents.collider->OnCollisionEnter.Add_Listener(&CPlayer::On_CollisionEnter, this);
@@ -76,6 +91,8 @@ void CPlayer::Priority_Update(void* pCtx, _float fDT)
     const auto& tInput = m_upInputController->Update_InputCommand();
     m_upStateMachine->Update_PlayerInput(tInput);
     m_upStateMachine->Priority_Update(fDT);
+
+    m_upSkillController->Update_SkillSet();
 }
 
 void CPlayer::Update(void* pCtx, _float fDT)
@@ -91,6 +108,9 @@ void CPlayer::Late_Update(void* pCtx, _float fDT)
 void CPlayer::OnChange_CurState(std::shared_ptr<CPlayerState> spNewState)
 {
     IF_NULL_RETURN_MSG_BREAK(spNewState, , "spNewState is nullptr");
+
+    m_spCurState = spNewState;
+    strncpy_s(m_szState, sizeof(m_szState), spNewState->Get_StateName(), _TRUNCATE);
 }
 
 void CPlayer::On_CollisionEnter(const COLLISION_DESC& tDesc)

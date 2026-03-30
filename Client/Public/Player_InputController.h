@@ -3,10 +3,6 @@
 #include "Client_Define.h"
 #include "Player_Struct.h"
 
-NS_BEGIN(Engine)
-    class CGameObject;
-NS_END
-
 NS_BEGIN(Client)
 
 class CPlayer_InputController final

@@ -29,8 +29,13 @@ private:
     void On_DashLandFinished(const Engine::ANIMATION_EVENT_DATA& tData);
 
 private:
-    void Move(_float fDT);
+    GROUNDED_MOVE   m_eGroundedMoveState = GROUNDED_MOVE::RUN;
+    _float          m_fSlideElapsedTime = 0.f;
+    _float          m_fSlideTotalTime = 1.5f;
 
+private :
+    void Move(_float fDT);
+    void Slide(_float fDT);
 public :
     static std::shared_ptr<CPlayerState_GroundedMove> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
 };

@@ -1,6 +1,7 @@
 ﻿#include "PlayerState.h"
 #include "CameraController.h"
 #include "Easing_Function.h"
+#include "ODM_Gear.h"
 
 HRESULT CPlayerState::Initialize()
 {
@@ -94,11 +95,28 @@ void CPlayerState::LookTo_InputDir(_float fDT)
     m_tComponents.transform.Set_Rotation_Quaternion(qRot);
 }
 
-void CPlayerState::Cache_PlayerInfos(const PLAYER_COMPONENTS& tComponents, const PLAYER_RUNTIME_REF& tRef, PLAYER_INFO* pInfo)
+void CPlayerState::Try_Grappling()
 {
-    m_tComponents = tComponents;
-    m_tRef = tRef;
-    m_pInfo = pInfo;
+    if (m_tInputCmd.bLeftAnchorPressed)
+    {
+        /* 앵커 고정 가능한지 판단 */
+        m_tRef.pGear->Try_Grappling(SIDE::LEFT);
+        return;
+    }
+    if (m_tInputCmd.bRightAnchorPressed)
+    {
+        /* 앵커 고정 가능한지 판단 */
+        m_tRef.pGear->Try_Grappling(SIDE::RIGHT);
+        return;
+    }
+}
+
+void CPlayerState::Cache_PlayerContext(const PLAYER_CONTEXT& tContext)
+{
+    m_tComponents = tContext.tComponents;
+    m_tRef = tContext.tRef;
+    m_pStats = tContext.pStats;
+    m_pSkillController = tContext.pSkillController;
 }
 
 PLAYER_STATE CPlayerState::Get_State() const
