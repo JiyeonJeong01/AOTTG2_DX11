@@ -11,6 +11,7 @@ enum class AIRBORNE_ATTACK : uint8_t { NORMAL, SPIN_H, THROW, SPIN_V, STRONG, EN
 enum class GROUNDED_MOVE : uint8_t { RUN, SLIDE, DASH_LAND, END };
 enum class GROUNDED_ATTACK : uint8_t { ATK, END };
 enum class JUMP : uint8_t { JUMP_BEGIN, RISE, DASH, FALL, END };
+enum class RELOAD : uint8_t { GROUNDED, AIR, END };
 
 
 
@@ -40,6 +41,7 @@ typedef struct tagPlayerInputCommand
 
     _bool bReloadBlade = false;         /* R */
     _bool bInteract = false;            /* F */
+    _bool bDodge = false;               /* C */
 
 }PLAYER_INPUT_COMMAND;
 

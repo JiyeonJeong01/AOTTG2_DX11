@@ -127,6 +127,34 @@ void CPlayerState_GroundedMove::Decide_NextState()
         cout << "[GROUNDED_MOVE] -> IDLE\n";
 
         m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::IDLE));
+        return;
+    }
+
+    /* -> RELOAD */
+    _bool bReload = m_tInputCmd.bReloadBlade;
+    if (bReload)
+    {
+        cout << "[GROUNDED_MOVE] -> RELOAD::GROUNDED\n";
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::RELOAD), To<_uint>(RELOAD::GROUNDED));
+        return;
+    }
+
+    /* -> RESUPPLY */
+    _bool bInteract = m_tInputCmd.bInteract;
+    if (bInteract)
+    {
+        cout << "[GROUNDED_MOVE] -> RESUPPLY\n";
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::RESUPPLY), 0);
+        return;
+    }
+
+    /* -> DODGE */
+    _bool bDodge = m_tInputCmd.bDodge;
+    if (bDodge)
+    {
+        cout << "[GROUNDED_MOVE] -> DODGE\n";
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::DODGE), 0);
+        return;
     }
 }
 

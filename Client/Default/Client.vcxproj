@@ -30,9 +30,12 @@
     <ClInclude Include="..\Public\Hello.h" />
     <ClInclude Include="..\Public\HUDController.h" />
     <ClInclude Include="..\Public\PlayerState_AirborneAttack.h" />
+    <ClInclude Include="..\Public\PlayerState_Dodge.h" />
     <ClInclude Include="..\Public\PlayerState_GroundedAttack.h" />
     <ClInclude Include="..\Public\PlayerState_Idle.h" />
     <ClInclude Include="..\Public\PlayerState_Jump.h" />
+    <ClInclude Include="..\Public\PlayerState_Reload.h" />
+    <ClInclude Include="..\Public\PlayerState_Resupply.h" />
     <ClInclude Include="..\Public\Player_SkillController.h" />
     <ClInclude Include="..\Public\Rope.h" />
     <ClInclude Include="..\Public\MainApp.h" />
@@ -56,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\CameraController.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Dodge.cpp" />
     <ClCompile Include="..\Private\FreeCam.cpp" />
     <ClCompile Include="..\Private\GameManager.cpp" />
     <ClCompile Include="..\Private\GroundChecker.cpp" />
@@ -65,6 +69,8 @@
     <ClCompile Include="..\Private\PlayerState_GroundedAttack.cpp" />
     <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
     <ClCompile Include="..\Private\PlayerState_Jump.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Reload.cpp" />
+    <ClCompile Include="..\Private\PlayerState_Resupply.cpp" />
     <ClCompile Include="..\Private\Player_SkillController.cpp" />
     <ClCompile Include="..\Private\Rope.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />

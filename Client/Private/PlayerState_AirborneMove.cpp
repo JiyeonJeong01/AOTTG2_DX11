@@ -126,9 +126,6 @@ void CPlayerState_AirborneMove::Decide_NextState()
         return;
     }
 
-    LOG_INFO(" ======== [ AIRBORNE_MOVE ] ======== ");
-    LOG_INFO("%d", m_tInputCmd.bStrongAttackPressed);
-
     _bool bNormalAtk = m_tInputCmd.bNormalAttackPressed;
 
     if (bNormalAtk)
@@ -146,6 +143,14 @@ void CPlayerState_AirborneMove::Decide_NextState()
         _bool bCanAtk = m_pSkillController->Try_UseSKill(eTrySkill);
         if (bCanAtk)
             m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::AIRBORNE_ATTACK), To<_uint>(AIRBORNE_ATTACK::STRONG));
+        return;
+    }
+
+    _bool bReload = m_tInputCmd.bReloadBlade;
+    if (bReload)
+    {
+        cout << "[AIRBORNE_MOVE] -> RELOAD::AIR\n";
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::RELOAD), To<_uint>(RELOAD::AIR));
         return;
     }
 

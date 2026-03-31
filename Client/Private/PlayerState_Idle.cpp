@@ -95,6 +95,33 @@ void CPlayerState_Idle::Decide_NextState()
         m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::RUN));
         return;
     }
+
+    /* -> RELOAD */
+    _bool bReload = m_tInputCmd.bReloadBlade;
+    if (bReload)
+    {
+        cout << "[AIRBORNE_MOVE] -> RELOAD::GROUNDED\n";
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::RELOAD), To<_uint>(RELOAD::GROUNDED));
+        return;
+    }
+
+    /* -> RESUPPLY */
+    _bool bInteract = m_tInputCmd.bInteract;
+    if (bInteract)
+    {
+        cout << "[GROUNDED_MOVE] -> RESUPPLYn";
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::RESUPPLY), 0);
+        return;
+    }
+
+    /* -> DODGE */
+    _bool bDodge = m_tInputCmd.bDodge;
+    if (bDodge)
+    {
+        cout << "[GROUNDED_MOVE] -> DODGE\n";
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::DODGE), 0);
+        return;
+    }
 }
 
 void CPlayerState_Idle::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)

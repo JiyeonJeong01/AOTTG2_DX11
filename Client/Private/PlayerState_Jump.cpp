@@ -88,6 +88,16 @@ void CPlayerState_Jump::Decide_NextState()
             m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::DASH_LAND));
         else
             m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::SLIDE));
+
+        return;
+    }
+
+    _bool bReload = m_tInputCmd.bReloadBlade;
+    if (bReload)
+    {
+        cout << "[AIRBORNE_MOVE] -> RELOAD::AIR\n";
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::RELOAD), To<_uint>(RELOAD::AIR));
+        return;
     }
 }
 

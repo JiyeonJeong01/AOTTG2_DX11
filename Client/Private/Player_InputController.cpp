@@ -97,6 +97,8 @@ const PLAYER_INPUT_COMMAND& CPlayer_InputController::Update_InputCommand()
         m_tInputCommand.bInteract = true;
     if (SYS_INPUT.Get_KeyDown('R'))
         m_tInputCommand.bReloadBlade = true;
+    if (SYS_INPUT.Get_KeyDown('C'))
+        m_tInputCommand.bDodge = true;
 
 
     return m_tInputCommand;
