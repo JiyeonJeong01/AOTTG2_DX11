@@ -3,6 +3,8 @@
 
 NS_BEGIN(Client)
 
+class CThrownBlade;
+
 class CPlayerState_AirborneAttack final : public CPlayerState
 {
 public:
@@ -26,7 +28,8 @@ private:
     void On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData);
     void On_NomalFinished(const Engine::ANIMATION_EVENT_DATA& tData);
     void On_SpinH_Finished(const Engine::ANIMATION_EVENT_DATA& tData);
-
+    void On_Throw_Finished(const Engine::ANIMATION_EVENT_DATA& tData);
+    void On_SpinV_Finished(const Engine::ANIMATION_EVENT_DATA& tData);
 private:
     AIRBORNE_ATTACK     m_eAirborneAttackState = AIRBORNE_ATTACK::END;
 
@@ -36,11 +39,27 @@ private:
     /* SPIN_H */
     _bool               m_bSpinH_Force = false;
     _float              m_SpinH_Elapsed_Degree = 0.f;
-    const _float        m_SpinH_Total_Degree = 1440.f;
-    const _float        m_SpinH_Degree_PerSec = 1440.f;
-
+    const _float        m_SpinH_Total_Degree = 1840.f;
+    const _float        m_SpinH_Degree_PerSec = 1840.f;
     _float              m_fSpinH_WaitElapsedTime = 0.f;
     _float              m_fSpinH_WaitTotalTime = 0.1f;
+
+    /* THROW */
+    CThrownBlade*       m_pThrownBlade{};
+    _bool               m_bThrowNow = false;
+    _bool               m_bThrewAlready= false;
+    _float              m_fThrow_WaitElapsedTime = 0.f;
+    _float              m_fThrow_WaitTotalTime = 0.1f;
+
+    /* SPIN_V */
+    _float              m_SpinV_Elapsed_Degree = 0.f;
+    _float              m_SpinV_Degree_PerSec = 1840.f;
+    _float              m_SpinV_Total_Degree = 1840.f;
+    _float              m_fSpinV_WaitElapsedTime = 0.f;
+    _float              m_fSpinV_WaitTotalTime = 0.15f;
+    _bool               m_bSpinV_Force = false;
+    _float3             m_vSpinV_Axis = { 1.f, 0.f, 0.f };
+private :
 
     void Spin_Horizontal(_float fDT);
     void Spin_Vertical(_float fDT);

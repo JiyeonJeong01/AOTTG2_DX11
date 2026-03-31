@@ -53,13 +53,19 @@ private:
     _float                          m_vWaveHeight = 4.f;
     _int                            m_iNumWave = 2;
     _int                            m_iNumPoints = 30;
-    _float                          m_fExtendVel = 90.f;
-    _float                          m_fRopMaxLength = 100.f;
+    _float                          m_fExtendVel = 120.f;
+    _float                          m_fRopMaxLength = 200.f;
 
     CEvent<ROPE_STATE, SIDE>        m_OnChanged_RopeState;
 
     SIDE                            m_eSide = {};
-    
+    _float                          m_fWaveSign = 1.f;
+private:
+    /* returning 시 필요 */
+    _float3                         m_vReturnRight{};
+    _bool                           m_bHasReturnRight = false;
+    _float3                         m_vPrevRight{ 1.f, 0.f, 0.f };
+    _bool                           m_bHasPrevRight = false;
 
 private:
     void Process_Extending(_float fTimeDelta);
@@ -68,6 +74,7 @@ private:
 
     void Calc_RopeShape(const _float3& vCurTip, _float fTimeDelta);
     _bool Calc_RopeComplete(const _float3& vCurTip);
+    void Calc_RetuningShape(_float fTimeDelta);
     void Upload_Line();
 
 public:

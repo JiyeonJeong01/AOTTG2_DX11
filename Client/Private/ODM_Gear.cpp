@@ -51,10 +51,13 @@ void CODM_Gear::Try_Grappling(SIDE eSide)
     TYR_GRAPPLING_INFO tInfo{};
 
     /* 성공한 경우 */
-    if (m_upLeftRope && Detect_GrapplingPoint(tInfo))
+    if (Detect_GrapplingPoint(tInfo))
     {
         m_vAnchor = tInfo.vPoint;
-        m_upLeftRope->Start_Extending_Success(XMLoadFloat3(&m_tr->vPosition), XMLoadFloat3(&m_vAnchor));
+        if (m_upLeftRope && eSide == SIDE::LEFT)
+            m_upLeftRope->Start_Extending_Success(XMLoadFloat3(&m_tr->vPosition), XMLoadFloat3(&m_vAnchor));
+        else if (m_upRightRope && eSide == SIDE::RIGHT)
+            m_upRightRope->Start_Extending_Success(XMLoadFloat3(&m_tr->vPosition), XMLoadFloat3(&m_vAnchor));
 
         m_flagUsingSide |= To<_uint>(eSide);
     }
@@ -65,14 +68,35 @@ void CODM_Gear::Try_Grappling(SIDE eSide)
         _vector vTryPos = XMLoadFloat3(&tInfo.vCamOrigin) + XMLoadFloat3(&tInfo.vRayDir) * m_fRopeMaxDist;
         _vector vTryDir = XMVector4Normalize(vTryPos - XMLoadFloat3(&m_tr->vPosition));
 
-        m_upLeftRope->Start_Extending_Fail(XMLoadFloat3(&m_tr->vPosition), vTryDir);
+        if (eSide == SIDE::LEFT)
+            m_upLeftRope->Start_Extending_Fail(XMLoadFloat3(&m_tr->vPosition), vTryDir);
+        else if (eSide == SIDE::RIGHT)
+            m_upRightRope->Start_Extending_Fail(XMLoadFloat3(&m_tr->vPosition), vTryDir);
     }
 }
 
-void CODM_Gear::Finish_Grappling()
+void CODM_Gear::Finish_Grappling(SIDE eSide)
 {
-    m_upLeftRope->Stop();
-    m_sj.Set_UseSpring(false);
+    const _uint iSideFlag = To<_uint>(eSide);
+
+    if ((m_flagUsingSide & iSideFlag) == 0)
+        return;
+
+    if (eSide == SIDE::LEFT)
+    {
+        if (m_upLeftRope)
+            m_upLeftRope->Stop();
+    }
+    else if (eSide == SIDE::RIGHT)
+    {
+        if (m_upRightRope)
+            m_upRightRope->Stop();
+    }
+
+    m_flagUsingSide &= ~iSideFlag;
+
+    if (m_flagUsingSide == 0)
+        m_sj.Set_UseSpring(false);
 }
 
 _bool CODM_Gear::Detect_GrapplingPoint(TYR_GRAPPLING_INFO& tInfo)
@@ -130,8 +154,8 @@ void CODM_Gear::Start(void* pCtx)
 
     m_upLeftRope = CRope::Create(SIDE::LEFT);
     m_upLeftRope->Subscribe_On_RopeState_Changed(&CODM_Gear::Handle_RopeState, this);
-    m_upLeftRope = CRope::Create(SIDE::RIGHT);
-    m_upLeftRope->Subscribe_On_RopeState_Changed(&CODM_Gear::Handle_RopeState, this);
+    m_upRightRope = CRope::Create(SIDE::RIGHT);
+    m_upRightRope->Subscribe_On_RopeState_Changed(&CODM_Gear::Handle_RopeState, this);
 }
 
 void CODM_Gear::Priority_Update(void* pCtx, _float fDT)
@@ -145,6 +169,11 @@ void CODM_Gear::Update(void* pCtx, _float fDT)
     {
         m_upLeftRope->Set_StartPoint(m_tr->vPosition);
         m_upLeftRope->Update(fDT);
+    }
+    if (m_upRightRope)
+    {
+        m_upRightRope->Set_StartPoint(m_tr->vPosition);
+        m_upRightRope->Update(fDT);
     }
 }
 

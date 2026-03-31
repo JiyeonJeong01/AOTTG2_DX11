@@ -49,6 +49,7 @@
     <ClInclude Include="..\Public\State.h" />
     <ClInclude Include="..\Public\StateMachine.h" />
     <ClInclude Include="..\Public\Tester.h" />
+    <ClInclude Include="..\Public\ThrownBlade.h" />
     <ClInclude Include="..\Public\UI_BladeController.h" />
     <ClInclude Include="..\Public\UI_GasController.h" />
     <ClInclude Include="..\Public\UI_SkillController.h" />
@@ -79,6 +80,7 @@
     <ClCompile Include="..\Private\State.cpp" />
     <ClCompile Include="..\Private\StateMachine.cpp" />
     <ClCompile Include="..\Private\Tester.cpp" />
+    <ClCompile Include="..\Private\ThrownBlade.cpp" />
     <ClCompile Include="..\Private\UI_BladeController.cpp" />
     <ClCompile Include="..\Private\UI_GasController.cpp" />
     <ClCompile Include="..\Private\UI_SkillController.cpp" />

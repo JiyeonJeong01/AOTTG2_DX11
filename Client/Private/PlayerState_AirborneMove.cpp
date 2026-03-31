@@ -31,10 +31,13 @@ void CPlayerState_AirborneMove::Priority_Update(_float fDT)
     Control_Camera();
     LookTo_InputDir(fDT);
     Try_Grappling();
+    Finish_Grappling();
 }
 
 void CPlayerState_AirborneMove::Update(_float fDT)
 {
+    CPlayerState::Late_Update(fDT);
+
     _bool bLeftHook = m_tInputCmd.bLeftAnchorHeld;
     _bool bRightHook = m_tInputCmd.bRightAnchorHeld;
 
@@ -43,7 +46,6 @@ void CPlayerState_AirborneMove::Update(_float fDT)
         && (bLeftHook == false && bRightHook == false))
     {
         m_eAirborneState = AIRBORNE_MOVE::AIR_FALL;
-        m_tRef.pGear->Finish_Grappling();
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
 
         return;
@@ -110,7 +112,7 @@ void CPlayerState_AirborneMove::Decide_NextState()
     if (m_eAirborneState == AIRBORNE_MOVE::AIR_FALL && m_tRef.pGroundChecker->Get_OnWalkable())
     {
         cout << "[AIRBORNE_MOVE] -> GROUNDED_MOVE\n";
-        const float THREASHOLD = 10.f;
+        const float THREASHOLD = 4.f;
 
         _float3 fLinearVel = m_tComponents.rigidbody.Get_LinearVel();
 
@@ -154,7 +156,7 @@ void CPlayerState_AirborneMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DA
     if (!m_bAcivated)
         return;
 
-    cout << "[AIRBORNE_ATTACK] On_AnimFinished\n";
+    cout << "[AIRBORNE_MOVE] On_AnimFinished\n";
 
     _uint iIndex = tData.iAnimationClip;
     if (iIndex == INVALID_ANIM_CLIP_INDEX)

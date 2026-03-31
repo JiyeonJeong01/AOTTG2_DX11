@@ -15,21 +15,21 @@ void CPlayer_SkillController::SetUp_SkillSet()
     skill1.eSkill = SKILL_TYPE::SPIN_H;
     skill1.strName = "수평 베기";
     skill1.fCoolDown = 5.f;
-    skill1.fElapsedCoolDown = 0.f;
+    skill1.fElapsedCoolDown = skill1.fCoolDown;
     skill1.tSpriteGUID = ASSET_GUID("C212BB34-F7FE-440A-9A89-348437E93C4A");
 
     PLAYER_SKILL skill2;
     skill2.eSkill = SKILL_TYPE::THROW;
     skill2.strName = "칼날 던지기";
     skill2.fCoolDown = 5.f;
-    skill2.fElapsedCoolDown = 0.f;
+    skill2.fElapsedCoolDown = skill2.fCoolDown;
     skill2.tSpriteGUID = ASSET_GUID("29085E95-8FA2-4160-A444-EDE76E0F9B34");
 
     PLAYER_SKILL skill3;
     skill3.eSkill = SKILL_TYPE::SPIN_V;
     skill3.strName = "수직 베기";
     skill3.fCoolDown = 5.f;
-    skill3.fElapsedCoolDown = 0.f;
+    skill3.fElapsedCoolDown = skill3.fCoolDown;
     skill3.tSpriteGUID = ASSET_GUID("43909CC7-975A-4F95-8328-1C13BD927403");
 
     m_pSkillSet->skills[0] = skill1;

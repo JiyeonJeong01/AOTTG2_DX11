@@ -25,6 +25,15 @@ NS_BEGIN(Client)
 
 class CODM_Gear : public IScript
 {
+
+public:
+    void Awake(void* pCtx) override;
+    void Start(void* pCtx) override;
+
+    void Priority_Update(void* pCtx, _float fDT) override;
+    void Update(void* pCtx, _float fDT) override;
+    void Late_Update(void* pCtx, _float fDT) override;
+
 private :
     std::unique_ptr<CRope>  m_upLeftRope;
     std::unique_ptr<CRope>  m_upRightRope;
@@ -47,7 +56,7 @@ private :
 
 public :
     void Try_Grappling(SIDE eSide);
-    void Finish_Grappling();
+    void Finish_Grappling(SIDE eSide);
 
     _bool           Detect_GrapplingPoint(TYR_GRAPPLING_INFO& tInfo);
     static _bool    Detect_GrapplingDist(_float* fDist);
@@ -60,13 +69,6 @@ public :
         return m_OnSuccessAnchored.Add_Listener(func, pInstance);
     }
 
-public:
-    void Awake(void* pCtx) override;
-    void Start(void* pCtx) override;
-
-    void Priority_Update(void* pCtx, _float fDT) override;
-    void Update(void* pCtx, _float fDT) override;
-    void Late_Update(void* pCtx, _float fDT) override;
 
 };
 

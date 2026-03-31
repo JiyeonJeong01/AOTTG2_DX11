@@ -19,8 +19,12 @@ HRESULT CPlayerState_Jump::Initialize()
 
 void CPlayerState_Jump::Priority_Update(_float fDT)
 {
+    CPlayerState::Priority_Update(fDT);
+
     Control_Camera();
     LookTo_InputDir(fDT);
+    Try_Grappling();
+    Finish_Grappling();
 }
 
 void CPlayerState_Jump::Update(_float fDT)
@@ -36,7 +40,6 @@ void CPlayerState_Jump::Late_Update(_float fDT)
 
     Decide_NextAnim();
     Decide_NextState();
-    Try_Grappling();
 }
 
 void CPlayerState_Jump::Enter(_uint iDetailFlag)
@@ -151,6 +154,7 @@ void CPlayerState_Jump::Jump_Dash(_float fDT)
     _float3 vDashForce = m_tComponents.rigidbody.Get_LinearVel();
 
     vDashForce.x *= m_pStats->fJumpDash * fDT;
+    vDashForce.y = 0.f;
     vDashForce.z *= m_pStats->fJumpDash * fDT;
 
     m_tComponents.rigidbody.Add_Force(vDashForce);

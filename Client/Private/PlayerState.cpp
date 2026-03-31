@@ -111,6 +111,58 @@ void CPlayerState::Try_Grappling()
     }
 }
 
+void CPlayerState::Finish_Grappling()
+{
+    _bool bLeftHook = m_tInputCmd.bLeftAnchorHeld || m_tInputCmd.bLeftAnchorPressed;;
+    _bool bRightHook = m_tInputCmd.bRightAnchorHeld || m_tInputCmd.bRightAnchorPressed;
+
+    if (!bLeftHook)
+    {
+        m_tRef.pGear->Finish_Grappling(SIDE::LEFT);
+    }
+    if (!bRightHook)
+    {
+        m_tRef.pGear->Finish_Grappling(SIDE::RIGHT);
+    }
+}
+
+void CPlayerState::GroundedMove(_float fDT)
+{
+    const _float fMaxSpeed = m_pStats->fMaxSpeed;
+    const _float fCurSpeed = m_pStats->fCurSpeed;
+
+    /* 플레이어의 현재 속도 */
+    _float3 vLinearVel = m_tComponents.rigidbody.Get_LinearVel();
+
+    _float3 vMoveDir{};
+    vMoveDir.x = m_tInputCmd.vMove.x;
+    vMoveDir.z = m_tInputCmd.vMove.z;
+
+    const _float fMoveLenSq = vMoveDir.x * vMoveDir.x + vMoveDir.z * vMoveDir.z;
+
+    /* 입력 없음 */
+    if (fMoveLenSq <= 0.f)
+        return;
+
+    _float3 vHorizontalVel{};
+    vHorizontalVel.x = vLinearVel.x;
+    vHorizontalVel.z = vLinearVel.z;
+
+    const _float fHorizontalSpeedSq =
+        vHorizontalVel.x * vHorizontalVel.x +
+        vHorizontalVel.z * vHorizontalVel.z;
+
+    /* 최대 속도 제한 */
+    if (fHorizontalSpeedSq < fMaxSpeed * fMaxSpeed)
+    {
+        _float3 vForce{};
+        vForce.x = vMoveDir.x * fCurSpeed * fCurSpeed;
+        vForce.z = vMoveDir.z * fCurSpeed * fCurSpeed;
+
+        m_tComponents.rigidbody.Add_Force(vForce);
+    }
+}
+
 void CPlayerState::Cache_PlayerContext(const PLAYER_CONTEXT& tContext)
 {
     m_tComponents = tContext.tComponents;

@@ -63,9 +63,9 @@ private:
     CRectTransform               m_Throw_CoolDown_RT;
     CRectTransform               m_SpinV_CoolDown_RT;
 
-    CCanvasRenderer                    m_SpinH_CoolDown_Img;
-    CCanvasRenderer                    m_Throw_CoolDown_Img;
-    CCanvasRenderer                    m_SpinV_CoolDown_Img;
+    CCanvasRenderer                    m_crSpinHCoolDown;
+    CCanvasRenderer                    m_crThrowCoolDown;
+    CCanvasRenderer                    m_crSpinVCoolDown;
 
     uint32_t                    m_hSpinH = INVALID_HANDLE_UINT;
     uint32_t                    m_hThrow = INVALID_HANDLE_UINT;

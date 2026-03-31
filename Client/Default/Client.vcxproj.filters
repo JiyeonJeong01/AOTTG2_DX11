@@ -154,6 +154,9 @@
     <ClInclude Include="..\Public\PlayerState_AirborneAttack.h">
       <Filter>Player\PlayerState</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\ThrownBlade.h">
+      <Filter>Equipment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -239,6 +242,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_AirborneAttack.cpp">
       <Filter>Player\PlayerState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ThrownBlade.cpp">
+      <Filter>Equipment</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -24,16 +24,21 @@ HRESULT CPlayerState_GroundedMove::Initialize()
 
 void CPlayerState_GroundedMove::Priority_Update(_float fDT)
 {
+    CPlayerState::Priority_Update(fDT);
+
     Control_Camera();
     LookTo_InputDir(fDT);
     Try_Grappling();
+    Finish_Grappling();
 }
 
 void CPlayerState_GroundedMove::Update(_float fDT)
 {
+    CPlayerState::Update(fDT);
+
     if (m_eGroundedMoveState == GROUNDED_MOVE::DASH_LAND)
         return;
-    Move(fDT);
+    CPlayerState::GroundedMove(fDT);
 }
 
 void CPlayerState_GroundedMove::Late_Update(_float fDT)
@@ -110,21 +115,6 @@ void CPlayerState_GroundedMove::Decide_NextState()
     {
         /* 아직 상태 전환하지 않고 애니메이션을 마저 재생해야 하는 경우 */
         /* - 공중에서 바닥으로 착지 후 착지/슬라이딩 애니메이션을 재생하는 경우 */
-        {        //_uint iCurIdx = m_tComponents.animator->iAnimationClip;
-                //_uint iNextIdx = m_tComponents.animator->iAnimationClip;
-
-                //_bool bShouldStay = false;
-                //bShouldStay = iCurIdx == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::DASH_LAND)
-                //              || iNextIdx == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::DASH_LAND);
-                //if (bShouldStay)
-                //    return;
-
-                //bShouldStay = iCurIdx == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::SLIDE)
-                //              || iNextIdx == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::SLIDE);
-                //if (bShouldStay)
-                //    return;
-        }
-
         if (m_eGroundedMoveState == GROUNDED_MOVE::DASH_LAND)
             return;
         if (m_eGroundedMoveState == GROUNDED_MOVE::SLIDE)
@@ -176,39 +166,39 @@ void CPlayerState_GroundedMove::On_DashLandFinished(const Engine::ANIMATION_EVEN
 
 void CPlayerState_GroundedMove::Move(_float fDT)
 {
-    const _float fMaxSpeed = m_pStats->fMaxSpeed;
-    const _float fCurSpeed = m_pStats->fCurSpeed;
+    //const _float fMaxSpeed = m_pStats->fMaxSpeed;
+    //const _float fCurSpeed = m_pStats->fCurSpeed;
 
-    /* 플레이어의 현재 속도 */
-    _float3 vLinearVel = m_tComponents.rigidbody.Get_LinearVel();
+    ///* 플레이어의 현재 속도 */
+    //_float3 vLinearVel = m_tComponents.rigidbody.Get_LinearVel();
 
-    _float3 vMoveDir{};
-    vMoveDir.x = m_tInputCmd.vMove.x;
-    vMoveDir.z = m_tInputCmd.vMove.z;
+    //_float3 vMoveDir{};
+    //vMoveDir.x = m_tInputCmd.vMove.x;
+    //vMoveDir.z = m_tInputCmd.vMove.z;
 
-    const _float fMoveLenSq = vMoveDir.x * vMoveDir.x + vMoveDir.z * vMoveDir.z;
+    //const _float fMoveLenSq = vMoveDir.x * vMoveDir.x + vMoveDir.z * vMoveDir.z;
 
-    /* 입력 없음 */
-    if (fMoveLenSq <= 0.f)
-        return;
+    ///* 입력 없음 */
+    //if (fMoveLenSq <= 0.f)
+    //    return;
 
-    _float3 vHorizontalVel{};
-    vHorizontalVel.x = vLinearVel.x;
-    vHorizontalVel.z = vLinearVel.z;
+    //_float3 vHorizontalVel{};
+    //vHorizontalVel.x = vLinearVel.x;
+    //vHorizontalVel.z = vLinearVel.z;
 
-    const _float fHorizontalSpeedSq =
-        vHorizontalVel.x * vHorizontalVel.x +
-        vHorizontalVel.z * vHorizontalVel.z;
+    //const _float fHorizontalSpeedSq =
+    //    vHorizontalVel.x * vHorizontalVel.x +
+    //    vHorizontalVel.z * vHorizontalVel.z;
 
-    /* 최대 속도 제한 */
-    if (fHorizontalSpeedSq < fMaxSpeed * fMaxSpeed)
-    {
-        _float3 vForce{};
-        vForce.x = vMoveDir.x * fCurSpeed * fCurSpeed;
-        vForce.z = vMoveDir.z * fCurSpeed * fCurSpeed;
+    ///* 최대 속도 제한 */
+    //if (fHorizontalSpeedSq < fMaxSpeed * fMaxSpeed)
+    //{
+    //    _float3 vForce{};
+    //    vForce.x = vMoveDir.x * fCurSpeed * fCurSpeed;
+    //    vForce.z = vMoveDir.z * fCurSpeed * fCurSpeed;
 
-        m_tComponents.rigidbody.Add_Force(vForce);
-    }
+    //    m_tComponents.rigidbody.Add_Force(vForce);
+    //}
 }
 
 std::shared_ptr<CPlayerState_GroundedMove> CPlayerState_GroundedMove::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)

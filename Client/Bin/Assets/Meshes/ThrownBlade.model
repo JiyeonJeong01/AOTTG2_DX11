@@ -1,0 +1,8 @@
+source=../../Converter/Bin/FBXs/ThrownBlade.fbx
+meshCount=2
+part0Name=Mesh.021
+part0MeshGuid=59EBB156-75E9-451F-977C-CAD5B9D6DC3E
+part0MaterialGuid=B1EA3D0D-69D4-4403-BC77-A6043DA114EE
+part1Name=Mesh.021
+part1MeshGuid=A8F0BB11-82F0-4D78-82E6-2A4668BD7677
+part1MaterialGuid=9451815F-84A2-46D9-84F7-84A6307682DB

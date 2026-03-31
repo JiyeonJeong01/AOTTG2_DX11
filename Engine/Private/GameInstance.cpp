@@ -86,6 +86,16 @@ CGameObject* CGameInstance::Find_GameObject(const std::string& strName)
     return SYS_GAMEOBJECT.Find_GameObject(strName);
 }
 
+CGameObject* CGameInstance::Instantiate(const string& strProto, Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent)
+{
+    return SYS_GAMEOBJECT.Instantiate(strProto, iLayer, strName, pParent);
+}
+
+CGameObject* CGameInstance::Instantiate(const ASSET_GUID& tGUID, Layer::LAYER_ID iLayer, const string& strName, CGameObject* pParent)
+{
+    return SYS_GAMEOBJECT.Instantiate(tGUID, iLayer, strName, pParent);
+}
+
 _bool CGameInstance::Raycast(const POINT& pt, RAY& tRAY, RAYCAST_HIT& tHitInfo)
 {
     RAYCAST_HITS allHits{};
@@ -179,9 +189,15 @@ void CGameInstance::Play()
 {
 }
 
-const _float3& CGameInstance::Cam_Position()
+_float3 CGameInstance::Cam_Position()
 {
     return SYS_RENDER.Contexts()->Get_CamPosition();
+}
+
+_float3 CGameInstance::Cam_Look()
+{
+    _float4x4 matInvView = SYS_RENDER.Contexts()->Get_ViewInv();
+    return _float3(matInvView._31, matInvView._32, matInvView._33);
 }
 
 unique_ptr<CLine> CGameInstance::Load_LineMesh(_uint iNumPoint, _float fThickness)

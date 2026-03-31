@@ -36,6 +36,8 @@ public :
     /* commons */
     void            LookTo_InputDir(_float fDT);
     void            Try_Grappling();
+    void            Finish_Grappling();
+    void            GroundedMove(_float fDT);
 
     void            Cache_PlayerContext(const PLAYER_CONTEXT& tContext);
     PLAYER_STATE    Get_State() const;

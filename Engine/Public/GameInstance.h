@@ -33,6 +33,15 @@ public: /* -------- GameObject --------- */
     CGameObject* Find_GameObject(OBJECT_HANDLE hObj);
     CGameObject* Find_GameObject(const std::string& strName);
 
+    CGameObject* Instantiate(const string& strProto,
+        Layer::LAYER_ID iLayer = Layer::DEFAULT_LAYER,
+        const string& strName = "GameObject_Clone",
+        CGameObject* pParent = nullptr);
+    CGameObject* Instantiate(const ASSET_GUID& tGUID,
+        Layer::LAYER_ID iLayer = Layer::DEFAULT_LAYER,
+        const string& strName = "GameObject_Clone",
+        CGameObject* pParent = nullptr);
+
 public : /* -------- Raycast -------- */
     _bool   Raycast(const POINT& pt, RAY& tRAY, RAYCAST_HIT& tHitInfo);
     _bool   RaycastAll(const POINT& pt, RAY& tRAY, RAYCAST_HITS& tAllHitInfo);
@@ -45,8 +54,8 @@ public : /* ---------- Game ---------- */
     void        Play();
 
 public : /* ---------- Game ---------- */
-    const _float3&     Cam_Position();
-
+    _float3  Cam_Position();
+    _float3         Cam_Look();
 
 public :/* ---------- Built-in ---------- */
     unique_ptr<CLine>   Load_LineMesh(_uint iNumPoint, _float fThickness);

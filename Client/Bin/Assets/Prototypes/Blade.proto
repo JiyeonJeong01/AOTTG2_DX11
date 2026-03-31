@@ -1,0 +1,168 @@
+{
+  "prototype": {
+    "children": [
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  -0.42998766899108887,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  -0.0,
+                  0.0,
+                  -0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "3376B10E-974E-4124-AA37-654D0B02848B",
+                "MeshGUID": "A78F05A9-B3E6-4E93-AEE8-31B58F01C689",
+                "Mode": 0,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "Left"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.7366874814033508,
+                  0.0,
+                  0.6762333512306213
+                ],
+                "Scale": [
+                  1.0000001192092896,
+                  1.0,
+                  0.9999998807907104
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "30A2F8D8-D82F-4652-91DB-0DA4E726129F",
+                "MeshGUID": "23C6D211-6848-438D-8049-7CDE32B49ADE",
+                "Mode": 0,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "Right"
+      }
+    ],
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "iObjMask": 0,
+    "isUI": false,
+    "name": "Blade"
+  },
+  "version": 1
+}

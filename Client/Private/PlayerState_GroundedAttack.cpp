@@ -24,12 +24,17 @@ HRESULT CPlayerState_GroundedAttack::Initialize()
 
 void CPlayerState_GroundedAttack::Priority_Update(_float fDT)
 {
+    CPlayerState::Priority_Update(fDT);
     Control_Camera();
     LookTo_InputDir(fDT);
+    Finish_Grappling();
 }
 
 void CPlayerState_GroundedAttack::Update(_float fDT)
 {
+    CPlayerState::Update(fDT);
+
+    CPlayerState::GroundedMove(fDT);
 }
 
 void CPlayerState_GroundedAttack::Late_Update(_float fDT)
