@@ -156,7 +156,21 @@ CMeshRenderer_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hC
     else
         spec->meshGUID = SYS_RESOURCE.Get_Mesh(pData->hMesh)->tGUID;
 
-    spec->materialGUID = SYS_RESOURCE.Get_Material(pData->hMaterial)->tGUID;
+    MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(pData->hMaterial);
+    if (!pMat)
+    {
+        CGameObject* pOwner = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
+        const std::string_view DEBUGNAME = pOwner->Get_Label();
+
+        spec->materialGUID = DefaultAssetGuid::MATERIAL_UI_DEFAULT;
+        __debugbreak();
+    }
+    else
+        spec->materialGUID = pMat->tGUID;
+
+    if (pMat->tGUID == ASSET_GUID("47C0DEB6-0F88-4B81-B8E7-63D27C6EAAF7"))
+        __debugbreak();
+
     spec->flags = pData->flags;
     spec->layer = pData->layer;
     spec->sortZ = pData->sortZ;

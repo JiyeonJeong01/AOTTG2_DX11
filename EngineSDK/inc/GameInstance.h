@@ -52,7 +52,7 @@ public :/* ---------- Built-in ---------- */
     unique_ptr<CLine>   Load_LineMesh(_uint iNumPoint, _float fThickness);
     void                Test_LineRibbonMesh();
 
-
+    uint32_t            Get_ResourceHandle(ASSET_TYPE eType, const ASSET_GUID& tGUID);
 
 private :
     ID3D11Device*               m_pDevice = nullptr;

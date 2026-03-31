@@ -57,7 +57,7 @@ CGameObject* CPrototype::Clone(Layer::LAYER_ID iLayer, const string& strName, co
     if (!m_tSpec.isUI)
         pInstance = SYS_GAMEOBJECT.Create_GameObject(iLayer, strName, nullptr, tUUID);
     else
-        pInstance = SYS_GAMEOBJECT.Create_GameObjectUI(iLayer, strName, nullptr, tUUID);
+        pInstance = SYS_GAMEOBJECT.Create_GameObjectUI(Layer::UI_LAYER, strName, nullptr, tUUID);
 
     SYS_GAMEOBJECT.Access_Data_Raw(pInstance->Get_Handle()).tProtoGUID = m_tGUID;
 

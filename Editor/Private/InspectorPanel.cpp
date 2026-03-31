@@ -2633,6 +2633,52 @@ void CInspectorPanel::Draw_ScriptFields(Engine::IScript* pScript)
 
             break;
         }
+        case SCRIPT_FIELD_TYPE::ASSET_GUID:
+        {
+            Engine::ASSET_GUID* pValue = reinterpret_cast<Engine::ASSET_GUID*>(pField);
+
+            std::string strButtonText = tDesc.strName;
+            strButtonText += " : ";
+
+            if (pValue->Is_Valid())
+            {
+                auto pRec = SYS_ASSET.Find(*pValue);
+                if (pRec && !pRec->path.empty())
+                    strButtonText += pRec->path.string();
+                else
+                    strButtonText += "<Missing Asset>";
+            }
+            else
+            {
+                strButtonText += "<None>";
+            }
+
+            ImGui::Button(strButtonText.c_str(), ImVec2(-1.f, 0.f));
+
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* p = ImGui::AcceptDragDropPayload("ASSET_GUID"))
+                {
+                    const Engine::ASSET_GUID* pGUID = reinterpret_cast<const Engine::ASSET_GUID*>(p->Data);
+                    if (pGUID && pGUID->Is_Valid())
+                    {
+                        *pValue = *pGUID;
+                    }
+                }
+                ImGui::EndDragDropTarget();
+            }
+
+            if (ImGui::BeginPopupContextItem("AssetGUIDContext"))
+            {
+                if (ImGui::MenuItem("Clear"))
+                {
+                    *pValue = ASSET_GUID{};
+                }
+                ImGui::EndPopup();
+            }
+
+            break;
+        }
 
         default:
             break;

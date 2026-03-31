@@ -440,17 +440,32 @@ void CRender_System::Execute_Draw_Canvas(const DRAW_CMD& tCmd)
     {
         const RECT_F& c = tCmd.canvas.rcClip;
 
-        D3D11_RECT r{};
-        r.left = (LONG)c.fLeft;
-        r.top = (LONG)c.fTop;
-        r.right = (LONG)(c.fLeft + c.fRight);
-        r.bottom = (LONG)(c.fTop + c.fBottom);
+        D3D11_RECT rectClip{};
+        rectClip.left = (LONG)c.fLeft;
+        rectClip.top = (LONG)c.fTop;
+        rectClip.right = (LONG)(c.fLeft + c.fRight);
+        rectClip.bottom = (LONG)(c.fTop + c.fBottom);
 
-        if (r.left > r.right)  std::swap(r.left, r.right);
-        if (r.top > r.bottom) std::swap(r.top, r.bottom);
+        _float2 vPos = rt.Get_PositionPx();
+        _float2 vSize = rt.Get_SizePx();
+
+        D3D11_RECT rectImg;
+        rectImg.left = vPos.x - vSize.x * 0.5f;
+        rectImg.top = vPos.y - vSize.y * 0.5f;
+        rectImg.right = vPos.x + vSize.x * 0.5f;
+        rectImg.bottom = vPos.y + vSize.y * 0.5f;
+
+        D3D11_RECT rectFinal;
+        rectFinal.left = rectClip.left + rectImg.left;
+        rectFinal.top = rectClip.top + rectImg.top;
+        rectFinal.right = rectClip.right + rectImg.right;
+        rectFinal.bottom = rectClip.bottom + rectImg.bottom;
+
+        if (rectFinal.left > rectFinal.right)  std::swap(rectFinal.left, rectFinal.right);
+        if (rectFinal.top > rectFinal.bottom) std::swap(rectFinal.top, rectFinal.bottom);
 
         m_pContext->RSSetState(m_rsScissor.Get());
-        m_pContext->RSSetScissorRects(1, &r);
+        m_pContext->RSSetScissorRects(1, &rectFinal);
     }
     else
     {

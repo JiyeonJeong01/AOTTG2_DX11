@@ -66,6 +66,11 @@ inline void ScriptField_ToJson_ObjectRef(json& j, const SCRIPT_OBJECT_REF& value
     j["UUID"] = value.tUUID.To_String_Utf8();
 }
 
+inline void ScriptField_ToJson_AssetGUID(json& j, const ASSET_GUID& value)
+{
+    j["GUID"] = value.To_String_Utf8();
+}
+
 inline _bool ScriptField_FromJson_Int(const json& j, _int& value)
 {
     if (false == j.is_number_integer())
@@ -134,6 +139,20 @@ inline _bool ScriptField_FromJson_ObjectRef(const json& j, SCRIPT_OBJECT_REF& va
     return true;
 }
 
+inline _bool ScriptField_FromJson_AssetGUID(const json& j, ASSET_GUID& value)
+{
+    if (false == j.is_object())
+        return false;
+
+    if (false == j.contains("GUID"))
+        return false;
+
+    if (false == ASSET_GUID::Try_Utf8_To_GUID(j["GUID"], value))
+        return false;
+
+    return true;
+}
+
 #pragma endregion
 
 #define SCRIPT_FIELDS_BEGIN(ClassName)                                  \
@@ -167,6 +186,9 @@ public :                                                                \
 
 #define SCRIPT_FIELD_OBJECT_REF(Member)                                 \
             s_Info.vecFields.push_back({ #Member, SCRIPT_FIELD_TYPE::OBJECT_REF, offsetof(SelfType, Member) });
+
+#define SCRIPT_FIELD_ASSET_GUID(Member)                                 \
+            s_Info.vecFields.push_back({ #Member, SCRIPT_FIELD_TYPE::ASSET_GUID, offsetof(SelfType, Member) });
 
 #define SCRIPT_FIELD_DEBUG_CHAR(Member)                                 \
             s_Info.vecFields.push_back({ #Member, SCRIPT_FIELD_TYPE::DEBUG_CHAR, offsetof(SelfType, Member) });

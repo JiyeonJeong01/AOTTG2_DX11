@@ -8,6 +8,7 @@
 
 #include "Core_System.h"
 #include "Event_System.h"
+#include "Input_System.h"
 
 #include "WindowResize_Event.h"
 
@@ -85,6 +86,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     SYS_GUI.Initialize();
     const string strMain = "PANEL_MAIN";
     unique_ptr<Editor::CMainPanel> upMainPanel = Editor::CMainPanel::Create(strMain);
+
+    _bool bCursorActive = true;
     
 
     // 기본 메시지 루프입니다:
@@ -109,6 +112,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         {
             static auto s_prev = Editor::CProfilerPanel::clock::now();
 
+            if (SYS_INPUT.Get_KeyDown('M'))
+            {
+                if (bCursorActive)
+                    while (ShowCursor(FALSE) >= 0);
+                else 
+                    while (ShowCursor(TRUE) < 0);
+
+                bCursorActive = !bCursorActive;
+            }
+        
             _float fDT = SYS_CORE.Compute_FrameDT() * g_fPlaySpeed;
 
             {   /* 월드 갱신 */

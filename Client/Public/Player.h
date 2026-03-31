@@ -60,6 +60,9 @@ private :
     void On_CollisionStay(const COLLISION_DESC& tDesc);
     void On_CollisionExit(const COLLISION_DESC& tDesc);
 
+public :
+    PLAYER_CONTEXT Get_PlayerContext();
+
 private :
     /* TODO : 이후에 json 등으로 로드 */
     

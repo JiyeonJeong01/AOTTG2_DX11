@@ -14,7 +14,7 @@ enum class JUMP : uint8_t { JUMP_BEGIN, RISE, DASH, FALL, END };
 
 
 
-enum class SKILL : uint8_t { SPIN_H, THROW, SPIN_V, END };
+enum class SKILL_TYPE : uint8_t { SPIN_H, THROW, SPIN_V, END };
 
 
 typedef struct tagPlayerInputCommand
@@ -40,8 +40,6 @@ typedef struct tagPlayerInputCommand
 
     _bool bReloadBlade = false;         /* R */
     _bool bInteract = false;            /* F */
-
-    /* TODO ::::::::::::::::::::::::::::::::: 확장 필수 ::::::::::::::::::::::::::::::::: */
 
 }PLAYER_INPUT_COMMAND;
 
@@ -74,7 +72,8 @@ typedef struct tagPlayerRuntimeRef
 
 typedef struct tagPlayerSkill
 {
-    SKILL           eSkill = SKILL::END;
+    SKILL_TYPE      eSkill = SKILL_TYPE::END;
+    _bool           bCoolDownCompleted = true;
     _float          fCoolDown{};
     _float          fElapsedCoolDown{};
     ASSET_GUID      tSpriteGUID{};
@@ -85,7 +84,7 @@ typedef struct tagPlayerSkillSET
 {
     static constexpr _uint      iNumSkills = 3;
 
-    SKILL                       eSkill = SKILL::END;
+    SKILL_TYPE                  eCurSkill = SKILL_TYPE::END;
     PLAYER_SKILL                skills[3];
 } PLAYER_SKILLSET;
 

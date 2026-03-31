@@ -5,10 +5,6 @@
 #include "CanvasRenderer_Processor.h"
 #include "RectTransform_Processor.h" 
 
-#include "UIButton.h"
-#include "UIImage.h"
-//#include "UIText.h" 나중에 추가
-
 #include "BuiltIn_GUID.h"
 #include "Engine_Log.h"
 #include "Input_System.h"
@@ -595,6 +591,12 @@ HRESULT CUI_Processor::Initialize_Component_Data(COMPONENT_TYPE eComType, COMPON
         pData->bEnable = true;
         pData->dirty = true;
         // pData->visualPriority = 0;
+        CRectTransform rt = pObj->Get_Component<CRectTransform>();
+
+        pData->rcUV = { 0.f,
+            0.f,
+            rt->vPosPx.x + rt->vSizePx.x * 0.5f,
+            rt->vPosPx.y + rt->vSizePx.y * 0.5f };
 
         return S_OK;
     }

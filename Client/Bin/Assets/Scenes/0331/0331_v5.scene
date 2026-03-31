@@ -2701,15 +2701,15 @@
         {
           "data": {
             "Position": [
-              -59.55280303955078,
-              8.633085250854492,
-              -65.41761016845703
+              18.962202072143555,
+              8.230496406555176,
+              8.639633178710938
             ],
             "Rotation": [
-              0.22599051892757416,
-              0.259818971157074,
-              -0.06268147379159927,
-              0.9367462396621704
+              0.203474760055542,
+              0.18765009939670563,
+              -0.039768580347299576,
+              0.9601062536239624
             ],
             "Scale": [
               1.0,
@@ -2748,15 +2748,15 @@
         {
           "data": {
             "Position": [
-              -55.88532638549805,
-              0.9854035377502441,
-              -59.31488800048828
+              21.7153377532959,
+              0.9853989481925964,
+              15.413755416870117
             ],
             "Rotation": [
-              5.767500397269032e-07,
-              0.9996103048324585,
-              -3.5844454941980075e-06,
-              0.027914345264434814
+              -0.00011991464270977303,
+              -0.9591030478477478,
+              5.297242751112208e-05,
+              -0.2830570936203003
             ],
             "Scale": [
               0.009999999776482582,
@@ -2796,7 +2796,7 @@
           "data": {
             "AngularDrag": 0.0,
             "BodyType": 0,
-            "Drag": 0.4000000059604645,
+            "Drag": 0.0,
             "Enabled": true,
             "Friction": 5.0,
             "Gravity": true,
@@ -2820,9 +2820,9 @@
         {
           "data": {
             "Anchor": [
-              -50.202091217041016,
-              1.136919379234314,
-              -64.8911361694336
+              32.36750793457031,
+              4.961755275726318,
+              -1.0102338790893555
             ],
             "Damper": 5.0,
             "Enabled": true,
@@ -2913,7 +2913,7 @@
         {
           "data": {
             "AnimationClip": 70,
-            "BlendDuration": 0.0,
+            "BlendDuration": 0.20000000298023224,
             "BlendMap": [],
             "Enabled": true,
             "LoopMap": [
@@ -3685,15 +3685,15 @@
         {
           "data": {
             "Position": [
-              -55.88532638549805,
-              0.9854035377502441,
-              -59.31488800048828
+              21.7153377532959,
+              0.9853990077972412,
+              15.413755416870117
             ],
             "Rotation": [
-              5.739286734751659e-07,
-              0.9996103048324585,
-              -3.5669104363478255e-06,
-              0.027914345264434814
+              -0.00011991464270977303,
+              -0.9591030478477478,
+              5.297242751112208e-05,
+              -0.2830570936203003
             ],
             "Scale": [
               0.009999999776482582,
@@ -3788,7 +3788,7 @@
             "Enabled": true,
             "Flags": 0,
             "Layer": 4,
-            "MaterialGUID": "47C0DEB6-0F88-4B81-B8E7-63D27C6EAAF7",
+            "MaterialGUID": "AA887B0F-0315-4772-8C65-82485AAABD4E",
             "MeshGUID": "11111111-1111-1111-1111-111111111112",
             "Mode": 0,
             "SortZ": 0.0,
@@ -3800,6 +3800,678 @@
       "parent": "",
       "protoGuid": "AEE67D84-1A1D-408F-A0D1-D12A03D2077E",
       "uuid": "89047C5B-AE62-4C00-B0EC-2DD6653182AC"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "HUD_v1_Proto",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              540.0
+            ],
+            "SizePx": [
+              100.0,
+              100.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        }
+      ],
+      "parent": "",
+      "protoGuid": "411E3052-E241-4936-955E-511DCC804571",
+      "uuid": "6A542382-A723-438F-A438-A7254A04CA40"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "Blade",
+      "overrides": [
+        {
+          "data": {
+            "Enabled": true,
+            "ScriptGuid": "6A3FCF60-FAB8-4E2D-AFC8-9C88DFD39358",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              972.0
+            ],
+            "SizePx": [
+              800.0,
+              120.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "DB589A4C-A27B-4134-8873-FC51287B5FFE",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "Color": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "TextureGuid": "DB589A4C-A27B-4134-8873-FC51287B5FFE",
+            "Type": 13,
+            "UV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "VisualPriority": 0
+          },
+          "type": 13
+        }
+      ],
+      "parent": "6A542382-A723-438F-A438-A7254A04CA40",
+      "protoGuid": "411E3052-E241-4936-955E-511DCC804571",
+      "uuid": "7EBEE0D8-7DCD-4F70-B182-2A0FEC0064CA"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "Gas",
+      "overrides": [
+        {
+          "data": {
+            "Enabled": true,
+            "ScriptGuid": "92E57873-96E8-4D20-87EF-AC6D06031EFD",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              976.0
+            ],
+            "SizePx": [
+              637.0,
+              88.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "7E26D598-90A6-4FA4-9100-4E5B0C31353E",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "Color": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "TextureGuid": "7E26D598-90A6-4FA4-9100-4E5B0C31353E",
+            "Type": 13,
+            "UV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "VisualPriority": 0
+          },
+          "type": 13
+        }
+      ],
+      "parent": "6A542382-A723-438F-A438-A7254A04CA40",
+      "protoGuid": "411E3052-E241-4936-955E-511DCC804571",
+      "uuid": "4B54116B-802A-49B5-B3A0-6AE134A5EE9D"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "Skill",
+      "overrides": [
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CUI_SkillController",
+              "Fields": [
+                {
+                  "Name": "m_refPlayer",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "C758073A-D827-495D-8A1C-E4EE3060F3AF"
+                  }
+                },
+                {
+                  "Name": "m_tRefSkill_Image",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "BFCE0C5B-8A9F-4EB5-810F-B513315A6661"
+                  }
+                },
+                {
+                  "Name": "m_vCoolDownSmallSize",
+                  "Type": 2,
+                  "Value": [
+                    79.0,
+                    65.0
+                  ]
+                },
+                {
+                  "Name": "m_vCoolDownBigSize",
+                  "Type": 2,
+                  "Value": [
+                    91.0,
+                    71.0
+                  ]
+                },
+                {
+                  "Name": "m_tRefSpinH_CoolDown_Image",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "204B0366-0568-4B85-B065-69123668F093"
+                  }
+                },
+                {
+                  "Name": "m_tRefThrow_CoolDown_Image",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "F0DE0A73-073D-4F37-B2D1-04962C4E7773"
+                  }
+                },
+                {
+                  "Name": "m_tRefSpinV_CoolDown_Image",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "F72721C4-3EE0-4B55-9C08-89741A253C4F"
+                  }
+                },
+                {
+                  "Name": "m_SpinH_Texture",
+                  "Type": 6,
+                  "Value": {
+                    "GUID": "C212BB34-F7FE-440A-9A89-348437E93C4A"
+                  }
+                },
+                {
+                  "Name": "m_Throw_Texture",
+                  "Type": 6,
+                  "Value": {
+                    "GUID": "43909CC7-975A-4F95-8328-1C13BD927403"
+                  }
+                },
+                {
+                  "Name": "m_SpinV_Texture",
+                  "Type": 6,
+                  "Value": {
+                    "GUID": "29085E95-8FA2-4160-A444-EDE76E0F9B34"
+                  }
+                },
+                {
+                  "Name": "m_CoolDownSmall",
+                  "Type": 6,
+                  "Value": {
+                    "GUID": "FAB11140-02A6-450A-9AF0-BDFB31500182"
+                  }
+                },
+                {
+                  "Name": "m_CoolDownBig",
+                  "Type": 6,
+                  "Value": {
+                    "GUID": "FAB11140-02A6-450A-9AF0-BDFB31500182"
+                  }
+                }
+              ]
+            },
+            "ScriptGuid": "0034A54C-20D0-413F-A4E4-2D731C2AE613",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "PosPx": [
+              1662.0,
+              969.0
+            ],
+            "SizePx": [
+              300.0,
+              92.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "C212BB34-F7FE-440A-9A89-348437E93C4A",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "Color": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "TextureGuid": "C212BB34-F7FE-440A-9A89-348437E93C4A",
+            "Type": 13,
+            "UV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "VisualPriority": 0
+          },
+          "type": 13
+        }
+      ],
+      "parent": "6A542382-A723-438F-A438-A7254A04CA40",
+      "protoGuid": "411E3052-E241-4936-955E-511DCC804571",
+      "uuid": "BFCE0C5B-8A9F-4EB5-810F-B513315A6661"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "SpinH_CoolDown",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              1566.0,
+              966.0
+            ],
+            "SizePx": [
+              91.0,
+              71.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "FAB11140-02A6-450A-9AF0-BDFB31500182",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "Color": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "TextureGuid": "FAB11140-02A6-450A-9AF0-BDFB31500182",
+            "Type": 13,
+            "UV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "VisualPriority": 0
+          },
+          "type": 13
+        }
+      ],
+      "parent": "BFCE0C5B-8A9F-4EB5-810F-B513315A6661",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "204B0366-0568-4B85-B065-69123668F093"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "Throw_CoolDown",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              1671.0,
+              972.0
+            ],
+            "SizePx": [
+              79.0,
+              65.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "FAB11140-02A6-450A-9AF0-BDFB31500182",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "Color": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "TextureGuid": "FAB11140-02A6-450A-9AF0-BDFB31500182",
+            "Type": 13,
+            "UV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "VisualPriority": 0
+          },
+          "type": 13
+        }
+      ],
+      "parent": "BFCE0C5B-8A9F-4EB5-810F-B513315A6661",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "F0DE0A73-073D-4F37-B2D1-04962C4E7773"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "SpinV_CoolDown",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              1766.0,
+              972.0
+            ],
+            "SizePx": [
+              79.0,
+              65.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "FAB11140-02A6-450A-9AF0-BDFB31500182",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              9.391730308532715,
+              0.0,
+              0.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "Color": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "TextureGuid": "FAB11140-02A6-450A-9AF0-BDFB31500182",
+            "Type": 13,
+            "UV": [
+              0.0,
+              9.391730308532715,
+              0.0,
+              0.0
+            ],
+            "VisualPriority": 0
+          },
+          "type": 13
+        }
+      ],
+      "parent": "BFCE0C5B-8A9F-4EB5-810F-B513315A6661",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "F72721C4-3EE0-4B55-9C08-89741A253C4F"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "cursor",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              540.0
+            ],
+            "SizePx": [
+              50.0,
+              50.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "DF143D6E-8F08-425E-B7AD-7CC47D99447E",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "Color": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "TextureGuid": "DF143D6E-8F08-425E-B7AD-7CC47D99447E",
+            "Type": 13,
+            "UV": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "VisualPriority": 10
+          },
+          "type": 13
+        }
+      ],
+      "parent": "6A542382-A723-438F-A438-A7254A04CA40",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "0F11B8AB-0F99-4F9B-B47E-287A6153ED47"
     }
   ],
   "version": 1

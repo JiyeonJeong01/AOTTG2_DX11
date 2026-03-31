@@ -219,6 +219,30 @@ void CGameInstance::Test_LineRibbonMesh()
     }
 }
 
+uint32_t CGameInstance::Get_ResourceHandle(ASSET_TYPE eType, const ASSET_GUID& tGUID)
+{
+    switch (eType)
+    {
+    case ASSET_TYPE::TEXTURE:
+        return SYS_RESOURCE.Load_Texture(tGUID);
+
+    case ASSET_TYPE::MESH:
+        return SYS_RESOURCE.Load_Mesh(tGUID);
+
+    case ASSET_TYPE::SHADER:
+        return SYS_RESOURCE.Load_Shader(tGUID);
+
+    case ASSET_TYPE::MATERIAL:
+        return SYS_RESOURCE.Load_Material(tGUID);
+
+    case ASSET_TYPE::FONT:
+        return SYS_RESOURCE.Load_Font(tGUID);
+
+    default:
+        return INVALID_HANDLE_UINT;
+    }
+}
+
 _bool CGameInstance::Read_GameConfig()
 {
     std::filesystem::path configPath = "../../Game/Bin/Config/GameConfig.json";

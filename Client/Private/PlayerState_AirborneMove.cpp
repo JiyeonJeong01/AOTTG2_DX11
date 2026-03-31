@@ -140,7 +140,7 @@ void CPlayerState_AirborneMove::Decide_NextState()
     if (bStrongAtk)
     {
         cout << "[AIRBORNE_MOVE] -> AIRBORNE_ATTACK::STRONG\n";
-        SKILL eTrySkill = m_pSkillController->Get_CurSkill();
+        SKILL_TYPE eTrySkill = m_pSkillController->Get_CurSkillType();
         _bool bCanAtk = m_pSkillController->Try_UseSKill(eTrySkill);
         if (bCanAtk)
             m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::AIRBORNE_ATTACK), To<_uint>(AIRBORNE_ATTACK::STRONG));

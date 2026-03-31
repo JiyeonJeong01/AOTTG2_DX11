@@ -211,17 +211,17 @@ void CPlayerState_AirborneAttack::Decide_State_If_Needed()
 {
     if (m_eAirborneAttackState == AIRBORNE_ATTACK::STRONG)
     {
-        SKILL eSkill = m_pSkillController->Get_CurSkill();
+        SKILL_TYPE eSkill = m_pSkillController->Get_CurSkillType();
 
         switch (eSkill)
         {
-        case SKILL::SPIN_H:
+        case SKILL_TYPE::SPIN_H:
             m_eAirborneAttackState = AIRBORNE_ATTACK::SPIN_H;
             break;
-        case SKILL::THROW:
+        case SKILL_TYPE::THROW:
             m_eAirborneAttackState = AIRBORNE_ATTACK::THROW;
             break;
-        case SKILL::SPIN_V:
+        case SKILL_TYPE::SPIN_V:
             m_eAirborneAttackState = AIRBORNE_ATTACK::SPIN_V;
             break;
         }

@@ -92,7 +92,7 @@ void CPlayer::Priority_Update(void* pCtx, _float fDT)
     m_upStateMachine->Update_PlayerInput(tInput);
     m_upStateMachine->Priority_Update(fDT);
 
-    m_upSkillController->Update_SkillSet(fDT);
+    m_upSkillController->Update_SkillSet(fDT, tInput);
 }
 
 void CPlayer::Update(void* pCtx, _float fDT)
@@ -132,6 +132,20 @@ void CPlayer::On_CollisionExit(const COLLISION_DESC& tDesc)
     CGameObject* pObj = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
     if (pObj)
         LOG_INFO("================================================== COLLISION_EXIT ====================================== ");
+}
+
+PLAYER_CONTEXT CPlayer::Get_PlayerContext()
+{
+    /* 플레이어 상태에게 전달 */
+    PLAYER_CONTEXT tContext;
+    tContext.tComponents = m_tComponents;
+    tContext.tRef = m_tRef;
+    tContext.pStats = &m_tStats;
+
+    /* 컨트롤러 */
+    tContext.pSkillController = m_upSkillController.get();
+
+    return tContext;
 }
 
 NS_END;

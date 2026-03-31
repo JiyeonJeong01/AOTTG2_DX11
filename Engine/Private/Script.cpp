@@ -44,6 +44,10 @@ void IScript::Save_Exposed_Fields(json& j) const
             ScriptField_ToJson_ObjectRef(jField["Value"], *reinterpret_cast<const SCRIPT_OBJECT_REF*>(pField));
             break;
 
+        case SCRIPT_FIELD_TYPE::ASSET_GUID:
+            ScriptField_ToJson_AssetGUID(jField["Value"], *reinterpret_cast<const ASSET_GUID*>(pField));
+            break;
+
         default:
             continue;
         }
@@ -116,6 +120,10 @@ _bool IScript::Load_Exposed_Fields(const json& j)
 
         case SCRIPT_FIELD_TYPE::OBJECT_REF:
             ScriptField_FromJson_ObjectRef(jValue, *reinterpret_cast<SCRIPT_OBJECT_REF*>(pField));
+            break;
+
+        case SCRIPT_FIELD_TYPE::ASSET_GUID:
+            ScriptField_FromJson_AssetGUID(jValue, *reinterpret_cast<ASSET_GUID*>(pField));
             break;
 
         default:
