@@ -26,6 +26,8 @@ void CPlayerState_Jump::Priority_Update(_float fDT)
 void CPlayerState_Jump::Update(_float fDT)
 {
     CPlayerState::Update(fDT);
+
+    Jump_Dash(fDT);
 }
 
 void CPlayerState_Jump::Late_Update(_float fDT)
@@ -63,8 +65,17 @@ void CPlayerState_Jump::Setup_CachedPlayerInfos()
 
 void CPlayerState_Jump::Decide_NextState()
 {
+    /* AIRBORNE_ATTACK */
+    if (m_tInputCmd.bNormalAttackPressed)
+    {
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::AIRBORNE_ATTACK), To<_uint>(AIRBORNE_ATTACK::NORMAL));
+        return;
+    }
+
+    /* -> GROUNDED_MOVE */
     _bool bFalling = m_tComponents.animator.Get_CurAnimaionClipIdx() == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::AIR_FALL);
-    if (m_tRef.pGroundChecker->Get_OnWalkable() && bFalling)
+    _bool bJumpDash = m_tComponents.animator.Get_CurAnimaionClipIdx() == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::AIR);
+    if (m_tRef.pGroundChecker->Get_OnWalkable() && (bFalling || bJumpDash))
     {
         _float3 vVelocity = m_tComponents.rigidbody.Get_LinearVel();
         _float fVelSq = XMVectorGetX(XMVector3LengthSq(XMLoadFloat3(&vVelocity)));
@@ -79,12 +90,33 @@ void CPlayerState_Jump::Decide_NextState()
 
 void CPlayerState_Jump::Decide_NextAnim()
 {
+    /* 점프 후, 가속 대쉬 */
+    _bool bBoost = m_tInputCmd.bBoostHeld;
+
+    _bool bJumpBegin = m_tComponents.animator->iAnimationClip == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::JUMP];
+    if (m_eJumpState != JUMP::DASH && bBoost && !bJumpBegin)
+    {
+        m_eJumpState = JUMP::DASH;
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR);
+        return;
+    }
+
+    /* 점프 대쉬 중단 */
+    if (m_eJumpState == JUMP::DASH && !bBoost)
+    {
+        m_eJumpState = JUMP::FALL;
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
+        return;
+    }
+
     /* 상승 후 하락 */
     if (m_eJumpState != JUMP::FALL
         && m_tComponents.rigidbody.Get_LinearVel().y < 0.f)
     {
         m_eJumpState = JUMP::FALL;
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
+
+        return;
     }
 }
 
@@ -92,6 +124,8 @@ void CPlayerState_Jump::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tDat
 {
     if (!m_bAcivated)
         return;
+
+    cout << "[JUMP] On_AnimFinished\n";
 
     const _uint iIndex = tData.iAnimationClip;
     if (iIndex == INVALID_ANIM_CLIP_INDEX)
@@ -103,9 +137,24 @@ void CPlayerState_Jump::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tDat
 
 void CPlayerState_Jump::On_JumpFinished(const Engine::ANIMATION_EVENT_DATA& tData)
 {
+    cout << " => [JUMP] On_JumpFinished\n";
+
     m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_RISE);
+    m_eJumpState = JUMP::RISE;
 }
 
+void CPlayerState_Jump::Jump_Dash(_float fDT)
+{
+    if (m_eJumpState != JUMP::DASH)
+        return;
+
+    _float3 vDashForce = m_tComponents.rigidbody.Get_LinearVel();
+
+    vDashForce.x *= m_pStats->fJumpDash * fDT;
+    vDashForce.z *= m_pStats->fJumpDash * fDT;
+
+    m_tComponents.rigidbody.Add_Force(vDashForce);
+}
 
 std::shared_ptr<CPlayerState_Jump> CPlayerState_Jump::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
 {

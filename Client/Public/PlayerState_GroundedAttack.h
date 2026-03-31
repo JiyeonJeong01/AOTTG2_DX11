@@ -3,11 +3,11 @@
 
 NS_BEGIN(Client)
 
-class CPlayerState_Jump final : public CPlayerState
+class CPlayerState_GroundedAttack final : public CPlayerState
 {
 public:
-    CPlayerState_Jump(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
-    ~CPlayerState_Jump();
+    CPlayerState_GroundedAttack(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
+    ~CPlayerState_GroundedAttack();
 
 public:
     HRESULT Initialize() override;
@@ -20,22 +20,19 @@ public:
 
     void Setup_CachedPlayerInfos() override;
 
-private :
-    void Decide_NextAnim() override;
+private:
     void Decide_NextState() override;
 
     void On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData);
-    void On_JumpFinished(const Engine::ANIMATION_EVENT_DATA& tData);
+    void On_Attack2Finished(const Engine::ANIMATION_EVENT_DATA& tData);
 
 private:
-    JUMP    m_eJumpState = JUMP::JUMP_BEGIN;
+    GROUNDED_ATTACK     m_eGroundedAttackState = GROUNDED_ATTACK::ATK;
 
 private:
-    void Jump_Dash(_float fDT);
-
 
 public:
-    static std::shared_ptr<CPlayerState_Jump> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
+    static std::shared_ptr<CPlayerState_GroundedAttack> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
 };
 
 NS_END

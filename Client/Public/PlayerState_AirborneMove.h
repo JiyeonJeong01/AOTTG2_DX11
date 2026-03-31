@@ -26,10 +26,12 @@ private :
     void Decide_NextState() override;
 
     void On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData);
-    void On_AirHookFinished(const Engine::ANIMATION_EVENT_DATA& tData);
+    void On_AirDashFinished(const Engine::ANIMATION_EVENT_DATA& tData);
 
 private :
-    AIRBORNE_STATE          m_eAirborneState = AIRBORNE_STATE::AIR_BEGIN;
+    AIRBORNE_MOVE          m_eAirborneState = AIRBORNE_MOVE::AIR_BEGIN;
+
+    void Decide_HookAnim();
 
 public:
     static std::shared_ptr<CPlayerState_AirborneMove> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);

@@ -17,7 +17,7 @@ void CODM_Gear::Handle_RopeState(CRope::ROPE_STATE eState, SIDE eSide)
         m_sj.Set_Spring(m_fSpring);
         m_sj.Set_Spring(m_fDamper);
 
-        m_OnSuccessAnchored.Invoke(To<_uint>(PLAYER_STATE::AIRBORNE_MOVE), 0);
+        m_OnSuccessAnchored.Invoke(To<_uint>(PLAYER_STATE::AIRBORNE_MOVE), To<_uint>(AIRBORNE_MOVE::AIR_BEGIN));
     }
 
     /* 사용 상태 갱신 */

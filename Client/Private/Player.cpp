@@ -92,7 +92,7 @@ void CPlayer::Priority_Update(void* pCtx, _float fDT)
     m_upStateMachine->Update_PlayerInput(tInput);
     m_upStateMachine->Priority_Update(fDT);
 
-    m_upSkillController->Update_SkillSet();
+    m_upSkillController->Update_SkillSet(fDT);
 }
 
 void CPlayer::Update(void* pCtx, _float fDT)

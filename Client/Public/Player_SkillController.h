@@ -13,7 +13,7 @@ public:
 
 public:
     void                SetUp_SkillSet();
-    void                Update_SkillSet();
+    void                Update_SkillSet(_float fDT);
 
     _bool               Try_UseSKill(SKILL eSkill);
 

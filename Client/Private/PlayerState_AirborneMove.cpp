@@ -39,10 +39,10 @@ void CPlayerState_AirborneMove::Update(_float fDT)
     _bool bRightHook = m_tInputCmd.bRightAnchorHeld;
 
     /* 그래플링 끝 */
-    if (m_eAirborneState != AIRBORNE_STATE::AIR_FALL
+    if (m_eAirborneState != AIRBORNE_MOVE::AIR_FALL
         && (bLeftHook == false && bRightHook == false))
     {
-        m_eAirborneState = AIRBORNE_STATE::AIR_FALL;
+        m_eAirborneState = AIRBORNE_MOVE::AIR_FALL;
         m_tRef.pGear->Finish_Grappling();
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
 
@@ -50,24 +50,10 @@ void CPlayerState_AirborneMove::Update(_float fDT)
     }
 
     /* 그래플링 좌/우/정면 적용 */
-    /* -> 정면 */
-    if (m_eAirborneState != AIRBORNE_STATE::AIR_FRONT && bLeftHook == true && bRightHook == true)
-    {
-        m_eAirborneState = AIRBORNE_STATE::AIR_FRONT;
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_HOOK);
-    }
-    /* -> 좌측 앵커 사용 */
-    else if (m_eAirborneState != AIRBORNE_STATE::AIR_LEFT && bLeftHook == true && bRightHook == false)
-    {
-        m_eAirborneState = AIRBORNE_STATE::AIR_LEFT;
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_LEFT);
-    }
-    /* -> 우측 앵커 사용 */
-    else if (m_eAirborneState != AIRBORNE_STATE::AIR_RIGHT && bLeftHook == false && bRightHook == true)
-    {
-        m_eAirborneState = AIRBORNE_STATE::AIR_RIGHT;
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_RIGHT);
-    }
+    if (m_eAirborneState == AIRBORNE_MOVE::AIR_BEGIN)
+        return;
+
+    Decide_HookAnim();
 }
 
 void CPlayerState_AirborneMove::Late_Update(_float fDT)
@@ -80,18 +66,37 @@ void CPlayerState_AirborneMove::Enter(_uint iDetailFlag)
 {
     CPlayerState::Enter(iDetailFlag);
 
+    if (iDetailFlag < To<_uint>(AIRBORNE_MOVE::END))
+        m_eAirborneState = To<AIRBORNE_MOVE>(iDetailFlag);
+
     _uint iFlag = m_tRef.pGear->Get_UsingFlag();
 
-    if ((iFlag & To<_uint>(SIDE::BOTH)) != 0)
+    if ((iFlag & To<_uint>(SIDE::BOTH)) != 0 /* 기어 사용 중 */
+        && m_eAirborneState == AIRBORNE_MOVE::AIR_BEGIN)
     {
         /* Grapple Action (Left, Right, or Both) */
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_HOOK);
-        m_eAirborneState = AIRBORNE_STATE::AIR_BEGIN;
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::DASH);
+
+        cout << "[AIRBORNE_MOVE] ENTER BEGIN\n";
+
+        return;
     }
-    else
+    if (m_eAirborneState == AIRBORNE_MOVE::AIR_FALL)
     {
-        /* Falling or Normal Jump */
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
+
+        cout << "[AIRBORNE_MOVE] ENTER FALL\n";
+        return;
     }
+    if (m_eAirborneState == AIRBORNE_MOVE::AIR)
+    {
+        cout << "[AIRBORNE_MOVE] ENTER AIR\n";
+        Decide_HookAnim();
+        return;
+    }
+
+    cout << "[AIRBORNE_MOVE] 지정되지 않은 상태\n";
+
 }
 
 void CPlayerState_AirborneMove::Exit()
@@ -102,8 +107,9 @@ void CPlayerState_AirborneMove::Exit()
 void CPlayerState_AirborneMove::Decide_NextState()
 {
     /* -> GROUNDED_MOVE(착지/슬라이딩) */
-    if (m_eAirborneState == AIRBORNE_STATE::AIR_FALL && m_tRef.pGroundChecker->Get_OnWalkable())
+    if (m_eAirborneState == AIRBORNE_MOVE::AIR_FALL && m_tRef.pGroundChecker->Get_OnWalkable())
     {
+        cout << "[AIRBORNE_MOVE] -> GROUNDED_MOVE\n";
         const float THREASHOLD = 10.f;
 
         _float3 fLinearVel = m_tComponents.rigidbody.Get_LinearVel();
@@ -114,16 +120,33 @@ void CPlayerState_AirborneMove::Decide_NextState()
             m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::SLIDE));
         else
             m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::DASH_LAND));
+
+        return;
     }
 
+    LOG_INFO(" ======== [ AIRBORNE_MOVE ] ======== ");
+    LOG_INFO("%d", m_tInputCmd.bStrongAttackPressed);
 
     _bool bNormalAtk = m_tInputCmd.bNormalAttackPressed;
-    _bool bStrongAtk = m_tInputCmd.bStrongAttackPressed;
 
-    //if (bNormalAtk)
-    //{
-    //    m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::AIRBORNE_ATTACK), )
-    //}
+    if (bNormalAtk)
+    {
+        cout << "[AIRBORNE_MOVE] -> AIRBORNE_ATTACK::NOMAL\n";
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::AIRBORNE_ATTACK), To<_uint>(AIRBORNE_ATTACK::NORMAL));
+        return;
+    }
+
+    _bool bStrongAtk = m_tInputCmd.bStrongAttackPressed;
+    if (bStrongAtk)
+    {
+        cout << "[AIRBORNE_MOVE] -> AIRBORNE_ATTACK::STRONG\n";
+        SKILL eTrySkill = m_pSkillController->Get_CurSkill();
+        _bool bCanAtk = m_pSkillController->Try_UseSKill(eTrySkill);
+        if (bCanAtk)
+            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::AIRBORNE_ATTACK), To<_uint>(AIRBORNE_ATTACK::STRONG));
+        return;
+    }
+
 }
 
 void CPlayerState_AirborneMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
@@ -131,22 +154,52 @@ void CPlayerState_AirborneMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DA
     if (!m_bAcivated)
         return;
 
+    cout << "[AIRBORNE_ATTACK] On_AnimFinished\n";
+
     _uint iIndex = tData.iAnimationClip;
     if (iIndex == INVALID_ANIM_CLIP_INDEX)
         return;
 
-    if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::AIR])
-        On_AirHookFinished(tData);
+    if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::DASH])
+        On_AirDashFinished(tData);
 }
 
-void CPlayerState_AirborneMove::On_AirHookFinished(const Engine::ANIMATION_EVENT_DATA& tData)
+void CPlayerState_AirborneMove::On_AirDashFinished(const Engine::ANIMATION_EVENT_DATA& tData)
 {
-    if ((m_tRef.pGear->Get_UsingFlag() & To<_uint>(SIDE::BOTH)) == (To<_uint>(SIDE::BOTH)))
+    Decide_HookAnim();
+
+    cout << " => [AIRBORNE_MOVE] On_NomalFinished\n";
+}
+
+void CPlayerState_AirborneMove::Decide_HookAnim()
+{
+    _bool bLeftHook = m_tInputCmd.bLeftAnchorHeld;
+    _bool bRightHook = m_tInputCmd.bRightAnchorHeld;
+
+    /* -> 정면 */
+    if (m_eAirborneState != AIRBORNE_MOVE::AIR_FRONT && bLeftHook == true && bRightHook == true)
+    {
+        m_eAirborneState = AIRBORNE_MOVE::AIR_FRONT;
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_HOOK);
-    else if (m_tRef.pGear->Get_UsingFlag() & To<_uint>(SIDE::LEFT))
+    }
+    /* -> 좌측 앵커 사용 */
+    else if (m_eAirborneState != AIRBORNE_MOVE::AIR_LEFT && bLeftHook == true && bRightHook == false)
+    {
+        m_eAirborneState = AIRBORNE_MOVE::AIR_LEFT;
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_LEFT);
-    else if (m_tRef.pGear->Get_UsingFlag() & To<_uint>(SIDE::RIGHT))
+    }
+    /* -> 우측 앵커 사용 */
+    else if (m_eAirborneState != AIRBORNE_MOVE::AIR_RIGHT && bLeftHook == false && bRightHook == true)
+    {
+        m_eAirborneState = AIRBORNE_MOVE::AIR_RIGHT;
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_RIGHT);
+    }
+    /* 사용 중이 아님 */
+    else
+    {
+        m_eAirborneState = AIRBORNE_MOVE::AIR_FALL;
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
+    }
 }
 
 std::shared_ptr<CPlayerState_AirborneMove> CPlayerState_AirborneMove::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)

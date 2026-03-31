@@ -50,6 +50,9 @@
     <Filter Include="UI\HUD">
       <UniqueIdentifier>{f049f1a7-e261-4a2b-8b72-41d034685f69}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\HitBox">
+      <UniqueIdentifier>{a5a5d237-93bd-42bf-ad35-a745d6a6d82a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -145,6 +148,12 @@
     <ClInclude Include="..\Public\Player_SkillController.h">
       <Filter>Player\PlayerController</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_GroundedAttack.h">
+      <Filter>Player\PlayerState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_AirborneAttack.h">
+      <Filter>Player\PlayerState</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -224,6 +233,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Player_SkillController.cpp">
       <Filter>Player\PlayerController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_GroundedAttack.cpp">
+      <Filter>Player\PlayerState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_AirborneAttack.cpp">
+      <Filter>Player\PlayerState</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

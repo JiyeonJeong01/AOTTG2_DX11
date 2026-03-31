@@ -30,8 +30,8 @@ private:
 
 private:
     GROUNDED_MOVE   m_eGroundedMoveState = GROUNDED_MOVE::RUN;
-    _float          m_fSlideElapsedTime = 0.f;
-    _float          m_fSlideTotalTime = 1.5f;
+    _float          m_fOriginDrag = 0.f;
+    const _float    m_fSlidingDrag = 0.2f;
 
 private :
     void Move(_float fDT);

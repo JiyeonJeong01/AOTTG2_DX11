@@ -94,9 +94,9 @@ const PLAYER_INPUT_COMMAND& CPlayer_InputController::Update_InputCommand()
         m_tInputCommand.bStrongAttackPressed = true;
 
     if (SYS_INPUT.Get_KeyDown('F'))
-        m_tInputCommand.bNormalAttackPressed = true;
-    if (SYS_INPUT.Get_KeyDown('R'))
         m_tInputCommand.bInteract = true;
+    if (SYS_INPUT.Get_KeyDown('R'))
+        m_tInputCommand.bReloadBlade = true;
 
 
     return m_tInputCommand;

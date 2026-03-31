@@ -47,6 +47,8 @@ void CPlayerState_Idle::Enter(_uint iDetailFlag)
 {
     CPlayerState::Enter(iDetailFlag);
 
+    cout << "[IDLE] ENTER \n";
+
     m_tComponents.animator.Set_NextAnimationClip(IDLE_F);
 }
 
@@ -64,16 +66,33 @@ void CPlayerState_Idle::Setup_CachedPlayerInfos()
 
 void CPlayerState_Idle::Decide_NextState()
 {
+    /* -> JUMP */
     if (m_tInputCmd.bBoostPressed
         && (m_tRef.pGroundChecker && m_tRef.pGroundChecker->Get_OnWalkable())
         && m_tRef.pFSM)
     {
-        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::JUMP));
+        cout << "[IDLE] -> JUMP::JUMP_BEGIN\n";
+
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::JUMP), To<_uint>(JUMP::JUMP_BEGIN));
+        return;
     }
 
+    /* -> GROUNDED_ATTAK */
+    if (m_tInputCmd.bNormalAttackPressed)
+    {
+        cout << "[IDLE] -> GROUNDED_ATTACK::ATK\n";
+
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_ATTACK), To<_uint>(GROUNDED_ATTACK::ATK));
+        return;
+    }
+
+    /* -> GROUNDED_MOVE */
     if (!XMVector3Equal(XMLoadFloat3(&m_tInputCmd.vMove), XMVectorZero()))
     {
-        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE));
+        cout << "[IDLE] -> GROUNDED_MOVE::JUMP_BEGIN\n";
+
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::RUN));
+        return;
     }
 }
 

@@ -39,10 +39,10 @@ private:
     Engine::CGameObject*    m_goPlayer{};
     CPlayer*                m_scPlayer{};
 
-    std::vector<std::shared_ptr<CPlayerState>>           m_States;
-    std::shared_ptr<CPlayerState>                        m_spCurState;
-
-    Engine::CEvent<std::shared_ptr<CPlayerState>>        m_OnChanged_CurState;
+    std::vector<std::shared_ptr<CPlayerState>>          m_States;
+    std::shared_ptr<CPlayerState>                       m_spCurState;   
+    Engine::CEvent<std::shared_ptr<CPlayerState>>       m_OnChanged_CurState;
+    PLAYER_INPUT_COMMAND                                m_tInputCmd{};
 
 private :
 

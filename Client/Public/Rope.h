@@ -50,11 +50,11 @@ private:
     AMPLITUDE_VALUE                 m_tDynamicValue{};
 
     /* Rope Line 설정 값 */
-    _float                          m_vWaveHeight = 20.f;
+    _float                          m_vWaveHeight = 4.f;
     _int                            m_iNumWave = 2;
     _int                            m_iNumPoints = 30;
-    _float                          m_fExtendVel = 20.f;
-    _float                          m_fRopMaxLength = 150.f;
+    _float                          m_fExtendVel = 90.f;
+    _float                          m_fRopMaxLength = 100.f;
 
     CEvent<ROPE_STATE, SIDE>        m_OnChanged_RopeState;
 

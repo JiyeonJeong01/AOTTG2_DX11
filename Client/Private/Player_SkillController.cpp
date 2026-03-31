@@ -14,7 +14,7 @@ void CPlayer_SkillController::SetUp_SkillSet()
     PLAYER_SKILL skill1;
     skill1.eSkill = SKILL::SPIN_H;
     skill1.strName = "수평 베기";
-    skill1.fCoolDown = 17.f;
+    skill1.fCoolDown = 0.f;//17.f;
     skill1.fElapsedCoolDown = 0.f;
     skill1.tSpriteGUID = ASSET_GUID("C212BB34-F7FE-440A-9A89-348437E93C4A");
 
@@ -35,11 +35,18 @@ void CPlayer_SkillController::SetUp_SkillSet()
     m_pSkillSet->skills[0] = skill1;
     m_pSkillSet->skills[1] = skill2;
     m_pSkillSet->skills[2] = skill3;
+
+    m_pSkillSet->eSkill = SKILL::SPIN_H;
 }
 
-void CPlayer_SkillController::Update_SkillSet()
+void CPlayer_SkillController::Update_SkillSet(_float fDT)
 {
-
+    /* 쿨다운 업데이트 */
+    for(auto& skill : m_pSkillSet->skills)
+    {
+        skill.fElapsedCoolDown += fDT;
+        skill.fElapsedCoolDown = fminf(skill.fElapsedCoolDown, skill.fCoolDown);
+    }
 }
 
 _bool CPlayer_SkillController::Try_UseSKill(SKILL eSkill)

@@ -29,6 +29,8 @@
     <ClInclude Include="..\Public\GroundChecker.h" />
     <ClInclude Include="..\Public\Hello.h" />
     <ClInclude Include="..\Public\HUDController.h" />
+    <ClInclude Include="..\Public\PlayerState_AirborneAttack.h" />
+    <ClInclude Include="..\Public\PlayerState_GroundedAttack.h" />
     <ClInclude Include="..\Public\PlayerState_Idle.h" />
     <ClInclude Include="..\Public\PlayerState_Jump.h" />
     <ClInclude Include="..\Public\Player_SkillController.h" />
@@ -58,6 +60,8 @@
     <ClCompile Include="..\Private\GroundChecker.cpp" />
     <ClCompile Include="..\Private\Hello.cpp" />
     <ClCompile Include="..\Private\HUDController.cpp" />
+    <ClCompile Include="..\Private\PlayerState_AirborneAttack.cpp" />
+    <ClCompile Include="..\Private\PlayerState_GroundedAttack.cpp" />
     <ClCompile Include="..\Private\PlayerState_Idle.cpp" />
     <ClCompile Include="..\Private\PlayerState_Jump.cpp" />
     <ClCompile Include="..\Private\Player_SkillController.cpp" />

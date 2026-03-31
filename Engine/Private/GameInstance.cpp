@@ -119,8 +119,8 @@ void CGameInstance::Test_Raycast()
         tRAY.fMaxDist = 1000.f;
         tRAY.fMinDist = 0.f;
 
-        LOG_INFO("[ RAYCAST TEST ] : max dist - %.1f, min dist - %.1f",
-            tRAY.fMaxDist, tRAY.fMinDist);
+        //LOG_INFO("[ RAYCAST TEST ] : max dist - %.1f, min dist - %.1f",
+        //    tRAY.fMaxDist, tRAY.fMinDist);
 
         CRaycast::Intersect_Ray(allHitInfo, tRAY, SYS_INPUT.Get_GameMousePos(), m_pPhysics);
     }
@@ -130,8 +130,8 @@ void CGameInstance::Test_Raycast()
         tRAY.fMaxDist = 50.f;
         tRAY.fMinDist = 0.f;
 
-        LOG_INFO("[ RAYCAST TEST ] : max dist - %.1f, min dist - %.1f",
-            tRAY.fMaxDist, tRAY.fMinDist);
+        //LOG_INFO("[ RAYCAST TEST ] : max dist - %.1f, min dist - %.1f",
+        //    tRAY.fMaxDist, tRAY.fMinDist);
 
         CRaycast::Intersect_Ray(allHitInfo, tRAY, SYS_INPUT.Get_GameMousePos(), m_pPhysics);
     }
@@ -141,8 +141,8 @@ void CGameInstance::Test_Raycast()
         tRAY.fMaxDist = 1000.f;
         tRAY.fMinDist = 50.f;
 
-        LOG_INFO("[ RAYCAST TEST ] : max dist - %.1f, min dist - %.1f",
-            tRAY.fMaxDist, tRAY.fMinDist);
+        //LOG_INFO("[ RAYCAST TEST ] : max dist - %.1f, min dist - %.1f",
+        //    tRAY.fMaxDist, tRAY.fMinDist);
 
         CRaycast::Intersect_Ray(allHitInfo, tRAY, SYS_INPUT.Get_GameMousePos(), m_pPhysics);
     }
@@ -153,11 +153,11 @@ void CGameInstance::Test_Raycast()
         for (auto hit : allHitInfo.allHits)
         {
             CGameObject* pObject = SYS_GAMEOBJECT.Get_Wrapper(hit.hObject);
-            LOG_INFO("%d : Object : { %.*s } | Hit Pos : { %.1f, %.1f, %.1f }",
-                i,
-                (int)pObject->Get_Label().size(),
-                pObject->Get_Label().data(),
-                hit.vHitPos.x, hit.vHitPos.y, hit.vHitPos.z);
+            //LOG_INFO("%d : Object : { %.*s } | Hit Pos : { %.1f, %.1f, %.1f }",
+            //    i,
+            //    (int)pObject->Get_Label().size(),
+            //    pObject->Get_Label().data(),
+            //    hit.vHitPos.x, hit.vHitPos.y, hit.vHitPos.z);
         }
     }
 }
@@ -212,7 +212,7 @@ void CGameInstance::Test_LineRibbonMesh()
             Positions[i].z = vCamPos.z + 2.f;
         }
 
-        LOG_INFO("==== TEST LINE RENDER ====");
+        //LOG_INFO("==== TEST LINE RENDER ====");
 
         s_Line->Update(Positions, 10);
         s_Line->Submit();
