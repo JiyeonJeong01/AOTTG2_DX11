@@ -1,0 +1,212 @@
+{
+  "prototype": {
+    "children": [
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "eyes_0",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "F8089D6E-5E8B-467F-A7E4-4ABDD8CFF6C9",
+                "MeshGUID": "F454ACF3-1946-4D2F-9C7A-128B82CF8F35",
+                "Mode": 2,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "eye"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  -1.2999999523162842,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.25,
+                  1.2999999523162842,
+                  1.25
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "head",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "8D3A2683-075F-421E-A893-E7DDEBA088D1",
+                "MeshGUID": "E0124909-9B33-43AE-B946-5D3F7ADAC189",
+                "Mode": 2,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "hair"
+      }
+    ],
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "6C740313-CCF4-4B50-AF11-86CDBE35CAF0",
+            "MeshGUID": "9467EA3F-1BA0-4831-95B2-FB5BCFEC0731",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "AnimationClip": 58,
+            "BlendDuration": 0.0,
+            "BlendMap": [],
+            "Enabled": true,
+            "LoopMap": [
+              {
+                "Clip": 98,
+                "Loop": true
+              },
+              {
+                "Clip": 97,
+                "Loop": true
+              },
+              {
+                "Clip": 96,
+                "Loop": true
+              },
+              {
+                "Clip": 95,
+                "Loop": true
+              }
+            ],
+            "PlaySpeed": 1.0,
+            "Playing": false,
+            "Type": 6
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "iObjMask": 0,
+    "isUI": false,
+    "name": "Titan_v1"
+  },
+  "version": 1
+}

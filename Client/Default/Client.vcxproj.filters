@@ -53,6 +53,9 @@
     <Filter Include="Common\HitBox">
       <UniqueIdentifier>{a5a5d237-93bd-42bf-ad35-a745d6a6d82a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Titan">
+      <UniqueIdentifier>{30f01a9c-7884-43a8-ba9a-b9ba107e7bd9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -165,6 +168,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\PlayerState_Dodge.h">
       <Filter>Player\PlayerState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Titan_Struct.h">
+      <Filter>Titan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AnimationClip_Titan.h">
+      <Filter>Titan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -11,6 +11,7 @@
 #include "HUDController.h"
 #include "Hello.h"
 #include "MainMenu_Controller.h"
+#include "NormalTitan.h"
 #include "ODM_Gear.h"
 #include "Player.h"
 #include "ThrownBlade.h"
@@ -49,6 +50,10 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\MainMenu_Controller.script");
         handler.Register_VTable(guid, ScriptBinder<CMainMenu_Controller>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\NormalTitan.script");
+        handler.Register_VTable(guid, ScriptBinder<CNormalTitan>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\ODM_Gear.script");
