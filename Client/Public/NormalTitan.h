@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 #include "Client_Define.h"
 #include "Script.h"
 
 NS_BEGIN(Client)
 
-class CCNormalTitan : public IScript
+class CNormalTitan : public IScript
 {
 public:
     void Awake(void* pCtx) override;

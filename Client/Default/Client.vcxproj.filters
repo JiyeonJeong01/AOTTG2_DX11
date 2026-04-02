@@ -175,6 +175,9 @@
     <ClInclude Include="..\Public\AnimationClip_Titan.h">
       <Filter>Titan</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\NormalTitan.h">
+      <Filter>Titan</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -272,6 +275,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\PlayerState_Dodge.cpp">
       <Filter>Player\PlayerState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NormalTitan.cpp">
+      <Filter>Titan</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

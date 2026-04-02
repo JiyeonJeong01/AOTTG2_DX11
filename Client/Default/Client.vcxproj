@@ -30,6 +30,7 @@
     <ClInclude Include="..\Public\GroundChecker.h" />
     <ClInclude Include="..\Public\Hello.h" />
     <ClInclude Include="..\Public\HUDController.h" />
+    <ClInclude Include="..\Public\NormalTitan.h" />
     <ClInclude Include="..\Public\PlayerState_AirborneAttack.h" />
     <ClInclude Include="..\Public\PlayerState_Dodge.h" />
     <ClInclude Include="..\Public\PlayerState_GroundedAttack.h" />
@@ -61,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\CameraController.cpp" />
+    <ClCompile Include="..\Private\NormalTitan.cpp" />
     <ClCompile Include="..\Private\PlayerState_Dodge.cpp" />
     <ClCompile Include="..\Private\FreeCam.cpp" />
     <ClCompile Include="..\Private\GameManager.cpp" />

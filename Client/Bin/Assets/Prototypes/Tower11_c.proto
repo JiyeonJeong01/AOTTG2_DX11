@@ -1,0 +1,87 @@
+{
+  "prototype": {
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              -42.97764205932617,
+              17.468826293945313,
+              -32.855228424072266
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              1.9900000095367432,
+              10.220000267028809,
+              2.180000066757202
+            ],
+            "Offset": [
+              0.0,
+              -6.480000019073486,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Trigger": false,
+            "Type": 1
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "DBE73B41-B463-4744-B1C1-04BF6463C5E2",
+            "MeshGUID": "5A3523BF-8EE4-4630-95DB-4CFF79DBF6E1",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "iObjMask": 0,
+    "isUI": false,
+    "name": "Tower11_c"
+  },
+  "version": 1
+}
