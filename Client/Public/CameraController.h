@@ -57,6 +57,7 @@ private:
 
 private:
     void Follow_Target(_float fDT);
+    _float WrapAngleDeg(_float fAngle);
 
 public :
     void Pitch(_float fDegree);

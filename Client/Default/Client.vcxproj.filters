@@ -56,6 +56,21 @@
     <Filter Include="Titan">
       <UniqueIdentifier>{30f01a9c-7884-43a8-ba9a-b9ba107e7bd9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Titan\NormalTitan">
+      <UniqueIdentifier>{2e4091f7-2ba5-4056-86fe-dcf13721fccf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Titan\NormalTitan\NormalTitanState">
+      <UniqueIdentifier>{61e3a43c-d3c7-4661-8348-4ea6cb7d1b60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Titan\State">
+      <UniqueIdentifier>{0d490da6-12a1-4323-a3d1-e852f9c50e74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scout">
+      <UniqueIdentifier>{2bd3a9d3-de32-48b6-a8aa-2e587ff02c0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NewFilter1">
+      <UniqueIdentifier>{66524134-65ab-413a-a3c6-b3d71b871312}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -176,6 +191,42 @@
       <Filter>Titan</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NormalTitan.h">
+      <Filter>Titan\NormalTitan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NormalTitanStateMachine.h">
+      <Filter>Titan\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TitanState.h">
+      <Filter>Titan\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NormalTitanState_Move.h">
+      <Filter>Titan\NormalTitan\NormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NormalTitanState_Idle.h">
+      <Filter>Titan\NormalTitan\NormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Entity_Define.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Scout.h">
+      <Filter>Scout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Scout_Define.h">
+      <Filter>Scout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ScoutBehavior.h">
+      <Filter>Scout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ScoutBehavior_Runaway.h">
+      <Filter>Scout</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NormalTitanState_Chase.h">
+      <Filter>Titan\NormalTitan\NormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TargetSensor.h">
+      <Filter>Titan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TitanBound_Controller.h">
       <Filter>Titan</Filter>
     </ClInclude>
   </ItemGroup>
@@ -277,6 +328,36 @@
       <Filter>Player\PlayerState</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\NormalTitan.cpp">
+      <Filter>Titan\NormalTitan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TitanState.cpp">
+      <Filter>Titan\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NormalTitanStateMachine.cpp">
+      <Filter>Titan\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NormalTitanState_Move.cpp">
+      <Filter>Titan\NormalTitan\NormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NormalTitanState_Idle.cpp">
+      <Filter>Titan\NormalTitan\NormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Scout.cpp">
+      <Filter>Scout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ScoutBehavior.cpp">
+      <Filter>Scout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ScoutBehavior_Runaway.cpp">
+      <Filter>Scout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NormalTitanState_Chase.cpp">
+      <Filter>Titan\NormalTitan\NormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TargetSensor.cpp">
+      <Filter>Titan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TitanBound_Controller.cpp">
       <Filter>Titan</Filter>
     </ClCompile>
   </ItemGroup>

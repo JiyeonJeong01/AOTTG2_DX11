@@ -679,6 +679,9 @@ _bool CCollision_Detector::Detect_Raycast(RAY& tRay, const vector<COLLIDER_PROXY
         RAYCAST_HIT curHit{};
         curHit.fDist = FLT_MAX;
 
+        if (collider.pCol->bTrigger)
+            continue;
+
         switch (collider.pCol->eShape)
         {
         case SHAPE::BOX:

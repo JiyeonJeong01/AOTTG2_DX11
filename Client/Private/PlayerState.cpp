@@ -48,7 +48,7 @@ void CPlayerState::Update_PlayerInput(const PLAYER_INPUT_COMMAND& tInputCmd)
     m_tInputCmd = tInputCmd;
 }
 
-void CPlayerState::Setup_CachedPlayerInfos()
+void CPlayerState::Setup_CachedPlayerContext()
 {
 
 }
@@ -88,6 +88,9 @@ void CPlayerState::LookTo_InputDir(_float fDT)
 
     const _float fT = 1.f - expf(-m_fRotateSharpness * fDT);
     _float fNewYaw = m_fCurrentYaw + fDeltaYaw * fT;
+
+    while (fNewYaw > XM_PI)  fNewYaw -= XM_2PI;
+    while (fNewYaw < -XM_PI) fNewYaw += XM_2PI;
 
     m_fCurrentYaw = fNewYaw;
 

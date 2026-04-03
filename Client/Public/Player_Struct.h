@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Client_Define.h"
+#include "Entity_Define.h"
 
 NS_BEGIN(Client)
 
@@ -12,7 +13,6 @@ enum class GROUNDED_MOVE : uint8_t { RUN, SLIDE, DASH_LAND, END };
 enum class GROUNDED_ATTACK : uint8_t { ATK, END };
 enum class JUMP : uint8_t { JUMP_BEGIN, RISE, DASH, FALL, END };
 enum class RELOAD : uint8_t { GROUNDED, AIR, END };
-
 
 
 enum class SKILL_TYPE : uint8_t { SPIN_H, THROW, SPIN_V, END };

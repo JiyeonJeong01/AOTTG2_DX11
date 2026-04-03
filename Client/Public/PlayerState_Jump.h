@@ -18,7 +18,7 @@ public:
     void Enter(_uint iDetailFlag) override;
     void Exit() override;
 
-    void Setup_CachedPlayerInfos() override;
+    void Setup_CachedPlayerContext() override;
 
 private :
     void Decide_NextAnim() override;

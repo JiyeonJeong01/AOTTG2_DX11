@@ -80,16 +80,18 @@ void CPhysics_Processor::Fixed_Update(_float fDT)
 
 void CPhysics_Processor::Render()
 {
-    //m_upDebugRenderer->Begin();
-    //for (const auto& tProxy : m_ActivatedColliders)
-    //{
-    //    if (tProxy.pCol == nullptr)
-    //        continue;
-    //    if (!tProxy.pCol->bEnable)
-    //        continue;
-    //    m_upDebugRenderer->Draw_Collider(tProxy);
-    //}
-    //m_upDebugRenderer->End();
+    m_upDebugRenderer->Begin();
+    for (const auto& tProxy : m_ActivatedColliders)
+    {
+        if (tProxy.pCol == nullptr)
+            continue;
+        if (!tProxy.pCol->bEnable)
+            continue;
+        if (!tProxy.pCol->bDebugDraw)
+            continue;
+        m_upDebugRenderer->Draw_Collider(tProxy);
+    }
+    m_upDebugRenderer->End();
 }
 
 void CPhysics_Processor::Process_SpringJoints(_float fDT)
@@ -666,6 +668,7 @@ HRESULT CPhysics_Processor::Initialize_From_Spec_Collider(COMPONENT_HANDLE h, co
     pData->hSelf = h;
     pData->bEnable = pSpec->bEnable;
     pData->bOnCol = pSpec->bOnCol;
+    pData->bDebugDraw = pSpec->bDebugDraw;
     pData->bTrigger = pSpec->bTrigger;
     pData->eShape = pSpec->eShape;
     pData->vOffset = pSpec->vOffset;
@@ -771,6 +774,7 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec_Collider(COM
 
     pSpec->bEnable = pData->bEnable;
     pSpec->bOnCol = pData->bOnCol;
+    pSpec->bDebugDraw = pData->bDebugDraw;
     pSpec->bTrigger = pData->bTrigger;
     pSpec->eShape = pData->eShape;
     pSpec->vOffset = pData->vOffset;
@@ -867,6 +871,7 @@ HRESULT CPhysics_Processor::Initialize_Component_Data(COMPONENT_TYPE eComType, C
         /* 값 채우기 */
         pData->hTransform = transform.Get_Handle();
         pData->hRigidbody = {}; /* TODO : 로직 생각해보기 */
+        pData->bDebugDraw = false;
 
         pData->bDirty = true;
         return S_OK;

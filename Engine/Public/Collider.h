@@ -13,6 +13,8 @@ typedef struct ENGINE_DLL tagColliderData final
     _bool               bEnable = false;
     _bool               bTrigger = false;
 
+    _bool               bDebugDraw = false;
+
     COMPONENT_HANDLE    hSelf{ INVALID_HANDLE }; /* self */
     COMPONENT_HANDLE    hTransform{ INVALID_HANDLE };
     COMPONENT_HANDLE    hRigidbody{ INVALID_HANDLE };

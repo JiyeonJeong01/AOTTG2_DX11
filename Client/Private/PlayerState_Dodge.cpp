@@ -23,9 +23,9 @@ HRESULT CPlayerState_Dodge::Initialize()
     return S_OK;
 }
 
-void CPlayerState_Dodge::Setup_CachedPlayerInfos()
+void CPlayerState_Dodge::Setup_CachedPlayerContext()
 {
-    CPlayerState::Setup_CachedPlayerInfos();
+    CPlayerState::Setup_CachedPlayerContext();
 
     m_tComponents.animator->OnAnimationFinished.Add_Listener(&CPlayerState_Dodge::On_AnimFinished, this);
 }

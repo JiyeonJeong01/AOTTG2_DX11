@@ -23,9 +23,9 @@ HRESULT CPlayerState_Reload::Initialize()
     return S_OK;
 }
 
-void CPlayerState_Reload::Setup_CachedPlayerInfos()
+void CPlayerState_Reload::Setup_CachedPlayerContext()
 {
-    CPlayerState::Setup_CachedPlayerInfos();
+    CPlayerState::Setup_CachedPlayerContext();
 
     m_tComponents.animator->OnAnimationFinished.Add_Listener(&CPlayerState_Reload::On_AnimFinished, this);
 }

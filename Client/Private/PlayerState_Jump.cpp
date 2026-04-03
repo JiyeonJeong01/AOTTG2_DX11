@@ -59,9 +59,9 @@ void CPlayerState_Jump::Exit()
     CPlayerState::Exit();
 }
 
-void CPlayerState_Jump::Setup_CachedPlayerInfos()
+void CPlayerState_Jump::Setup_CachedPlayerContext()
 {
-    CPlayerState::Setup_CachedPlayerInfos();
+    CPlayerState::Setup_CachedPlayerContext();
 
     m_tComponents.animator->OnAnimationFinished.Add_Listener(&CPlayerState_Jump::On_AnimFinished, this);
 }

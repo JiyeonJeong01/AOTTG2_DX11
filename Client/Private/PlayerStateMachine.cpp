@@ -71,7 +71,7 @@ void CPlayerStateMachine::Cache_PlayerInfos(const PLAYER_CONTEXT& tContext)
 
     for (auto& pState : m_States)
         if (pState)
-            pState->Setup_CachedPlayerInfos();
+            pState->Setup_CachedPlayerContext();
 }
 
 

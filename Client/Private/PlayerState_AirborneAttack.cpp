@@ -24,9 +24,9 @@ HRESULT CPlayerState_AirborneAttack::Initialize()
     return CPlayerState::Initialize();
 }
 
-void CPlayerState_AirborneAttack::Setup_CachedPlayerInfos()
+void CPlayerState_AirborneAttack::Setup_CachedPlayerContext()
 {
-    CPlayerState::Setup_CachedPlayerInfos();
+    CPlayerState::Setup_CachedPlayerContext();
 
     m_tComponents.animator->OnAnimationFinished.Add_Listener(&CPlayerState_AirborneAttack::On_AnimFinished, this);
 }
@@ -91,6 +91,8 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
         /* 정면 */
         else
             m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::ATTACK_2);/* ATTACK2 = AIRBORNE_ATTACK::NORMAL 동작으로 사용 */
+
+        return;
     }
 
     /* 공격을 정하지 않고 진입한 경우 */

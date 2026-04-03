@@ -218,6 +218,7 @@
         },
         {
           "data": {
+            "DebugDraw": false,
             "Enabled": true,
             "HalfExtentsLocal": [
               5.0,
@@ -684,7 +685,7 @@
       "uuid": "1E42AEC0-2DAB-4D09-8ADD-78D5170FFADA"
     },
     {
-      "iObjMask": 16,
+      "iObjMask": 32,
       "isUI": false,
       "layer": 0,
       "name": "TrostTerrain",
@@ -713,6 +714,7 @@
         },
         {
           "data": {
+            "DebugDraw": false,
             "Dimension": [
               500.0,
               500.0
@@ -997,6 +999,7 @@
         },
         {
           "data": {
+            "DebugDraw": false,
             "Enabled": true,
             "HalfExtentsLocal": [
               5.0,
@@ -1069,6 +1072,7 @@
         },
         {
           "data": {
+            "DebugDraw": false,
             "Enabled": true,
             "HalfExtentsLocal": [
               5.0,
@@ -1141,6 +1145,7 @@
         },
         {
           "data": {
+            "DebugDraw": false,
             "Enabled": true,
             "HalfExtentsLocal": [
               5.0,
@@ -1213,6 +1218,7 @@
         },
         {
           "data": {
+            "DebugDraw": false,
             "Enabled": true,
             "HalfExtentsLocal": [
               5.0,
@@ -1365,6 +1371,7 @@
         },
         {
           "data": {
+            "DebugDraw": false,
             "Enabled": true,
             "HalfExtentsLocal": [
               5.0,
@@ -1437,6 +1444,7 @@
         },
         {
           "data": {
+            "DebugDraw": false,
             "Enabled": true,
             "HalfExtentsLocal": [
               5.0,
@@ -2701,15 +2709,15 @@
         {
           "data": {
             "Position": [
-              35.55574035644531,
-              5.052382469177246,
-              0.2869997024536133
+              6.900407314300537,
+              8.218705177307129,
+              -25.353654861450195
             ],
             "Rotation": [
-              -0.012198587879538536,
-              -0.22419975697994232,
-              -0.0028065929654985666,
-              0.9744628667831421
+              0.16619330644607544,
+              0.5809163451194763,
+              -0.12262344360351563,
+              0.7873243093490601
             ],
             "Scale": [
               1.0,
@@ -2740,7 +2748,7 @@
       "uuid": "18E24985-3AB9-42AD-BE24-18A7A725547F"
     },
     {
-      "iObjMask": 0,
+      "iObjMask": 5,
       "isUI": false,
       "layer": 0,
       "name": "Character_0328_v5_Proto",
@@ -2748,15 +2756,15 @@
         {
           "data": {
             "Position": [
-              32.060707092285156,
-              1.2518584728240967,
-              7.480247974395752
+              13.89223861694336,
+              0.9854013323783875,
+              -23.19500160217285
             ],
             "Rotation": [
-              0.0021983401384204626,
-              0.5568649172782898,
-              -0.00036082800943404436,
-              0.8306001424789429
+              1.021210482576862e-05,
+              0.8124158382415771,
+              1.2530695130408276e-05,
+              -0.5830785632133484
             ],
             "Scale": [
               0.009999999776482582,
@@ -2769,6 +2777,7 @@
         },
         {
           "data": {
+            "DebugDraw": false,
             "Enabled": true,
             "HalfExtentsLocal": [
               30.68000030517578,
@@ -2820,9 +2829,9 @@
         {
           "data": {
             "Anchor": [
-              32.367515563964844,
-              3.522594451904297,
-              7.463108062744141
+              27.939138412475586,
+              0.9999990463256836,
+              15.859747886657715
             ],
             "Damper": 5.0,
             "Enabled": true,
@@ -2833,7 +2842,7 @@
             "Type": 3,
             "UseMaxLength": false,
             "UseMinLength": false,
-            "UseSpring": true
+            "UseSpring": false
           },
           "type": 3
         },
@@ -2918,7 +2927,7 @@
             "Enabled": true,
             "LoopMap": [
               {
-                "Clip": 22,
+                "Clip": 78,
                 "Loop": true
               },
               {
@@ -2926,7 +2935,7 @@
                 "Loop": true
               },
               {
-                "Clip": 78,
+                "Clip": 22,
                 "Loop": true
               },
               {
@@ -3685,15 +3694,15 @@
         {
           "data": {
             "Position": [
-              32.060707092285156,
-              1.252012848854065,
-              7.48027229309082
+              13.89223861694336,
+              0.9854013919830322,
+              -23.19500160217285
             ],
             "Rotation": [
-              0.002195612993091345,
-              0.556864857673645,
-              -0.00036031409399583936,
-              0.8306000828742981
+              1.017232261801837e-05,
+              0.8124158382415771,
+              1.2481113117246423e-05,
+              -0.5830785632133484
             ],
             "Scale": [
               0.009999999776482582,
@@ -3706,6 +3715,7 @@
         },
         {
           "data": {
+            "DebugDraw": false,
             "Enabled": true,
             "HalfExtentsLocal": [
               25.0,
@@ -4117,7 +4127,7 @@
           "data": {
             "Enabled": true,
             "MaterialGUID": "55555555-5555-5555-5555-555555555555",
-            "TextureGUID": "29085E95-8FA2-4160-A444-EDE76E0F9B34",
+            "TextureGUID": "C212BB34-F7FE-440A-9A89-348437E93C4A",
             "Type": 12,
             "flags": 0,
             "layer": 1,
@@ -4152,7 +4162,7 @@
               1.0
             ],
             "Enabled": true,
-            "TextureGuid": "29085E95-8FA2-4160-A444-EDE76E0F9B34",
+            "TextureGuid": "C212BB34-F7FE-440A-9A89-348437E93C4A",
             "Type": 13,
             "UV": [
               0.0,
@@ -4178,12 +4188,12 @@
         {
           "data": {
             "PosPx": [
-              1556.0,
-              972.0
+              1566.0,
+              966.0
             ],
             "SizePx": [
-              79.0,
-              65.0
+              91.0,
+              71.0
             ],
             "Type": 11
           },
@@ -4199,7 +4209,7 @@
             "layer": 1,
             "rcClip": [
               0.0,
-              65.0,
+              71.0,
               0.0,
               0.0
             ],
@@ -4254,7 +4264,7 @@
         {
           "data": {
             "PosPx": [
-              1657.0,
+              1671.0,
               972.0
             ],
             "SizePx": [
@@ -4330,12 +4340,12 @@
         {
           "data": {
             "PosPx": [
-              1760.0,
-              966.0
+              1766.0,
+              972.0
             ],
             "SizePx": [
-              91.0,
-              71.0
+              79.0,
+              65.0
             ],
             "Type": 11
           },
@@ -4351,7 +4361,7 @@
             "layer": 1,
             "rcClip": [
               0.0,
-              71.0,
+              65.0,
               0.0,
               0.0
             ],
@@ -4527,6 +4537,563 @@
       "parent": "C758073A-D827-495D-8A1C-E4EE3060F3AF",
       "protoGuid": "CBBD5290-7499-41AE-9923-8661D5FCEC9A",
       "uuid": "BB94BE80-5CC8-4939-A6E1-C7130C3C0C53"
+    },
+    {
+      "iObjMask": 2,
+      "isUI": false,
+      "layer": 0,
+      "name": "Titan_v1_Proto",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              18.161598205566406,
+              1.100000262260437,
+              0.018738117069005966
+            ],
+            "Rotation": [
+              0.005989536643028259,
+              -0.7070301175117493,
+              0.005989470519125462,
+              0.7071327567100525
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "DebugDraw": true,
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              3.0,
+              18.0,
+              3.4200000762939453
+            ],
+            "Offset": [
+              0.0,
+              8.899999618530273,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Trigger": false,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "AngularDrag": 0.0,
+            "BodyType": 0,
+            "Drag": 0.0,
+            "Enabled": true,
+            "Friction": 1.0,
+            "Gravity": true,
+            "Mass": 1.0,
+            "PositionLock": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Restitution": 0.0,
+            "RotationLock": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Type": 2
+          },
+          "type": 2
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CNormalTitan",
+              "Fields": []
+            },
+            "ScriptGuid": "284DB806-B2F6-4ACA-A4B9-5DE396AE515A",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CTitanBound_Controller",
+              "Fields": [
+                {
+                  "Name": "m_refOwner",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "00000000-0000-0000-0000-000000000000"
+                  }
+                },
+                {
+                  "Name": "m_refAttackAntiAe",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "00000000-0000-0000-0000-000000000000"
+                  }
+                },
+                {
+                  "Name": "m_vAttackAntiAeOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "Name": "m_refAttackAntiAeLow",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "00000000-0000-0000-0000-000000000000"
+                  }
+                },
+                {
+                  "Name": "m_vAttackAntiAeLowOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabAirFar",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "00000000-0000-0000-0000-000000000000"
+                  }
+                },
+                {
+                  "Name": "m_vGrabAirFarOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabAirShort",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "00000000-0000-0000-0000-000000000000"
+                  }
+                },
+                {
+                  "Name": "m_vGrabAirShortOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabBack",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "00000000-0000-0000-0000-000000000000"
+                  }
+                },
+                {
+                  "Name": "m_vGrabBackOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabCore",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "00000000-0000-0000-0000-000000000000"
+                  }
+                },
+                {
+                  "Name": "m_vGrabCoreOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabGroundBack",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "00000000-0000-0000-0000-000000000000"
+                  }
+                },
+                {
+                  "Name": "m_vGrabGroundBackOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabGroundFront",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "00000000-0000-0000-0000-000000000000"
+                  }
+                },
+                {
+                  "Name": "m_vGrabGroundFrontOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabHeadBack",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "00000000-0000-0000-0000-000000000000"
+                  }
+                },
+                {
+                  "Name": "m_vGrabHeadBackOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabHeadFront",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "00000000-0000-0000-0000-000000000000"
+                  }
+                },
+                {
+                  "Name": "m_vGrabHeadFrontOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabHigh",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "00000000-0000-0000-0000-000000000000"
+                  }
+                },
+                {
+                  "Name": "m_vGrabHighOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabStomach",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "00000000-0000-0000-0000-000000000000"
+                  }
+                },
+                {
+                  "Name": "m_vGrabStomachOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "ScriptGuid": "EC4E30FD-88C9-4BF4-BC56-F2DB1EEA06B9",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "6C740313-CCF4-4B50-AF11-86CDBE35CAF0",
+            "MeshGUID": "9467EA3F-1BA0-4831-95B2-FB5BCFEC0731",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        },
+        {
+          "data": {
+            "AnimationClip": 99,
+            "BlendDuration": 0.0,
+            "BlendMap": [],
+            "Enabled": true,
+            "LoopMap": [
+              {
+                "Clip": 98,
+                "Loop": true
+              },
+              {
+                "Clip": 97,
+                "Loop": true
+              },
+              {
+                "Clip": 105,
+                "Loop": true
+              },
+              {
+                "Clip": 96,
+                "Loop": true
+              },
+              {
+                "Clip": 95,
+                "Loop": true
+              },
+              {
+                "Clip": 107,
+                "Loop": true
+              },
+              {
+                "Clip": 108,
+                "Loop": true
+              },
+              {
+                "Clip": 100,
+                "Loop": false
+              },
+              {
+                "Clip": 91,
+                "Loop": true
+              },
+              {
+                "Clip": 92,
+                "Loop": true
+              },
+              {
+                "Clip": 90,
+                "Loop": true
+              },
+              {
+                "Clip": 99,
+                "Loop": true
+              }
+            ],
+            "PlaySpeed": 1.0,
+            "Playing": true,
+            "Type": 6
+          },
+          "type": 6
+        }
+      ],
+      "parent": "",
+      "protoGuid": "5199AABE-65C7-4515-A136-87063DD99E7E",
+      "uuid": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "eye",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "eyes_0",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "F8089D6E-5E8B-467F-A7E4-4ABDD8CFF6C9",
+            "MeshGUID": "F454ACF3-1946-4D2F-9C7A-128B82CF8F35",
+            "Mode": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE",
+      "protoGuid": "5199AABE-65C7-4515-A136-87063DD99E7E",
+      "uuid": "7A5B8579-28FE-4A67-8423-676B9D744F77"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "hair",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              -1.2999999523162842,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.25,
+              1.2999999523162842,
+              1.25
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "8D3A2683-075F-421E-A893-E7DDEBA088D1",
+            "MeshGUID": "E0124909-9B33-43AE-B946-5D3F7ADAC189",
+            "Mode": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE",
+      "protoGuid": "5199AABE-65C7-4515-A136-87063DD99E7E",
+      "uuid": "D0CCA7CF-461A-4814-B2B3-B6E90606B97B"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Sensor",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              18.16149139404297,
+              1.0999999046325684,
+              0.01873791217803955
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "DebugDraw": true,
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              10.0,
+              10.0,
+              10.0
+            ],
+            "Offset": [
+              0.0,
+              10.0,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Trigger": true,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CTargetSensor",
+              "Fields": [
+                {
+                  "Name": "m_refTitan",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE"
+                  }
+                }
+              ]
+            },
+            "ScriptGuid": "A087260F-7DDD-4E48-A09E-4F0AC3B2637D",
+            "Type": 4
+          },
+          "type": 4
+        }
+      ],
+      "parent": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "40A82CA2-DB1C-4BDB-B2D9-FF9B966BCB3D"
     }
   ],
   "version": 1

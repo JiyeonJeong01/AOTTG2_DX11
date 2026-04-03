@@ -14,7 +14,10 @@
 #include "NormalTitan.h"
 #include "ODM_Gear.h"
 #include "Player.h"
+#include "Scout.h"
+#include "TargetSensor.h"
 #include "ThrownBlade.h"
+#include "TitanBound_Controller.h"
 #include "UI_BladeController.h"
 #include "UI_GasController.h"
 #include "UI_SkillController.h"
@@ -64,8 +67,20 @@ void Register_AllScripts()
         handler.Register_VTable(guid, ScriptBinder<CPlayer>::Build());
     }
     {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Scout.script");
+        handler.Register_VTable(guid, ScriptBinder<CScout>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\TargetSensor.script");
+        handler.Register_VTable(guid, ScriptBinder<CTargetSensor>::Build());
+    }
+    {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\ThrownBlade.script");
         handler.Register_VTable(guid, ScriptBinder<CThrownBlade>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\TitanBound_Controller.script");
+        handler.Register_VTable(guid, ScriptBinder<CTitanBound_Controller>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\UI_BladeController.script");

@@ -83,9 +83,9 @@ void CPlayerState_GroundedMove::Exit()
     m_tComponents.rigidbody.Set_Drag(m_fOriginDrag);
 }
 
-void CPlayerState_GroundedMove::Setup_CachedPlayerInfos()
+void CPlayerState_GroundedMove::Setup_CachedPlayerContext()
 {
-    CPlayerState::Setup_CachedPlayerInfos();
+    CPlayerState::Setup_CachedPlayerContext();
 
     m_tComponents.animator->OnAnimationFinished.Add_Listener(&CPlayerState_GroundedMove::On_AnimFinished, this);
 }

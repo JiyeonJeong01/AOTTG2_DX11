@@ -19,9 +19,9 @@ HRESULT CPlayerState_AirborneMove::Initialize()
     return CPlayerState::Initialize();
 }
 
-void CPlayerState_AirborneMove::Setup_CachedPlayerInfos()
+void CPlayerState_AirborneMove::Setup_CachedPlayerContext()
 {
-    CPlayerState::Setup_CachedPlayerInfos();
+    CPlayerState::Setup_CachedPlayerContext();
 
     m_tComponents.animator->OnAnimationFinished.Add_Listener(&CPlayerState_AirborneMove::On_AnimFinished, this);
 }

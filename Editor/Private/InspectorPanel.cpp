@@ -215,7 +215,7 @@ void CInspectorPanel::Draw_Basic_Info()
 
     ImGui::Spacing();
 
-    if (ImGui::TreeNodeEx("Object Mask", ImGuiTreeNodeFlags_DefaultOpen))
+    if (ImGui::TreeNodeEx("Object Mask"))
     {
         struct MASK_ITEM
         {
@@ -225,10 +225,10 @@ void CInspectorPanel::Draw_Basic_Info()
 
         std::string_view svSeverity = magic_enum::enum_name(Client::PLAYER);
 
-        
 
         const MASK_ITEM arrMaskItems[] =
         {
+            { "HUMAN",   Client::HUMAN },
             { "PLAYER",   Client::PLAYER },
             { "TITAN",    Client::TITAN },
             { "NPC",      Client::NPC },
@@ -1332,6 +1332,15 @@ void CInspectorPanel::Draw_Collider()
     if (ImGui::Checkbox("bTrigger", &bTrigger))
     {
         pData->bTrigger = bTrigger ? 1 : 0;
+        pData->bDirty = true;
+    }
+
+    ImGui::SameLine();
+
+    bool bDebugDraw = (pData->bDebugDraw);
+    if (ImGui::Checkbox("bDebugDraw", &bDebugDraw))
+    {
+        pData->bDebugDraw = bDebugDraw ? 1 : 0;
         pData->bDirty = true;
     }
 

@@ -145,7 +145,6 @@ void CAnimator::Set_NextAnimationClip(const std::string& strNextAnimClip)
 
     Set_NextAnimationClip(iNextAnimClip);
 }
-
 void CAnimator::Set_NextAnimationClip(uint32_t iNextAnimClip)
 {
     if (!m_pData)
@@ -160,12 +159,25 @@ void CAnimator::Set_NextAnimationClip(uint32_t iNextAnimClip)
     if (m_pData->NameToClipIndex.size() == 0)
         return;
 
-    /* 현재 클립으로 돌아가려는 요청이면, 남아 있던 예약을 취소한다 */
+    /* 현재 클립과 같을 때 */
     if (m_pData->iAnimationClip == iNextAnimClip)
     {
-        m_pData->iNextAnimationClip = INVALID_ANIM_CLIP_INDEX;
-        m_pData->fBlendElapsed = 0.f;
-        m_pData->fBlendDuration = 0.f;
+        /* 이미 끝난 클립을 다시 재생하려는 경우 */
+        if (!m_pData->bPlaying)
+        {
+            m_pData->iNextAnimationClip = INVALID_ANIM_CLIP_INDEX;
+            m_pData->fBlendElapsed = 0.f;
+            m_pData->fBlendDuration = 0.f;
+            m_pData->fTrackPosition = 0.f;
+            m_pData->bPlaying = true;
+        }
+        else
+        {
+            /* 그냥 같은 클립 유지 요청이면 예약만 취소 */
+            m_pData->iNextAnimationClip = INVALID_ANIM_CLIP_INDEX;
+            m_pData->fBlendElapsed = 0.f;
+            m_pData->fBlendDuration = 0.f;
+        }
         return;
     }
 
@@ -183,8 +195,6 @@ void CAnimator::Set_NextAnimationClip(uint32_t iNextAnimClip)
 
     DEBUG_POINT;
 }
-
-
 
 _uint CAnimator::Get_CurAnimaionClipIdx() const
 {

@@ -478,7 +478,7 @@ void CEditor_System::Update_Input(_float fDT)
     /* ----------------------------- 마우스 입력 ----------------------------- */
     const long dx = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::HORIZONTAL);
     const long dy = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::VERTICAL);
-    const long dz = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::DEPTH);
+    long dz = SYS_INPUT.Get_DIMouseMove(MOUSE_MOVE_AXIS::DEPTH);
 
     if (SYS_INPUT.Get_Key(VK_RBUTTON))
     {
@@ -489,6 +489,10 @@ void CEditor_System::Update_Input(_float fDT)
         const _float limit = 1.55334306f;
         if (m_fPitch > limit) m_fPitch = limit;
         if (m_fPitch < -limit) m_fPitch = -limit;
+    }
+    else
+    {
+        dz = 0;
     }
 
     /* ----------------------------- 이동 입력 ----------------------------- */

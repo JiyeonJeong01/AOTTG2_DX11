@@ -187,6 +187,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Light.h" />
     <ClInclude Include="..\Public\Model.h" />
     <ClInclude Include="..\Public\Physics_Processor.h" />
+    <ClInclude Include="..\Public\RandomUtil.h" />
     <ClInclude Include="..\Public\Raycast.h" />
     <ClInclude Include="..\Public\Render_Context.h" />
     <ClInclude Include="..\Public\Rigidbody.h" />

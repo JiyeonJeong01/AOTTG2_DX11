@@ -31,7 +31,7 @@ public :
 
     virtual void    Control_Camera();
     virtual void    Update_PlayerInput(const PLAYER_INPUT_COMMAND& tInputCmd);
-    virtual void    Setup_CachedPlayerInfos();
+    virtual void    Setup_CachedPlayerContext();
 
     /* commons */
     void            LookTo_InputDir(_float fDT);

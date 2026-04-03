@@ -11,7 +11,7 @@ public:
 public:
     virtual HRESULT Initialize() override;
 
-    virtual void Setup_CachedPlayerInfos() override;
+    virtual void Setup_CachedPlayerContext() override;
 
     virtual void Priority_Update(_float fDT) override;
     virtual void Update(_float fDT) override;

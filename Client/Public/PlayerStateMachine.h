@@ -4,10 +4,6 @@
 #include "Player_Struct.h"
 #include "Event.h"
 
-NS_BEGIN(Engine)
-class CGameObject;
-NS_END
-
 NS_BEGIN(Client)
 
 class CPlayerState;

@@ -58,9 +58,9 @@ void CPlayerState_Idle::Exit()
     CPlayerState::Exit();
 }
 
-void CPlayerState_Idle::Setup_CachedPlayerInfos()
+void CPlayerState_Idle::Setup_CachedPlayerContext()
 {
-    CPlayerState::Setup_CachedPlayerInfos();
+    CPlayerState::Setup_CachedPlayerContext();
 
     m_tComponents.animator->OnAnimationFinished.Add_Listener(&CPlayerState_Idle::On_AnimFinished, this);
 }

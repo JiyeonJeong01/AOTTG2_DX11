@@ -61,9 +61,9 @@ void CPlayerState_GroundedAttack::Exit()
     CPlayerState::Exit();
 }
 
-void CPlayerState_GroundedAttack::Setup_CachedPlayerInfos()
+void CPlayerState_GroundedAttack::Setup_CachedPlayerContext()
 {
-    CPlayerState::Setup_CachedPlayerInfos();
+    CPlayerState::Setup_CachedPlayerContext();
 
     m_tComponents.animator->OnAnimationFinished.Add_Listener(&CPlayerState_GroundedAttack::On_AnimFinished, this);
 }

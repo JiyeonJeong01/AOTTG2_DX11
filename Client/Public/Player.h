@@ -13,7 +13,7 @@ class CODM_Gear;
 NS_END
 
 NS_BEGIN(Client)
-class CPlayer : public IScript
+class CPlayer : public IScript, public CHuman
 {
 
 public:
