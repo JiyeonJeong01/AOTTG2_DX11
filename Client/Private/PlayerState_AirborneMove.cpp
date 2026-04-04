@@ -36,7 +36,7 @@ void CPlayerState_AirborneMove::Priority_Update(_float fDT)
 
 void CPlayerState_AirborneMove::Update(_float fDT)
 {
-    CPlayerState::Late_Update(fDT);
+    CPlayerState::Update(fDT);
 
     _bool bLeftHook = m_tInputCmd.bLeftAnchorHeld;
     _bool bRightHook = m_tInputCmd.bRightAnchorHeld;
@@ -161,11 +161,13 @@ void CPlayerState_AirborneMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DA
     if (!m_bAcivated)
         return;
 
-    cout << "[AIRBORNE_MOVE] On_AnimFinished\n";
+    cout << "[AIRBORNE_MOVE] On_AnimFinished | ClipIdx : " << tData.iAnimationClip << "\n";
 
     _uint iIndex = tData.iAnimationClip;
     if (iIndex == INVALID_ANIM_CLIP_INDEX)
         return;
+
+    cout << "[AIRBORNE_MOVE] DASH IDX : " << m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::DASH] << "\n";
 
     if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::DASH])
         On_AirDashFinished(tData);
@@ -183,29 +185,38 @@ void CPlayerState_AirborneMove::Decide_HookAnim()
     _bool bLeftHook = m_tInputCmd.bLeftAnchorHeld;
     _bool bRightHook = m_tInputCmd.bRightAnchorHeld;
 
+    AIRBORNE_MOVE eNextState = AIRBORNE_MOVE::AIR_FALL;
+    const char* pNextAnim = ANIM_PLAYER::AIR_FALL;
+
     /* -> 정면 */
-    if (m_eAirborneState != AIRBORNE_MOVE::AIR_FRONT && bLeftHook == true && bRightHook == true)
+    if (bLeftHook == true && bRightHook == true)
     {
-        m_eAirborneState = AIRBORNE_MOVE::AIR_FRONT;
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_HOOK);
+        eNextState = AIRBORNE_MOVE::AIR_FRONT;
+        pNextAnim = ANIM_PLAYER::AIR_HOOK;
     }
     /* -> 좌측 앵커 사용 */
-    else if (m_eAirborneState != AIRBORNE_MOVE::AIR_LEFT && bLeftHook == true && bRightHook == false)
+    else if (bLeftHook == true && bRightHook == false)
     {
-        m_eAirborneState = AIRBORNE_MOVE::AIR_LEFT;
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_LEFT);
+        eNextState = AIRBORNE_MOVE::AIR_LEFT;
+        pNextAnim = ANIM_PLAYER::AIR_LEFT;
     }
     /* -> 우측 앵커 사용 */
-    else if (m_eAirborneState != AIRBORNE_MOVE::AIR_RIGHT && bLeftHook == false && bRightHook == true)
+    else if (bLeftHook == false && bRightHook == true)
     {
-        m_eAirborneState = AIRBORNE_MOVE::AIR_RIGHT;
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_RIGHT);
+        eNextState = AIRBORNE_MOVE::AIR_RIGHT;
+        pNextAnim = ANIM_PLAYER::AIR_RIGHT;
     }
     /* 사용 중이 아님 */
     else
     {
-        m_eAirborneState = AIRBORNE_MOVE::AIR_FALL;
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
+        eNextState = AIRBORNE_MOVE::AIR_FALL;
+        pNextAnim = ANIM_PLAYER::AIR_FALL;
+    }
+
+    if (m_eAirborneState != eNextState)
+    {
+        m_eAirborneState = eNextState;
+        m_tComponents.animator.Set_NextAnimationClip(pNextAnim);
     }
 }
 

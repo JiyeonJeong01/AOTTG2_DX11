@@ -100,14 +100,54 @@ void CPlayerState_Jump::Decide_NextState()
         return;
     }
 }
-
 void CPlayerState_Jump::Decide_NextAnim()
 {
     /* 점프 후, 가속 대쉬 */
     _bool bBoost = m_tInputCmd.bBoostHeld;
 
-    _bool bJumpBegin = m_tComponents.animator->iAnimationClip == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::JUMP];
-    if (m_eJumpState != JUMP::DASH && bBoost && !bJumpBegin)
+    const _uint iCurClip = m_tComponents.animator.Get_CurAnimaionClipIdx();
+    const _uint iNextClip = m_tComponents.animator->iNextAnimationClip;
+
+    const _uint iJumpClip = m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::JUMP);
+    const _uint iAirRiseClip = m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::AIR_RISE);
+    const _uint iAirClip = m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::AIR);
+    const _uint iAirFallClip = m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::AIR_FALL);
+
+    _bool bJumpBegin = iCurClip == iJumpClip;
+    _bool bAirRisePlaying = iCurClip == iAirRiseClip;
+    _bool bAirRiseReserved = iNextClip == iAirRiseClip;
+    _bool bAirPlaying = iCurClip == iAirClip;
+    _bool bAirReserved = iNextClip == iAirClip;
+    _bool bAirFallPlaying = iCurClip == iAirFallClip;
+    _bool bAirFallReserved = iNextClip == iAirFallClip;
+
+    /* 상승 후 하락 */
+    if (m_tComponents.rigidbody.Get_LinearVel().y < 0.f)
+    {
+        if (m_eJumpState != JUMP::FALL)
+        {
+            m_eJumpState = JUMP::FALL;
+            m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
+        }
+        else if (!bAirFallPlaying && !bAirFallReserved)
+        {
+            m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
+        }
+
+        return;
+    }
+
+    /* 점프 후, 가속 대쉬 */
+    /* FALL 상태에서는 AIR로 되돌아가지 않는다 */
+    /* AIR_RISE 재생 중이거나 예약 중이면 AIR로 덮어쓰지 않는다 */
+    if (m_eJumpState != JUMP::DASH
+        && m_eJumpState != JUMP::FALL
+        && bBoost
+        && !bJumpBegin
+        && !bAirRisePlaying
+        && !bAirRiseReserved
+        && !bAirPlaying
+        && !bAirReserved)
     {
         m_eJumpState = JUMP::DASH;
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR);
@@ -117,18 +157,10 @@ void CPlayerState_Jump::Decide_NextAnim()
     /* 점프 대쉬 중단 */
     if (m_eJumpState == JUMP::DASH && !bBoost)
     {
-        m_eJumpState = JUMP::FALL;
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
-        return;
-    }
+        if (!bAirRisePlaying && !bAirRiseReserved)
+            m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_RISE);
 
-    /* 상승 후 하락 */
-    if (m_eJumpState != JUMP::FALL
-        && m_tComponents.rigidbody.Get_LinearVel().y < 0.f)
-    {
-        m_eJumpState = JUMP::FALL;
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
-
+        m_eJumpState = JUMP::RISE;
         return;
     }
 }
@@ -151,7 +183,7 @@ void CPlayerState_Jump::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tDat
 void CPlayerState_Jump::On_JumpFinished(const Engine::ANIMATION_EVENT_DATA& tData)
 {
     cout << " => [JUMP] On_JumpFinished\n";
-
+    cout << "[JUMP] -> AIR_RISE\n";
     m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_RISE);
     m_eJumpState = JUMP::RISE;
 }

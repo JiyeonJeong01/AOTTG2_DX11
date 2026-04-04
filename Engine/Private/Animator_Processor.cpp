@@ -144,6 +144,9 @@ void CAnimator_Processor::Update_Animator(ANIMATOR_DATA* pData, _float fDT)
     Ensure_RuntimeBuffers(pData, *pModel, *pCurClip);
 
     _bool bFinished = false;
+    const uint32_t iFinishedClip = pData->iAnimationClip;
+    const std::string strFinishedClipName = pCurClip->strName;
+
     Update_TrackPosition(pData, *pCurClip, fDT, bFinished);
     Update_BlendState(pData, fDT);
 
@@ -172,6 +175,12 @@ void CAnimator_Processor::Update_Animator(ANIMATOR_DATA* pData, _float fDT)
 
     /* 매 프레임 각 Bone이 어디로 움직였는지 finalBoneMatrices에 계산해둔다. */
     Build_FinalBoneMatrices(pData, *pModel);
+
+    if (bFinished)
+    {
+        ANIMATION_EVENT_DATA tEventData{ iFinishedClip, strFinishedClipName };
+        pData->OnAnimationFinished.Invoke(tEventData);
+    }
 }
 
 void CAnimator_Processor::Update_TrackPosition(ANIMATOR_DATA* pData, const ANIMATION_CLIP_ENTRY& tClip, _float fDT, _bool& bOutFinished)
@@ -188,28 +197,31 @@ void CAnimator_Processor::Update_TrackPosition(ANIMATOR_DATA* pData, const ANIMA
     /* 애니메이션 재생이 끝난 경우 */
     if (pData->fTrackPosition >= tClip.fDuration)
     {
-        /* 반복 재생하지 않는 경우  */
-        ANIMATION_EVENT_DATA tEventData{ pData->iAnimationClip, tClip.strName };
-        if (!Is_LoopClip(pData, pData->iAnimationClip))
+        const _bool bLoop = Is_LoopClip(pData, pData->iAnimationClip);
+
+        cout << "[ANIM] End Reached | ClipIdx : " << pData->iAnimationClip
+            << " | Name : " << tClip.strName
+            << " | Duration : " << tClip.fDuration
+            << " | Track : " << pData->fTrackPosition
+            << " | Loop : " << bLoop << "\n";
+
+        if (!bLoop)
         {
             pData->fTrackPosition = tClip.fDuration;
             pData->bPlaying = false;
             bOutFinished = true;
-
-            /* 이벤트 발생 */
-            pData->OnAnimationFinished.Invoke(tEventData);
-
             return;
         }
+
+        ANIMATION_EVENT_DATA tEventData{ pData->iAnimationClip, tClip.strName };
 
         /* 이벤트 발생 */
         pData->OnAnimationLooped.Invoke(tEventData);
 
         /* 초과 시간 버리지 않고 유지 */
-        pData->fTrackPosition = fmodf(pData->fTrackPosition, tClip.fDuration); 
+        pData->fTrackPosition = fmodf(pData->fTrackPosition, tClip.fDuration);
 
-        /* 반복 재생하는 경우 */
-        for (uint32_t& iKeyFrameIndex : pData->currentKeyFrameIndices) 
+        for (uint32_t& iKeyFrameIndex : pData->currentKeyFrameIndices)
             iKeyFrameIndex = 0;
     }
 }
