@@ -71,6 +71,11 @@ inline void ScriptField_ToJson_AssetGUID(json& j, const ASSET_GUID& value)
     j["GUID"] = value.To_String_Utf8();
 }
 
+inline void ScriptField_ToJson_Char32(json& j, const char* value)
+{
+    j["Value"] = value;
+}
+
 inline _bool ScriptField_FromJson_Int(const json& j, _int& value)
 {
     if (false == j.is_number_integer())
@@ -153,6 +158,27 @@ inline _bool ScriptField_FromJson_AssetGUID(const json& j, ASSET_GUID& value)
     return true;
 }
 
+inline bool ScriptField_FromJson_Char32(const json& j, char* value)
+{
+    const json* target = &j;
+
+    if (j.is_object() && j.contains("Value")) {
+        target = &j["Value"];
+    }
+
+    if (!target->is_string()) {
+        return false;
+    }
+
+    std::string s = target->get<std::string>();
+    size_t copyLen = s.length() < 31 ? s.length() : 31;
+
+    memcpy(value, s.c_str(), copyLen);
+    value[copyLen] = '\0';
+
+    return true;
+}
+
 #pragma endregion
 
 #define SCRIPT_FIELDS_BEGIN(ClassName)                                  \
@@ -190,8 +216,8 @@ public :                                                                \
 #define SCRIPT_FIELD_ASSET_GUID(Member)                                 \
             s_Info.vecFields.push_back({ #Member, SCRIPT_FIELD_TYPE::ASSET_GUID, offsetof(SelfType, Member) });
 
-#define SCRIPT_FIELD_DEBUG_CHAR(Member)                                 \
-            s_Info.vecFields.push_back({ #Member, SCRIPT_FIELD_TYPE::DEBUG_CHAR, offsetof(SelfType, Member) });
+#define SCRIPT_FIELD_CHAR(Member)                                 \
+            s_Info.vecFields.push_back({ #Member, SCRIPT_FIELD_TYPE::CHAR32, offsetof(SelfType, Member) });
 
 #define SCRIPT_FIELDS_END(ClassName)                                    \
         }                                                               \

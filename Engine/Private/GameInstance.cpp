@@ -17,6 +17,9 @@
 #include "Raycast.h"
 #include "Physics_Processor.h"
 
+#include "Animator_Processor.h"
+#include "MeshRenderer_Processor.h"
+
 #include "Mesh.h"
 #include "MeshBuilder.h"
 #include "Line.h"
@@ -198,6 +201,45 @@ _float3 CGameInstance::Cam_Look()
 {
     _float4x4 matInvView = SYS_RENDER.Contexts()->Get_ViewInv();
     return _float3(matInvView._31, matInvView._32, matInvView._33);
+}
+
+_bool CGameInstance::Find_AttachBoneInfo(OBJECT_HANDLE hTargetObj, const string& strTargetBoneName, ANIMATOR_DATA*& pOutAnimator, _uint& iOutBoneIndex)
+{
+    CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(hTargetObj);
+    IF_NULL_RETURN_MSG_BREAK(pObj, false, "pObj is nullptr");
+
+    auto mr = pObj->Get_Component<CMeshRenderer>();
+    auto anim = pObj->Get_Component<CAnimator>();
+
+    IF_TRUE_RETURN_MSG_BREAK(mr.Is_Valid() == false, false, "mr is invalid");
+    IF_TRUE_RETURN_MSG_BREAK(anim.Is_Valid() == false, false, "anim is invalid");
+
+    if (!SYS_RESOURCE.Is_ModelHandle(mr->hMesh))
+        return false;
+
+    MODEL_ENTRY* pModel = SYS_RESOURCE.Get_Model(mr->hMesh);
+    IF_NULL_RETURN_MSG_BREAK(pModel, false, "pModel is nullptr");
+
+    auto it = pModel->tSkeleton.BoneNameToIndex.find(strTargetBoneName);
+    if (it == pModel->tSkeleton.BoneNameToIndex.end())
+        return false;
+
+    /* 애니메이터 컴포넌트의 주소 + 해당 뼈의 인덱스 반환 */
+    pOutAnimator = anim._Data();
+    iOutBoneIndex = it->second;
+    return true;
+}
+
+void CGameInstance::Calculate_AttachBoneMatrixPtr(const CTransform& hTargetTrans, CTransform& hAttachTrans, const _float4x4* matCombinedPtr)
+{
+    IF_NULL_RETURN_MSG_BREAK(matCombinedPtr, , "matCombinedPtr is nullptr.");
+
+    Math::Store(
+        hAttachTrans->matWorld,
+        Math::Load(hAttachTrans->matWorld) *
+        Math::Load(*matCombinedPtr) *
+        Math::Load(hTargetTrans->matWorld)
+    );
 }
 
 unique_ptr<CLine> CGameInstance::Load_LineMesh(_uint iNumPoint, _float fThickness)

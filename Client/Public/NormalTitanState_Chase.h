@@ -33,14 +33,15 @@ private:
     _float          m_fChaseDist = FLT_MAX;
 
     _bool           m_bGrabAnimPlaying = false;
-    _float          m_fGrabAnimCooldownElapsed = 3.f;
-    _float          m_fGrabAnimCooldown = 3.f;
+    _float          m_fGrabAnimCooldownElapsed = 0.f;
+    _float          m_fGrabAnimCooldown = 0.f;
     _uint           m_iGrabAnimClip = INVALID_ANIM_CLIP_INDEX;
 
 private:
     _float  Get_ChaseDist();
     void    Move(_float fDT);
     void    Try_PlayTriggeredGrabAnim();
+    void    On_SuccessGrabHuman(SIDE eSid, _float3* vGrabPoint, CHuman* pHuman);
 
     void    On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData);
 

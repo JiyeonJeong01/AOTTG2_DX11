@@ -142,6 +142,21 @@ CGameObject* CNormalTitan::Get_CurTarget() const
     return m_goTarget;
 }
 
+void CNormalTitan::On_Grab(SIDE eSide, CHuman* pHuman)
+{
+    TITAN_STATE eState = m_spCurState->Get_State();
+    if (eState == TITAN_STATE::GRAB || eState == TITAN_STATE::DEAD)
+        return;
+
+    TITAN_GRAB eGrabbed = TITAN_GRAB::END;
+    if (eSide == SIDE::LEFT)
+        eGrabbed = TITAN_GRAB::LEFT;
+    else if (eSide == SIDE::RIGHT)
+        eGrabbed = TITAN_GRAB::RIGHT;
+
+    m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::GRAB), To<_uint>(eGrabbed));
+}
+
 void CNormalTitan::Validate_Target()
 {
     if (!m_goTarget)

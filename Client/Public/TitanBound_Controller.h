@@ -20,11 +20,24 @@ public:
 private:
     struct TITAN_BOUND_NODE
     {
-        SCRIPT_OBJECT_REF   refObject{};
-        Engine::CGameObject* pObject{};
-        CTransform          trObject{};
-        _float3* pOffset{};
+        SCRIPT_OBJECT_REF       refObject{};
+        Engine::CGameObject*    pObject{};
+        CTransform              trObject{};
+        _float3*                pOffset{};
     };
+
+    struct TITAN_ATTACH_BONE
+    {
+        ANIMATOR_DATA*  pAnimData = nullptr;
+        _float3         vOffset = {};
+        _uint           iBoneIndex = 0;
+        CTransform      trParent;
+        CTransform      trChild;
+    };
+
+private :
+    void Attach(const SCRIPT_OBJECT_REF& refObject, const std::string& strBoneName, const _float3& vOffset);
+    void Sync_AttchBone(TITAN_ATTACH_BONE& tAttach);
 
 private:
     void Register_Bound(std::vector<TITAN_BOUND_NODE>& vecBounds, SCRIPT_OBJECT_REF& refBound, _float3& vOffset);
@@ -35,6 +48,9 @@ private:
     void Try_QueueGrabAnim(const char* pAnimName, const COLLISION_DESC& tDesc);
 
     void OnTriggerEnter_Weak(const COLLISION_DESC& tDesc);
+
+    void OnTriggerEnter_HandL(const COLLISION_DESC& tDesc);
+    void OnTriggerEnter_HandR(const COLLISION_DESC& tDesc);
 
     void OnTriggerEnter_GrabAirFarL(const COLLISION_DESC& tDesc);
     void OnTriggerEnter_GrabAirFarR(const COLLISION_DESC& tDesc);
@@ -63,26 +79,44 @@ private:
     void OnTriggerEnter_GrabStomachL(const COLLISION_DESC& tDesc);
     void OnTriggerEnter_GrabStomachR(const COLLISION_DESC& tDesc);
 
+
 public:
-    _bool Consume_PendingGrabAnim(std::string& strOutAnim);
-    void Clear_PendingGrabAnim();
-    void Set_GrabTriggerEnabled(_bool bEnable);
+    _bool           Consume_PendingGrabAnim(std::string& strOutAnim);
+    void            Clear_PendingGrabAnim();
+    void            Set_GrabTriggerEnabled(_bool bEnable);
+    CGameObject*    Get_GrabbedObject();
+    CHuman*         Get_GrabbedHuman();
+    _float3*        Get_GrabbedPoint();
 
 private:
-    std::string m_strPendingGrabAnim{};
-    _bool       m_bPendingGrabAnim = false;
-    _bool       m_bGrabTriggerEnabled = true;
-
-private:
-    Engine::CGameObject* m_pOwner{};
+    CGameObject*                    m_pOwner{};
     CTransform                      m_trOwner{};
+
+    std::string                     m_strPendingGrabAnim{};
+    _bool                           m_bPendingGrabAnim = false;
+    _bool                           m_bGrabTriggerEnabled = true;
+
+    _float3*                        m_pGrabbedPoint{};
+    CGameObject*                    m_goGrabbed{};
+    CHuman*                         m_pHuman{};
+
     std::vector<TITAN_BOUND_NODE>   m_vecBounds;
+    std::vector<TITAN_ATTACH_BONE>  m_vecAttachBones;
+
+private :
+    void Handle_GrabState(SIDE eSide, CGameObject* pTarget, CGameObject* pHand);
+
 public:
     SCRIPT_FIELDS_BEGIN(CTitanBound_Controller)
         SCRIPT_FIELD_OBJECT_REF(m_refOwner)
 
         SCRIPT_FIELD_OBJECT_REF(m_refWeak)
         SCRIPT_FIELD_FLOAT3(m_vWeakOffset)
+
+        SCRIPT_FIELD_OBJECT_REF(m_refHandL)
+        SCRIPT_FIELD_CHAR(m_szHandL)
+        SCRIPT_FIELD_OBJECT_REF(m_refHandR)
+        SCRIPT_FIELD_CHAR(m_szHandR)
 
         SCRIPT_FIELD_OBJECT_REF(m_refGrabAirFarL)
         SCRIPT_FIELD_FLOAT3(m_vGrabAirFarLOffset)
@@ -135,6 +169,12 @@ private:
     SCRIPT_OBJECT_REF               m_refWeak{};
     _float3                         m_vWeakOffset{ 0.f, 0.f, 0.f };
 
+    SCRIPT_OBJECT_REF               m_refHandL{};
+    SCRIPT_OBJECT_REF               m_refHandR{};
+
+    _char                           m_szHandL[32] = { 0, };
+    _char                           m_szHandR[32] = { 0, };
+
     SCRIPT_OBJECT_REF               m_refGrabAirFarL{};
     _float3                         m_vGrabAirFarLOffset{ 0.f, 0.f, 0.f };
     SCRIPT_OBJECT_REF               m_refGrabAirFarR{};
@@ -180,5 +220,7 @@ private:
     SCRIPT_OBJECT_REF               m_refGrabStomachR{};
     _float3                         m_vGrabStomachROffset{ 0.f, 0.f, 0.f };
 };
+
+
 
 NS_END

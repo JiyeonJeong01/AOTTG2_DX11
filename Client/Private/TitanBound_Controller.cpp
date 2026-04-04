@@ -41,63 +41,78 @@ void CTitanBound_Controller::Awake(void* pCtx)
     m_vecBounds.clear();
     m_vecBounds.reserve(19);
 
-    Register_Bound(m_vecBounds, m_refWeak, m_vWeakOffset);
+    /* Register */
+    {
+        Register_Bound(m_vecBounds, m_refWeak, m_vWeakOffset);
 
-    Register_Bound(m_vecBounds, m_refGrabAirFarL, m_vGrabAirFarLOffset);
-    Register_Bound(m_vecBounds, m_refGrabAirFarR, m_vGrabAirFarROffset);
+        Register_Bound(m_vecBounds, m_refGrabAirFarL, m_vGrabAirFarLOffset);
+        Register_Bound(m_vecBounds, m_refGrabAirFarR, m_vGrabAirFarROffset);
 
-    Register_Bound(m_vecBounds, m_refGrabAirShortL, m_vGrabAirShortLOffset);
-    Register_Bound(m_vecBounds, m_refGrabAirShortR, m_vGrabAirShortROffset);
+        Register_Bound(m_vecBounds, m_refGrabAirShortL, m_vGrabAirShortLOffset);
+        Register_Bound(m_vecBounds, m_refGrabAirShortR, m_vGrabAirShortROffset);
 
-    Register_Bound(m_vecBounds, m_refGrabBackL, m_vGrabBackLOffset);
-    Register_Bound(m_vecBounds, m_refGrabBackR, m_vGrabBackROffset);
+        Register_Bound(m_vecBounds, m_refGrabBackL, m_vGrabBackLOffset);
+        Register_Bound(m_vecBounds, m_refGrabBackR, m_vGrabBackROffset);
 
-    Register_Bound(m_vecBounds, m_refGrabGroundBackL, m_vGrabGroundBackLOffset);
-    Register_Bound(m_vecBounds, m_refGrabGroundBackR, m_vGrabGroundBackROffset);
+        Register_Bound(m_vecBounds, m_refGrabGroundBackL, m_vGrabGroundBackLOffset);
+        Register_Bound(m_vecBounds, m_refGrabGroundBackR, m_vGrabGroundBackROffset);
 
-    Register_Bound(m_vecBounds, m_refGrabGroundFrontL, m_vGrabGroundFrontLOffset);
-    Register_Bound(m_vecBounds, m_refGrabGroundFrontR, m_vGrabGroundFrontROffset);
+        Register_Bound(m_vecBounds, m_refGrabGroundFrontL, m_vGrabGroundFrontLOffset);
+        Register_Bound(m_vecBounds, m_refGrabGroundFrontR, m_vGrabGroundFrontROffset);
 
-    Register_Bound(m_vecBounds, m_refGrabHeadBackL, m_vGrabHeadBackLOffset);
-    Register_Bound(m_vecBounds, m_refGrabHeadBackR, m_vGrabHeadBackROffset);
+        Register_Bound(m_vecBounds, m_refGrabHeadBackL, m_vGrabHeadBackLOffset);
+        Register_Bound(m_vecBounds, m_refGrabHeadBackR, m_vGrabHeadBackROffset);
 
-    Register_Bound(m_vecBounds, m_refGrabHeadFrontL, m_vGrabHeadFrontLOffset);
-    Register_Bound(m_vecBounds, m_refGrabHeadFrontR, m_vGrabHeadFrontROffset);
+        Register_Bound(m_vecBounds, m_refGrabHeadFrontL, m_vGrabHeadFrontLOffset);
+        Register_Bound(m_vecBounds, m_refGrabHeadFrontR, m_vGrabHeadFrontROffset);
 
-    Register_Bound(m_vecBounds, m_refGrabHighL, m_vGrabHighLOffset);
-    Register_Bound(m_vecBounds, m_refGrabHighR, m_vGrabHighROffset);
+        Register_Bound(m_vecBounds, m_refGrabHighL, m_vGrabHighLOffset);
+        Register_Bound(m_vecBounds, m_refGrabHighR, m_vGrabHighROffset);
 
-    Register_Bound(m_vecBounds, m_refGrabStomachL, m_vGrabStomachLOffset);
-    Register_Bound(m_vecBounds, m_refGrabStomachR, m_vGrabStomachROffset);
+        Register_Bound(m_vecBounds, m_refGrabStomachL, m_vGrabStomachLOffset);
+        Register_Bound(m_vecBounds, m_refGrabStomachR, m_vGrabStomachROffset);
+    }
 
-    Bind_Trigger(m_refWeak, &CTitanBound_Controller::OnTriggerEnter_Weak);
+    /* Bind Trigger */
+    {
+        Bind_Trigger(m_refWeak, &CTitanBound_Controller::OnTriggerEnter_Weak);
 
-    Bind_Trigger(m_refGrabAirFarL, &CTitanBound_Controller::OnTriggerEnter_GrabAirFarL);
-    Bind_Trigger(m_refGrabAirFarR, &CTitanBound_Controller::OnTriggerEnter_GrabAirFarR);
+        Bind_Trigger(m_refHandL, &CTitanBound_Controller::OnTriggerEnter_HandL);
+        Bind_Trigger(m_refHandR, &CTitanBound_Controller::OnTriggerEnter_HandR);
 
-    Bind_Trigger(m_refGrabAirShortL, &CTitanBound_Controller::OnTriggerEnter_GrabAirShortL);
-    Bind_Trigger(m_refGrabAirShortR, &CTitanBound_Controller::OnTriggerEnter_GrabAirShortR);
+        Bind_Trigger(m_refGrabAirFarL, &CTitanBound_Controller::OnTriggerEnter_GrabAirFarL);
+        Bind_Trigger(m_refGrabAirFarR, &CTitanBound_Controller::OnTriggerEnter_GrabAirFarR);
 
-    Bind_Trigger(m_refGrabBackL, &CTitanBound_Controller::OnTriggerEnter_GrabBackL);
-    Bind_Trigger(m_refGrabBackR, &CTitanBound_Controller::OnTriggerEnter_GrabBackR);
+        Bind_Trigger(m_refGrabAirShortL, &CTitanBound_Controller::OnTriggerEnter_GrabAirShortL);
+        Bind_Trigger(m_refGrabAirShortR, &CTitanBound_Controller::OnTriggerEnter_GrabAirShortR);
 
-    Bind_Trigger(m_refGrabGroundBackL, &CTitanBound_Controller::OnTriggerEnter_GrabGroundBackL);
-    Bind_Trigger(m_refGrabGroundBackR, &CTitanBound_Controller::OnTriggerEnter_GrabGroundBackR);
+        Bind_Trigger(m_refGrabBackL, &CTitanBound_Controller::OnTriggerEnter_GrabBackL);
+        Bind_Trigger(m_refGrabBackR, &CTitanBound_Controller::OnTriggerEnter_GrabBackR);
 
-    Bind_Trigger(m_refGrabGroundFrontL, &CTitanBound_Controller::OnTriggerEnter_GrabGroundFrontL);
-    Bind_Trigger(m_refGrabGroundFrontR, &CTitanBound_Controller::OnTriggerEnter_GrabGroundFrontR);
+        Bind_Trigger(m_refGrabGroundBackL, &CTitanBound_Controller::OnTriggerEnter_GrabGroundBackL);
+        Bind_Trigger(m_refGrabGroundBackR, &CTitanBound_Controller::OnTriggerEnter_GrabGroundBackR);
 
-    Bind_Trigger(m_refGrabHeadBackL, &CTitanBound_Controller::OnTriggerEnter_GrabHeadBackL);
-    Bind_Trigger(m_refGrabHeadBackR, &CTitanBound_Controller::OnTriggerEnter_GrabHeadBackR);
+        Bind_Trigger(m_refGrabGroundFrontL, &CTitanBound_Controller::OnTriggerEnter_GrabGroundFrontL);
+        Bind_Trigger(m_refGrabGroundFrontR, &CTitanBound_Controller::OnTriggerEnter_GrabGroundFrontR);
 
-    Bind_Trigger(m_refGrabHeadFrontL, &CTitanBound_Controller::OnTriggerEnter_GrabHeadFrontL);
-    Bind_Trigger(m_refGrabHeadFrontR, &CTitanBound_Controller::OnTriggerEnter_GrabHeadFrontR);
+        Bind_Trigger(m_refGrabHeadBackL, &CTitanBound_Controller::OnTriggerEnter_GrabHeadBackL);
+        Bind_Trigger(m_refGrabHeadBackR, &CTitanBound_Controller::OnTriggerEnter_GrabHeadBackR);
 
-    Bind_Trigger(m_refGrabHighL, &CTitanBound_Controller::OnTriggerEnter_GrabHighL);
-    Bind_Trigger(m_refGrabHighR, &CTitanBound_Controller::OnTriggerEnter_GrabHighR);
+        Bind_Trigger(m_refGrabHeadFrontL, &CTitanBound_Controller::OnTriggerEnter_GrabHeadFrontL);
+        Bind_Trigger(m_refGrabHeadFrontR, &CTitanBound_Controller::OnTriggerEnter_GrabHeadFrontR);
 
-    Bind_Trigger(m_refGrabStomachL, &CTitanBound_Controller::OnTriggerEnter_GrabStomachL);
-    Bind_Trigger(m_refGrabStomachR, &CTitanBound_Controller::OnTriggerEnter_GrabStomachR);
+        Bind_Trigger(m_refGrabHighL, &CTitanBound_Controller::OnTriggerEnter_GrabHighL);
+        Bind_Trigger(m_refGrabHighR, &CTitanBound_Controller::OnTriggerEnter_GrabHighR);
+
+        Bind_Trigger(m_refGrabStomachL, &CTitanBound_Controller::OnTriggerEnter_GrabStomachL);
+        Bind_Trigger(m_refGrabStomachR, &CTitanBound_Controller::OnTriggerEnter_GrabStomachR);
+    }
+
+    /* Attach */
+    {
+        Attach(m_refHandL, m_szHandL, {0.f, 0.f, 0.f});
+        Attach(m_refHandR, m_szHandR, { 0.f, 0.f, 0.f });
+    }
 }
 
 void CTitanBound_Controller::Start(void* pCtx)
@@ -123,8 +138,62 @@ void CTitanBound_Controller::Late_Update(void* pCtx, _float fDT)
     const _vector vOwnerPos = XMLoadFloat3(&m_trOwner->vPosition);
     const _vector vOwnerRot = XMLoadFloat4(&m_trOwner->vRotationQuat);
 
+    for (auto& tAttach : m_vecAttachBones)
+        Sync_AttchBone(tAttach);
+
     for (auto& tBound : m_vecBounds)
         Sync_Bound(tBound, vOwnerPos, vOwnerRot);
+}
+
+void CTitanBound_Controller::Attach(const SCRIPT_OBJECT_REF& refObject, const std::string& strBoneName, const _float3& vOffset)
+{
+    if (!Is_Valid_ObjectRef(refObject))
+        return;
+
+    if (!m_pOwner || m_trOwner.Is_Valid() == false)
+        return;
+
+    Engine::CGameObject* pChildObject = GAME_INSTANCE.Find_GameObject(refObject.hObject);
+    if (!pChildObject)
+        return;
+
+    CTransform trChild = pChildObject->Get_Component<CTransform>();
+    if (trChild.Is_Valid() == false)
+        return;
+
+    TITAN_ATTACH_BONE tAttach{};
+
+    if (!GAME_INSTANCE.Find_AttachBoneInfo(m_hObject, strBoneName, tAttach.pAnimData, tAttach.iBoneIndex))
+        return;
+
+    tAttach.trParent = m_trOwner;
+    tAttach.trChild = trChild;
+    tAttach.vOffset = vOffset;
+
+    m_vecAttachBones.push_back(tAttach);
+}
+
+void CTitanBound_Controller::Sync_AttchBone(TITAN_ATTACH_BONE& tAttach)
+{
+    if (!tAttach.pAnimData)
+        return;
+
+    if (tAttach.trParent.Is_Valid() == false || tAttach.trChild.Is_Valid() == false)
+        return;
+
+    const auto& combined = tAttach.pAnimData->boneCombinedMatrices;
+    if (tAttach.iBoneIndex >= combined.size())
+        return;
+
+    const _matrix matWorld =
+        XMLoadFloat4x4(&combined[tAttach.iBoneIndex]) *
+        XMLoadFloat4x4(&tAttach.trParent->matWorld);
+
+    _vector vWorldPos = matWorld.r[3];
+    /* 직접 이동시키기 */
+    vWorldPos += XMVectorSet(tAttach.vOffset.x, tAttach.vOffset.y, tAttach.vOffset.z, 0.f);
+
+    tAttach.trChild.Set_Position(vWorldPos);
 }
 
 void CTitanBound_Controller::Register_Bound(std::vector<TITAN_BOUND_NODE>& vecBounds, SCRIPT_OBJECT_REF& refBound, _float3& vOffset)
@@ -223,10 +292,72 @@ void CTitanBound_Controller::Set_GrabTriggerEnabled(_bool bEnable)
         Clear_PendingGrabAnim();
 }
 
+CGameObject* CTitanBound_Controller::Get_GrabbedObject()
+{
+    return m_goGrabbed;
+}
+
+CHuman* CTitanBound_Controller::Get_GrabbedHuman()
+{
+    return m_pHuman;
+}
+
+_float3* CTitanBound_Controller::Get_GrabbedPoint()
+{
+    return m_pGrabbedPoint;
+}
+
+void CTitanBound_Controller::Handle_GrabState(SIDE eSide, CGameObject* pTarget, CGameObject* pHand)
+{
+    if (pTarget->Has_Mask(HUMAN))
+    {
+        CTransform tr = pHand->Get_Component<CTransform>();
+
+        m_pGrabbedPoint = &tr._Data()->vPosition;
+
+        /* class Player : public IScript, public CHuman 이므로 다중 상속 가능 */
+        CHuman* pHuman = pTarget->Get_Script_InChildren<CHuman>();
+        /* class NormalTitan : public IScript, public CTitan 이므로 다중 상속 가능 */
+        CTitan* pTitan = m_pOwner->Get_Script<CTitan>();
+        if (nullptr == pHuman || nullptr == pTitan)
+            return;
+        m_pHuman = pHuman;
+        m_goGrabbed = pTarget;
+        pHuman->On_Grabbed(eSide, pTitan);
+        pTitan->On_Grab(eSide, pHuman);
+    }
+}
+
 void CTitanBound_Controller::OnTriggerEnter_Weak(const COLLISION_DESC& tDesc)
 {
     UNREFERENCED_PARAMETER(tDesc);
     /* 약점 판정은 나중에 별도 처리 */
+}
+
+void CTitanBound_Controller::OnTriggerEnter_HandL(const COLLISION_DESC& tDesc)
+{
+    CGameObject* pTarget = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
+    if (!pTarget)
+        return;
+
+    CGameObject* pLeftHand = GAME_INSTANCE.Find_GameObject(m_refHandL.hObject);
+    if (!pLeftHand)
+        return;
+
+    Handle_GrabState(SIDE::LEFT, pTarget, pLeftHand);
+}
+
+void CTitanBound_Controller::OnTriggerEnter_HandR(const COLLISION_DESC& tDesc)
+{
+    CGameObject* pTarget = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
+    if (!pTarget)
+        return;
+
+    CGameObject* pRightHand = GAME_INSTANCE.Find_GameObject(m_refHandR.hObject);
+    if (!pRightHand)
+        return;
+
+    Handle_GrabState(SIDE::RIGHT, pTarget, pRightHand);
 }
 
 void CTitanBound_Controller::OnTriggerEnter_GrabAirFarL(const COLLISION_DESC& tDesc) { Try_QueueGrabAnim(ANIM_TITAN::GRAB_AIR_FAR_L, tDesc); }

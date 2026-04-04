@@ -513,6 +513,9 @@ void CAnimator_Processor::Build_FinalBoneMatrices(ANIMATOR_DATA* pData, const MO
     {
         const BONE_ENTRY& tBone = tModel.tSkeleton.bones[i];
 
+        /* Why 2-step ? */
+        /* matOffset을 곱하기 전까지는, Bone의 Transform 행렬이다. */
+        /* 곱한 뒤로는 스키닝용 보정된 Bone의 Transform 행렬이다. */
         const _matrix matOffset = XMLoadFloat4x4(&tBone.matOffset);
         const _matrix matCombined = XMLoadFloat4x4(&pData->boneCombinedMatrices[i]);
 

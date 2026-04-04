@@ -40,6 +40,7 @@ void CNormalTitanState_Chase::Update(_float fDT)
 {
     CTitanState::Update(fDT);
 
+    /* 애니메이션 간의 최소 전환 시간 확보 */
     if (m_fGrabAnimCooldownElapsed < m_fGrabAnimCooldown)
     {
         m_fGrabAnimCooldownElapsed += fDT;
@@ -48,17 +49,20 @@ void CNormalTitanState_Chase::Update(_float fDT)
         {
             m_fGrabAnimCooldownElapsed = m_fGrabAnimCooldown;
 
+            /* 애니메이션 실행 중에는 전환 금지 */
             if (m_tRef.pBoundCtlr && !m_bGrabAnimPlaying)
                 m_tRef.pBoundCtlr->Set_GrabTriggerEnabled(true);
         }
     }
 
+    /* Pending 된 애니메이션이 있다면 실행 */
     if (!m_bGrabAnimPlaying)
         Try_PlayTriggeredGrabAnim();
 
     if (m_bGrabAnimPlaying)
         return;
 
+    /* 없다면 타겟을 쫓기 위해 움직이기 */
     _vector vMoveDir = XMLoadFloat3(&m_vChaseDir);
     if (!XMVector3Equal(vMoveDir, XMVectorZero()))
     {
@@ -113,6 +117,8 @@ void CNormalTitanState_Chase::Exit()
 void CNormalTitanState_Chase::Setup_CachedTitanContext()
 {
     CTitanState::Setup_CachedTitanContext();
+
+    m_tComponents.animator->OnAnimationFinished.Add_Listener(&CNormalTitanState_Chase::On_AnimFinished, this);
 }
 
 void CNormalTitanState_Chase::Decide_NextState()
@@ -128,7 +134,7 @@ void CNormalTitanState_Chase::Decide_NextAnim()
     m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::RUN_WALK);
 }
 
-
+/* Pending된 애니메이션이 있다면 조건에 따라 실행하기 */
 void CNormalTitanState_Chase::Try_PlayTriggeredGrabAnim()
 {
     if (!m_tRef.pBoundCtlr)
@@ -144,18 +150,21 @@ void CNormalTitanState_Chase::Try_PlayTriggeredGrabAnim()
     if (!m_tRef.pBoundCtlr->Consume_PendingGrabAnim(strAnimName))
         return;
 
-    auto iter = m_tComponents.animator->NameToClipIndex.find(strAnimName);
-    if (iter == m_tComponents.animator->NameToClipIndex.end())
+    _uint iIndex = m_tComponents.animator.Get_AnimationClipIdx_By_Name(strAnimName);
+    if (To<_uint>(INVALID_ANIM_CLIP_INDEX) == iIndex)
         return;
 
-    m_iGrabAnimClip = iter->second;
+    m_iGrabAnimClip = iIndex;
     m_bGrabAnimPlaying = true;
 
     m_tRef.pBoundCtlr->Set_GrabTriggerEnabled(false);
-
     m_tComponents.animator.Set_NextAnimationClip(m_iGrabAnimClip);
 
     cout << "[TITAN_CHASE] Grab Triggered : " << strAnimName << "\n";
+}
+
+void CNormalTitanState_Chase::On_SuccessGrabHuman(SIDE eSid, _float3* vGrabPoint, CHuman* pHuman)
+{
 }
 
 void CNormalTitanState_Chase::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
@@ -175,7 +184,7 @@ void CNormalTitanState_Chase::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA
     m_fGrabAnimCooldownElapsed = 0.f;
 
     if (m_tRef.pBoundCtlr)
-        m_tRef.pBoundCtlr->Set_GrabTriggerEnabled(false);
+        m_tRef.pBoundCtlr->Set_GrabTriggerEnabled(true);
 
     cout << "[TITAN_CHASE] Grab Animation Finished\n";
 }

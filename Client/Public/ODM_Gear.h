@@ -4,9 +4,6 @@
 #include "Event.h"
 
 #pragma region FD
-NS_BEGIN(Engine)
-class CGameObject;
-NS_END
 
 NS_BEGIN(Client)
 class CRope;
@@ -25,6 +22,14 @@ NS_BEGIN(Client)
 
 class CODM_Gear : public IScript
 {
+public :
+    _float                  m_fSpring = 10.f;
+    _float                  m_fDamper = 5.f;
+
+SCRIPT_FIELDS_BEGIN(CODM_Gear)
+    SCRIPT_FIELD_FLOAT(m_fSpring)
+    SCRIPT_FIELD_FLOAT(m_fDamper)
+SCRIPT_FIELDS_END(CODM_Gear)
 
 public:
     void Awake(void* pCtx) override;
@@ -42,8 +47,6 @@ private :
     Engine::CSpringJoint    m_sj;
 
     _float3                 m_vAnchor{};
-    _float                  m_fSpring = 10.f;
-    _float                  m_fDamper = 5.f;
 
     _float                  m_fRopeMaxDist = 150.f;
 

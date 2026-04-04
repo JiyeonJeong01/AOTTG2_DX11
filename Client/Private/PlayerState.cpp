@@ -5,15 +5,11 @@
 
 HRESULT CPlayerState::Initialize()
 {
-
-
     return S_OK;
 }
 
 void CPlayerState::Priority_Update(_float fDT)
 {
-
-
 }
 
 void CPlayerState::Update(_float fDT)
@@ -50,7 +46,6 @@ void CPlayerState::Update_PlayerInput(const PLAYER_INPUT_COMMAND& tInputCmd)
 
 void CPlayerState::Setup_CachedPlayerContext()
 {
-
 }
 
 void CPlayerState::LookTo_InputDir(_float fDT)

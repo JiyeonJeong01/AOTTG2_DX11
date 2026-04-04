@@ -68,7 +68,7 @@ namespace Engine
     enum class MOUSE_BUTTON : uint8_t       { LEFT, RIGHT, MIDDLE, END };
 
     /* --- Utils --- */
-    enum class SCRIPT_FIELD_TYPE : uint8_t  { INT = 0, FLOAT, FLOAT2, FLOAT3, FLOAT4, OBJECT_REF, ASSET_GUID, DEBUG_CHAR };
+    enum class SCRIPT_FIELD_TYPE : uint8_t  { INT = 0, FLOAT, FLOAT2, FLOAT3, FLOAT4, OBJECT_REF, ASSET_GUID, CHAR32 };
     enum class STATE : uint8_t { RIGHT, UP, LOOK, POSITION, END };
     enum class SPACE : uint8_t { WORLD, LOCAL, END };
     enum class Geometry : uint8_t { Rect, Circle, Cube, Sphere };

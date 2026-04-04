@@ -10,7 +10,7 @@ enum class TITAN_IDLE { DEFAULT = 0, SIT, DEFENSE, END };
 enum class TITAN_MOVE { WALK = 0, END };
 enum class TITAN_CHASE { };
 enum class TITAN_ATTACK { };
-enum class TITAN_GRAB { };
+enum class TITAN_GRAB { LEFT, RIGHT, END };
 enum class TITAN_HURT { };
 enum class TITAN_DEAD { };
 

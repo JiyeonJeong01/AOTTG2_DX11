@@ -68,8 +68,8 @@
     <Filter Include="Scout">
       <UniqueIdentifier>{2bd3a9d3-de32-48b6-a8aa-2e587ff02c0b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="NewFilter1">
-      <UniqueIdentifier>{66524134-65ab-413a-a3c6-b3d71b871312}</UniqueIdentifier>
+    <Filter Include="Managers">
+      <UniqueIdentifier>{6950d9bf-fcde-49e1-9cd4-6f81dfefb151}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +229,18 @@
     <ClInclude Include="..\Public\TitanBound_Controller.h">
       <Filter>Titan</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Titan_Hand.h">
+      <Filter>Titan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NormalTitanState_Grab.h">
+      <Filter>Titan\NormalTitan\NormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState_Grabbed.h">
+      <Filter>Player\PlayerState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UIManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -360,5 +372,15 @@
     <ClCompile Include="..\Private\TitanBound_Controller.cpp">
       <Filter>Titan</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Titan_Hand.cpp">
+      <Filter>Titan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NormalTitanState_Grab.cpp">
+      <Filter>Titan\NormalTitan\NormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState_Grabbed.cpp">
+      <Filter>Player\PlayerState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIManager.cpp" />
   </ItemGroup>
 </Project>

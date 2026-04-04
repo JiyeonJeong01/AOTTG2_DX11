@@ -105,6 +105,26 @@ void CPlayer::Late_Update(void* pCtx, _float fDT)
     m_upStateMachine->Late_Update(fDT);
 }
 
+void CPlayer::On_Grabbed(SIDE eSide, CTitan* pTitan)
+{
+    PLAYER_STATE eState = m_spCurState->Get_State();
+    if (eState == PLAYER_STATE::GRABBED)
+        return;
+
+    GRABBED eGrabbed = GRABBED::END;
+    if (eSide == SIDE::LEFT)
+        eGrabbed = GRABBED::LEFT;
+    else if (eSide == SIDE::RIGHT)
+        eGrabbed = GRABBED::RIGHT;
+
+    m_upStateMachine->Change_State(To<_uint>(PLAYER_STATE::GRABBED), To<_uint>(eGrabbed));
+}
+
+void CPlayer::On_Dead()
+{
+    CHuman::On_Dead();
+}
+
 void CPlayer::OnChange_CurState(std::shared_ptr<CPlayerState> spNewState)
 {
     IF_NULL_RETURN_MSG_BREAK(spNewState, , "spNewState is nullptr");

@@ -22,7 +22,7 @@ public:
 
 public:
     SCRIPT_FIELDS_BEGIN(CPlayer)
-        SCRIPT_FIELD_DEBUG_CHAR(m_szState)
+        SCRIPT_FIELD_CHAR(m_szState)
         SCRIPT_FIELD_FLOAT(m_fSpeed)
     SCRIPT_FIELDS_END(CPlayer)
 
@@ -54,6 +54,9 @@ private:
     CODM_Gear*                                  m_pGear{};
 
 private :
+    void On_Grabbed(SIDE eSide, CTitan* pTitan) override;
+    void On_Dead() override;
+
     void OnChange_CurState(std::shared_ptr<CPlayerState> spNewState);
 
     void On_CollisionEnter(const COLLISION_DESC& tDesc);

@@ -2,7 +2,6 @@
 #include "Engine_Define.h"
 #include "Component_Struct.h"
 #include "Identity.h"
-#include "Component_Struct.h"
 #include "Component_System.h"
 
 #pragma region FOWARD DECLARATION
@@ -10,9 +9,11 @@ NS_BEGIN(Engine)
 class CGameObject;
 class CPhysics_Processor;
 class CLine;
+class CTransform;
 typedef struct tagRay RAY;
 typedef struct tagRaycastHit RAYCAST_HIT;
 typedef struct tagRaycastHits RAYCAST_HITS;
+typedef struct tagAnimatorData ANIMATOR_DATA;
 NS_END
 #pragma endregion
 
@@ -53,9 +54,13 @@ public : /* ---------- Game ---------- */
     void        Pause();
     void        Play();
 
-public : /* ---------- Game ---------- */
-    _float3  Cam_Position();
-    _float3         Cam_Look();
+public : /* ---------- Camera ---------- */
+    _float3     Cam_Position();
+    _float3     Cam_Look();
+
+public : /* ---------- Animation ---------- */
+    _bool Find_AttachBoneInfo(OBJECT_HANDLE hTargetObj, const string& strTargetBoneName, ANIMATOR_DATA*& pOutAnimator, _uint& iOutBoneIndex);
+    void  Calculate_AttachBoneMatrixPtr(const CTransform& hTargetTrans, CTransform& hAttachTrans, const _float4x4* matCombinedPtr);
 
 public :/* ---------- Built-in ---------- */
     unique_ptr<CLine>   Load_LineMesh(_uint iNumPoint, _float fThickness);

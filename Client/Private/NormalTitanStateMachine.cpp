@@ -3,6 +3,7 @@
 #include "NormalTitanState_Idle.h"
 #include "NormalTitanState_Move.h"
 #include "NormalTitanState_Chase.h"
+#include "NormalTitanState_Grab.h"
 
 CNormalTitanStateMachine::CNormalTitanStateMachine()
 {
@@ -21,6 +22,7 @@ HRESULT CNormalTitanStateMachine::Initialize(CGameObject* goTitan, CTitan* scTit
     m_States[To<_uint>(TITAN_STATE::IDLE)] = CNormalTitanState_Idle::Create(goTitan, scTitan, TITAN_STATE::IDLE);
     m_States[To<_uint>(TITAN_STATE::MOVE)] = CNormalTitanState_Move::Create(goTitan, scTitan, TITAN_STATE::MOVE);
     m_States[To<_uint>(TITAN_STATE::CHASE)] = CNormalTitanState_Chase::Create(goTitan, scTitan, TITAN_STATE::CHASE);
+    m_States[To<_uint>(TITAN_STATE::GRAB)] = CNormalTitanState_Grab::Create(goTitan, scTitan, TITAN_STATE::GRAB);
 
     m_spCurState = m_States[To<_uint>(TITAN_STATE::IDLE)];
 

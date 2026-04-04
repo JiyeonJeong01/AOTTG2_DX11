@@ -40,4 +40,9 @@ void CScout::Move(_fvector vDir, _float fDT)
 
 }
 
+void CScout::On_Grabbed(SIDE eSide, CTitan* pTitan)
+{
+
+}
+
 NS_END;

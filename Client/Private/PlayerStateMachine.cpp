@@ -9,6 +9,7 @@
 #include "PlayerState_Dodge.h"
 #include "PlayerState_Reload.h"
 #include "PlayerState_Resupply.h"
+#include "PlayerState_Grabbed.h"
 
 #include "ODM_Gear.h"
 
@@ -38,6 +39,7 @@ HRESULT CPlayerStateMachine::Initialize(CGameObject* goPlayer, CPlayer* scPlayer
     m_States[To<_uint>(PLAYER_STATE::DODGE)] = CPlayerState_Dodge::Create(goPlayer, scPlayer, PLAYER_STATE::DODGE);
     m_States[To<_uint>(PLAYER_STATE::RELOAD)] = CPlayerState_Reload::Create(goPlayer, scPlayer, PLAYER_STATE::RELOAD);
     m_States[To<_uint>(PLAYER_STATE::RESUPPLY)] = CPlayerState_Resupply::Create(goPlayer, scPlayer, PLAYER_STATE::RESUPPLY);
+    m_States[To<_uint>(PLAYER_STATE::GRABBED)] = CPlayerState_Grabbed::Create(goPlayer, scPlayer, PLAYER_STATE::GRABBED);
 
     m_spCurState = m_States[To<_uint>(PLAYER_STATE::IDLE)];
 

@@ -296,6 +296,7 @@ _bool CMeshRenderer_Processor::Build_Skinning_BoneRemap(MESH_RENDERER_DATA* pDat
     return true;
 }
 
+/* NOTE : Parts는 정점이 Bone 영향을 받아 변형되는 메쉬이므로, matOffset이 곱해진 finalBoneMatrices를 사용해야 한다. */
 _bool CMeshRenderer_Processor::Build_SkinnedPart_BoneMatrices(MESH_RENDERER_DATA* pData)
 {
     IF_NULL_RETURN_MSG_BREAK(pData, false, "pData is nullptr");
@@ -374,6 +375,7 @@ _bool CMeshRenderer_Processor::Find_Attach_BoneIndex(MESH_RENDERER_DATA* pData)
     return true;
 }
 
+/* NOTE : Attach는 별도의 메쉬를 가진 오브젝트가 Bone의 Transform에 붙어야 하므로, boneCombinedMatrices를 이용해야 한다. */
 _bool CMeshRenderer_Processor::Build_Attach_BoneMatrix(MESH_RENDERER_DATA* pData)
 {
     IF_NULL_RETURN_MSG_BREAK(pData, false, "pData is nullptr");

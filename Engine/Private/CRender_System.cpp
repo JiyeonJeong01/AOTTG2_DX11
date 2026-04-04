@@ -450,10 +450,10 @@ void CRender_System::Execute_Draw_Canvas(const DRAW_CMD& tCmd)
         _float2 vSize = rt.Get_SizePx();
 
         D3D11_RECT rectImg;
-        rectImg.left = vPos.x - vSize.x * 0.5f;
-        rectImg.top = vPos.y - vSize.y * 0.5f;
-        rectImg.right = vPos.x + vSize.x * 0.5f;
-        rectImg.bottom = vPos.y + vSize.y * 0.5f;
+        rectImg.left = To<LONG>(vPos.x - vSize.x * 0.5f);
+        rectImg.top = To<LONG>(vPos.y - vSize.y * 0.5f);
+        rectImg.right = To<LONG>(vPos.x + vSize.x * 0.5f);
+        rectImg.bottom = To<LONG>(vPos.y + vSize.y * 0.5f);
 
         D3D11_RECT rectFinal;
         rectFinal.left = rectClip.left + rectImg.left;

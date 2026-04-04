@@ -26,6 +26,7 @@ private :
 
 public :
     void            Set_ActCase();
+    void On_Grabbed(SIDE eSide, CTitan* pTitan) override;
 };
 
 NS_END;

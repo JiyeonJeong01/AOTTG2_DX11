@@ -18,7 +18,7 @@ public:
     char        m_szState[32] = {};
 
 SCRIPT_FIELDS_BEGIN(CNormalTitan)
-    SCRIPT_FIELD_DEBUG_CHAR(m_szState)
+    SCRIPT_FIELD_CHAR(m_szState)
 SCRIPT_FIELDS_END(CNormalTitan)
 
 public:
@@ -65,6 +65,8 @@ public :
     CGameObject*        Get_CurTarget() const;
 
 private:
+    void On_Grab(SIDE eSide, CHuman* pHuman) override;
+
     void On_DetectedHuman(CGameObject* goHuman);
     void OnChange_CurState(std::shared_ptr<CTitanState> spNewState);
 };

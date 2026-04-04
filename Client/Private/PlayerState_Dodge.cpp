@@ -19,6 +19,7 @@ CPlayerState_Dodge::~CPlayerState_Dodge()
 HRESULT CPlayerState_Dodge::Initialize()
 {
     IF_NULL_RETURN_MSG_BREAK(m_goPlayer, E_FAIL, "m_goPlayer is nullptr");
+    IF_NULL_RETURN_MSG_BREAK(m_scPlayer, E_FAIL, "m_scPlayer is nullptr");
 
     return S_OK;
 }
