@@ -167,6 +167,27 @@ TScript* CGameObject::Get_Script_InChildren()
     return nullptr;
 }
 
+template <typename TScript>
+std::vector<TScript*> CGameObject::Get_AllScripts_InChildren()
+{
+    std::vector<TScript*> allScripts;
+
+    if (TScript* pScript = Get_Script<TScript>())
+        allScripts.push_back(pScript);
+
+    const auto& children = Get_Children();
+    for (auto* pChild : children)
+    {
+        if (!pChild)
+            continue;
+
+        std::vector<TScript*> childScripts = pChild->Get_AllScripts_InChildren<TScript>();
+        allScripts.insert(allScripts.end(), childScripts.begin(), childScripts.end());
+    }
+
+    return allScripts;
+}
+
 template <typename T>
 void CGameObject::Add_Mask(T eMask)
 {

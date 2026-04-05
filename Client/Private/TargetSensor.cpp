@@ -116,7 +116,7 @@ void CTargetSensor::OnTriggerEnter(const COLLISION_DESC& tDesc)
     if (!pObject)
         return;
 
-    if (pObject->Has_Mask(HUMAN))
+    if (pObject->Has_Mask(O_HUMAN))
     {
         m_OnDetected_Human.Invoke(pObject);
     }

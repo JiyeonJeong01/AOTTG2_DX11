@@ -53,6 +53,8 @@ private:
     CCameraController*                          m_pCameraController{};
     CODM_Gear*                                  m_pGear{};
 
+    std::unordered_map<std::string, class CHitBox*> m_AllHitBoxes;
+
 private :
     void On_Grabbed(SIDE eSide, CTitan* pTitan) override;
     void On_Dead() override;

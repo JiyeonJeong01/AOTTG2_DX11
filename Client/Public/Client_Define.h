@@ -27,13 +27,16 @@ namespace Client
 
     enum OBJECT_MASK
     {
-        HUMAN       = 1 << 0,
-        TITAN       = 1 << 1,
-        PLAYER      = 1 << 2,
-        NPC         = 1 << 3,
-        ALLY        = 1 << 4, 
-        WALKABLE    = 1 << 5,
-
+        O_HUMAN       = 1 << 0,
+        O_TITAN       = 1 << 1,
+        O_PLAYER      = 1 << 2,
+        O_NPC         = 1 << 3,
+        O_ALLY        = 1 << 4, 
+        O_WALKABLE    = 1 << 5,
+        O_HUMAN_ATK   = 1 << 6,
+        O_TITAN_ATK   = 1 << 7,
+        O_HITBOX      = 1 << 8,
+        O_HURTBOX     = 1 << 9, 
     };
 
     typedef struct tagDisplacement
@@ -62,6 +65,14 @@ namespace Client
         _float3 vMin{};
         _float3 vMax{};
     } ENTITY_VOLUME;
+
+    typedef struct tagHitInfo
+    {
+        CGameObject*    goAttacker{};
+        _float          fDamage{};
+        _float3         vHitPoint{};
+
+    } HIT_INFO;
 
 
 }

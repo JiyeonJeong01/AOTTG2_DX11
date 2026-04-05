@@ -24,6 +24,9 @@
     <ClInclude Include="..\Public\AnimationClip_Titan.h" />
     <ClInclude Include="..\Public\CameraController.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
+    <ClInclude Include="..\Public\HitBox.h" />
+    <ClInclude Include="..\Public\HurtBox.h" />
+    <ClInclude Include="..\Public\NormalTitanState_Dead.h" />
     <ClInclude Include="..\Public\NormalTitanState_Grab.h" />
     <ClInclude Include="..\Public\PlayerState_Grabbed.h" />
     <ClInclude Include="..\Public\TargetSensor.h" />
@@ -78,6 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\CameraController.cpp" />
+    <ClCompile Include="..\Private\HitBox.cpp" />
+    <ClCompile Include="..\Private\HurtBox.cpp" />
+    <ClCompile Include="..\Private\NormalTitanState_Dead.cpp" />
     <ClCompile Include="..\Private\NormalTitanState_Grab.cpp" />
     <ClCompile Include="..\Private\PlayerState_Grabbed.cpp" />
     <ClCompile Include="..\Private\TargetSensor.cpp" />

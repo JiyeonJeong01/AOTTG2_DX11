@@ -1,0 +1,62 @@
+{
+  "prototype": {
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.5,
+              -0.5000000596046448,
+              0.5,
+              0.4999999701976776
+            ],
+            "Scale": [
+              0.00999999325722456,
+              0.009999994188547134,
+              0.009999999776482582
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "12C6B54E-EA2E-4D14-AFB3-0E96C0A8F631",
+            "MeshGUID": "CA6A1A21-416A-448E-A47B-69910D2617A5",
+            "Mode": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "iObjMask": 0,
+    "isUI": false,
+    "name": "ShiganHous3_v4"
+  },
+  "version": 1
+}

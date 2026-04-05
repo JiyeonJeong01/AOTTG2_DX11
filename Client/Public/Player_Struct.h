@@ -71,6 +71,7 @@ typedef struct tagPlayerRuntimeRef
     class CODM_Gear*            pGear = nullptr;
     class CCameraController*    pCameraController = nullptr;
     class CPlayerStateMachine*  pFSM = nullptr;
+    std::unordered_map<std::string, class CHitBox*>* pAllHitBoxes = nullptr;
 } PLAYER_RUNTIME_REF;
 
 typedef struct tagPlayerSkill
@@ -103,6 +104,10 @@ typedef struct tagPlayerContext
     /* 헬퍼 */
     class CPlayer_SkillController*  pSkillController = nullptr;
 
+    class CHitBox* pHitBox = nullptr;
+
 } PLAYER_CONTEXT;
+
+inline constexpr const char* PLAYER_BLADE_ATTACK = "Blade_Left";
 
 NS_END

@@ -21,6 +21,7 @@ class CTitan
 public:
     virtual ~CTitan() = default;
     virtual void On_Grab(SIDE eSide, CHuman* pHuman) = 0;
+    virtual void On_Dead(const _float fAccuracy) {};
 
 };
 

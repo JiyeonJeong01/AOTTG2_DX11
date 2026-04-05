@@ -44,6 +44,8 @@ private :
     std::unique_ptr<CNormalTitanStateMachine>   m_upStateMachine{};
     std::shared_ptr<CTitanState>                m_spCurState{};
 
+    std::unordered_map<std::string, CHitBox*>   m_AllHitBoxes;
+
     Engine::CEvent<Engine::CGameObject*>        m_OnChanged_Target;
 
 public :
@@ -66,6 +68,7 @@ public :
 
 private:
     void On_Grab(SIDE eSide, CHuman* pHuman) override;
+    void On_Dead(const _float fAccuracy) override;
 
     void On_DetectedHuman(CGameObject* goHuman);
     void OnChange_CurState(std::shared_ptr<CTitanState> spNewState);

@@ -20,6 +20,7 @@ public:
     void Enter(_uint iDetailFlag) override;
     void Exit() override;
 
+    void Cache_PlayerContext(const PLAYER_CONTEXT& tContext) override;
     void Setup_CachedPlayerContext() override;
 
 private:
@@ -32,6 +33,7 @@ private:
     void On_SpinV_Finished(const Engine::ANIMATION_EVENT_DATA& tData);
 private:
     AIRBORNE_ATTACK     m_eAirborneAttackState = AIRBORNE_ATTACK::END;
+    CHitBox*            m_pHitBox = nullptr;
 
     _bool               m_bAnimFinished = false;
     _bool               m_bKeepAttack = false;
@@ -59,15 +61,26 @@ private:
     _float              m_fSpinV_WaitTotalTime = 0.15f;
     _bool               m_bSpinV_Force = false;
     _float3             m_vSpinV_Axis = { 1.f, 0.f, 0.f };
+
+    CHitBox*            m_pBladeHitBox = nullptr;
+
+    _float              m_fNormal_HitBoxStartTrackPos = 0.f;
+    _float              m_fSpinH_HitBoxStartTrackPos = 0.f;
+    _float              m_fSpinV_HitBoxStartTrackPos = 0.f;
+
+    _bool               m_bBladeHitBoxStarted = false;
+
 private :
+    void    Update_BladeHitBox();
+    void    Spin_Horizontal(_float fDT);
+    void    Spin_Vertical(_float fDT);
+    void    Throw_Blade(_float fDT);
 
-    void Spin_Horizontal(_float fDT);
-    void Spin_Vertical(_float fDT);
-    void Throw_Blade(_float fDT);
+    void    Set_InitialValue();
 
-    void Set_InitialValue();
-
-    void Decide_State_If_Needed();
+    void    Decide_State_If_Needed();
+    _bool   Can_Start_BladeHitBox() const;
+    _bool   Can_End_BladeHitBox() const;
 public:
     static std::shared_ptr<CPlayerState_AirborneAttack> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
 };

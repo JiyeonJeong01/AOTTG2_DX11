@@ -3,6 +3,7 @@
 #include "NormalTitanStateMachine.h"
 #include "TargetSensor.h"
 #include "TitanBound_Controller.h"
+#include "HitBox.h"
 
 NS_BEGIN(Client)
 
@@ -52,6 +53,19 @@ void CNormalTitan::Start(void* pCtx)
 
         m_tRef.pBoundCtlr = m_goTitan->Get_Script_InChildren<CTitanBound_Controller>();
         IF_NULL_RETURN_MSG_BREAK(m_tRef.pBoundCtlr, , "m_tRef.pBoundCtlr is nullptr");
+
+        auto allHitBoxes = m_goTitan->Get_AllScripts_InChildren<CHitBox>();
+
+        for (auto& hit : allHitBoxes)
+        {
+            CGameObject* goHitBox = hit->Get_HitBoxObject();
+            IF_NULL_RETURN_MSG_BREAK(goHitBox, , "goHitBox is nullptr");
+
+            auto [iter, bInserted] = m_AllHitBoxes.emplace(string(goHitBox->Get_Label()), hit);
+            IF_TRUE_RETURN_MSG_BREAK(!bInserted, , "duplicated hitbox label");
+        }
+
+        m_tRef.pAllHitBoxes = &m_AllHitBoxes;
     }
 
     /* 플레이어 상태에게 전달 */
@@ -65,6 +79,9 @@ void CNormalTitan::Start(void* pCtx)
     m_tRef.pSensor->Subscribe_OnDetectedHuman(&CNormalTitan::On_DetectedHuman, this);
     m_upStateMachine->Subscribe_OnChangedCurState(&CNormalTitan::OnChange_CurState, this);
 
+    /* 히트박스 전부 끄기 */
+    for (auto& hit : m_AllHitBoxes)
+        hit.second->Set_Active(false);
 }
 
 void CNormalTitan::Priority_Update(void* pCtx, _float fDT)
@@ -127,7 +144,7 @@ _bool CNormalTitan::Is_ValidTarget(Engine::CGameObject* pTarget)
     if (!pTarget)
         return false;
 
-    if (!pTarget->Has_Mask(HUMAN))
+    if (!pTarget->Has_Mask(O_HUMAN))
         return false;
 
     CTransform trTarget = pTarget->Get_Component<CTransform>();
@@ -155,6 +172,15 @@ void CNormalTitan::On_Grab(SIDE eSide, CHuman* pHuman)
         eGrabbed = TITAN_GRAB::RIGHT;
 
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::GRAB), To<_uint>(eGrabbed));
+}
+
+void CNormalTitan::On_Dead(const _float fAccuracy)
+{
+    TITAN_STATE eState = m_spCurState->Get_State();
+    if (eState == TITAN_STATE::DEAD)
+        return;
+
+    m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
 }
 
 void CNormalTitan::Validate_Target()

@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "PlayerStateMachine.h"
 #include "AnimationClip_Player.h"
+#include "HitBox.h"
 #include "ODM_Gear.h"
 
 CPlayerState_GroundedAttack::CPlayerState_GroundedAttack(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
@@ -48,6 +49,13 @@ void CPlayerState_GroundedAttack::Enter(_uint iDetailFlag)
 {
     CPlayerState::Enter(iDetailFlag);
 
+    auto it = m_tRef.pAllHitBoxes->find(PLAYER_BLADE_ATTACK);
+    if (it == m_tRef.pAllHitBoxes->end())
+    {
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::IDLE), 0);
+        return;
+    }
+    it->second->Set_Active(true);
 
     if (iDetailFlag == To<_uint>(GROUNDED_ATTACK::ATK))
     {
@@ -59,6 +67,12 @@ void CPlayerState_GroundedAttack::Enter(_uint iDetailFlag)
 void CPlayerState_GroundedAttack::Exit()
 {
     CPlayerState::Exit();
+
+    auto it = m_tRef.pAllHitBoxes->find(PLAYER_BLADE_ATTACK);
+    if (it == m_tRef.pAllHitBoxes->end())
+        return;
+
+    it->second->Set_Active(false);
 }
 
 void CPlayerState_GroundedAttack::Setup_CachedPlayerContext()

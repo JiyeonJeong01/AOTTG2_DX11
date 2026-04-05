@@ -6,6 +6,8 @@
 #include "GroundChecker.h"
 #include "Player_SkillController.h"
 #include "ThrownBlade.h"
+#include "HitBox.h"
+
 
 CPlayerState_AirborneAttack::CPlayerState_AirborneAttack(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
     : CPlayerState(goPlayer, scPlayer, eState)
@@ -44,11 +46,13 @@ void CPlayerState_AirborneAttack::Update(_float fDT)
 {
     if (m_eAirborneAttackState == AIRBORNE_ATTACK::NORMAL)
     {
+        Update_BladeHitBox();
         return;
     }
     if (m_eAirborneAttackState == AIRBORNE_ATTACK::SPIN_H)
     {
         Spin_Horizontal(fDT);
+        Update_BladeHitBox();
         return;
     }
     if (m_eAirborneAttackState == AIRBORNE_ATTACK::THROW)
@@ -59,6 +63,7 @@ void CPlayerState_AirborneAttack::Update(_float fDT)
     if (m_eAirborneAttackState == AIRBORNE_ATTACK::SPIN_V)
     {
         Spin_Vertical(fDT);
+        Update_BladeHitBox();
         return;
     }
 }
@@ -74,6 +79,18 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
     CPlayerState::Enter(iDetailFlag);
 
     Set_InitialValue();
+    m_bBladeHitBoxStarted = false;
+
+    auto it = m_tRef.pAllHitBoxes->find(PLAYER_BLADE_ATTACK);
+    if (it != m_tRef.pAllHitBoxes->end())
+    {
+        m_pBladeHitBox = it->second;
+        m_pBladeHitBox->Set_Active(false);
+    }
+    else
+    {
+        m_pBladeHitBox = nullptr;
+    }
 
     if (iDetailFlag < To<_uint>(AIRBORNE_ATTACK::END))
         m_eAirborneAttackState = To<AIRBORNE_ATTACK>(iDetailFlag);
@@ -92,6 +109,9 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
         else
             m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::ATTACK_2);/* ATTACK2 = AIRBORNE_ATTACK::NORMAL 동작으로 사용 */
 
+        if (m_pHitBox)
+            m_pHitBox->Set_Active(true);
+
         return;
     }
 
@@ -106,6 +126,9 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::ATTACK_1); /* ATTACK1 = SpinH 시작 동작으로 사용 */
         m_bAnimFinished = false;
         m_bKeepAttack = true;
+
+        if (m_pHitBox)
+            m_pHitBox->Set_Active(true);
 
         return;
     }
@@ -150,6 +173,9 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
         m_bAnimFinished = false;
         m_bKeepAttack = true;
 
+        if (m_pHitBox)
+            m_pHitBox->Set_Active(true);
+
         return;
     }
     cout << "[AIRBORNE_ATTACK] 지정되지 않는 상태\n";
@@ -158,6 +184,19 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
 void CPlayerState_AirborneAttack::Exit()
 {
     CPlayerState::Exit();
+
+    if (m_pBladeHitBox)
+        m_pBladeHitBox->Set_Active(false);
+
+    m_bBladeHitBoxStarted = false;
+}
+
+void CPlayerState_AirborneAttack::Cache_PlayerContext(const PLAYER_CONTEXT& tContext)
+{
+    CPlayerState::Cache_PlayerContext(tContext);
+
+    m_pHitBox = tContext.pHitBox;
+    IF_NULL_RETURN_MSG_BREAK(m_pHitBox, , "m_pHitBox is nullptr");
 }
 
 void CPlayerState_AirborneAttack::Decide_NextState()
@@ -248,6 +287,29 @@ void CPlayerState_AirborneAttack::On_SpinV_Finished(const Engine::ANIMATION_EVEN
     cout << " => [AIRBORNE_ATTACK] On_SpinV_Finished\n";
 }
 
+void CPlayerState_AirborneAttack::Update_BladeHitBox()
+{
+    if (!m_pBladeHitBox)
+        return;
+
+    /* 히트박스 on */
+    if (!m_bBladeHitBoxStarted)
+    {
+        if (Can_Start_BladeHitBox())
+        {
+            m_pBladeHitBox->Set_Active(true);
+            m_bBladeHitBoxStarted = true;
+        }
+        return;
+    }
+
+    /* 히트박스 off */
+    if (m_pBladeHitBox->Get_Active() && Can_End_BladeHitBox())
+    {
+        m_pBladeHitBox->Set_Active(false);
+    }
+}
+
 void CPlayerState_AirborneAttack::Spin_Horizontal(_float fDT)
 {
     m_fSpinH_WaitElapsedTime += fDT;
@@ -329,6 +391,48 @@ void CPlayerState_AirborneAttack::Set_InitialValue()
     m_bThrowNow = false;
     m_bThrewAlready = false;
     m_fThrow_WaitElapsedTime = 0.f;
+}
+
+_bool CPlayerState_AirborneAttack::Can_Start_BladeHitBox() const
+{
+    if (!m_pBladeHitBox)
+        return false;
+
+    if (m_bBladeHitBoxStarted)
+        return false;
+
+    const _float fTrackPosition = m_tComponents.animator->fTrackPosition;
+
+    if (m_eAirborneAttackState == AIRBORNE_ATTACK::NORMAL)
+        return fTrackPosition >= m_fNormal_HitBoxStartTrackPos;
+
+    if (m_eAirborneAttackState == AIRBORNE_ATTACK::SPIN_H)
+        return fTrackPosition >= m_fSpinH_HitBoxStartTrackPos;
+
+    if (m_eAirborneAttackState == AIRBORNE_ATTACK::SPIN_V)
+        return fTrackPosition >= m_fSpinV_HitBoxStartTrackPos;
+
+    return false;
+}
+
+_bool CPlayerState_AirborneAttack::Can_End_BladeHitBox() const
+{
+    if (!m_pBladeHitBox)
+        return true;
+
+    if (!m_bBladeHitBoxStarted)
+        return false;
+
+    if (m_eAirborneAttackState == AIRBORNE_ATTACK::NORMAL)
+        return m_bAnimFinished;
+
+    if (m_eAirborneAttackState == AIRBORNE_ATTACK::SPIN_H)
+        return m_SpinH_Elapsed_Degree > m_SpinH_Total_Degree;
+
+    if (m_eAirborneAttackState == AIRBORNE_ATTACK::SPIN_V)
+        return m_SpinV_Elapsed_Degree > m_SpinV_Total_Degree;
+
+    return true;
 }
 
 void CPlayerState_AirborneAttack::Decide_State_If_Needed()

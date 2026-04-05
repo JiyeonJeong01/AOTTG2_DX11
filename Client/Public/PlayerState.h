@@ -39,7 +39,7 @@ public :
     void            Finish_Grappling();
     void            GroundedMove(_float fDT);
 
-    void            Cache_PlayerContext(const PLAYER_CONTEXT& tContext);
+    virtual void    Cache_PlayerContext(const PLAYER_CONTEXT& tContext);
     PLAYER_STATE    Get_State() const;
     const char*     Get_StateName() const;
 

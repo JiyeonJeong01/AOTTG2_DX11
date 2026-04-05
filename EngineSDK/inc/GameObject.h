@@ -37,6 +37,9 @@ public:
     template <typename TScript>
     TScript* Get_Script_InChildren();
 
+    template <typename TScript>
+    std::vector<TScript*> Get_AllScripts_InChildren();
+
     void                Remove_Components(COMPONENT_TYPE eComType);
     void                Remove_All_Components();
 

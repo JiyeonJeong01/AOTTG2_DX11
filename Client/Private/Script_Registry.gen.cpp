@@ -10,6 +10,8 @@
 #include "GroundChecker.h"
 #include "HUDController.h"
 #include "Hello.h"
+#include "HitBox.h"
+#include "HurtBox.h"
 #include "MainMenu_Controller.h"
 #include "NormalTitan.h"
 #include "ODM_Gear.h"
@@ -50,6 +52,14 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Hello.script");
         handler.Register_VTable(guid, ScriptBinder<CHello>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\HitBox.script");
+        handler.Register_VTable(guid, ScriptBinder<CHitBox>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\HurtBox.script");
+        handler.Register_VTable(guid, ScriptBinder<CHurtBox>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\MainMenu_Controller.script");

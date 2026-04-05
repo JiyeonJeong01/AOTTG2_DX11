@@ -39,6 +39,7 @@ typedef struct tagTitanRuntimeRef
     class CNormalTitanStateMachine* pFSM = nullptr;
     class CTargetSensor*            pSensor = nullptr;
     class CTitanBound_Controller*   pBoundCtlr = nullptr;
+    unordered_map<std::string, class CHitBox*>*  pAllHitBoxes;
 } TITAN_RUNTIME_REF;
 
 typedef struct tagTitanContext

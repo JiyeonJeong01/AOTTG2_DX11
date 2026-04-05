@@ -113,11 +113,35 @@ public:
         SCRIPT_FIELD_OBJECT_REF(m_refWeak)
         SCRIPT_FIELD_FLOAT3(m_vWeakOffset)
 
+        /* -------- PLAYER_GRAB_POINT -------- */
         SCRIPT_FIELD_OBJECT_REF(m_refHandL)
         SCRIPT_FIELD_CHAR(m_szHandL)
         SCRIPT_FIELD_OBJECT_REF(m_refHandR)
         SCRIPT_FIELD_CHAR(m_szHandR)
 
+        /* -------- HIT_BOX -------- */
+        SCRIPT_FIELD_OBJECT_REF(m_refHitBoxHandL)
+        SCRIPT_FIELD_CHAR(m_szHitBoxHandL)
+        SCRIPT_FIELD_OBJECT_REF(m_refHitBoxHandR)
+        SCRIPT_FIELD_CHAR(m_szHitBoxHandR)
+
+        SCRIPT_FIELD_OBJECT_REF(m_refHitBoxLegL)
+        SCRIPT_FIELD_CHAR(m_szHitBoxLegL)
+        SCRIPT_FIELD_OBJECT_REF(m_refHitBoxLegR)
+        SCRIPT_FIELD_CHAR(m_szHitBoxLegR)
+
+        /* -------- HURT_BOX -------- */
+        SCRIPT_FIELD_OBJECT_REF(m_refHurtBoxArmL)
+        SCRIPT_FIELD_CHAR(m_szHurtBoxArmL)
+        SCRIPT_FIELD_OBJECT_REF(m_refHurtBoxArmR)
+        SCRIPT_FIELD_CHAR(m_szHurtBoxArmR)
+
+        SCRIPT_FIELD_OBJECT_REF(m_refHurtBoxLegL)
+        SCRIPT_FIELD_CHAR(m_szHurtBoxLegL)
+        SCRIPT_FIELD_OBJECT_REF(m_refHurtBoxLegR)
+        SCRIPT_FIELD_CHAR(m_szHurtBoxLegR)
+
+        /* -------- GRAB_DETECT_BOUND -------- */
         SCRIPT_FIELD_OBJECT_REF(m_refGrabAirFarL)
         SCRIPT_FIELD_FLOAT3(m_vGrabAirFarLOffset)
         SCRIPT_FIELD_OBJECT_REF(m_refGrabAirFarR)
@@ -169,12 +193,35 @@ private:
     SCRIPT_OBJECT_REF               m_refWeak{};
     _float3                         m_vWeakOffset{ 0.f, 0.f, 0.f };
 
+    /* -------- PLAYER_GRAB_POINT -------- */
     SCRIPT_OBJECT_REF               m_refHandL{};
     SCRIPT_OBJECT_REF               m_refHandR{};
-
     _char                           m_szHandL[32] = { 0, };
     _char                           m_szHandR[32] = { 0, };
 
+    /* -------- HIT_BOX -------- */
+    SCRIPT_OBJECT_REF               m_refHitBoxHandL{};
+    SCRIPT_OBJECT_REF               m_refHitBoxHandR{};
+    _char                           m_szHitBoxHandL[32] = { 0, };
+    _char                           m_szHitBoxHandR[32] = { 0, };
+
+    SCRIPT_OBJECT_REF               m_refHitBoxLegL{};
+    SCRIPT_OBJECT_REF               m_refHitBoxLegR{};
+    _char                           m_szHitBoxLegL[32] = { 0, };
+    _char                           m_szHitBoxLegR[32] = { 0, };
+
+    /* -------- HURT_BOX -------- */
+    SCRIPT_OBJECT_REF               m_refHurtBoxArmL{};
+    SCRIPT_OBJECT_REF               m_refHurtBoxArmR{};
+    _char                           m_szHurtBoxArmL[32] = { 0, };
+    _char                           m_szHurtBoxArmR[32] = { 0, };
+
+    SCRIPT_OBJECT_REF               m_refHurtBoxLegL{};
+    SCRIPT_OBJECT_REF               m_refHurtBoxLegR{};
+    _char                           m_szHurtBoxLegL[32] = { 0, };
+    _char                           m_szHurtBoxLegR[32] = { 0, };
+
+    /* -------- GRAB_DETECT -------- */
     SCRIPT_OBJECT_REF               m_refGrabAirFarL{};
     _float3                         m_vGrabAirFarLOffset{ 0.f, 0.f, 0.f };
     SCRIPT_OBJECT_REF               m_refGrabAirFarR{};

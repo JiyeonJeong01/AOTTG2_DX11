@@ -59,14 +59,14 @@ void CGroundChecker::Late_Update(void* pCtx, _float fDT)
 void CGroundChecker::OnTriggerEnter(const COLLISION_DESC& tDesc)
 {
     CGameObject* pCounter = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
-    if (pCounter && pCounter->Has_Mask(WALKABLE))
+    if (pCounter && pCounter->Has_Mask(O_WALKABLE))
         m_iGroundContactCount++;
 }
 
 void CGroundChecker::OnTriggerExit(const COLLISION_DESC& tDesc)
 {
     CGameObject* pCounter = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
-    if (pCounter && pCounter->Has_Mask(WALKABLE))
+    if (pCounter && pCounter->Has_Mask(O_WALKABLE))
     {
         m_iGroundContactCount--;
         if (m_iGroundContactCount < 0) m_iGroundContactCount = 0;

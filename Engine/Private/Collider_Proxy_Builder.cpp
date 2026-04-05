@@ -105,16 +105,6 @@ void CCollider_Proxy_Builder::Build_Plane_Proxy(COLLIDER_DATA* pCol, TRANSFORM_D
 
     Math::Store(outProxy.plane.vNormalWorld, vWorldN);
 
-    { /*  TODO ================================================================== */
-
-        if (SYS_INPUT.Get_KeyDown('T'))
-        {
-            LOG_INFO("%.2f, %.2f, %.2f", outProxy.plane.vNormalWorld.x, outProxy.plane.vNormalWorld.y, outProxy.plane.vNormalWorld.z );
-        }
-
-
-    } /*  TODO ================================================================== */
-
     outProxy.plane.fDistanceWorld = -Math::Get_X(Math::Dot(vWorldN, vCenter));
     if (outProxy.plane.bInfinite)
     {

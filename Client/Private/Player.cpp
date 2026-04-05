@@ -10,7 +10,7 @@
 #include "CameraController.h"
 #include "ODM_Gear.h"
 #include "GroundChecker.h"
-
+#include "HitBox.h"
 
 NS_BEGIN(Client)
 
@@ -62,6 +62,7 @@ void CPlayer::Start(void* pCtx)
         m_tRef.pGroundChecker = m_goPlayer->Get_Script_InChildren<CGroundChecker>();
         m_tRef.pFSM = m_upStateMachine.get();
         m_tRef.pCameraController = m_goPlayer->Get_Script<CCameraController>();
+        m_tRef.pAllHitBoxes = &m_AllHitBoxes;
     }
 
     /* 플레이어 스킬 정보 */
@@ -74,11 +75,27 @@ void CPlayer::Start(void* pCtx)
     tContext.tComponents = m_tComponents;
     tContext.tRef = m_tRef;
     tContext.pStats = &m_tStats;
+    tContext.pHitBox = m_goPlayer->Get_Script_InChildren<CHitBox>();
 
     /* 컨트롤러 */
     tContext.pSkillController = m_upSkillController.get();
 
     m_upStateMachine->Cache_PlayerInfos(tContext);
+
+    auto allHitBoxes = m_goPlayer->Get_AllScripts_InChildren<CHitBox>();
+
+    for (auto& hit : allHitBoxes)
+    {
+        CGameObject* goHitBox = hit->Get_HitBoxObject();
+        IF_NULL_RETURN_MSG_BREAK(goHitBox, , "goHitBox is nullptr");
+
+        auto [iter, bInserted] = m_AllHitBoxes.emplace(string(goHitBox->Get_Label()), hit);
+        IF_TRUE_RETURN_MSG_BREAK(!bInserted, , "duplicated hitbox label");
+    }
+
+    /* 히트박스 전부 끄기 */
+    for (auto& hit : m_AllHitBoxes)
+        hit.second->Set_Active(false);
 
     /* 이벤트 등록 */
     //m_tComponents.collider->OnCollisionEnter.Add_Listener(&CPlayer::On_CollisionEnter, this);

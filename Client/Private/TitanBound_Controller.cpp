@@ -112,6 +112,16 @@ void CTitanBound_Controller::Awake(void* pCtx)
     {
         Attach(m_refHandL, m_szHandL, {0.f, 0.f, 0.f});
         Attach(m_refHandR, m_szHandR, { 0.f, 0.f, 0.f });
+
+        Attach(m_refHitBoxHandL, m_szHitBoxHandL, {0.f, 0.f, 0.f});
+        Attach(m_refHitBoxHandR, m_szHitBoxHandR, { 0.f, 0.f, 0.f });
+        Attach(m_refHitBoxLegL, m_szHitBoxLegL, {0.f, 0.f, 0.f});
+        Attach(m_refHitBoxLegR, m_szHitBoxLegR, { 0.f, 0.f, 0.f });
+
+        Attach(m_refHurtBoxArmL, m_szHurtBoxArmL, {0.f, 0.f, 0.f});
+        Attach(m_refHurtBoxArmR, m_szHurtBoxArmR, { 0.f, 0.f, 0.f });
+        Attach(m_refHurtBoxLegL, m_szHurtBoxLegL, {0.f, 0.f, 0.f});
+        Attach(m_refHurtBoxLegR, m_szHurtBoxLegR, { 0.f, 0.f, 0.f });
     }
 }
 
@@ -259,7 +269,7 @@ void CTitanBound_Controller::Try_QueueGrabAnim(const char* pAnimName, const COLL
         return;
 
     /* 플레이어 + HUMAN만 받기 */
-    if (!pCounter->Has_Mask(HUMAN))
+    if (!pCounter->Has_Mask(O_HUMAN))
         return;
 
     m_strPendingGrabAnim = pAnimName;
@@ -309,7 +319,7 @@ _float3* CTitanBound_Controller::Get_GrabbedPoint()
 
 void CTitanBound_Controller::Handle_GrabState(SIDE eSide, CGameObject* pTarget, CGameObject* pHand)
 {
-    if (pTarget->Has_Mask(HUMAN))
+    if (pTarget->Has_Mask(O_HUMAN))
     {
         CTransform tr = pHand->Get_Component<CTransform>();
 
@@ -331,7 +341,27 @@ void CTitanBound_Controller::Handle_GrabState(SIDE eSide, CGameObject* pTarget, 
 void CTitanBound_Controller::OnTriggerEnter_Weak(const COLLISION_DESC& tDesc)
 {
     UNREFERENCED_PARAMETER(tDesc);
-    /* 약점 판정은 나중에 별도 처리 */
+
+    CGameObject* pCounter = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
+    if (!pCounter)
+        return;
+
+    if (pCounter->Has_Mask(O_HUMAN_ATK))
+    {
+        CGameObject* pWeakPoint = GAME_INSTANCE.Find_GameObject(m_refWeak.hObject);
+        if (!pWeakPoint)
+            return;
+
+        CTitan* pTitan = m_pOwner->Get_Script<CTitan>();
+        if (nullptr == pTitan)
+            return;
+
+        const _vector vPoint = XMLoadFloat3(&pWeakPoint->Get_Component<CTransform>()->vPosition);
+        _vector vDiff = vPoint - XMLoadFloat3(&tDesc.vPoint);
+        _float fDiff = XMVectorGetX(XMVector3Length(vDiff));
+
+        pTitan->On_Dead(fDiff);
+    }
 }
 
 void CTitanBound_Controller::OnTriggerEnter_HandL(const COLLISION_DESC& tDesc)

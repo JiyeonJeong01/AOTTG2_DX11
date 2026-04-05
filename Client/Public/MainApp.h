@@ -58,12 +58,10 @@ public:
 
 inline void CMainApp::OnClickTest(BUTTON_EVENT_DATA& eData)
 {
-    LOG_INFO("on click");
 }
 
 inline void CMainApp::OnHoverTest(BUTTON_EVENT_DATA& eData)
 {
-    LOG_INFO("on hover");
 }
 
 NS_END

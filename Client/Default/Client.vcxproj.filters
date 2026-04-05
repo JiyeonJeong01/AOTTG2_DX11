@@ -241,6 +241,15 @@
     <ClInclude Include="..\Public\UIManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\NormalTitanState_Dead.h">
+      <Filter>Titan\NormalTitan\NormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HitBox.h">
+      <Filter>Common\HitBox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HurtBox.h">
+      <Filter>Common\HitBox</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -382,5 +391,14 @@
       <Filter>Player\PlayerState</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UIManager.cpp" />
+    <ClCompile Include="..\Private\NormalTitanState_Dead.cpp">
+      <Filter>Titan\NormalTitan\NormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HitBox.cpp">
+      <Filter>Common\HitBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HurtBox.cpp">
+      <Filter>Common\HitBox</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -223,17 +223,17 @@ void CInspectorPanel::Draw_Basic_Info()
             uint32_t    iMask;
         };
 
-        std::string_view svSeverity = magic_enum::enum_name(Client::PLAYER);
+        std::string_view svSeverity = magic_enum::enum_name(Client::O_PLAYER);
 
 
         const MASK_ITEM arrMaskItems[] =
         {
-            { "HUMAN",   Client::HUMAN },
-            { "PLAYER",   Client::PLAYER },
-            { "TITAN",    Client::TITAN },
-            { "NPC",      Client::NPC },
-            { "ALLY",     Client::ALLY },
-            { "WALKABLE", Client::WALKABLE },
+            { "O_HUMAN",   Client::O_HUMAN },
+            { "O_PLAYER",   Client::O_PLAYER },
+            { "O_TITAN",    Client::O_TITAN },
+            { "O_NPC",      Client::O_NPC },
+            { "O_ALLY",     Client::O_ALLY },
+            { "O_WALKABLE", Client::O_WALKABLE },
         };
 
         for (const auto& tItem : arrMaskItems)
