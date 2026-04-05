@@ -62,6 +62,8 @@ HRESULT CMainPanel::Initialize()
     if (pRec) m_scenePath = pRec->path.wstring();
     m_bSceneDirty = false;
 
+    SYS_CORE.Set_DebugRender(m_bDebugRender);
+
     return S_OK;
 }
 
@@ -434,12 +436,20 @@ void CMainPanel::Draw_Toolbar()
     ImGui::BeginChild("##MainToolbar", ImVec2(0, 34.f), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
     const _float button_size = 70.0f;
+    const _float checkbox_size = 200.0f;
     const _float spacing = ImGui::GetStyle().ItemSpacing.x;
     const _float total_width = button_size * 3 + spacing * 2;
 
-    float start_x = (ImGui::GetContentRegionAvail().x - total_width) * 0.5f;
+    float start_x = (ImGui::GetContentRegionAvail().x - total_width) * 0.5f - checkbox_size;
     if (start_x > 0.0f)
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + start_x);
+
+
+    if (ImGui::Checkbox("DebugRender", &m_bDebugRender))
+    {
+         SYS_CORE.Set_DebugRender(m_bDebugRender);
+    }
+    ImGui::SameLine();
 
     /* Play / Pause / Step */
     {

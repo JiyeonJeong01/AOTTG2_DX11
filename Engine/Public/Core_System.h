@@ -55,6 +55,9 @@ public: /* For.Scene_Handler */
     void    Set_CurrentScene(std::unique_ptr<CScene> pScene);
     _bool   Restart();
 
+public : /* Debug */
+    void    Set_DebugRender(_bool b);
+
 private:
 	std::unique_ptr<CGraphic_Device>		m_pGraphic_Device{ };
     std::unique_ptr<CTimer_Handler>		    m_pTimer_Handler{ };
@@ -66,6 +69,8 @@ private:
 
     _float                      m_fTimeAcc = 0.f;
     const _float                m_FIXED_DT = 0.02f;
+
+    _bool                       m_bDebugRender = true;
 
 private :
     void        Update_RuntimeEngine(_float fDT, CScene* pScene);

@@ -60,6 +60,7 @@ private:
     class Engine::CScene* m_pCurScene = nullptr;
 
     /* --- Playe UI State --- */
+    _bool m_bDebugRender = true;
     _bool m_bPlaying = false;
     _bool m_bSceneStarted = false;
     _bool m_bForceSceneView = false;

@@ -174,7 +174,8 @@ HRESULT CCore_System::Draw()
     //    pScene->Render();
 
     SYS_RENDER.Render();
-    SYS_COMPONENT.Render();
+    if (m_bDebugRender) 
+        SYS_COMPONENT.Render();
 
     return S_OK;
 }
@@ -308,6 +309,11 @@ void CCore_System::Set_CurrentScene(std::unique_ptr<CScene> pScene)
 _bool CCore_System::Restart()
 {
     return m_pScene_Handler->Restart();
+}
+
+void CCore_System::Set_DebugRender(_bool b)
+{
+    m_bDebugRender = b;
 }
 
 void CCore_System::Update_RuntimeEngine(_float fDT, CScene* pScene)
