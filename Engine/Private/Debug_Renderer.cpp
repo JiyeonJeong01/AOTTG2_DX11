@@ -164,6 +164,22 @@ void CDebug_Renderer::Draw_AABB(const AABB& aabb)
     DX::Draw(m_pBatch.get(), tBox, Colors::Yellow);
 }
 
+void CDebug_Renderer::Draw_AABB(const AABB& aabb, FXMVECTOR vColor)
+{
+    BoundingBox tBox{};
+    tBox.Center = _float3(
+        (aabb.vMin.x + aabb.vMax.x) * 0.5f,
+        (aabb.vMin.y + aabb.vMax.y) * 0.5f,
+        (aabb.vMin.z + aabb.vMax.z) * 0.5f);
+
+    tBox.Extents = _float3(
+        (aabb.vMax.x - aabb.vMin.x) * 0.5f,
+        (aabb.vMax.y - aabb.vMin.y) * 0.5f,
+        (aabb.vMax.z - aabb.vMin.z) * 0.5f);
+
+    DX::Draw(m_pBatch.get(), tBox, vColor);
+}
+
 std::unique_ptr<CDebug_Renderer> CDebug_Renderer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     std::unique_ptr<CDebug_Renderer> pInstance = std::unique_ptr<CDebug_Renderer>(new CDebug_Renderer(pDevice, pContext));

@@ -4,9 +4,22 @@
 #include "Transform_Processor.h"
 #include "Engine_Math.h"
 #include "Raycast.h"
+#include "Uniform_Grid.h"
 
 namespace
 {
+    static _bool Check_AABB_Overlap(const AABB& a, const AABB& b)
+    {
+        if (a.vMax.x < b.vMin.x || a.vMin.x > b.vMax.x)
+            return false;
+        if (a.vMax.y < b.vMin.y || a.vMin.y > b.vMax.y)
+            return false;
+        if (a.vMax.z < b.vMin.z || a.vMin.z > b.vMax.z)
+            return false;
+
+        return true;
+    }
+
     inline _vector Get_ColliderCenter(COLLIDER_PROXY_DATA* pCol)
     {
         return Math::Load(pCol->vCenterWorld);
@@ -71,16 +84,67 @@ void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_
     if (iTotalCnt < 2)
         return;
 
-    for (uint32_t i = 0; i < iTotalCnt - 1; ++i)
+    CUniform_Grid* pGrid = m_pPhysics_Processor->Get_Uniform_Grid();
+    if (!pGrid)
+        return;
+
+    std::vector<COMPONENT_HANDLE> vecStaticHandles;
+    std::unordered_set<PAIR_KEY, PAIR_KEY_HASHER> setAddedPairs;
+
+    for (uint32_t i = 0; i < iTotalCnt; ++i)
     {
         const COLLIDER_PROXY_DATA* pColA = &allColliders[i];
         if (!pColA || !pColA->pCol || !pColA->pCol->bEnable)
             continue;
 
+        if (pColA->pCol->bStatic)
+            continue;
+
+        const AABB& tAABB_A = pColA->aabbWorld;
+
+        /* non-static <-> static */
+        vecStaticHandles.clear();
+        pGrid->Query_StaticOverlap(tAABB_A, &vecStaticHandles);
+
+        CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pColA->pCol->hObject);
+        string_view strName = pObj->Get_Label();
+
+        for (COMPONENT_HANDLE hStatic : vecStaticHandles)
+        {
+            const COLLIDER_PROXY_DATA* pStatic = m_pPhysics_Processor->Find_ActivatedCollider_ByHandle(hStatic);
+            if (!pStatic || !pStatic->pCol || !pStatic->pCol->bEnable)
+                continue;
+
+            if (!pStatic->pCol->bStatic)
+                continue;
+
+            const AABB& tAABB_B = pStatic->aabbWorld;
+            if (!Check_AABB_Overlap(tAABB_A, tAABB_B))
+                continue;
+
+            PAIR_KEY tPairKey(pColA->pCol->hSelf, pStatic->pCol->hSelf);
+            if (!setAddedPairs.insert(tPairKey).second)
+                continue;
+
+            outPair.emplace_back(const_cast<COLLIDER_PROXY_DATA*>(pColA), const_cast<COLLIDER_PROXY_DATA*>(pStatic));
+        }
+
+        /* non-static <-> non-static */
         for (uint32_t j = i + 1; j < iTotalCnt; ++j)
         {
             const COLLIDER_PROXY_DATA* pColB = &allColliders[j];
             if (!pColB || !pColB->pCol || !pColB->pCol->bEnable)
+                continue;
+
+            if (pColB->pCol->bStatic)
+                continue;
+
+            const AABB& tAABB_B = pColB->aabbWorld;
+            if (!Check_AABB_Overlap(tAABB_A, tAABB_B))
+                continue;
+
+            PAIR_KEY tPairKey(pColA->pCol->hSelf, pColB->pCol->hSelf);
+            if (!setAddedPairs.insert(tPairKey).second)
                 continue;
 
             outPair.emplace_back(const_cast<COLLIDER_PROXY_DATA*>(pColA), const_cast<COLLIDER_PROXY_DATA*>(pColB));

@@ -13,6 +13,7 @@ typedef struct ENGINE_DLL tagColliderData final
     _bool               bEnable = false;
     _bool               bTrigger = false;
 
+    _bool               bStatic = false;
     _bool               bDebugDraw = false;
 
     COMPONENT_HANDLE    hSelf{ INVALID_HANDLE }; /* self */

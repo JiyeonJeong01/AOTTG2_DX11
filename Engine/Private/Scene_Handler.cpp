@@ -11,6 +11,7 @@
 #include "SceneChange_Event.h"
 #include "MeshRenderer_Processor.h"
 #include "Script_Processor.h"
+#include "Physics_Processor.h"
 
 NS_BEGIN(Engine)
 
@@ -177,6 +178,12 @@ _bool CScene_Handler::Load_NextScene(const std::filesystem::path& path, const AS
     /* ------------------------------------------*/
 
     IF_FAIL_RETURN_MSG_BREAK(LoadScene_Runtime(specs), false, "LoadScene_Runtime failed");
+
+    CPhysics_Processor* pPhysics_Processor = SYS_COMPONENT.Bind_Processor<CPhysics_Processor>();
+    if (!pPhysics_Processor)
+        return false;
+
+    pPhysics_Processor->Rebuild_Static_Grid();
 
     return true;
 }

@@ -1336,6 +1336,12 @@ void CInspectorPanel::Draw_Collider()
     }
 
     ImGui::SameLine();
+    bool bStatic = (pData->bStatic);
+    if (ImGui::Checkbox("bStatic", &bStatic))
+    {
+        pData->bStatic = bStatic ? 1 : 0;
+        pData->bDirty = true;
+    }
 
     bool bDebugDraw = (pData->bDebugDraw);
     if (ImGui::Checkbox("bDebugDraw", &bDebugDraw))

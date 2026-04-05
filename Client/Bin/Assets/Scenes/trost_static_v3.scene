@@ -897,7 +897,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -2382,7 +2382,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -2447,7 +2447,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -2586,7 +2586,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -2651,7 +2651,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -2790,7 +2790,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -2855,7 +2855,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -2994,7 +2994,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -3059,7 +3059,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -3198,7 +3198,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -3263,7 +3263,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -3402,7 +3402,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -3467,7 +3467,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -3606,7 +3606,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -3671,7 +3671,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -3810,7 +3810,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -3875,7 +3875,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -4014,7 +4014,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -4079,7 +4079,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -4218,7 +4218,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -4283,7 +4283,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -4422,7 +4422,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -4487,7 +4487,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -4626,7 +4626,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -4691,7 +4691,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5025,7 +5025,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5090,7 +5090,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5229,7 +5229,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5294,7 +5294,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5433,7 +5433,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5498,7 +5498,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5637,7 +5637,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5702,7 +5702,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5841,7 +5841,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5906,7 +5906,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -6045,7 +6045,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -6110,7 +6110,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -6249,7 +6249,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -6314,7 +6314,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -6453,7 +6453,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -6518,7 +6518,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -6657,7 +6657,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -6722,7 +6722,7 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
+            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -8052,10 +8052,10 @@
               -236.4753875732422
             ],
             "Rotation": [
-              0.5,
-              0.5000001192092896,
-              -0.5000000596046448,
-              0.5
+              0.4999999403953552,
+              0.5000000596046448,
+              -0.5,
+              0.4999999403953552
             ],
             "Scale": [
               1.2000001668930054,

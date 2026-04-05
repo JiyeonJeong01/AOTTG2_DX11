@@ -18,6 +18,7 @@ public:
     void End();
 
     void Draw_Collider(const COLLIDER_PROXY_DATA& tProxy);
+    void Draw_AABB(const AABB& aabb, FXMVECTOR vColor);
 
 private:
     void Draw_Box(const COLLIDER_PROXY_DATA& tProxy);

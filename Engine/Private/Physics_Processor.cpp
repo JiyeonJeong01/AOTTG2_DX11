@@ -10,6 +10,7 @@
 #include "Rigidbody_Builder.h"
 #include "GameObject.h"
 #include "Solver.h"
+#include "Uniform_Grid.h"
 
 HRESULT CPhysics_Processor::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
@@ -31,6 +32,7 @@ HRESULT CPhysics_Processor::Initialize(ID3D11Device* pDevice, ID3D11DeviceContex
     m_pTransformProcessor = SYS_COMPONENT.Bind_Processor<CTransform_Processor>();
     IF_NULL_RETURN_MSG_BREAK(m_pTransformProcessor, E_FAIL, "Transform Processor bind failed");
 
+    m_upUniform_Grid = CUniform_Grid::Create({ -240.f, -30.f, -240.f }, { 240.f, 30.f, 240.f }, 60.f);
     m_upCollision_Detector = CCollision_Detector::Create(this);
     m_upCollider_Builder = CCollider_Proxy_Builder::Create();
     m_upRigidbody_Builder = CRigidbody_Builder::Create();
@@ -81,6 +83,7 @@ void CPhysics_Processor::Fixed_Update(_float fDT)
 void CPhysics_Processor::Render()
 {
     m_upDebugRenderer->Begin();
+
     for (const auto& tProxy : m_ActivatedColliders)
     {
         if (tProxy.pCol == nullptr)
@@ -89,8 +92,48 @@ void CPhysics_Processor::Render()
             continue;
         if (!tProxy.pCol->bDebugDraw)
             continue;
+
         m_upDebugRenderer->Draw_Collider(tProxy);
     }
+
+    if (m_upUniform_Grid)
+    {
+        const _float3 vWorldMin = m_upUniform_Grid->Get_WorldMin();
+
+        for (int iZ = 0; iZ < m_upUniform_Grid->Get_DimZ(); ++iZ)
+        {
+            for (int iY = 0; iY < m_upUniform_Grid->Get_DimY(); ++iY)
+            {
+                for (int iX = 0; iX < m_upUniform_Grid->Get_DimX(); ++iX)
+                {
+                    _float3 vCellMin{};
+                    _float3 vCellMax{};
+                    m_upUniform_Grid->Calc_CellMinMax(iX, iY, iZ, &vCellMin, &vCellMax);
+
+                    AABB tCellAABB{};
+                    tCellAABB.vMin = vCellMin;
+                    tCellAABB.vMax = vCellMax;
+
+                    m_upDebugRenderer->Draw_AABB(tCellAABB, Colors::Gray);
+                }
+            }
+        }
+
+        const auto& vecQueriedCells = m_upUniform_Grid->Get_DebugFrameQueriedCells();
+        for (const auto& tCell : vecQueriedCells)
+        {
+            _float3 vCellMin{};
+            _float3 vCellMax{};
+            m_upUniform_Grid->Calc_CellMinMax(tCell.iX, tCell.iY, tCell.iZ, &vCellMin, &vCellMax);
+
+            AABB tCellAABB{};
+            tCellAABB.vMin = vCellMin;
+            tCellAABB.vMax = vCellMax;
+
+            m_upDebugRenderer->Draw_AABB(tCellAABB, Colors::Green);
+        }
+    }
+
     m_upDebugRenderer->End();
 }
 
@@ -363,7 +406,8 @@ void CPhysics_Processor::Process_Collision(vector<CONTACT_DESC>& outContacts)
     for (const auto& upPage : ColliderPage)
     {
         auto* pPage = upPage.get();
-        if (!pPage) continue;
+        if (!pPage)
+            continue;
 
         for (uint32_t i = 0; i < PAGE_SIZE; ++i)
         {
@@ -371,25 +415,20 @@ void CPhysics_Processor::Process_Collision(vector<CONTACT_DESC>& outContacts)
                 continue;
 
             auto* pData = pPage->Get_Ptr(i);
-            if (!pData || !pData->bEnable) continue;
+            if (!pData || !pData->bEnable)
+                continue;
 
-            COLLIDER_PROXY_DATA outData;
+            COLLIDER_PROXY_DATA outData{};
             m_upCollider_Builder->Build_Collider_Proxy(pData, outData);
             pData->bDirty = false;
 
             m_ActivatedColliders.push_back(std::move(outData));
-
-            {/* TEST +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  */
-                CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
-                if (pObj)
-                {
-                    if (pObj->Get_Label() == "GroundChecker")
-                    {
-                        int a = 10;
-                    }
-                }
-            }
         }
+    }
+
+    if (m_upUniform_Grid)
+    {
+        m_upUniform_Grid->Begin_Debug_Frame();
     }
 
     vector<COLLIDER_PAIR> outPair;
@@ -422,29 +461,6 @@ void CPhysics_Processor::Invoke_CollisionEvent()
 
         const _bool bTriggerPair = pA->bTrigger || pB->bTrigger;
         const _bool bEnter = (m_prevPair.find(k) == m_prevPair.end()); /* 이전에 충돌한 적이 없다면 Enter */
-
-        CGameObject* pObjA = nullptr;
-        CGameObject* pObjB = nullptr;
-        {/* TEST +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  */
-             pObjA = SYS_GAMEOBJECT.Get_Wrapper(pA->hObject);
-            if (pObjA)
-            {
-                if (pObjA->Get_Label() == "GroundChecker")
-                {
-                    int a = 10;
-                }
-            }
-        }
-        {/* TEST +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  */
-            pObjB = SYS_GAMEOBJECT.Get_Wrapper(pB->hObject);
-            if (pObjB)
-            {
-                if (pObjB->Get_Label() == "GroundChecker")
-                {
-                    int a = 10;
-                }
-            }
-        }
 
         if (bEnter)
         {
@@ -561,6 +577,54 @@ _bool CPhysics_Processor::Detect_Raycast(RAY& tRay, RAYCAST_HITS& outHits)
     return m_upCollision_Detector->Detect_Raycast(tRay, m_ActivatedColliders, outHits);
 }
 
+const COLLIDER_PROXY_DATA* CPhysics_Processor::Find_ActivatedCollider_ByHandle(COMPONENT_HANDLE hCollider) const
+{
+    for (const auto& tProxy : m_ActivatedColliders)
+    {
+        if (!tProxy.pCol)
+            continue;
+
+        if (tProxy.pCol->hSelf == hCollider)
+            return &tProxy;
+    }
+
+    return nullptr;
+}
+
+void CPhysics_Processor::Rebuild_Static_Grid()
+{
+    if (!m_upUniform_Grid)
+        return;
+
+    m_upUniform_Grid->Clear();
+
+    const auto& ColliderPage = m_ColliderPool.GetPages();
+    for (const auto& upPage : ColliderPage)
+    {
+        auto* pPage = upPage.get();
+        if (!pPage)
+            continue;
+
+        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        {
+            if (!pPage->Is_Allocated(i))
+                continue;
+
+            auto* pData = pPage->Get_Ptr(i);
+            if (!pData || !pData->bEnable)
+                continue;
+
+            if (!pData->bStatic)
+                continue;
+
+            COLLIDER_PROXY_DATA tProxy{};
+            m_upCollider_Builder->Build_Collider_Proxy(pData, tProxy);
+
+            m_upUniform_Grid->Insert_Static(pData->hSelf, tProxy.aabbWorld);
+        }
+    }
+}
+
 COMPONENT_HANDLE CPhysics_Processor::Create_Component_Data(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject)
 {
     switch (eComType)
@@ -673,6 +737,7 @@ HRESULT CPhysics_Processor::Initialize_From_Spec_Collider(COMPONENT_HANDLE h, co
     pData->eShape = pSpec->eShape;
     pData->vOffset = pSpec->vOffset;
     pData->vRotationOffset = pSpec->vRotationOffset;
+    pData->bStatic = pSpec->bStatic;
 
     switch (pSpec->eShape)
     {
@@ -779,6 +844,7 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CPhysics_Processor::Build_Spec_Collider(COM
     pSpec->eShape = pData->eShape;
     pSpec->vOffset = pData->vOffset;
     pSpec->vRotationOffset = pData->vRotationOffset;
+    pSpec->bStatic = pData->bStatic;
 
     switch (pData->eShape)
     {

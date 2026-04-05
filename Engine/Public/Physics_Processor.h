@@ -11,6 +11,7 @@ class CTransform_Processor;
 class CCollision_Detector;
 class CCollider_Proxy_Builder;
 class CRigidbody_Builder;
+class CUniform_Grid;
 class CSolver;
 class CDebug_Renderer;
 
@@ -86,7 +87,10 @@ private :
     HRESULT Initialize_Component_Data(COMPONENT_TYPE eComType, COMPONENT_HANDLE h);
 
 public :
-    _bool       Detect_Raycast(RAY& tRay, RAYCAST_HITS& outHits);
+    _bool                       Detect_Raycast(RAY& tRay, RAYCAST_HITS& outHits);
+    CUniform_Grid*              Get_Uniform_Grid() const { return m_upUniform_Grid.get(); }
+    const COLLIDER_PROXY_DATA*  Find_ActivatedCollider_ByHandle(COMPONENT_HANDLE hCollider) const;
+    void                        Rebuild_Static_Grid();
 
 private:
     CComponent_Pool<CCollider>          m_ColliderPool;
@@ -98,6 +102,7 @@ private:
     std::unordered_set<PAIR_KEY, PAIR_KEY_HASHER> m_prevPair;
 
     CTransform_Processor*                       m_pTransformProcessor{};
+    std::unique_ptr<CUniform_Grid>              m_upUniform_Grid{};
     std::unique_ptr<CCollision_Detector>        m_upCollision_Detector{};
     std::unique_ptr<CCollider_Proxy_Builder>    m_upCollider_Builder{};
     std::unique_ptr<CRigidbody_Builder>         m_upRigidbody_Builder{};

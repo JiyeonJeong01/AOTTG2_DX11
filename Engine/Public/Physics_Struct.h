@@ -128,4 +128,13 @@ typedef struct tagAxisMask
     bool bZ = false;
 }AXIS_MASK;
 
+typedef struct tagUniformGridDebugCell
+{
+    int iX = 0;
+    int iY = 0;
+    int iZ = 0;
+    size_t iCellIndex = 0;
+    _uint iNumColliders = 0;
+} UNIFORM_GRID_DEBUG_CELL;
+
 NS_END

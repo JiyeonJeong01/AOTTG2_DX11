@@ -49,7 +49,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -170,7 +169,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -244,7 +242,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -318,7 +315,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -420,7 +416,7 @@
         },
         {
           "data": {
-            "DebugDraw": false,
+            "DebugDraw": true,
             "Enabled": true,
             "HalfExtentsLocal": [
               10.4399995803833,
@@ -439,7 +435,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -513,7 +508,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -677,7 +671,6 @@
               7.800000190734863
             ],
             "Shape": 1,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -897,7 +890,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -2382,7 +2374,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -2447,7 +2438,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -2507,7 +2497,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -2586,7 +2575,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -2651,7 +2639,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -2711,7 +2698,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -2790,7 +2776,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -2855,7 +2840,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -2915,7 +2899,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -2994,7 +2977,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -3059,7 +3041,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -3119,7 +3100,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -3198,7 +3178,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -3263,7 +3242,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -3323,7 +3301,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -3402,7 +3379,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -3467,7 +3443,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -3527,7 +3502,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -3606,7 +3580,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -3671,7 +3644,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -3731,7 +3703,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -3810,7 +3781,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -3875,7 +3845,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -3935,7 +3904,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -4014,7 +3982,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -4079,7 +4046,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -4139,7 +4105,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -4218,7 +4183,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -4283,7 +4247,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -4343,7 +4306,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -4422,7 +4384,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -4487,7 +4448,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -4547,7 +4507,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -4626,7 +4585,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -4691,7 +4649,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -4751,7 +4708,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -4825,7 +4781,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -4946,7 +4901,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5025,7 +4979,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -5090,7 +5043,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -5150,7 +5102,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5229,7 +5180,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -5294,7 +5244,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -5354,7 +5303,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5433,7 +5381,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -5498,7 +5445,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -5558,7 +5504,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5637,7 +5582,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -5702,7 +5646,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -5762,7 +5705,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -5841,7 +5783,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -5906,7 +5847,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -5966,7 +5906,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -6045,7 +5984,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -6110,7 +6048,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -6170,7 +6107,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -6249,7 +6185,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -6314,7 +6249,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -6374,7 +6308,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -6453,7 +6386,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -6518,7 +6450,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -6578,7 +6509,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -6657,7 +6587,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -6722,7 +6651,6 @@
               0.0
             ],
             "Shape": 2,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },
@@ -6909,7 +6837,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -6983,7 +6910,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -7090,7 +7016,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -7164,7 +7089,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -7238,7 +7162,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -7312,7 +7235,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -7386,7 +7308,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -7460,7 +7381,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -7534,7 +7454,6 @@
               0.0
             ],
             "Shape": 0,
-            "Static": true,
             "Trigger": false,
             "Type": 1
           },
@@ -7637,7 +7556,6 @@
               7.800000190734863
             ],
             "Shape": 1,
-            "Static": false,
             "Trigger": false,
             "Type": 1
           },

@@ -835,6 +835,7 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
     _bool       bDebugDraw = false;
 
     _bool       bTrigger = false;
+    _bool       bStatic = false;
 
     SHAPE       eShape{ SHAPE::END };
     _float3     vOffset{ 0.f, 0.f, 0.f };
@@ -859,6 +860,7 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
         j["OnCol"] = bOnCol;
         j["DebugDraw"] = bDebugDraw;
         j["Trigger"] = bTrigger;
+        j["Static"] = bStatic;
         j["Shape"] = SCAST(_uint, eShape);
         j["Offset"] = { vOffset.x, vOffset.y, vOffset.z };
         j["RotationOffset"] = { vRotationOffset.x, vRotationOffset.y, vRotationOffset.z };
@@ -897,6 +899,9 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
 
         if (!Read_Bool(j, "DebugDraw", bDebugDraw))
             bDebugDraw = false;
+
+        if (!Read_Bool(j, "Static", bStatic))
+            bStatic = false;
 
         if (!Read_Bool(j, "Trigger", bTrigger))
             bTrigger = false;
