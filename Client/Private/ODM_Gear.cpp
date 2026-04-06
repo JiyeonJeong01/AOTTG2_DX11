@@ -11,11 +11,25 @@ void CODM_Gear::Handle_RopeState(CRope::ROPE_STATE eState, SIDE eSide)
 {
     if (eState == CRope::ROPE_STATE::ANCHORED)
     {
+        if (!Can_UseGas())
+        {
+            
+        }
+
         m_sj.Set_Enable(true);
         m_sj.Set_Anchor(m_vAnchor);
         m_sj.Set_UseSpring(true);
-        m_sj.Set_Spring(m_fSpring);
-        m_sj.Set_Damper(m_fDamper);
+
+        if (m_bReelBoost)
+        {
+            m_sj.Set_Spring(m_fSpringReel);
+            m_sj.Set_Damper(m_fDamperReel);
+        }
+        else
+        {
+            m_sj.Set_Spring(m_fSpringNormal);
+            m_sj.Set_Damper(m_fDamperNormal);
+        }
 
         m_OnSuccessAnchored.Invoke(To<_uint>(PLAYER_STATE::AIRBORNE_MOVE), To<_uint>(AIRBORNE_MOVE::AIR_BEGIN));
     }
@@ -50,14 +64,18 @@ void CODM_Gear::Try_Grappling(SIDE eSide)
 
     TYR_GRAPPLING_INFO tInfo{};
 
-    /* 성공한 경우 */
+    _vector vLook =  XMVector3Normalize(m_tr.Get_StateXM(STATE::LOOK));
+    _vector vUp = XMVector3Normalize(m_tr.Get_StateXM(STATE::UP));
+    _vector vRopeStart = XMLoadFloat3(&m_tr->vPosition) + vLook * m_vRopeOffset.z + vUp * m_vRopeOffset.y;
+
     if (Detect_GrapplingPoint(tInfo))
     {
         m_vAnchor = tInfo.vPoint;
+
         if (m_upLeftRope && eSide == SIDE::LEFT)
-            m_upLeftRope->Start_Extending_Success(XMLoadFloat3(&m_tr->vPosition), XMLoadFloat3(&m_vAnchor));
+            m_upLeftRope->Start_Extending_Success(vRopeStart, XMLoadFloat3(&m_vAnchor));
         else if (m_upRightRope && eSide == SIDE::RIGHT)
-            m_upRightRope->Start_Extending_Success(XMLoadFloat3(&m_tr->vPosition), XMLoadFloat3(&m_vAnchor));
+            m_upRightRope->Start_Extending_Success(vRopeStart, XMLoadFloat3(&m_vAnchor));
 
         m_flagUsingSide |= To<_uint>(eSide);
     }
@@ -66,12 +84,12 @@ void CODM_Gear::Try_Grappling(SIDE eSide)
     {
         /* 실패하여 앵커 위치가 없는 경우 발사 방향을 찾아 넘기기 */
         _vector vTryPos = XMLoadFloat3(&tInfo.vCamOrigin) + XMLoadFloat3(&tInfo.vRayDir) * m_fRopeMaxDist;
-        _vector vTryDir = XMVector4Normalize(vTryPos - XMLoadFloat3(&m_tr->vPosition));
+        _vector vTryDir = XMVector4Normalize(vTryPos - vRopeStart);
 
         if (eSide == SIDE::LEFT)
-            m_upLeftRope->Start_Extending_Fail(XMLoadFloat3(&m_tr->vPosition), vTryDir);
+            m_upLeftRope->Start_Extending_Fail(vRopeStart, vTryDir);
         else if (eSide == SIDE::RIGHT)
-            m_upRightRope->Start_Extending_Fail(XMLoadFloat3(&m_tr->vPosition), vTryDir);
+            m_upRightRope->Start_Extending_Fail(vRopeStart, vTryDir);
     }
 }
 
@@ -144,6 +162,65 @@ _uint CODM_Gear::Get_UsingFlag()
     return m_flagUsingSide;
 }
 
+_bool CODM_Gear::Has_Anchor() const
+{
+    return m_flagUsingSide != 0;
+}
+
+_float3 CODM_Gear::Get_AnchoredPos() const
+{
+    if (m_flagUsingSide != 0)
+        return m_vAnchor;
+    return {};
+}
+
+void CODM_Gear::Set_ReelBoost(_bool bEnable)
+{
+    m_bReelBoost = bEnable;
+
+    if (m_flagUsingSide == 0)
+        return;
+
+    m_sj.Set_UseSpring(true);
+
+    if (m_bReelBoost)
+    {
+        m_sj.Set_Spring(m_fSpringReel);
+        m_sj.Set_Damper(m_fDamperReel);
+    }
+    else
+    {
+        m_sj.Set_Spring(m_fSpringNormal);
+        m_sj.Set_Damper(m_fDamperNormal);
+    }
+}
+
+_bool CODM_Gear::Can_UseGas() const
+{
+    return m_tGas.fCurrent > 0.f;
+}
+
+void CODM_Gear::Fill_Max()
+{
+    m_tGas.fCurrent = m_tGas.fMax;
+}
+
+void CODM_Gear::Bind_PlayerContext(const PLAYER_CONTEXT& tContext)
+{
+    m_fSpringNormal = tContext.pStats->fSpringNormal;
+    m_fDamperNormal = tContext.pStats->fDamperNormal;
+    m_fSpringNormal = tContext.pStats->fSpringNormal;
+    m_fDamperNormal = tContext.pStats->fDamperNormal;
+}
+
+CODM_Gear::CODM_Gear()
+{
+}
+
+CODM_Gear::~CODM_Gear()
+{
+}
+
 void CODM_Gear::Awake(void* pCtx)
 {
 }
@@ -165,15 +242,27 @@ void CODM_Gear::Priority_Update(void* pCtx, _float fDT)
 void CODM_Gear::Update(void* pCtx, _float fDT)
 {
     /* 로프 시작 위치 갱신 */
+
+    _vector vLook = XMVector3Normalize(m_tr.Get_StateXM(STATE::LOOK));
+    _vector vUp = XMVector3Normalize(m_tr.Get_StateXM(STATE::UP));
+    _float3 vRopeStart;
+     XMStoreFloat3(&vRopeStart, XMLoadFloat3(&m_tr->vPosition) + vLook * m_vRopeOffset.z + vUp * m_vRopeOffset.y);
+     
     if (m_upLeftRope)
     {
-        m_upLeftRope->Set_StartPoint(m_tr->vPosition);
+        m_upLeftRope->Set_StartPoint(vRopeStart);
         m_upLeftRope->Update(fDT);
     }
     if (m_upRightRope)
     {
-        m_upRightRope->Set_StartPoint(m_tr->vPosition);
+        m_upRightRope->Set_StartPoint(vRopeStart);
         m_upRightRope->Update(fDT);
+    }
+
+    if (m_flagUsingSide != 0)
+    {
+        m_tGas.fCurrent -= fDT;
+        m_tGas.fCurrent = fmaxf(m_tGas.fCurrent, 0.f);
     }
 }
 

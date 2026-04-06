@@ -2847,7 +2847,7 @@
             "MaxLength": 0.0,
             "MinLength": 0.0,
             "RestLength": 0.0,
-            "Spring": 10.0,
+            "Spring": 6.0,
             "Type": 3,
             "UseMaxLength": false,
             "UseMinLength": false,

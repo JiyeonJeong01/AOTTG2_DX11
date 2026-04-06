@@ -29,7 +29,12 @@ void CPlayerState_AirborneMove::Setup_CachedPlayerContext()
 void CPlayerState_AirborneMove::Priority_Update(_float fDT)
 {
     Control_Camera();
-    LookTo_InputDir(fDT);
+
+    if (m_tRef.pGear->Has_Anchor())
+        LookTo_AnchorPos(fDT);
+    else 
+        LookTo_InputDir(fDT);
+
     Try_Grappling();
     Finish_Grappling();
 }
@@ -41,21 +46,26 @@ void CPlayerState_AirborneMove::Update(_float fDT)
     _bool bLeftHook = m_tInputCmd.bLeftAnchorHeld;
     _bool bRightHook = m_tInputCmd.bRightAnchorHeld;
 
+    m_tRef.pGear->Set_ReelBoost(m_tInputCmd.bRopeReelHeld);
+
     /* 그래플링 끝 */
     if (m_eAirborneState != AIRBORNE_MOVE::AIR_FALL
-        && (bLeftHook == false && bRightHook == false))
+        && bLeftHook == false && bRightHook == false)
     {
         m_eAirborneState = AIRBORNE_MOVE::AIR_FALL;
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
 
+        m_fGroundStableTime = 0.f;
+        m_fAirStableTime = 0.f;
+
         return;
     }
 
-    /* 그래플링 좌/우/정면 적용 */
+    /* AIR_BEGIN 중에는 DASH 끝날 때까지 유지 */
     if (m_eAirborneState == AIRBORNE_MOVE::AIR_BEGIN)
         return;
 
-    Decide_HookAnim();
+    Update_AnchorAirOrSlide();
 }
 
 void CPlayerState_AirborneMove::Late_Update(_float fDT)
@@ -67,6 +77,9 @@ void CPlayerState_AirborneMove::Late_Update(_float fDT)
 void CPlayerState_AirborneMove::Enter(_uint iDetailFlag)
 {
     CPlayerState::Enter(iDetailFlag);
+
+    m_fGroundStableTime = 0.f;
+    m_fAirStableTime = 0.f;
 
     if (iDetailFlag < To<_uint>(AIRBORNE_MOVE::END))
         m_eAirborneState = To<AIRBORNE_MOVE>(iDetailFlag);
@@ -90,10 +103,16 @@ void CPlayerState_AirborneMove::Enter(_uint iDetailFlag)
         cout << "[AIRBORNE_MOVE] ENTER FALL\n";
         return;
     }
-    if (m_eAirborneState == AIRBORNE_MOVE::AIR)
+    if (m_eAirborneState == AIRBORNE_MOVE::AIR
+        || m_eAirborneState == AIRBORNE_MOVE::AIR_LEFT
+        || m_eAirborneState == AIRBORNE_MOVE::AIR_RIGHT
+        || m_eAirborneState == AIRBORNE_MOVE::AIR_FRONT
+        || m_eAirborneState == AIRBORNE_MOVE::SLIDE_LEFT
+        || m_eAirborneState == AIRBORNE_MOVE::SLIDE_RIGHT
+        || m_eAirborneState == AIRBORNE_MOVE::SLIDE_FRONT)
     {
-        cout << "[AIRBORNE_MOVE] ENTER AIR\n";
-        Decide_HookAnim();
+        cout << "[AIRBORNE_MOVE] ENTER AIR/SLIDE\n";
+        Update_AnchorAirOrSlide();
         return;
     }
 
@@ -104,18 +123,26 @@ void CPlayerState_AirborneMove::Enter(_uint iDetailFlag)
 void CPlayerState_AirborneMove::Exit()
 {
     CPlayerState::Exit();
+
+    m_fGroundStableTime = 0.f;
+    m_fAirStableTime = 0.f;
 }
 
 void CPlayerState_AirborneMove::Decide_NextState()
 {
-    /* -> GROUNDED_MOVE(착지/슬라이딩) */
-    if (m_eAirborneState == AIRBORNE_MOVE::AIR_FALL && m_tRef.pGroundChecker->Get_OnWalkable())
+    _bool bLeftHook = m_tInputCmd.bLeftAnchorHeld;
+    _bool bRightHook = m_tInputCmd.bRightAnchorHeld;
+    const _bool bUsingAnchor = (bLeftHook || bRightHook);
+
+    /* 훅 없이 추락 착지했을 때만 지상 상태로 전환 */
+    if (bUsingAnchor == false
+        && m_eAirborneState == AIRBORNE_MOVE::AIR_FALL
+        && m_tRef.pGroundChecker->Get_OnWalkable())
     {
         cout << "[AIRBORNE_MOVE] -> GROUNDED_MOVE\n";
         const float THREASHOLD = 4.f;
 
         _float3 fLinearVel = m_tComponents.rigidbody.Get_LinearVel();
-
         const _float fLinearVelSq = fLinearVel.x * fLinearVel.x + fLinearVel.z * fLinearVel.z;
 
         if (fLinearVelSq > THREASHOLD)
@@ -127,7 +154,6 @@ void CPlayerState_AirborneMove::Decide_NextState()
     }
 
     _bool bNormalAtk = m_tInputCmd.bNormalAttackPressed;
-
     if (bNormalAtk)
     {
         cout << "[AIRBORNE_MOVE] -> AIRBORNE_ATTACK::NOMAL\n";
@@ -153,7 +179,6 @@ void CPlayerState_AirborneMove::Decide_NextState()
         m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::RELOAD), To<_uint>(RELOAD::AIR));
         return;
     }
-
 }
 
 void CPlayerState_AirborneMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
@@ -175,12 +200,44 @@ void CPlayerState_AirborneMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DA
 
 void CPlayerState_AirborneMove::On_AirDashFinished(const Engine::ANIMATION_EVENT_DATA& tData)
 {
-    Decide_HookAnim();
+    UNREFERENCED_PARAMETER(tData);
+
+    Update_AnchorAirOrSlide();
 
     cout << " => [AIRBORNE_MOVE] On_NomalFinished\n";
 }
 
 void CPlayerState_AirborneMove::Decide_HookAnim()
+{
+    Update_AnchorAirOrSlide();
+}
+
+void CPlayerState_AirborneMove::Update_AnchorAirOrSlide()
+{
+    const _bool bOnGroundRaw = m_tRef.pGroundChecker->Get_OnWalkable();
+
+    if (bOnGroundRaw)
+    {
+        m_fGroundStableTime += GAME_INSTANCE.Get_DT();
+        m_fAirStableTime = 0.f;
+    }
+    else
+    {
+        m_fAirStableTime += GAME_INSTANCE.Get_DT();
+        m_fGroundStableTime = 0.f;
+    }
+
+    _bool bOnGround = false;
+
+    if (Is_AnchorSliding())
+        bOnGround = (m_fAirStableTime < 0.05f);
+    else
+        bOnGround = (m_fGroundStableTime >= 0.03f);
+
+    Decide_AnchorMoveAnim(bOnGround);
+}
+
+void CPlayerState_AirborneMove::Decide_AnchorMoveAnim(_bool bOnGround)
 {
     _bool bLeftHook = m_tInputCmd.bLeftAnchorHeld;
     _bool bRightHook = m_tInputCmd.bRightAnchorHeld;
@@ -188,25 +245,45 @@ void CPlayerState_AirborneMove::Decide_HookAnim()
     AIRBORNE_MOVE eNextState = AIRBORNE_MOVE::AIR_FALL;
     const char* pNextAnim = ANIM_PLAYER::AIR_FALL;
 
-    /* -> 정면 */
     if (bLeftHook == true && bRightHook == true)
     {
-        eNextState = AIRBORNE_MOVE::AIR_FRONT;
-        pNextAnim = ANIM_PLAYER::AIR_HOOK;
+        if (bOnGround)
+        {
+            eNextState = AIRBORNE_MOVE::SLIDE_FRONT;
+            pNextAnim = ANIM_PLAYER::SLIDE;
+        }
+        else
+        {
+            eNextState = AIRBORNE_MOVE::AIR_FRONT;
+            pNextAnim = ANIM_PLAYER::AIR_HOOK;
+        }
     }
-    /* -> 좌측 앵커 사용 */
     else if (bLeftHook == true && bRightHook == false)
     {
-        eNextState = AIRBORNE_MOVE::AIR_LEFT;
-        pNextAnim = ANIM_PLAYER::AIR_LEFT;
+        if (bOnGround)
+        {
+            eNextState = AIRBORNE_MOVE::SLIDE_LEFT;
+            pNextAnim = ANIM_PLAYER::SLIDE;
+        }
+        else
+        {
+            eNextState = AIRBORNE_MOVE::AIR_LEFT;
+            pNextAnim = ANIM_PLAYER::AIR_LEFT;
+        }
     }
-    /* -> 우측 앵커 사용 */
     else if (bLeftHook == false && bRightHook == true)
     {
-        eNextState = AIRBORNE_MOVE::AIR_RIGHT;
-        pNextAnim = ANIM_PLAYER::AIR_RIGHT;
+        if (bOnGround)
+        {
+            eNextState = AIRBORNE_MOVE::SLIDE_RIGHT;
+            pNextAnim = ANIM_PLAYER::SLIDE;
+        }
+        else
+        {
+            eNextState = AIRBORNE_MOVE::AIR_RIGHT;
+            pNextAnim = ANIM_PLAYER::AIR_RIGHT;
+        }
     }
-    /* 사용 중이 아님 */
     else
     {
         eNextState = AIRBORNE_MOVE::AIR_FALL;
@@ -217,7 +294,16 @@ void CPlayerState_AirborneMove::Decide_HookAnim()
     {
         m_eAirborneState = eNextState;
         m_tComponents.animator.Set_NextAnimationClip(pNextAnim);
+
+        cout << "[AIRBORNE_MOVE] AnchorMove -> " << To<_uint>(eNextState) << "\n";
     }
+}
+
+_bool CPlayerState_AirborneMove::Is_AnchorSliding() const
+{
+    return m_eAirborneState == AIRBORNE_MOVE::SLIDE_LEFT
+        || m_eAirborneState == AIRBORNE_MOVE::SLIDE_RIGHT
+        || m_eAirborneState == AIRBORNE_MOVE::SLIDE_FRONT;
 }
 
 std::shared_ptr<CPlayerState_AirborneMove> CPlayerState_AirborneMove::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)

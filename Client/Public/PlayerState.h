@@ -35,6 +35,7 @@ public :
 
     /* commons */
     void            LookTo_InputDir(_float fDT);
+    void            LookTo_AnchorPos(_float fDT);
     void            Try_Grappling();
     void            Finish_Grappling();
     void            GroundedMove(_float fDT);

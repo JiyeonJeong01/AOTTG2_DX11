@@ -180,9 +180,6 @@ CMeshRenderer_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hC
     else
         spec->materialGUID = pMat->tGUID;
 
-    if (pMat->tGUID == ASSET_GUID("47C0DEB6-0F88-4B81-B8E7-63D27C6EAAF7"))
-        __debugbreak();
-
     spec->flags = pData->flags;
     spec->layer = pData->layer;
     spec->sortZ = pData->sortZ;

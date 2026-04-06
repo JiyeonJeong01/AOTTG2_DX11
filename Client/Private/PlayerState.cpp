@@ -94,6 +94,59 @@ void CPlayerState::LookTo_InputDir(_float fDT)
     m_tComponents.transform.Set_Rotation_Quaternion(qRot);
 }
 
+void CPlayerState::LookTo_AnchorPos(_float fDT)
+{
+    if (!m_bYawInitialized)
+    {
+        _vector vInitLook = m_tComponents.transform.Get_StateXM(STATE::LOOK);
+        vInitLook = XMVectorSetY(vInitLook, 0.f);
+
+        const _float fEps = 1e-4f;
+        if (XMVectorGetX(XMVector3LengthSq(vInitLook)) < fEps)
+            vInitLook = XMVectorSet(0.f, 0.f, -1.f, 0.f);
+        else
+            vInitLook = XMVector3Normalize(vInitLook);
+
+        m_fCurrentYaw = atan2f(XMVectorGetX(vInitLook), XMVectorGetZ(vInitLook));
+        m_bYawInitialized = true;
+    }
+
+    CODM_Gear* pODM_Gear = m_tRef.pGear;
+    if (pODM_Gear == nullptr)
+        return;
+
+    _float3 vAnchorPos = pODM_Gear->Get_AnchoredPos();
+    if (vAnchorPos.x == 0.f && vAnchorPos.y == 0.f && vAnchorPos.z == 0.f)
+        return;
+
+    _vector vMyPos = m_tComponents.transform.Get_StateXM(STATE::POSITION);
+    _vector vTargetLook = vMyPos - XMLoadFloat3(&vAnchorPos);
+    vTargetLook = XMVectorSetY(vTargetLook, 0.f);
+
+    const _float fEps = 1e-4f;
+    if (XMVectorGetX(XMVector3LengthSq(vTargetLook)) < fEps)
+        return;
+
+    vTargetLook = XMVector3Normalize(vTargetLook);
+
+    _float fTargetYaw = atan2f(XMVectorGetX(vTargetLook), XMVectorGetZ(vTargetLook));
+
+    _float fDeltaYaw = fTargetYaw - m_fCurrentYaw;
+    while (fDeltaYaw > XM_PI)  fDeltaYaw -= XM_2PI;
+    while (fDeltaYaw < -XM_PI) fDeltaYaw += XM_2PI;
+
+    const _float fT = 1.f - expf(-m_fRotateSharpness * fDT);
+    _float fNewYaw = m_fCurrentYaw + fDeltaYaw * fT;
+
+    while (fNewYaw > XM_PI)  fNewYaw -= XM_2PI;
+    while (fNewYaw < -XM_PI) fNewYaw += XM_2PI;
+
+    m_fCurrentYaw = fNewYaw;
+
+    _vector qRot = XMQuaternionRotationRollPitchYaw(0.f, fNewYaw, 0.f);
+    m_tComponents.transform.Set_Rotation_Quaternion(qRot);
+}
+
 void CPlayerState::Try_Grappling()
 {
     if (m_tInputCmd.bLeftAnchorPressed)

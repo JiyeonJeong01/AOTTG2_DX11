@@ -49,6 +49,11 @@ void CRope::Update(_float fTimeDelta)
     Upload_Line();
 }
 
+void CRope::Set_Offset(const _float3& vOffset)
+{
+    m_vRopeOffset = vOffset;
+}
+
 void CRope::Start_Extending_Success(_fvector vStartPoint, _fvector vAnchorPoint)
 {
     XMStoreFloat3(&m_vStartPoint, vStartPoint);
@@ -168,6 +173,18 @@ void CRope::Set_RopeAmplitueInfo(const AMPLITUDE_VALUE& tInfo)
     m_tDynamicValue = tInfo;
 }
 
+_float3 CRope::Get_ReturnEndPoint() const
+{
+    _float3 vReturnEndPoint = m_vEndPoint;
+
+    _float fDropY = m_fReturnElapsed * m_fReturnDropSpeed;
+    if (fDropY > m_fReturnMaxDrop)
+        fDropY = m_fReturnMaxDrop;
+
+    vReturnEndPoint.y -= fDropY;
+    return vReturnEndPoint;
+}
+
 void CRope::Process_Extending(_float fTimeDelta)
 {
     Calc_RopeShape(m_vStartPoint, fTimeDelta);
@@ -194,6 +211,7 @@ void CRope::Process_Extending(_float fTimeDelta)
         {
             Start_Returning(m_vStartPoint);
             m_OnChanged_RopeState.Invoke(ROPE_STATE::RETURNING, m_eSide);
+            m_fReturnElapsed = 0.f;
         }
     }
 }
@@ -207,13 +225,16 @@ void CRope::Process_Anchored()
 
 void CRope::Process_Retuning(_float fTimeDelta)
 {
+    m_fReturnElapsed += fTimeDelta;
+
     Calc_RetuningShape(fTimeDelta);
 
-    if (Calc_RopeComplete(m_vStartPoint))
+    if (Calc_RopeComplete(Get_ReturnEndPoint()))
     {
         m_State = ROPE_STATE::IDLE;
         m_RopePoints.clear();
         m_bHasReturnRight = false;
+        m_fReturnElapsed = 0.f;
 
         m_OnChanged_RopeState.Invoke(ROPE_STATE::IDLE, m_eSide);
     }
@@ -225,6 +246,10 @@ void CRope::Calc_RetuningShape(_float fTimeDelta)
     const _vector vTrialDir = Math::Load(m_vTrialDir);
 
     vCurDynamicPos += vTrialDir * m_fExtendVel * fTimeDelta;
+
+    const _float fDropY = fminf(m_fReturnElapsed * m_fReturnDropSpeed, m_fReturnMaxDrop);
+    vCurDynamicPos = XMVectorSetY(vCurDynamicPos, XMVectorGetY(vCurDynamicPos) - fDropY);
+
     Math::Store(m_vCurDynamicPos, vCurDynamicPos);
 
     const _float fAmplitude = m_tDynamicValue.Get_Value(fTimeDelta);
@@ -314,7 +339,13 @@ void CRope::Calc_RopeShape(const _float3& vCurTip, _float fTimeDelta)
     const _float fAmplitude = m_tDynamicValue.Get_Value(fTimeDelta);
 
     const _vector vTip = Math::Load(vCurTip);
-    const _vector vAnchor = Math::Load(m_vEndPoint);
+    _vector vAnchor = Math::Load(m_vEndPoint);
+
+    if (m_State == ROPE_STATE::RETURNING)
+    {
+        const _float fDropY = fminf(m_fReturnElapsed * m_fReturnDropSpeed, m_fReturnMaxDrop);
+        vAnchor = XMVectorSetY(vAnchor, XMVectorGetY(vAnchor) - fDropY);
+    }
 
     _vector vDir = vAnchor - vTip;
     if (Math::Get_X(XMVector3LengthSq(vDir)) <= 1e-6f)
@@ -379,11 +410,11 @@ void CRope::Calc_RopeShape(const _float3& vCurTip, _float fTimeDelta)
     }
 }
 
-_bool CRope::Calc_RopeComplete(const _float3& vCurTip)
+_bool CRope::Calc_RopeComplete(const _float3& vCurEndPoint)
 {
     const _vector vCurDynamicPos = Math::Load(m_vCurDynamicPos);
-    const _vector vAnchor = Math::Load(m_vEndPoint);
-    const _vector vTip = Math::Load(vCurTip);
+    const _vector vAnchor = Math::Load(vCurEndPoint);
+    const _vector vTip = Math::Load(m_vStartPoint);
     const _vector vTrialDir = Math::Load(m_vTrialDir);
 
     const _float fDist = Math::Get_X(XMVector3Length(vCurDynamicPos - vAnchor));

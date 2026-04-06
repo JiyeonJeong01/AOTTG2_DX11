@@ -5,6 +5,7 @@
 #include "Input_System.h"
 #include "Rigidbody.h"
 #include "Logger.h"
+#include "Resource_System.h"
 
 NS_BEGIN(Client)
 
@@ -15,10 +16,39 @@ void CHello::Awake(void* pCtx)
 void CHello::Start(void* pCtx)
 {
     Engine::CGameObject* pObject = SYS_GAMEOBJECT.Get_Wrapper(m_hObject);
+    if (!pObject)
+    {
+        __debugbreak();
+        return;
+    }
+
     m_Transform = pObject->Get_Component<CTransform>();
+    m_mr = pObject->Get_Component<CMeshRenderer>();
 
+    m_hPerObjBlock = SYS_RESOURCE.Alloc_PerObjectParamBlock();
 
-    m_pTarget = SYS_GAMEOBJECT.Get_Wrapper(m_rObject.hObject);
+    auto* pBlock = SYS_RESOURCE.Get_PerObjectParamBlock(m_hPerObjBlock);
+    if (!pBlock)
+    {
+        __debugbreak();
+        return;
+    }
+
+    m_hTexture = GAME_INSTANCE.Get_ResourceHandle(ASSET_TYPE::TEXTURE, m_MaskTExture);
+    if (m_hTexture == INVALID_HANDLE_UINT)
+    {
+        __debugbreak();
+        return;
+    }
+
+    pBlock->block.Set_Texture("g_CuttedMask", m_hTexture);
+    pBlock->block.Set_Float4("g_CutFlag", { 0.f, 0.f, 0.f, 0.f });
+
+    cout << "CHello::Start Set_Texture = [" << "g_CuttedMask" << "]" << endl;
+    cout << "CHello::Start Set_Float4 = [" << "g_CutFlag" << "]" << endl;
+
+    /* 이 부분은 MeshRenderer 쪽에 per-object param handle을 연결하는 용도 */
+    m_mr->hPerObjectParams = m_hPerObjBlock;
 }
 
 void CHello::Priority_Update(void* pCtx, _float fDT)
@@ -27,44 +57,39 @@ void CHello::Priority_Update(void* pCtx, _float fDT)
 
 void CHello::Update(void* pCtx, _float fDT)
 {
-    if (nullptr == m_pTarget && m_rObject.hObject.Is_Valid())
-    {
-       m_pTarget = SYS_GAMEOBJECT.Get_Wrapper(m_rObject.hObject);
-    }
-    if (!m_pTarget)
+    auto* flag = SYS_RESOURCE.Get_PerObjectParamBlock(m_hPerObjBlock);
+    if (!flag)
         return;
 
-    m_Transform = m_pTarget->Get_Component<CTransform>();
-    m_SpringJoint = m_pTarget->Get_Component<CSpringJoint>();
-
-
-    _float fSpeed = (_float)m_iSpeed * fDT;
-
     if (SYS_INPUT.Get_Key(VK_UP))
+
     {
-        m_Transform.Translate({ 0.f, 0.f , fSpeed });
+        flag->block.Set_Float4("g_CutFlag", { 1.f, 0.f, 0.f, 0.f });
     }
+
     if (SYS_INPUT.Get_Key(VK_DOWN))
     {
-        m_Transform.Translate({ 0.f, 0.f , -fSpeed });
+        flag->block.Set_Float4("g_CutFlag", { 0.f, 1.f, 0.f, 0.f });
     }
+
     if (SYS_INPUT.Get_Key(VK_RIGHT))
     {
-        m_Transform.Translate({ fSpeed, 0.f, 0.f });
+        flag->block.Set_Float4("g_CutFlag", { 0.f, 0.f, 1.f, 0.f });
     }
+
     if (SYS_INPUT.Get_Key(VK_LEFT))
     {
-        m_Transform.Translate({ -fSpeed, 0.f,  0.f });
+        flag->block.Set_Float4("g_CutFlag", { 0.f, 0.f, 0.f, 1.f });
     }
+
     if (SYS_INPUT.Get_KeyDown(VK_LBUTTON))
     {
-        _float3 vAnchor = { m_Transform->vPosition.x - 5.f, m_Transform->vPosition.y + 5.f, m_Transform->vPosition.z + 5.f };
-        m_SpringJoint.Set_Anchor(vAnchor);
+        flag->block.Set_Float4("g_CutFlag", { 1.f, 1.f, 0.f, 0.f });
     }
+
     if (SYS_INPUT.Get_KeyDown(VK_RBUTTON))
     {
-        _float3 vAnchor = { m_Transform->vPosition.x + 5.f, m_Transform->vPosition.y + 5.f, m_Transform->vPosition.z + 5.f };
-        m_SpringJoint.Set_Anchor(vAnchor);
+        flag->block.Set_Float4("g_CutFlag", { 0.f, 0.f, 0.f, 0.f });
     }
 }
 
@@ -74,7 +99,6 @@ void CHello::Late_Update(void* pCtx, _float fDT)
 
 void CHello::Move(_float fDT)
 {
-
 }
 
 NS_END;

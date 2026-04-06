@@ -80,15 +80,7 @@ void CPlayerState_Jump::Decide_NextState()
     _bool bJumpDash = m_tComponents.animator.Get_CurAnimaionClipIdx() == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::AIR);
     if (m_tRef.pGroundChecker->Get_OnWalkable() && (bFalling || bJumpDash))
     {
-        _float3 vVelocity = m_tComponents.rigidbody.Get_LinearVel();
-        _float fVelSq = XMVectorGetX(XMVector3LengthSq(XMLoadFloat3(&vVelocity)));
-        const _float fThreshold = 25.f;
-
-        if (fVelSq < 25.f)
-            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::DASH_LAND));
-        else
-            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::SLIDE));
-
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::RUN));
         return;
     }
 
@@ -195,9 +187,9 @@ void CPlayerState_Jump::Jump_Dash(_float fDT)
 
     _float3 vDashForce = m_tComponents.rigidbody.Get_LinearVel();
 
-    vDashForce.x *= m_pStats->fJumpDash * fDT;
-    vDashForce.y = 0.f;
-    vDashForce.z *= m_pStats->fJumpDash * fDT;
+    vDashForce.x *= m_pStats->fJumpDashH * fDT;
+    vDashForce.y = m_pStats->fJumpDashV;
+    vDashForce.z *= m_pStats->fJumpDashH * fDT;
 
     m_tComponents.rigidbody.Add_Force(vDashForce);
 }

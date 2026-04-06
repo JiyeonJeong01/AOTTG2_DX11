@@ -18,6 +18,7 @@ public:
 public:
     void Initialize();
     void Update(_float fTimeDelta);
+    void Set_Offset(const _float3& vOffset);
 
 public:
     void Start_Extending_Success(_fvector vStartPoint, _fvector vAnchorPoint);
@@ -30,7 +31,8 @@ public:
 
     ROPE_STATE Get_State() const { return m_State; }
 
-    void Set_RopeAmplitueInfo(const AMPLITUDE_VALUE& tInfo);
+    void    Set_RopeAmplitueInfo(const AMPLITUDE_VALUE& tInfo);
+    _float3 Get_ReturnEndPoint() const;
 
     template <typename T>
     ListenerID Subscribe_On_RopeState_Changed(void(T::* func)(ROPE_STATE, SIDE), T* pInstance)
@@ -40,6 +42,7 @@ public:
 
 private:
     unique_ptr<Engine::CLine>       m_upLine;
+    _float3                         m_vRopeOffset{};
     _float3                         m_vStartPoint{};
     _float3                         m_vEndPoint{};
     _float3                         m_vCurDynamicPos{};
@@ -66,6 +69,10 @@ private:
     _bool                           m_bHasReturnRight = false;
     _float3                         m_vPrevRight{ 1.f, 0.f, 0.f };
     _bool                           m_bHasPrevRight = false;
+
+    _float                          m_fReturnElapsed = 0.f;
+    _float                          m_fReturnDropSpeed = 2.5f;
+    _float                          m_fReturnMaxDrop = 0.3f;
 
 private:
     void Process_Extending(_float fTimeDelta);

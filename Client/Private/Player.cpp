@@ -81,6 +81,7 @@ void CPlayer::Start(void* pCtx)
     tContext.pSkillController = m_upSkillController.get();
 
     m_upStateMachine->Cache_PlayerInfos(tContext);
+    m_tRef.pGear->Bind_PlayerContext(tContext);
 
     auto allHitBoxes = m_goPlayer->Get_AllScripts_InChildren<CHitBox>();
 

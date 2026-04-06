@@ -7,7 +7,7 @@ NS_BEGIN(Client)
 
 enum class PLAYER_STATE { IDLE = 0, GROUNDED_MOVE, JUMP, AIRBORNE_MOVE, HOOK, GROUNDED_ATTACK, AIRBORNE_ATTACK, SHOOT, RELOAD, DODGE, RESUPPLY, GRABBED, EMOTE, END };
 
-enum class AIRBORNE_MOVE : uint8_t { AIR_BEGIN, AIR, AIR_LEFT, AIR_RIGHT, AIR_FRONT, AIR_BACK, AIR_FALL, END };
+enum class AIRBORNE_MOVE : uint8_t { AIR_BEGIN, AIR, AIR_LEFT, AIR_RIGHT, AIR_FRONT, AIR_BACK, AIR_FALL, SLIDE_LEFT, SLIDE_RIGHT, SLIDE_FRONT, END };
 enum class AIRBORNE_ATTACK : uint8_t { NORMAL, SPIN_H, THROW, SPIN_V, STRONG, END };
 enum class GROUNDED_MOVE : uint8_t { RUN, SLIDE, DASH_LAND, END };
 enum class GROUNDED_ATTACK : uint8_t { ATK, END };
@@ -62,7 +62,15 @@ typedef struct tagPlayerStats
     _float                      fMaxSpeed = 13.f;
 
     _float                      fJump = 5.f;
-    _float                      fJumpDash = 0.05f;
+    _float                      fJumpDashH = 0.03f;
+    _float                      fJumpDashV = 0.5f;
+
+    /* 그래플링 */
+    _float                      fSpringNormal = 4.f;
+    _float                      fDamperNormal = 3.f;
+    _float                      fSpringReel = 8.f;
+    _float                      fDamperReel = 5.f;
+
 } PLAYER_STATS;
 
 typedef struct tagPlayerRuntimeRef

@@ -732,6 +732,9 @@ void CRender_System::Apply_Block_To_Shader(SHADER_ENTRY* pShader, const NAME_VAL
 
     for (const auto& it : blk.params)
     {
+
+        cout << "Apply_Block_To_Shader param = [" << it.strName << "]" << endl;
+
         ID3DX11EffectVariable* pVar = pShader->Get_VarCached(it.strName.c_str());
         if (!pVar)
         {
