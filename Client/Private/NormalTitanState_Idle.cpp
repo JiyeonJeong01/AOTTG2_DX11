@@ -63,22 +63,26 @@ void CNormalTitanState_Idle::Enter(_uint iDetailFlag)
     case TITAN_IDLE::SIT:
         cout << "[TITAN_IDLE] ENTER SIT_IDLE\n";
         m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::SIT_IDLE);
+        *m_tRef.pPose = TITAN_POSE::SIT;
         break;
 
     case TITAN_IDLE::DEFAULT:
         cout << "[TITAN_IDLE] ENTER IDLE\n";
         m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::IDLE);
+        *m_tRef.pPose = TITAN_POSE::STAND;
         break;
 
     case TITAN_IDLE::DEFENSE:
         cout << "[TITAN_IDLE] ENTER IDLE_DEFENSE\n";
         m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::IDLE_DEFENSE);
+        *m_tRef.pPose = TITAN_POSE::STAND;
         break;
 
     default:
         cout << "[TITAN_IDLE] unknown detail. fallback -> IDLE\n";
         m_eIdleState = TITAN_IDLE::DEFAULT;
         m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::IDLE);
+        *m_tRef.pPose = TITAN_POSE::STAND;
         break;
     }
 }
@@ -90,6 +94,11 @@ void CNormalTitanState_Idle::Exit()
 void CNormalTitanState_Idle::Setup_CachedTitanContext()
 {
     CTitanState::Setup_CachedTitanContext();
+}
+
+_uint CNormalTitanState_Idle::Get_DetailState() const
+{
+    return To<_uint>(m_eIdleState);
 }
 
 void CNormalTitanState_Idle::Decide_NextState()

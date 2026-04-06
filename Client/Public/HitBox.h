@@ -24,10 +24,13 @@ private :
 
     HIT_INFO        m_tHitInfo{};
 
+    CTransform      m_trHitBox;
+
 public :
     CGameObject*    Get_HitBoxObject() const;
     void            Set_Active(_bool bActive);
     _bool           Get_Active() const;
+    void            Set_Position(_fvector vPos);
 
     void OnTriggerEnter(const COLLISION_DESC& tDesc);
 

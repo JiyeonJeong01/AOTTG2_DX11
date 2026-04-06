@@ -1,0 +1,5 @@
+source=../../Converter/Bin/FBXs/miniwall.fbx
+meshCount=1
+part0Name=Cube.001
+part0MeshGuid=BFCE83B7-8042-4145-8611-FA6F16D8BD6A
+part0MaterialGuid=2936EA2E-D130-451A-B9B7-5E044D5EA36E

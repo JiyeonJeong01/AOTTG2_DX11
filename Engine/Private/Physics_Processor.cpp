@@ -82,24 +82,36 @@ void CPhysics_Processor::Fixed_Update(_float fDT)
 
 void CPhysics_Processor::Render()
 {
+    if (m_eDebugDraw == DEBUG_DRAW::NONE)
+        return;
+
+    const _bool bDrawGrid =
+        (m_eDebugDraw == DEBUG_DRAW::ALL_GRID ||
+            m_eDebugDraw == DEBUG_DRAW::SELECT_GRID);
+
+    const _bool bSelectOnly =
+        (m_eDebugDraw == DEBUG_DRAW::SELECT ||
+            m_eDebugDraw == DEBUG_DRAW::SELECT_GRID);
+
     m_upDebugRenderer->Begin();
 
+    /* -------- COLLIDER -------- */
     for (const auto& tProxy : m_ActivatedColliders)
     {
         if (tProxy.pCol == nullptr)
             continue;
         if (!tProxy.pCol->bEnable)
             continue;
-        if (!tProxy.pCol->bDebugDraw)
+
+        if (bSelectOnly && !tProxy.pCol->bDebugDraw)
             continue;
 
         m_upDebugRenderer->Draw_Collider(tProxy);
     }
 
-    if (m_upUniform_Grid)
+    /* -------- UNIFORM GRID -------- */
+    if (bDrawGrid && m_upUniform_Grid)
     {
-        const _float3 vWorldMin = m_upUniform_Grid->Get_WorldMin();
-
         for (int iZ = 0; iZ < m_upUniform_Grid->Get_DimZ(); ++iZ)
         {
             for (int iY = 0; iY < m_upUniform_Grid->Get_DimY(); ++iY)
@@ -623,6 +635,11 @@ void CPhysics_Processor::Rebuild_Static_Grid()
             m_upUniform_Grid->Insert_Static(pData->hSelf, tProxy.aabbWorld);
         }
     }
+}
+
+void CPhysics_Processor::Set_DrawMode(DEBUG_DRAW eDraw)
+{
+    m_eDebugDraw = eDraw;
 }
 
 COMPONENT_HANDLE CPhysics_Processor::Create_Component_Data(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject)

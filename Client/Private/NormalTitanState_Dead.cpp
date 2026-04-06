@@ -38,7 +38,12 @@ void CNormalTitanState_Dead::Enter(_uint iDetailFlag)
 {
     CTitanState::Enter(iDetailFlag);
 
-    m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::DIE_FRONT);
+    if (*m_tRef.pPose == TITAN_POSE::STAND)
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::DIE_FRONT);
+    else if (*m_tRef.pPose == TITAN_POSE::SIT)
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::SIT_DIE);
+    else if (*m_tRef.pPose == TITAN_POSE::CRAWL)
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::CRAWLER_DIE);
 }
 
 void CNormalTitanState_Dead::Exit()
@@ -49,6 +54,11 @@ void CNormalTitanState_Dead::Exit()
 void CNormalTitanState_Dead::Setup_CachedTitanContext()
 {
     CTitanState::Setup_CachedTitanContext();
+}
+
+_uint CNormalTitanState_Dead::Get_DetailState() const
+{
+    return 0;
 }
 
 void CNormalTitanState_Dead::Decide_NextState()

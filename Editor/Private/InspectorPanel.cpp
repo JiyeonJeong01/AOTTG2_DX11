@@ -225,15 +225,18 @@ void CInspectorPanel::Draw_Basic_Info()
 
         std::string_view svSeverity = magic_enum::enum_name(Client::O_PLAYER);
 
-
         const MASK_ITEM arrMaskItems[] =
         {
             { "O_HUMAN",   Client::O_HUMAN },
+            { "O_TITAN",   Client::O_TITAN },
             { "O_PLAYER",   Client::O_PLAYER },
-            { "O_TITAN",    Client::O_TITAN },
-            { "O_NPC",      Client::O_NPC },
+            { "O_NPC",    Client::O_NPC },
             { "O_ALLY",     Client::O_ALLY },
             { "O_WALKABLE", Client::O_WALKABLE },
+            { "O_HUMAN_ATK",     Client::O_HUMAN_ATK },
+            { "O_TITAN_ATK",     Client::O_TITAN_ATK },
+            { "O_HITBOX",     Client::O_HITBOX },
+            { "O_HURTBOX", Client::O_HURTBOX },
         };
 
         for (const auto& tItem : arrMaskItems)

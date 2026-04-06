@@ -40,6 +40,7 @@ private :
     TITAN_COMPONENTS        m_tComponents{};
     TITAN_RUNTIME_REF       m_tRef{};
     TITAN_STATS             m_tStats{};
+    TITAN_POSE              m_ePose = TITAN_POSE::END;
 
     std::unique_ptr<CNormalTitanStateMachine>   m_upStateMachine{};
     std::shared_ptr<CTitanState>                m_spCurState{};
@@ -69,6 +70,7 @@ public :
 private:
     void On_Grab(SIDE eSide, CHuman* pHuman) override;
     void On_Dead(const _float fAccuracy) override;
+    void On_Hurt(const HIT_INFO& tHitBox, const std::string& strHurtBox);
 
     void On_DetectedHuman(CGameObject* goHuman);
     void OnChange_CurState(std::shared_ptr<CTitanState> spNewState);

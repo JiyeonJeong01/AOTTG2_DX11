@@ -38,6 +38,7 @@ public:
     /* Debug */
     TITAN_STATE     Get_State() const;
     const char*     Get_StateName() const;
+    virtual _uint   Get_DetailState() const;
 
 private:
     virtual void    Decide_NextState() {};

@@ -4,10 +4,10 @@
 #include "TargetSensor.h"
 #include "TitanBound_Controller.h"
 #include "HitBox.h"
+#include "HurtBox.h"
 
 NS_BEGIN(Client)
-
-CNormalTitan::CNormalTitan()
+    CNormalTitan::CNormalTitan()
 {
 }
 
@@ -54,8 +54,8 @@ void CNormalTitan::Start(void* pCtx)
         m_tRef.pBoundCtlr = m_goTitan->Get_Script_InChildren<CTitanBound_Controller>();
         IF_NULL_RETURN_MSG_BREAK(m_tRef.pBoundCtlr, , "m_tRef.pBoundCtlr is nullptr");
 
+        /* 히트박스 캐싱 */
         auto allHitBoxes = m_goTitan->Get_AllScripts_InChildren<CHitBox>();
-
         for (auto& hit : allHitBoxes)
         {
             CGameObject* goHitBox = hit->Get_HitBoxObject();
@@ -65,7 +65,16 @@ void CNormalTitan::Start(void* pCtx)
             IF_TRUE_RETURN_MSG_BREAK(!bInserted, , "duplicated hitbox label");
         }
 
+        /* 허트박스에 이벤트 등록 */
+        auto allHurtBoxes = m_goTitan->Get_AllScripts_InChildren<CHurtBox>();
+        for (auto& hurt : allHurtBoxes)
+        {
+            hurt->Subscribe_OnHurt(&CNormalTitan::On_Hurt, this);
+        }
+
         m_tRef.pAllHitBoxes = &m_AllHitBoxes;
+
+        m_tRef.pPose = &m_ePose;
     }
 
     /* 플레이어 상태에게 전달 */
@@ -162,7 +171,7 @@ CGameObject* CNormalTitan::Get_CurTarget() const
 void CNormalTitan::On_Grab(SIDE eSide, CHuman* pHuman)
 {
     TITAN_STATE eState = m_spCurState->Get_State();
-    if (eState == TITAN_STATE::GRAB || eState == TITAN_STATE::DEAD)
+    if (eState == TITAN_STATE::GRAB || eState == TITAN_STATE::HURT || eState == TITAN_STATE::DEAD)
         return;
 
     TITAN_GRAB eGrabbed = TITAN_GRAB::END;
@@ -181,6 +190,46 @@ void CNormalTitan::On_Dead(const _float fAccuracy)
         return;
 
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
+}
+
+void CNormalTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox)
+{
+    UNREFERENCED_PARAMETER(tHitInfo);
+
+    TITAN_HURT eHurt = TITAN_HURT::END;
+
+    if (strHurtBox == "HurtBox_Eye")
+    {
+        if (m_ePose == TITAN_POSE::STAND)
+            eHurt = TITAN_HURT::STAND_EYE;
+        else if (m_ePose == TITAN_POSE::SIT)
+            eHurt = TITAN_HURT::SIT_EYE;
+    }
+    else if (strHurtBox == "HurtBox_ArmL")
+    {
+        if (m_ePose == TITAN_POSE::STAND)
+            eHurt = TITAN_HURT::STAND_ARM_L;
+    }
+    else if (strHurtBox == "HurtBox_ArmR")
+    {
+        if (m_ePose == TITAN_POSE::STAND)
+            eHurt = TITAN_HURT::STAND_ARM_R;
+    }
+    else if (strHurtBox == "HurtBox_LegL")
+    {
+        if (m_ePose == TITAN_POSE::STAND)
+            eHurt = TITAN_HURT::STAND_LEG_L;
+    }
+    else if (strHurtBox == "HurtBox_LegR")
+    {
+        if (m_ePose == TITAN_POSE::STAND)
+            eHurt = TITAN_HURT::STAND_LEG_R;
+    }
+
+    if (eHurt == TITAN_HURT::END)
+        return;
+
+    m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::HURT), To<_uint>(eHurt));
 }
 
 void CNormalTitan::Validate_Target()

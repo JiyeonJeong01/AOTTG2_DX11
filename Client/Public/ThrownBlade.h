@@ -29,7 +29,7 @@ private:
     _bool                m_bStarted = false;
 
     _float               m_fRotPerSec = 720.f;
-    _float               m_fThrowSpeed = 0.1f;
+    _float               m_fThrowSpeed = 1.f;
     const std::string    m_strBlade = "ThrownBlade";
 private:
     void On_CollisionEnter(const COLLISION_DESC& tDesc);

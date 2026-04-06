@@ -28,7 +28,7 @@ private:
 
 private:
     GROUNDED_ATTACK     m_eGroundedAttackState = GROUNDED_ATTACK::ATK;
-
+    _bool               m_bHitBoxActive = false;
 private:
 
 public:

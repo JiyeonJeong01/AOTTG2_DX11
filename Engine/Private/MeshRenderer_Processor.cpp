@@ -152,9 +152,21 @@ CMeshRenderer_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hC
     auto spec = std::make_unique<MESH_RENDERER_SPEC>();
 
     if (SYS_RESOURCE.Is_ModelHandle(pData->hMesh))
-        spec->meshGUID = SYS_RESOURCE.Get_Model(pData->hMesh)->tGUID;
+    {
+        auto pModel = SYS_RESOURCE.Get_Model(pData->hMesh);
+        if (pModel)
+            spec->meshGUID = pModel->tGUID;
+        else
+            __debugbreak();
+    }
     else
-        spec->meshGUID = SYS_RESOURCE.Get_Mesh(pData->hMesh)->tGUID;
+    {
+        auto pMesh = SYS_RESOURCE.Get_Mesh(pData->hMesh);
+        if (pMesh)
+            spec->meshGUID = pMesh->tGUID;
+        else
+            __debugbreak();
+    }
 
     MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(pData->hMaterial);
     if (!pMat)

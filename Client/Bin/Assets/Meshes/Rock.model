@@ -1,0 +1,5 @@
+source=../../Converter/Bin/FBXs/Rock.fbx
+meshCount=1
+part0Name=Boulder1Model
+part0MeshGuid=D0597B79-D4D5-4603-8737-96B24A2099B5
+part0MaterialGuid=7B369D24-0267-4A49-8AE7-77BF45CF0BE1

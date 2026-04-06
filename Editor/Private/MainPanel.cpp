@@ -14,10 +14,10 @@
 #include "ResourcePanel.h"
 #include "Scene.h"
 #include "Event_System.h"
+#include "magic_enum.hpp"
 
 NS_BEGIN(Editor)
-
-CMainPanel::CMainPanel(const std::string& strPanelName)
+    CMainPanel::CMainPanel(const std::string& strPanelName)
     : CEditorPanel(strPanelName)
 {
 }
@@ -61,8 +61,6 @@ HRESULT CMainPanel::Initialize()
     const Engine::ASSET_RECORD* pRec = SYS_ASSET.Find(ensureGUID);
     if (pRec) m_scenePath = pRec->path.wstring();
     m_bSceneDirty = false;
-
-    SYS_CORE.Set_DebugRender(m_bDebugRender);
 
     return S_OK;
 }
@@ -444,12 +442,38 @@ void CMainPanel::Draw_Toolbar()
     if (start_x > 0.0f)
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + start_x);
 
-
-    if (ImGui::Checkbox("DebugRender", &m_bDebugRender))
+    ImGui::SetNextItemWidth(150.f);
+    if (ImGui::BeginCombo("##DebugRender", magic_enum::enum_name(m_eDebugDraw).data()))
     {
-         SYS_CORE.Set_DebugRender(m_bDebugRender);
+        const DEBUG_DRAW arrDebugDraw[] =
+        {
+            DEBUG_DRAW::NONE,
+            DEBUG_DRAW::ALL,
+            DEBUG_DRAW::SELECT,
+            DEBUG_DRAW::ALL_GRID,
+            DEBUG_DRAW::SELECT_GRID,
+        };
+
+        for (DEBUG_DRAW eDraw : arrDebugDraw)
+        {
+            const bool bSelected = (m_eDebugDraw == eDraw);
+            const std::string_view svName = magic_enum::enum_name(eDraw);
+
+            if (ImGui::Selectable(svName.data(), bSelected))
+            {
+                m_eDebugDraw = eDraw;
+                SYS_CORE.Set_DebugRender(eDraw);
+            }
+
+            if (bSelected)
+                ImGui::SetItemDefaultFocus();
+        }
+
+        ImGui::EndCombo();
     }
+
     ImGui::SameLine();
+
 
     /* Play / Pause / Step */
     {

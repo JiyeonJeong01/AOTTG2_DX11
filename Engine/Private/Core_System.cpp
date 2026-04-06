@@ -15,6 +15,7 @@
 /* --- sub --- */
 #include "Graphic_Device.h"
 #include "Timer_System.h"
+#include "Physics_Processor.h"
 
 /* --- --- */
 #include "Scene.h"
@@ -174,8 +175,7 @@ HRESULT CCore_System::Draw()
     //    pScene->Render();
 
     SYS_RENDER.Render();
-    if (m_bDebugRender) 
-        SYS_COMPONENT.Render();
+    SYS_COMPONENT.Render();
 
     return S_OK;
 }
@@ -311,10 +311,14 @@ _bool CCore_System::Restart()
     return m_pScene_Handler->Restart();
 }
 
-void CCore_System::Set_DebugRender(_bool b)
+void CCore_System::Set_DebugRender(DEBUG_DRAW eDraw)
 {
-    m_bDebugRender = b;
+    CPhysics_Processor* pPhysics = SYS_COMPONENT.Bind_Processor<CPhysics_Processor>();
+    IF_NULL_RETURN_MSG_BREAK(pPhysics, , "pPhysics is nullptr");
+
+    pPhysics->Set_DrawMode(eDraw);
 }
+
 
 void CCore_System::Update_RuntimeEngine(_float fDT, CScene* pScene)
 {

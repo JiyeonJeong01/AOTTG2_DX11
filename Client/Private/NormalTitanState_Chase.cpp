@@ -83,6 +83,7 @@ void CNormalTitanState_Chase::Late_Update(_float fDT)
 void CNormalTitanState_Chase::Enter(_uint iDetailFlag)
 {
     CTitanState::Enter(iDetailFlag);
+    *m_tRef.pPose = TITAN_POSE::STAND;
 
     cout << "[TITAN_CHASE] ENTER\n";
 
@@ -119,6 +120,11 @@ void CNormalTitanState_Chase::Setup_CachedTitanContext()
     CTitanState::Setup_CachedTitanContext();
 
     m_tComponents.animator->OnAnimationFinished.Add_Listener(&CNormalTitanState_Chase::On_AnimFinished, this);
+}
+
+_uint CNormalTitanState_Chase::Get_DetailState() const
+{
+    return To<_uint>(m_eChaseState);
 }
 
 void CNormalTitanState_Chase::Decide_NextState()

@@ -108,6 +108,6 @@ typedef struct tagPlayerContext
 
 } PLAYER_CONTEXT;
 
-inline constexpr const char* PLAYER_BLADE_ATTACK = "Blade_Left";
+inline constexpr const char* PLAYER_BLADE_ATTACK = "Blade_Attack";
 
 NS_END

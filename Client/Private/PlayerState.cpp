@@ -2,6 +2,7 @@
 #include "CameraController.h"
 #include "Easing_Function.h"
 #include "ODM_Gear.h"
+#include "HitBox.h"
 
 HRESULT CPlayerState::Initialize()
 {
@@ -159,6 +160,57 @@ void CPlayerState::GroundedMove(_float fDT)
 
         m_tComponents.rigidbody.Add_Force(vForce);
     }
+}
+
+_bool CPlayerState::Set_HitBoxActive(const std::string& strHitBox, _bool bActive)
+{
+    auto it = m_tRef.pAllHitBoxes->find(strHitBox);
+    if (it == m_tRef.pAllHitBoxes->end())
+        return false;
+
+    it->second->Set_Active(bActive);
+
+    if (bActive)
+        Sync_HiBox(strHitBox);
+
+    return true;
+}
+
+void CPlayerState::Sync_HiBox(const std::string& strHitBox)
+{
+    auto it = m_tRef.pAllHitBoxes->find(strHitBox);
+    if (it == m_tRef.pAllHitBoxes->end())
+        return;
+
+    CHitBox* pHitBox = it->second;
+    const _vector vPlayerPos = m_tComponents.transform.Get_StateXM(STATE::POSITION);
+
+    _vector vLook = m_tComponents.transform.Get_StateXM(STATE::LOOK);
+    vLook = XMVectorSetY(vLook, 0.f);
+
+    if (XMVectorGetX(XMVector3LengthSq(vLook)) < 0.0001f)
+        vLook = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+    else
+        vLook = XMVector3Normalize(vLook);
+
+    vLook *= -1.f;
+
+    _vector vRight = m_tComponents.transform.Get_StateXM(STATE::RIGHT);
+    vRight = XMVectorSetY(vRight, 0.f);
+
+    if (XMVectorGetX(XMVector3LengthSq(vRight)) < 0.0001f)
+        vRight = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+    else
+        vRight = XMVector3Normalize(vRight);
+
+    _vector vOffset =
+        vLook * m_vHitBoxOffset.z +
+        vRight * m_vHitBoxOffset.x +
+        XMVectorSet(0.f, m_vHitBoxOffset.y, 0.f, 0.f);
+
+    const _vector vHitBoxPos = vPlayerPos + vOffset;
+
+    pHitBox->Set_Position(vHitBoxPos);
 }
 
 void CPlayerState::Cache_PlayerContext(const PLAYER_CONTEXT& tContext)

@@ -25,6 +25,8 @@ void CHitBox::Awake(void* pCtx)
     m_cldrHit->OnTriggerEnter.Add_Listener(&CHitBox::OnTriggerEnter, this);
 
     m_tHitInfo.goAttacker = m_goAttacker;
+
+    m_trHitBox = m_goHitBox->Get_Component<CTransform>();
 }
 
 void CHitBox::Start(void* pCtx)
@@ -61,6 +63,11 @@ void CHitBox::Set_Active(_bool bActive)
 _bool CHitBox::Get_Active() const
 {
     return m_cldrHit->bEnable;
+}
+
+void CHitBox::Set_Position(_fvector vPos)
+{
+    m_trHitBox.Set_Position(vPos);
 }
 
 void CHitBox::OnTriggerEnter(const COLLISION_DESC& tDesc)

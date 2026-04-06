@@ -71,6 +71,9 @@
     <Filter Include="Managers">
       <UniqueIdentifier>{6950d9bf-fcde-49e1-9cd4-6f81dfefb151}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\Attacher">
+      <UniqueIdentifier>{cb722e92-1ff7-4688-b7a9-e0169e39c874}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -250,6 +253,12 @@
     <ClInclude Include="..\Public\HurtBox.h">
       <Filter>Common\HitBox</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\NormalTitanState_Hurt.h">
+      <Filter>Titan\NormalTitan\NormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Attacher.h">
+      <Filter>Common\Attacher</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -399,6 +408,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\HurtBox.cpp">
       <Filter>Common\HitBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NormalTitanState_Hurt.cpp">
+      <Filter>Titan\NormalTitan\NormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Attacher.cpp">
+      <Filter>Common\Attacher</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

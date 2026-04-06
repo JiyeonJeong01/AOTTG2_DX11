@@ -138,3 +138,8 @@ const char* CTitanState::Get_StateName() const
 {
     return m_szStateName;
 }
+
+_uint CTitanState::Get_DetailState() const
+{
+    return 0;
+}

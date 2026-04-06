@@ -63,6 +63,7 @@ void CNormalTitanState_Move::Enter(_uint iDetailFlag)
     }
 
     m_eMoveState = To<TITAN_MOVE>(iDetailFlag);
+    *m_tRef.pPose = TITAN_POSE::STAND;
 
     m_fElapsedMoveTime = 0.f;
 
@@ -81,6 +82,11 @@ void CNormalTitanState_Move::Exit()
 void CNormalTitanState_Move::Setup_CachedTitanContext()
 {
     CTitanState::Setup_CachedTitanContext();
+}
+
+_uint CNormalTitanState_Move::Get_DetailState() const
+{
+    return To<_uint>(m_eMoveState);
 }
 
 void CNormalTitanState_Move::Decide_NextState()

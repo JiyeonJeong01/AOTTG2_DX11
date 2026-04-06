@@ -34,7 +34,10 @@ void CHurtBox::Late_Update(void* pCtx, _float fDT)
 
 void CHurtBox::Try_ApplyHit(const HIT_INFO& tHitBox)
 {
-    m_OnHit.Invoke(tHitBox);
+    CGameObject* pHurtBox = GAME_INSTANCE.Find_GameObject(m_hObject);
+    IF_NULL_RETURN_MSG_BREAK(pHurtBox, , "pHurtBox is nullptr");
+
+    m_OnHurt.Invoke(tHitBox, string(pHurtBox->Get_Label()));
 }
 
 NS_END;

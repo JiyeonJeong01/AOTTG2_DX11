@@ -91,6 +91,7 @@ public :
     CUniform_Grid*              Get_Uniform_Grid() const { return m_upUniform_Grid.get(); }
     const COLLIDER_PROXY_DATA*  Find_ActivatedCollider_ByHandle(COMPONENT_HANDLE hCollider) const;
     void                        Rebuild_Static_Grid();
+    void                        Set_DrawMode(DEBUG_DRAW eDraw);
 
 private:
     CComponent_Pool<CCollider>          m_ColliderPool;
@@ -111,6 +112,8 @@ private:
 
     const _float    m_fGravity = -9.81f;
     const _float3   m_vGravity = { 0.f, m_fGravity, 0.f };
+
+    DEBUG_DRAW      m_eDebugDraw = DEBUG_DRAW::ALL_GRID;
 
 private :
     void    Process_SpringJoints(_float fDT);

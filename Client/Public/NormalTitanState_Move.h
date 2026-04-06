@@ -21,6 +21,8 @@ public:
 
     void    Setup_CachedTitanContext() override;
 
+    _uint   Get_DetailState() const override;
+
 private:
     void    Decide_NextState() override;
     void    Decide_NextAnim() override;

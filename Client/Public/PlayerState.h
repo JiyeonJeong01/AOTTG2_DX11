@@ -38,6 +38,8 @@ public :
     void            Try_Grappling();
     void            Finish_Grappling();
     void            GroundedMove(_float fDT);
+    _bool           Set_HitBoxActive(const std::string& strHitBox, _bool bActive);
+    void            Sync_HiBox(const std::string& strHitBox);
 
     virtual void    Cache_PlayerContext(const PLAYER_CONTEXT& tContext);
     PLAYER_STATE    Get_State() const;
@@ -69,6 +71,8 @@ protected :
 
     PLAYER_STATE            m_eState = PLAYER_STATE::IDLE;
     _char                   m_szStateName[32];
+
+    _float3                 m_vHitBoxOffset = { 0.2f, 0.8f, 0.8f };
 };
 
 NS_END

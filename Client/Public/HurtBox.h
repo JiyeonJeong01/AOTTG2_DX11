@@ -19,15 +19,15 @@ public:
 
 private :
     CGameObject*            m_pOwner{};
-    CEvent<const HIT_INFO&> m_OnHit;
+    CEvent<const HIT_INFO&, const string&> m_OnHurt;
 
 public :
     void Try_ApplyHit(const HIT_INFO& tHitBox);
 
     template <typename T>
-    ListenerID Subscribe_OnHit(void(T::* func)(const HIT_INFO&), T* pInstance)
+    ListenerID Subscribe_OnHurt(void(T::* func)(const HIT_INFO&, const string&), T* pInstance)
     {
-        return m_OnHit.Add_Listener(func, pInstance);
+        return m_OnHurt.Add_Listener(func, pInstance);
     }
 
 private :

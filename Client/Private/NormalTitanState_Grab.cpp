@@ -56,16 +56,19 @@ void CNormalTitanState_Grab::Late_Update(_float fDT)
 void CNormalTitanState_Grab::Enter(_uint iDetailFlag)
 {
     CTitanState::Enter(iDetailFlag);
+    *m_tRef.pPose = TITAN_POSE::STAND;
 
     TITAN_GRAB eSide = To<TITAN_GRAB>(iDetailFlag);
 
     if (eSide == TITAN_GRAB::LEFT)
     {
         m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::EAT_SLOW_L);
+        m_eGrabState = TITAN_GRAB::LEFT;
     }
     else if (eSide == TITAN_GRAB::RIGHT)
     {
         m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::EAT_SLOW_R);
+        m_eGrabState = TITAN_GRAB::RIGHT;
     }
     else
     {
@@ -92,6 +95,11 @@ void CNormalTitanState_Grab::Exit()
 void CNormalTitanState_Grab::Setup_CachedTitanContext()
 {
     CTitanState::Setup_CachedTitanContext();
+}
+
+_uint CNormalTitanState_Grab::Get_DetailState() const
+{
+    return To<_uint>(m_eGrabState);
 }
 
 void CNormalTitanState_Grab::Decide_NextState()

@@ -5,13 +5,15 @@
 
 NS_BEGIN(Client)
 
+enum class TITAN_POSE { STAND, SIT, CRAWL, END };
+
 enum class TITAN_STATE { IDLE = 0, MOVE, CHASE, ATTACK, GRAB, HURT, DEAD, END };
 enum class TITAN_IDLE { DEFAULT = 0, SIT, DEFENSE, END };
 enum class TITAN_MOVE { WALK = 0, END };
-enum class TITAN_CHASE { };
-enum class TITAN_ATTACK { };
+enum class TITAN_CHASE { END };
+enum class TITAN_ATTACK { END };
 enum class TITAN_GRAB { LEFT, RIGHT, END };
-enum class TITAN_HURT { };
+enum class TITAN_HURT { STAND_EYE = 0, STAND_ARM_L, STAND_ARM_R, STAND_LEG_L, STAND_LEG_R, SIT_EYE, CRAWL_EYE, END };
 enum class TITAN_DEAD { };
 
 typedef struct tagTitanComponents
@@ -40,6 +42,8 @@ typedef struct tagTitanRuntimeRef
     class CTargetSensor*            pSensor = nullptr;
     class CTitanBound_Controller*   pBoundCtlr = nullptr;
     unordered_map<std::string, class CHitBox*>*  pAllHitBoxes;
+
+    TITAN_POSE*                     pPose = nullptr;
 } TITAN_RUNTIME_REF;
 
 typedef struct tagTitanContext

@@ -20,6 +20,7 @@ public:
     void    Exit() override;
 
     void    Setup_CachedTitanContext() override;
+    _uint   Get_DetailState() const override;
 
 private:
     void    Decide_NextState() override;
@@ -29,6 +30,7 @@ private:
     void On_EatSlowFinished(const Engine::ANIMATION_EVENT_DATA& tData);
 
 private:
+    TITAN_GRAB      m_eGrabState = TITAN_GRAB::END;
     CTransform      m_trHuman;
     _float3*        m_pGrabbedPoint{};
 

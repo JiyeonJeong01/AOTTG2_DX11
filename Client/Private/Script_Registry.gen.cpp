@@ -4,6 +4,7 @@
 #include "Script_Handler.h"
 #include "Script_Register.h"
 
+#include "Attacher.h"
 #include "CameraController.h"
 #include "FreeCam.h"
 #include "GameManager.h"
@@ -29,6 +30,10 @@ NS_BEGIN(Client)
 void Register_AllScripts()
 {
     auto& handler = SYS_ASSET.Scripts();
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Attacher.script");
+        handler.Register_VTable(guid, ScriptBinder<CAttacher>::Build());
+    }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\CameraController.script");
         handler.Register_VTable(guid, ScriptBinder<CCameraController>::Build());
