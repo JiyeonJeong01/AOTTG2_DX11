@@ -11,6 +11,7 @@
 #include "GameObject.h"
 #include "Solver.h"
 #include "Uniform_Grid.h"
+#include "Editor_System.h"
 
 HRESULT CPhysics_Processor::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
@@ -87,26 +88,43 @@ void CPhysics_Processor::Render()
 
     const _bool bDrawGrid =
         (m_eDebugDraw == DEBUG_DRAW::ALL_GRID ||
-            m_eDebugDraw == DEBUG_DRAW::SELECT_GRID);
+         m_eDebugDraw == DEBUG_DRAW::SELECT_GRID);
+
+    const _bool bDrawNav =
+        (m_eDebugDraw == DEBUG_DRAW::ALL_NAV ||
+         m_eDebugDraw == DEBUG_DRAW::SELECT_NAV ||
+         m_eDebugDraw == DEBUG_DRAW::NAV);
+
+    const _bool bDrawCollider =
+        (m_eDebugDraw == DEBUG_DRAW::ALL ||
+         m_eDebugDraw == DEBUG_DRAW::SELECT ||
+         m_eDebugDraw == DEBUG_DRAW::ALL_GRID ||
+         m_eDebugDraw == DEBUG_DRAW::SELECT_GRID ||
+         m_eDebugDraw == DEBUG_DRAW::ALL_NAV ||
+         m_eDebugDraw == DEBUG_DRAW::SELECT_NAV);
 
     const _bool bSelectOnly =
         (m_eDebugDraw == DEBUG_DRAW::SELECT ||
-            m_eDebugDraw == DEBUG_DRAW::SELECT_GRID);
+         m_eDebugDraw == DEBUG_DRAW::SELECT_GRID ||
+         m_eDebugDraw == DEBUG_DRAW::SELECT_NAV);
 
     m_upDebugRenderer->Begin();
 
     /* -------- COLLIDER -------- */
-    for (const auto& tProxy : m_ActivatedColliders)
+    if (bDrawCollider)
     {
-        if (tProxy.pCol == nullptr)
-            continue;
-        if (!tProxy.pCol->bEnable)
-            continue;
+        for (const auto& tProxy : m_ActivatedColliders)
+        {
+            if (tProxy.pCol == nullptr)
+                continue;
+            if (!tProxy.pCol->bEnable)
+                continue;
 
-        if (bSelectOnly && !tProxy.pCol->bDebugDraw)
-            continue;
+            if (bSelectOnly && !tProxy.pCol->bDebugDraw)
+                continue;
 
-        m_upDebugRenderer->Draw_Collider(tProxy);
+            m_upDebugRenderer->Draw_Collider(tProxy);
+        }
     }
 
     /* -------- UNIFORM GRID -------- */
@@ -144,6 +162,12 @@ void CPhysics_Processor::Render()
 
             m_upDebugRenderer->Draw_AABB(tCellAABB, Colors::Green);
         }
+    }
+
+    /* -------- NAV -------- */
+    if (bDrawNav)
+    {
+        SYS_EDITOR.Render_NavCells(m_upDebugRenderer.get());
     }
 
     m_upDebugRenderer->End();

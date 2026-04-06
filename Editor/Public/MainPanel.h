@@ -32,6 +32,7 @@ public :
     void Set_Playing(_bool bPlaying) { m_bPlaying = bPlaying; }
 
     void On_SceneChanged(Engine::EVENT_DATA& event);
+    EDITOR_PICK_MODE Get_NavMode() const;
 
 private:
     void Build_Default_Layout();
@@ -64,6 +65,8 @@ private:
     _bool m_bPlaying = false;
     _bool m_bSceneStarted = false;
     _bool m_bForceSceneView = false;
+
+    EDITOR_PICK_MODE        m_ePickMode = EDITOR_PICK_MODE::NORMAL;
 
     static constexpr const char* PANEL_HIERARCHY = "Hierarchy";
     static constexpr const char* PANEL_INSPECTOR = "Inspector";

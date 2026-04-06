@@ -17,6 +17,7 @@
 #include "Engine_Math.h"
 #include "Render_Context.h"
 #include "MeshRenderer.h"
+#include "Debug_Renderer.h"
 
 IMPLEMENT_SINGLETON(CEditor_System)
 
@@ -30,7 +31,7 @@ CEditor_System::~CEditor_System()
 }
 
 
-HRESULT CEditor_System::Initialize(const std::filesystem::path& assetRoot)
+HRESULT CEditor_System::Initialize(const std::filesystem::path& assetRoot, ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     m_pathAsset = assetRoot;
 
@@ -52,6 +53,12 @@ void CEditor_System::Update(_float fDT)
 
     if (m_bDebugCam/* || (m_pCurScene != nullptr && (m_pCurScene->Get_State() != SCENE_STATE::PLAY))*/)
     	Submit_DebugCamera();
+}
+
+void CEditor_System::Render()
+{
+
+
 }
 
 /* NOTE : 에디터 시작 시점에 기본 씬(Untitled)으로 시작한다. */
@@ -449,6 +456,7 @@ void CEditor_System::Pick_SceneView(_uint px, _uint py, _uint vpW, _uint vpH)
 	}
 }
 
+
 void CEditor_System::Build_SceneView_Matrices()
 {
     /* 방향 계산 */
@@ -569,5 +577,169 @@ void CEditor_System::Update_Input(_float fDT)
         m_vCamPos.x += vMove.x * fTargetSpeed * fDT;
         m_vCamPos.y += vMove.y * fTargetSpeed * fDT;
         m_vCamPos.z += vMove.z * fTargetSpeed * fDT;
+    }
+}
+
+/* 스크린 좌표 -> 클릭 위치  */
+_bool CEditor_System::Pick_Cell(_uint px, _uint py, _uint vpW, _uint vpH, _float3& vOutPoint)
+{
+    const float ndcX = (2.0f * (((float)px + 0.5f) / (float)vpW)) - 1.0f;
+    const float ndcY = 1.0f - (2.0f * (((float)py + 0.5f) / (float)vpH));
+
+    const _matrix V = Engine::Math::Load(m_matCamView);
+    const _matrix P = Engine::Math::Load(m_matCamProj);
+
+    const _matrix invVP = Engine::Math::Matrix_Inverse(V * P);
+
+    const _float3 pNear = Engine::Math::TransformCoord(_float3{ ndcX, ndcY, 0.f }, invVP);
+    const _float3 pFar = Engine::Math::TransformCoord(_float3{ ndcX, ndcY, 1.f }, invVP);
+
+    const _float3 rayOrigin = pNear;
+
+    _float3 rayDir =
+    {
+        pFar.x - pNear.x,
+        pFar.y - pNear.y,
+        pFar.z - pNear.z
+    };
+    rayDir = Engine::Math::Normalize(rayDir);
+
+    if (fabsf(rayDir.y) < 1e-6f)
+        return false;
+
+    const float t = (m_fNavCellY - rayOrigin.y) / rayDir.y;
+    if (t < 0.f)
+        return false;
+
+    vOutPoint.x = rayOrigin.x + rayDir.x * t;
+    vOutPoint.y = m_fNavCellY;
+    vOutPoint.z = rayOrigin.z + rayDir.z * t;
+
+    return true;
+}
+
+_int CEditor_System::Find_Or_Add_NavPoint(const _float3& vPoint)
+{
+    const _float fSnapRangeSq = m_fPointSnapRange * m_fPointSnapRange;
+
+    for (_uint i = 0; i < (_uint)m_vecNavPoints.size(); ++i)
+    {
+        const _float3& vNavPoint = m_vecNavPoints[i].vPos;
+
+        const _float fDeltaX = vNavPoint.x - vPoint.x;
+        const _float fDeltaZ = vNavPoint.z - vPoint.z;
+        const _float fDistSq = fDeltaX * fDeltaX + fDeltaZ * fDeltaZ;
+
+        /* 같은 점 */
+        if (fDistSq <= fSnapRangeSq)
+            return (_int)i;
+    }
+
+    /* 새로운 점 추가 */
+    NAV_POINT tNavPoint{};
+    tNavPoint.vPos = vPoint;
+
+    m_vecNavPoints.push_back(tNavPoint);
+
+    return (_int)m_vecNavPoints.size() - 1;
+}
+
+void CEditor_System::Add_CellPoint(const _float3& vPoint)
+{
+    if (m_iPickedPointCount >= 3)
+        return;
+
+    const _int iPointIndex = Find_Or_Add_NavPoint(vPoint);
+
+    for (_int i = 0; i < m_iPickedPointCount; ++i)
+    {
+        if (m_iPickedPointIndices[i] == iPointIndex)
+            return;
+    }
+
+    m_iPickedPointIndices[m_iPickedPointCount] = iPointIndex;
+    ++m_iPickedPointCount;
+
+    if (m_iPickedPointCount < 3)
+        return;
+
+    const _int iPointA = m_iPickedPointIndices[0];
+    const _int iPointB = m_iPickedPointIndices[1];
+    const _int iPointC = m_iPickedPointIndices[2];
+
+    const _float3& vA = m_vecNavPoints[iPointA].vPos;
+    const _float3& vB = m_vecNavPoints[iPointB].vPos;
+    const _float3& vC = m_vecNavPoints[iPointC].vPos;
+
+    const _float fCross =
+        (vB.x - vA.x) * (vC.z - vA.z) -
+        (vB.z - vA.z) * (vC.x - vA.x);
+
+    if (fabsf(fCross) < 1e-6f)
+    {
+        Clear_PickedCellPoints();
+        return;
+    }
+
+    /* 셀 생성 */
+    NAV_CELL tCell{};
+
+    if (fCross > 0.f)
+    {
+        tCell = NAV_CELL(iPointA, iPointB, iPointC, (_int)m_vecNavCells.size());
+    }
+    else
+    {
+        tCell = NAV_CELL(iPointA, iPointC, iPointB, (_int)m_vecNavCells.size());
+    }
+
+    m_vecNavCells.push_back(tCell);
+
+    Clear_PickedCellPoints();
+}
+
+void CEditor_System::Clear_PickedCellPoints()
+{
+    m_iPickedPointIndices[0] = -1;
+    m_iPickedPointIndices[1] = -1;
+    m_iPickedPointIndices[2] = -1;
+    m_iPickedPointCount = 0;
+}
+
+void CEditor_System::Render_NavCells(CDebug_Renderer* pDebugRenderer)
+{
+    /* ---------------- 완성된 Cell ---------------- */
+    for (const NAV_CELL& tCell : m_vecNavCells)
+    {
+        const _int iPointA = tCell.iPoints[0];
+        const _int iPointB = tCell.iPoints[1];
+        const _int iPointC = tCell.iPoints[2];
+
+        if (iPointA < 0 || iPointB < 0 || iPointC < 0)
+            continue;
+
+        if (iPointA >= (_int)m_vecNavPoints.size() ||
+            iPointB >= (_int)m_vecNavPoints.size() ||
+            iPointC >= (_int)m_vecNavPoints.size())
+            continue;
+
+        _float3 vA = m_vecNavPoints[iPointA].vPos;
+        _float3 vB = m_vecNavPoints[iPointB].vPos;
+        _float3 vC = m_vecNavPoints[iPointC].vPos;
+
+        vA.y += 0.05f;
+        vB.y += 0.05f;
+        vC.y += 0.05f;
+
+        pDebugRenderer->Draw_NavCell(vA, vB, vC, DirectX::Colors::Lime);
+    }
+
+    /* ---------------- 전체 Point ---------------- */
+    for (const NAV_POINT& tPoint : m_vecNavPoints)
+    {
+        _float3 vDrawPos = tPoint.vPos;
+        vDrawPos.y += 0.07f;
+
+        pDebugRenderer->Draw_NavPoint(vDrawPos, 0.3f, DirectX::Colors::Yellow);
     }
 }

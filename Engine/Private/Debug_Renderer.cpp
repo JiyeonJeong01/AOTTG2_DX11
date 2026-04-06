@@ -180,6 +180,49 @@ void CDebug_Renderer::Draw_AABB(const AABB& aabb, FXMVECTOR vColor)
     DX::Draw(m_pBatch.get(), tBox, vColor);
 }
 
+void CDebug_Renderer::Draw_Line(const _float3& vStart, const _float3& vEnd, FXMVECTOR vColor)
+{
+    if (!m_bBegun || !m_pBatch)
+        return;
+
+    DirectX::VertexPositionColor v0;
+    v0.position = { vStart.x, vStart.y, vStart.z };
+    XMStoreFloat4(&v0.color, vColor);
+
+    DirectX::VertexPositionColor v1;
+    v1.position = { vEnd.x, vEnd.y, vEnd.z };
+    XMStoreFloat4(&v1.color, vColor);
+
+    m_pBatch->DrawLine(v0, v1);
+}
+
+void CDebug_Renderer::Draw_NavCell(const _float3& vA, const _float3& vB, const _float3& vC, FXMVECTOR vColor)
+{
+    if (!m_bBegun || !m_pBatch)
+        return;
+
+    DX::DrawTriangle(
+        m_pBatch.get(),
+        XMLoadFloat3(&vA),
+        XMLoadFloat3(&vB),
+        XMLoadFloat3(&vC),
+        vColor);
+}
+
+void CDebug_Renderer::Draw_NavPoint(const _float3& vPos, _float fSize, FXMVECTOR vColor)
+{
+    if (!m_bBegun || !m_pBatch)
+        return;
+
+    const _float3 vLeft = { vPos.x - fSize, vPos.y, vPos.z };
+    const _float3 vRight = { vPos.x + fSize, vPos.y, vPos.z };
+    const _float3 vDown = { vPos.x, vPos.y, vPos.z - fSize };
+    const _float3 vUp = { vPos.x, vPos.y, vPos.z + fSize };
+
+    Draw_Line(vLeft, vRight, vColor);
+    Draw_Line(vDown, vUp, vColor);
+}
+
 std::unique_ptr<CDebug_Renderer> CDebug_Renderer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     std::unique_ptr<CDebug_Renderer> pInstance = std::unique_ptr<CDebug_Renderer>(new CDebug_Renderer(pDevice, pContext));

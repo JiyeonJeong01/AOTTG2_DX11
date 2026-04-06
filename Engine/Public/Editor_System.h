@@ -5,9 +5,11 @@
 #include "BuiltIn_GUID.h"
 #include "Event.h"
 #include "GameObject_Event.h"
+#include "Nav_Struct.h"
+#include "Debug_Renderer.h"
 
 NS_BEGIN(Engine)
-class CTransform_Processor;
+    class CTransform_Processor;
 class CGameObject;
 
 class ENGINE_DLL CEditor_System final
@@ -15,8 +17,9 @@ class ENGINE_DLL CEditor_System final
     DECLARE_SINGLETON(CEditor_System)
 
 public:
-    HRESULT Initialize(const std::filesystem::path& assetRoot);
+    HRESULT Initialize(const std::filesystem::path& assetRoot, ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     void    Update(_float fDT);
+    void    Render();
 
 /* -------------------- Scene -------------------- */
 public:
@@ -88,6 +91,26 @@ private :
     OBJECT_HANDLE                   m_hSelectedObject{};
     CEvent<GAMEOBJECT_EVENT_DATA&>  m_OnPicking{};
     _bool                           m_bDebugCam = true;
+
+
+/* -------------------- Nav Edit -------------------- */
+private:
+    std::vector<NAV_POINT> m_vecNavPoints;                              // 전체 Nav 점 목록
+    std::vector<NAV_CELL>  m_vecNavCells;                               // 삼각형 셀 목록
+            
+    _int                   m_iPickedPointIndices[3] = { -1, -1, -1 };   // 지금 찍는 중인 점 세 개의 인덱스 임시 저장
+    _int                   m_iPickedPointCount = 0;                     // 현재 몇 개 찍었는지
+        
+    _float                 m_fNavCellY = 0.f;
+    _float                 m_fPointSnapRange = 0.1f;                    // 이 범위 내면 같은 점으로 판단
+
+
+public:
+    _bool   Pick_Cell(_uint px, _uint py, _uint vpW, _uint vpH, _float3& vOutPoint);
+    _int    Find_Or_Add_NavPoint(const _float3& vPoint);
+    void    Add_CellPoint(const _float3& vPoint);
+    void    Clear_PickedCellPoints();
+    void    Render_NavCells(CDebug_Renderer* pDebugRenderer);
 };
 
 NS_END

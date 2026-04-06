@@ -517,6 +517,9 @@
       <Filter>98. Util</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Uniform_Grid.h" />
+    <ClInclude Include="..\Public\Nav_Struct.h">
+      <Filter>99. Defines\Engine_Struct</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">

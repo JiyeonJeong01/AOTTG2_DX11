@@ -13,6 +13,8 @@
 #include "Editor_Util.h"
 #include "RectTransform.h"
 
+#include "MainPanel.h"
+
 
 NS_BEGIN(Editor)
     CScenePanel::CScenePanel(const std::string& strPanelName)
@@ -22,12 +24,14 @@ NS_BEGIN(Editor)
 
 CScenePanel::~CScenePanel() = default;
 
-HRESULT CScenePanel::Initialize(CHierarchyPanel* pHierarchy)
+HRESULT CScenePanel::Initialize(CHierarchyPanel* pHierarchy, CMainPanel* pMainPanel)
 {
     pHierarchy->m_OnPrimarySelectionChanged.Add_Listener(&CScenePanel::Set_Target, this);
 
     SYS_EDITOR.Update_SceneView_State((_float)m_FIXEDW, (_float)m_FIXEDH);
     SYS_EDITOR.Toggle_DebugCamera(true);
+
+    m_pMainPanel = pMainPanel;
 
     m_pGizmo = CGizmo::Create();
     return S_OK;
@@ -222,10 +226,19 @@ void CScenePanel::Draw_Viewport()
                 const _uint px = (_uint)(u * (float)m_FIXEDW);
                 const _uint py = (_uint)(v * (float)m_FIXEDH);
 
-                SYS_EDITOR.Pick_SceneView(px, py, m_FIXEDW, m_FIXEDH);
+                if (m_pMainPanel &&  m_pMainPanel->Get_NavMode() == EDITOR_PICK_MODE::NAV_EDIT)
+                {
+                    _float3 vPoint{};
+                    if (true == SYS_EDITOR.Pick_Cell(px, py, m_FIXEDW, m_FIXEDH, vPoint))
+                        SYS_EDITOR.Add_CellPoint(vPoint);
+                }
+                else
+                {
+                    SYS_EDITOR.Pick_SceneView(px, py, m_FIXEDW, m_FIXEDH);
+                }
             }
         }
-        else 
+        else
         {
             if (!bGizmoUsing)
                 m_ShowSceneGizmo = false;
@@ -278,10 +291,10 @@ void CScenePanel::Render_Scene(_uint w, _uint h)
 
 }
 
-std::unique_ptr<CScenePanel> CScenePanel::Create(const std::string& strPanelName, CHierarchyPanel* pHierarchy)
+std::unique_ptr<CScenePanel> CScenePanel::Create(const std::string& strPanelName, CHierarchyPanel* pHierarchy, CMainPanel* pMainPanel)
 {
     auto p = std::make_unique<CScenePanel>(strPanelName);
-    if (FAILED(p->Initialize(pHierarchy)))
+    if (FAILED(p->Initialize(pHierarchy, pMainPanel)))
         return nullptr;
     return p;
 }

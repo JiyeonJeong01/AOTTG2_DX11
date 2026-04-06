@@ -20,6 +20,9 @@ public:
     void Draw_Collider(const COLLIDER_PROXY_DATA& tProxy);
     void Draw_AABB(const AABB& aabb, FXMVECTOR vColor);
 
+    void Draw_NavCell(const _float3& vA, const _float3& vB, const _float3& vC, FXMVECTOR vColor);
+    void Draw_NavPoint(const _float3& vPos, _float fSize, FXMVECTOR vColor);
+    void Draw_Line(const _float3& vStart, const _float3& vEnd, FXMVECTOR vColor);
 private:
     void Draw_Box(const COLLIDER_PROXY_DATA& tProxy);
     void Draw_Sphere(const COLLIDER_PROXY_DATA& tProxy);

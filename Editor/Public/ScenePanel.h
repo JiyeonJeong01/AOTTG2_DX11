@@ -13,6 +13,7 @@ NS_BEGIN(Editor)
 
 class CGizmo;
 class CHierarchyPanel;
+class CMainPanel;
 
 class CScenePanel final : public CEditorPanel
 {
@@ -21,7 +22,7 @@ public:
     ~CScenePanel() override;
 
 public:
-    HRESULT Initialize(CHierarchyPanel* pHierarchy);
+    HRESULT Initialize(CHierarchyPanel* pHierarchy, CMainPanel* pMainPanel);
     void    Update() override;
     void    Render() override;
 
@@ -51,12 +52,14 @@ private:
 
 private:
     // cached SRV ptr for ImGui::Image
-    ID3D11ShaderResourceView* m_pSceneSRV = nullptr;
-    std::unique_ptr<CGizmo> m_pGizmo;
+    ID3D11ShaderResourceView*   m_pSceneSRV = nullptr;
+    std::unique_ptr<CGizmo>     m_pGizmo;
     _bool                       m_ShowSceneGizmo = true;
 
+    CMainPanel*                 m_pMainPanel = nullptr;
+
 public:
-    static std::unique_ptr<CScenePanel> Create(const std::string& strPanelName, CHierarchyPanel* pHierarchy);
+    static std::unique_ptr<CScenePanel> Create(const std::string& strPanelName, CHierarchyPanel* pHierarchy, CMainPanel* pMainPanel);
 };
 
 NS_END

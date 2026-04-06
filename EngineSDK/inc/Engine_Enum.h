@@ -37,7 +37,7 @@ namespace Engine
     enum class PARAM_TYPE : uint8_t         { FLOAT, FLOAT4, FLOAT4X4, TEXTURE_HANDLE };
     enum class MODEL_TYPE : uint8_t         { NONANIM = 0, ANIM, };
     enum class MESH_MODE : uint8_t          { NONE = 0, PARTS, ATTACH };
-    enum class DEBUG_DRAW : uint8_t         { NONE = 0, ALL, SELECT, ALL_GRID, SELECT_GRID };
+    enum class DEBUG_DRAW : uint8_t         { NONE = 0, ALL, SELECT, ALL_GRID, SELECT_GRID, ALL_NAV, SELECT_NAV, NAV };
 
     /* --- Physics --- */
 	enum class SHAPE : uint8_t              { BOX, SPHERE, PLANE, CAPSULE, END };

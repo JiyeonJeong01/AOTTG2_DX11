@@ -33,7 +33,7 @@ HRESULT CMainPanel::Initialize()
     auto pProject = CProjectPanel::Create(PANEL_PROJECT);
     auto pInspector = CInspectorPanel::Create(PANEL_INSPECTOR, pHierarchy.get(), pProject.get());
     auto pProfile = CProfilerPanel::Create(PANEL_PROFILE);
-    auto pScene = CScenePanel::Create(PANEL_SCENE, pHierarchy.get());
+    auto pScene = CScenePanel::Create(PANEL_SCENE, pHierarchy.get(), this);
     auto pResource = CResourcePanel::Create(PANEL_RESOURCE);
 
     Add_Panel(std::move(pConsole));
@@ -434,7 +434,7 @@ void CMainPanel::Draw_Toolbar()
     ImGui::BeginChild("##MainToolbar", ImVec2(0, 34.f), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
     const _float button_size = 70.0f;
-    const _float checkbox_size = 200.0f;
+    const _float checkbox_size = 250.0f;
     const _float spacing = ImGui::GetStyle().ItemSpacing.x;
     const _float total_width = button_size * 3 + spacing * 2;
 
@@ -452,6 +452,9 @@ void CMainPanel::Draw_Toolbar()
             DEBUG_DRAW::SELECT,
             DEBUG_DRAW::ALL_GRID,
             DEBUG_DRAW::SELECT_GRID,
+            DEBUG_DRAW::ALL_NAV,
+            DEBUG_DRAW::SELECT_NAV,
+            DEBUG_DRAW::NAV,
         };
 
         for (DEBUG_DRAW eDraw : arrDebugDraw)
@@ -488,6 +491,18 @@ void CMainPanel::Draw_Toolbar()
                 m_bPlaying = true;
                 SYS_EDITOR.Toggle_DebugCamera(false);
             }
+            ImGui::SameLine(0, 20.0f);
+            bool bNavEdit = (m_ePickMode == EDITOR_PICK_MODE::NAV_EDIT);
+            if (ImGui::Checkbox("NAV", &bNavEdit))
+            {
+                if (bNavEdit)
+                    m_ePickMode = EDITOR_PICK_MODE::NAV_EDIT;
+                else
+                    m_ePickMode = EDITOR_PICK_MODE::NORMAL;
+            }
+
+            ImGui::SameLine();
+
         }
         else
         {
@@ -553,6 +568,11 @@ void CMainPanel::On_SceneChanged(Engine::EVENT_DATA& event)
 {
     SCENECHANGE_EVENT_DATA& onSceneChanged = SCAST(SCENECHANGE_EVENT_DATA&, event);
     m_pCurScene = onSceneChanged.m_pNewScene;
+}
+
+EDITOR_PICK_MODE CMainPanel::Get_NavMode() const
+{
+    return m_ePickMode;
 }
 
 void CMainPanel::Build_Default_Layout()

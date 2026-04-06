@@ -91,7 +91,7 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
     IF_FAIL_RETURN_MSG_BREAK(SYS_RENDER.Initialize(m_pDevice, m_pContext, iWidth, iHeight), E_FAIL, "Renderer System failed Initialize");
 
     /* --- Editor_System --- */
-    IF_FAIL_RETURN_MSG_BREAK(SYS_EDITOR.Initialize(ProjectConfig::PATH + ProjectConfig::ROOT), E_FAIL, "Editor System failed Initialize");
+    IF_FAIL_RETURN_MSG_BREAK(SYS_EDITOR.Initialize(ProjectConfig::PATH + ProjectConfig::ROOT, m_pDevice, m_pContext), E_FAIL, "Editor System failed Initialize");
 
     /* --- GameInstance --- */
     IF_FAIL_RETURN_MSG_BREAK(GAME_INSTANCE.Initialize(m_pDevice, m_pContext), E_FAIL, "GAME_INSTANCE failed Initialize");

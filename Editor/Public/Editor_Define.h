@@ -34,6 +34,7 @@ namespace Editor
 
     enum class GIZMO_MODE : uint8_t     { TRANSLATE, ROTATE, SCALE };
     enum class GIZMO_SPACE :uint8_t    { LOCAL, WORLD };
+    enum class EDITOR_PICK_MODE : uint8_t { NORMAL = 0,  NAV_EDIT };
 
 }
 
