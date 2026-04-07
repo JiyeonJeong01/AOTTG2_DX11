@@ -1,4 +1,5 @@
 ﻿#include "MeshRenderer.h"
+#include "Component_System.h"
 
 NS_BEGIN(Engine)
 
@@ -67,4 +68,68 @@ float CMeshRenderer::Get_SortZ() const
     return m_pData->sortZ;
 }
 
+void CMeshRenderer::Set_Mode(MESH_MODE e)
+{
+    if (!_Data())
+        return;
+
+    _Data()->eMode = e;
+}
+
+void CMeshRenderer::Set_Particle(uint32_t hParticle)
+{
+    if (!_Data())
+        return;
+
+    _Data()->hParticle = hParticle;
+}
+
+void CMeshRenderer::Set_ParticlePlaying(_bool bPlaying)
+{
+    if (!_Data())
+        return;
+
+    _Data()->bParticlePlaying = bPlaying;
+}
+
+void CMeshRenderer::Set_ParticlePivot(const _float3& vPivot)
+{
+    if (!_Data())
+        return;
+
+    _Data()->vParticlePivot = vPivot;
+}
+
+MESH_MODE CMeshRenderer::Get_Mode() const
+{
+    if (!_Data())
+        return MESH_MODE::NONE;
+
+    return _Data()->eMode;
+}
+
+uint32_t CMeshRenderer::Get_Particle() const
+{
+    if (!_Data())
+        return INVALID_HANDLE_UINT;
+
+    return _Data()->hParticle;
+}
+
+_bool CMeshRenderer::Get_ParticlePlaying() const
+{
+    if (!_Data())
+        return false;
+
+    return _Data()->bParticlePlaying;
+}
+
+const _float3& CMeshRenderer::Get_ParticlePivot() const
+{
+    static const _float3 vDefault{};
+    if (!_Data())
+        return vDefault;
+
+    return _Data()->vParticlePivot;
+}
 NS_END

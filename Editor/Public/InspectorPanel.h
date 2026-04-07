@@ -105,6 +105,7 @@ private:
     MESH_MODE       m_eEditMode = MESH_MODE::NONE;
     _bool           m_bEditModeInitialized = false;
     std::string     m_strEditAttachBoneName = "";
+    uint32_t        m_iEditParticleHandle = INVALID_HANDLE_UINT;
 
     /* Transform */
     _float3      m_vCachedRotationEuler{};

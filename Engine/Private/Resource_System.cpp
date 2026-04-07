@@ -29,6 +29,7 @@ HRESULT CResource_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext*
     m_Textures.emplace_back();
     m_Models.emplace_back();
     m_Fonts.emplace_back();
+    m_Particles.emplace_back();
 
     return S_OK;
 }
@@ -110,6 +111,43 @@ uint32_t CResource_System::Load_Font(const ASSET_GUID& tGUID)
     m_FontGUIDMap[tGUID] = handle;
 
     return handle;
+}
+
+uint32_t CResource_System::Load_Particle(const ASSET_GUID& tGUID)
+{
+    auto it = m_ParticleGUIDMap.find(tGUID);
+    if (it != m_ParticleGUIDMap.end())
+        return it->second;
+
+    std::filesystem::path particlePath = SYS_ASSET.Get_Asset_Path(tGUID);
+    IF_TRUE_RETURN_MSG_BREAK(particlePath.empty(), INVALID_HANDLE_UINT,
+        "Particle Load Failed: GUID not found in Registry.");
+
+    PARTICLE_ENTRY entry{};
+    IF_FAIL_RETURN_MSG_BREAK(CMaterialBuilder::Load_ParticleDesc(particlePath, entry), INVALID_HANDLE_UINT,
+        "Load_Particle failed");
+
+    /* 파일 내부 GUID와 요청 GUID가 다르면 방어 */
+    IF_TRUE_RETURN_MSG_BREAK(entry.tGUID != tGUID, INVALID_HANDLE_UINT,
+        "Particle GUID mismatch.");
+
+    entry.hTexture = Load_Texture(entry.tTextureGUID);
+    IF_TRUE_RETURN_MSG_BREAK(entry.hTexture == INVALID_HANDLE_UINT, INVALID_HANDLE_UINT,
+        "Particle texture load failed.");
+
+    uint32_t handle = static_cast<uint32_t>(m_Particles.size());
+    m_Particles.push_back(std::move(entry));
+    m_ParticleGUIDMap[tGUID] = handle;
+
+    return handle;
+}
+
+PARTICLE_ENTRY* CResource_System::Get_Particle(uint32_t handle)
+{
+    if (handle == INVALID_HANDLE_UINT || handle >= m_Particles.size())
+        return nullptr;
+
+    return &m_Particles[handle];
 }
 
 FONT_ENTRY* CResource_System::Get_Font(uint32_t handle)

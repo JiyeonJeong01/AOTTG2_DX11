@@ -6,6 +6,7 @@
 
 #include "Attacher.h"
 #include "CameraController.h"
+#include "Environment_Controller.h"
 #include "FreeCam.h"
 #include "GameManager.h"
 #include "GroundChecker.h"
@@ -37,6 +38,10 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\CameraController.script");
         handler.Register_VTable(guid, ScriptBinder<CCameraController>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Environment_Controller.script");
+        handler.Register_VTable(guid, ScriptBinder<CEnvironment_Controller>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\FreeCam.script");

@@ -25,6 +25,7 @@
     <ClInclude Include="..\Public\Attacher.h" />
     <ClInclude Include="..\Public\CameraController.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
+    <ClInclude Include="..\Public\Environment_Controller.h" />
     <ClInclude Include="..\Public\HitBox.h" />
     <ClInclude Include="..\Public\HurtBox.h" />
     <ClInclude Include="..\Public\NormalTitanState_Dead.h" />
@@ -84,6 +85,7 @@
   <ItemGroup>
     <ClCompile Include="..\Private\Attacher.cpp" />
     <ClCompile Include="..\Private\CameraController.cpp" />
+    <ClCompile Include="..\Private\Environment_Controller.cpp" />
     <ClCompile Include="..\Private\HitBox.cpp" />
     <ClCompile Include="..\Private\HurtBox.cpp" />
     <ClCompile Include="..\Private\NormalTitanState_Dead.cpp" />

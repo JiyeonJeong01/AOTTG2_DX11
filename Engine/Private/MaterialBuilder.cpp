@@ -187,4 +187,150 @@ HRESULT CMaterialBuilder::Load_Default_VTXTEX(MATERIAL_ENTRY& outDesc)
     return S_OK;
 }
 
+HRESULT CMaterialBuilder::Load_ParticleDesc(const std::filesystem::path& filePath, PARTICLE_ENTRY& outDesc)
+{
+    std::ifstream ifs(filePath);
+    if (!ifs.is_open())
+        return E_FAIL;
+
+    json j;
+    try
+    {
+        ifs >> j;
+    }
+    catch (...)
+    {
+        return E_FAIL;
+    }
+
+    outDesc = PARTICLE_ENTRY{};
+
+    /* 필수값 : GUID */
+    if (!ReadGuid(j, "GUID", outDesc.tGUID))
+        return E_FAIL;
+
+    /* 필수값 : TextureGUID */
+    if (!ReadGuid(j, "TextureGUID", outDesc.tTextureGUID))
+        return E_FAIL;
+
+    /* 필수값 : MaxParticles */
+    if (!j.contains("MaxParticles") || !j.at("MaxParticles").is_number_unsigned())
+        return E_FAIL;
+    outDesc.iMaxParticles = j.at("MaxParticles").get<_uint>();
+
+    /* 필수값 : LifeTime [min, max] */
+    if (!j.contains("LifeTime") || !j.at("LifeTime").is_array() || j.at("LifeTime").size() != 2)
+        return E_FAIL;
+    {
+        const auto& a = j.at("LifeTime");
+        if (!a[0].is_number() || !a[1].is_number())
+            return E_FAIL;
+
+        outDesc.vLifeTime = _float2(a[0].get<_float>(), a[1].get<_float>());
+    }
+
+    /* 필수값 : Speed [min, max] */
+    if (!j.contains("Speed") || !j.at("Speed").is_array() || j.at("Speed").size() != 2)
+        return E_FAIL;
+    {
+        const auto& a = j.at("Speed");
+        if (!a[0].is_number() || !a[1].is_number())
+            return E_FAIL;
+
+        outDesc.vSpeed = _float2(a[0].get<_float>(), a[1].get<_float>());
+    }
+
+    /* 필수값 : Scale [min, max] */
+    if (!j.contains("Scale") || !j.at("Scale").is_array() || j.at("Scale").size() != 2)
+        return E_FAIL;
+    {
+        const auto& a = j.at("Scale");
+        if (!a[0].is_number() || !a[1].is_number())
+            return E_FAIL;
+
+        outDesc.vScale = _float2(a[0].get<_float>(), a[1].get<_float>());
+    }
+
+    /* 선택값 : Center */
+    if (j.contains("Center"))
+    {
+        const auto& a = j.at("Center");
+        if (!a.is_array() || a.size() != 3)
+            return E_FAIL;
+        if (!a[0].is_number() || !a[1].is_number() || !a[2].is_number())
+            return E_FAIL;
+
+        outDesc.vCenter = _float3(a[0].get<_float>(), a[1].get<_float>(), a[2].get<_float>());
+    }
+    else
+    {
+        outDesc.vCenter = _float3(0.f, 0.f, 0.f);
+    }
+
+    /* 선택값 : Range */
+    if (j.contains("Range"))
+    {
+        const auto& a = j.at("Range");
+        if (!a.is_array() || a.size() != 3)
+            return E_FAIL;
+        if (!a[0].is_number() || !a[1].is_number() || !a[2].is_number())
+            return E_FAIL;
+
+        outDesc.vRange = _float3(a[0].get<_float>(), a[1].get<_float>(), a[2].get<_float>());
+    }
+    else
+    {
+        outDesc.vRange = _float3(0.f, 0.f, 0.f);
+    }
+
+    /* 선택값 : Pivot */
+    if (j.contains("Pivot"))
+    {
+        const auto& a = j.at("Pivot");
+        if (!a.is_array() || a.size() != 3)
+            return E_FAIL;
+        if (!a[0].is_number() || !a[1].is_number() || !a[2].is_number())
+            return E_FAIL;
+
+        outDesc.vPivot = _float3(a[0].get<_float>(), a[1].get<_float>(), a[2].get<_float>());
+    }
+    else
+    {
+        outDesc.vPivot = _float3(0.f, 0.f, 0.f);
+    }
+
+    /* 선택값 : IsLoop */
+    if (j.contains("IsLoop"))
+    {
+        if (!j.at("IsLoop").is_boolean())
+            return E_FAIL;
+
+        outDesc.isLoop = j.at("IsLoop").get<_bool>();
+    }
+    else
+    {
+        outDesc.isLoop = true;
+    }
+
+    /* 선택값 : Simulation */
+    if (j.contains("Simulation"))
+    {
+        if (!j.at("Simulation").is_number_unsigned())
+            return E_FAIL;
+
+        const auto eSim = static_cast<PARTICLE_SIMULATION>(j.at("Simulation").get<uint32_t>());
+        outDesc.eSimulation = eSim;
+    }
+    else
+    {
+        outDesc.eSimulation = PARTICLE_SIMULATION::DROP;
+    }
+
+    /* 런타임 바인딩 값 초기화 */
+    outDesc.hTexture = INVALID_HANDLE_UINT;
+
+    return S_OK;
+}
+
+
 NS_END

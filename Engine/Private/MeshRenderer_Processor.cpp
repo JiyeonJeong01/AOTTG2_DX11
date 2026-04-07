@@ -8,6 +8,7 @@
 #include "GameObject.h"
 #include "Texture.h"
 #include "Animator.h"
+#include "RandomUtil.h"
 
 CMeshRenderer_Processor::CMeshRenderer_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : m_pDevice(pDevice), m_pContext(pContext)
@@ -45,7 +46,26 @@ HRESULT CMeshRenderer_Processor::Late_Initialize()
 
 void CMeshRenderer_Processor::Update(_float fDT)
 {
+    const auto& Pages = m_Pool.GetPages();
 
+    for (const auto& upPage : Pages)
+    {
+        auto* pPage = upPage.get();
+        if (!pPage) continue;
+
+        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        {
+            if (!pPage->Is_Allocated(i))
+                continue;
+            auto* pData = pPage->Get_Ptr(i);
+            if (!pData || !pData->bEnable)
+                continue;
+            if (pData->eMode != MESH_MODE::PARTICLE)
+                continue;
+
+            Update_Particle(pData, fDT);
+        }
+    }
 }
 
 void CMeshRenderer_Processor::LateUpdate(_float fDT)
@@ -67,8 +87,31 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             if (!pPage->Is_Allocated(i))
                 continue;
             auto* pData = pPage->Get_Ptr(i);
-            if (!pData || !pData->bEnable) continue;
-            if (pData->hMesh == 0 || pData->hMaterial == 0)
+            if (!pData || !pData->bEnable)
+                continue;
+
+            /* 파티클 처리 */
+            if (pData->eMode == MESH_MODE::PARTICLE)
+            {
+
+                if (pData->hParticle == INVALID_HANDLE_UINT)
+                    continue;
+
+                if (!Ensure_ParticleRuntime(pData))
+                    continue;
+
+                DRAW_CMD cmd{};
+                cmd.mesh.eMode = MESH_MODE::PARTICLE;
+                cmd.mesh.hTransform = pData->hTransform;
+                cmd.mesh.iParticleRuntime = pData->iParticleRuntime;
+                cmd.eLayer = pData->layer;
+                cmd.mesh.flags = pData->flags;
+
+                outCmds.push_back(std::move(cmd));
+                continue;
+            }
+
+            if (pData->hMesh == INVALID_HANDLE_UINT || pData->hMaterial == INVALID_HANDLE_UINT)
                 continue;
 
             COMPONENT_HANDLE hReferenceAnimator = INVALID_HANDLE;
@@ -114,13 +157,28 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
 
 HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
 {
+    IF_TRUE_RETURN_MSG_BREAK(eComType != COMPONENT_TYPE::MESH_RENDERER, E_FAIL, "Wrong component type.");
+
     MESH_RENDERER_DATA* pData = m_Pool.Get_Data_By_Handle(handle);
     IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "Invalid MeshRenderer handle in Initialize_From_Spec");
 
     const auto* pMeshSpec = SCAST(const MESH_RENDERER_SPEC*, pSpec);
+    IF_NULL_RETURN_MSG_BREAK(pMeshSpec, E_FAIL, "Invalid MeshRenderer spec");
 
-    pData->hMesh = SYS_RESOURCE.Load_Mesh(pMeshSpec->meshGUID);
-    pData->hMaterial = SYS_RESOURCE.Load_Material(pMeshSpec->materialGUID);
+    pData->hMesh = INVALID_HANDLE_UINT;
+    pData->hMaterial = INVALID_HANDLE_UINT;
+    pData->hParticle = INVALID_HANDLE_UINT;
+    pData->iParticleRuntime = INVALID_HANDLE_UINT;
+
+    if (pMeshSpec->meshGUID.Is_Valid())
+        pData->hMesh = SYS_RESOURCE.Load_Mesh(pMeshSpec->meshGUID);
+
+    if (pMeshSpec->materialGUID.Is_Valid())
+        pData->hMaterial = SYS_RESOURCE.Load_Material(pMeshSpec->materialGUID);
+
+    if (pMeshSpec->particleGUID.Is_Valid())
+        pData->hParticle = SYS_RESOURCE.Load_Particle(pMeshSpec->particleGUID);
+
     pData->flags = pMeshSpec->flags;
     pData->layer = pMeshSpec->layer;
     pData->sortZ = pMeshSpec->sortZ;
@@ -129,20 +187,22 @@ HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, C
     pData->eMode = pMeshSpec->eMode;
     pData->strAttachBoneName = pMeshSpec->strAttachBoneName;
 
+    pData->bParticlePlaying = pMeshSpec->bParticlePlaying;
+    pData->vParticlePivot = pMeshSpec->vParticlePivot;
+
     HRESULT hr = S_OK;
 
     if (pData->eMode == MESH_MODE::PARTS)
         hr = Resolve_SkinningReference(handle) ? S_OK : E_FAIL;
-    if (pData->eMode == MESH_MODE::ATTACH)
+    else if (pData->eMode == MESH_MODE::ATTACH)
         hr = Resolve_AttachReference(handle) ? S_OK : E_FAIL;
 
-    IF_FAIL_RETURN_MSG_BREAK(hr, hr, "mesh renderer failed to initialie spec");
+    IF_FAIL_RETURN_MSG_BREAK(hr, hr, "mesh renderer failed to initialize spec");
 
-    return hr;
+    return S_OK;
 }
 
-std::unique_ptr<COMPONENT_SPEC_BASE>
-CMeshRenderer_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
+std::unique_ptr<COMPONENT_SPEC_BASE> CMeshRenderer_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
 {
     IF_TRUE_RETURN_MSG_BREAK(eComType != COMPONENT_TYPE::MESH_RENDERER, nullptr, "Wrong component type.");
 
@@ -151,39 +211,42 @@ CMeshRenderer_Processor::Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hC
 
     auto spec = std::make_unique<MESH_RENDERER_SPEC>();
 
-    if (SYS_RESOURCE.Is_ModelHandle(pData->hMesh))
+    if (pData->hMesh != INVALID_HANDLE_UINT)
     {
-        auto pModel = SYS_RESOURCE.Get_Model(pData->hMesh);
-        if (pModel)
-            spec->meshGUID = pModel->tGUID;
+        if (SYS_RESOURCE.Is_ModelHandle(pData->hMesh))
+        {
+            MODEL_ENTRY* pModel = SYS_RESOURCE.Get_Model(pData->hMesh);
+            if (pModel)
+                spec->meshGUID = pModel->tGUID;
+        }
         else
-            __debugbreak();
-    }
-    else
-    {
-        auto pMesh = SYS_RESOURCE.Get_Mesh(pData->hMesh);
-        if (pMesh)
-            spec->meshGUID = pMesh->tGUID;
-        else
-            __debugbreak();
+        {
+            MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(pData->hMesh);
+            if (pMesh)
+                spec->meshGUID = pMesh->tGUID;
+        }
     }
 
-    MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(pData->hMaterial);
-    if (!pMat)
+    if (pData->hMaterial != INVALID_HANDLE_UINT)
     {
-        CGameObject* pOwner = SYS_GAMEOBJECT.Get_Wrapper(pData->hObject);
-        const std::string_view DEBUGNAME = pOwner->Get_Label();
-
-        spec->materialGUID = DefaultAssetGuid::MATERIAL_UI_DEFAULT;
-        __debugbreak();
+        MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(pData->hMaterial);
+        if (pMat)
+            spec->materialGUID = pMat->tGUID;
     }
-    else
-        spec->materialGUID = pMat->tGUID;
+
+    if (pData->hParticle != INVALID_HANDLE_UINT)
+    {
+        PARTICLE_ENTRY* pParticle = SYS_RESOURCE.Get_Particle(pData->hParticle);
+        if (pParticle)
+            spec->particleGUID = pParticle->tGUID;
+    }
+
+    spec->bParticlePlaying = pData->bParticlePlaying;
+    spec->vParticlePivot = pData->vParticlePivot;
 
     spec->flags = pData->flags;
     spec->layer = pData->layer;
     spec->sortZ = pData->sortZ;
-
     spec->bEnable = pData->bEnable;
 
     spec->eMode = pData->eMode;
@@ -538,6 +601,227 @@ _bool CMeshRenderer_Processor::Resolve_AttachReference(COMPONENT_HANDLE hCompone
     pData->eMode = MESH_MODE::ATTACH;
 
     return true;
+}
+
+void CMeshRenderer_Processor::Update_Particle(MESH_RENDERER_DATA* pData, _float fDT)
+{
+    if (!pData)
+        return;
+
+    if (pData->eMode != MESH_MODE::PARTICLE)
+        return;
+
+    if (pData->bParticlePlaying == false)
+        return;
+
+    if (!Ensure_ParticleRuntime(pData))
+        return;
+
+    PARTICLE_RUNTIME* pRuntime = Get_ParticleRuntime(pData->iParticleRuntime);
+    PARTICLE_ENTRY* pParticle = SYS_RESOURCE.Get_Particle(pData->hParticle);
+
+    if (!pRuntime || !pParticle)
+        return;
+
+    D3D11_MAPPED_SUBRESOURCE mapped{};
+    if (FAILED(m_pContext->Map(pRuntime->pInstanceVB.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped)))
+        return;
+
+    auto* pInstance = To<VTXPARTICLE_INSTANCE*>(mapped.pData);
+
+    for (_uint i = 0; i < pRuntime->iNumInstances; ++i)
+    {
+        /* x : total, y : elapsed */
+        pRuntime->vecInstances[i].vLifeTime.y += fDT;
+
+        if (pParticle->eSimulation == PARTICLE_SIMULATION::DROP)
+        {
+            pRuntime->vecInstances[i].vTranslation.y -= pRuntime->vecSpeeds[i] * fDT;
+        }
+        else if (pParticle->eSimulation == PARTICLE_SIMULATION::SPREAD)
+        {
+            _vector vPos = XMLoadFloat4(&pRuntime->vecInstances[i].vTranslation);
+            _vector vPivot = XMLoadFloat3(&pData->vParticlePivot);
+            _vector vDir = XMVectorSetW(vPos - vPivot, 0.f);
+
+            if (!XMVector3NearEqual(vDir, XMVectorZero(), XMVectorReplicate(0.0001f)))
+            {
+                vPos += XMVector3Normalize(vDir) * pRuntime->vecSpeeds[i] * fDT;
+                XMStoreFloat4(&pRuntime->vecInstances[i].vTranslation, vPos);
+            }
+        }
+
+        /* 라이프 타임 도달 */
+        if (pRuntime->vecInstances[i].vLifeTime.y >= pRuntime->vecInstances[i].vLifeTime.x)
+        {
+            if (pParticle->isLoop)
+            {
+                const _float fScale = CRandomUtil::Get_Float(pParticle->vScale.x, pParticle->vScale.y);
+                pRuntime->vecSpeeds[i] = CRandomUtil::Get_Float(pParticle->vSpeed.x, pParticle->vSpeed.y);
+
+                pRuntime->vecInstances[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
+                pRuntime->vecInstances[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
+                pRuntime->vecInstances[i].vLook = _float4(0.f, 0.f, fScale, 0.f);
+
+                pRuntime->vecInstances[i].vTranslation = _float4(
+                    CRandomUtil::Get_Float(pParticle->vCenter.x - pParticle->vRange.x * 0.5f, pParticle->vCenter.x + pParticle->vRange.x * 0.5f),
+                    CRandomUtil::Get_Float(pParticle->vCenter.y - pParticle->vRange.y * 0.5f, pParticle->vCenter.y + pParticle->vRange.y * 0.5f),
+                    CRandomUtil::Get_Float(pParticle->vCenter.z - pParticle->vRange.z * 0.5f, pParticle->vCenter.z + pParticle->vRange.z * 0.5f),
+                    1.f);
+
+                pRuntime->vecInstances[i].vLifeTime = _float2(
+                    CRandomUtil::Get_Float(pParticle->vLifeTime.x, pParticle->vLifeTime.y),
+                    0.f);
+            }
+        }
+
+        pInstance[i] = pRuntime->vecInstances[i];
+    }
+
+    m_pContext->Unmap(pRuntime->pInstanceVB.Get(), 0);
+}
+
+_bool CMeshRenderer_Processor::Create_ParticleBuffers(PARTICLE_RUNTIME* pRuntime)
+{
+    if (!pRuntime)
+        return false;
+
+    if (pRuntime->iNumInstances == 0 || pRuntime->iInstanceStride == 0)
+        return false;
+
+    VTXPOS vPoint{};
+    vPoint.vPosition = _float3(0.f, 0.f, 0.f);
+
+    D3D11_BUFFER_DESC vbDesc{};
+    vbDesc.ByteWidth = sizeof(VTXPOS);
+    vbDesc.Usage = D3D11_USAGE_DEFAULT;
+    vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    vbDesc.CPUAccessFlags = 0;
+    vbDesc.MiscFlags = 0;
+    vbDesc.StructureByteStride = sizeof(VTXPOS);
+
+    D3D11_SUBRESOURCE_DATA vbData{};
+    vbData.pSysMem = &vPoint;
+
+    if (FAILED(m_pDevice->CreateBuffer(&vbDesc, &vbData, pRuntime->pPointVB.GetAddressOf())))
+        return false;
+
+    D3D11_BUFFER_DESC instDesc{};
+    instDesc.ByteWidth = pRuntime->iInstanceStride * pRuntime->iNumInstances;
+    instDesc.Usage = D3D11_USAGE_DYNAMIC;
+    instDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    instDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    instDesc.MiscFlags = 0;
+    instDesc.StructureByteStride = pRuntime->iInstanceStride;
+
+    D3D11_SUBRESOURCE_DATA instData{};
+    instData.pSysMem = pRuntime->vecInstances.data();
+
+    if (FAILED(m_pDevice->CreateBuffer(&instDesc, &instData, pRuntime->pInstanceVB.GetAddressOf())))
+        return false;
+
+    return true;
+}
+
+_bool CMeshRenderer_Processor::Ensure_ParticleRuntime(MESH_RENDERER_DATA* pData)
+{
+    if (!pData)
+        return false;
+
+    if (pData->hParticle == INVALID_HANDLE_UINT)
+        return false;
+
+    if (pData->iParticleRuntime == INVALID_HANDLE_UINT)
+        pData->iParticleRuntime = Allocate_ParticleRuntime();
+
+    PARTICLE_RUNTIME* pRuntime = Get_ParticleRuntime(pData->iParticleRuntime);
+    if (!pRuntime)
+        return false;
+
+    if (pRuntime->bInitialized)
+        return true;
+
+    PARTICLE_ENTRY* pParticle = SYS_RESOURCE.Get_Particle(pData->hParticle);
+    if (!pParticle || !pParticle->Is_Valid())
+    {
+        Release_ParticleRuntime(pData->iParticleRuntime);
+        pData->iParticleRuntime = INVALID_HANDLE_UINT;
+        return false;
+    }
+
+    if (pParticle->hTexture == INVALID_HANDLE_UINT || pParticle->iMaxParticles == 0)
+    {
+        Release_ParticleRuntime(pData->iParticleRuntime);
+        pData->iParticleRuntime = INVALID_HANDLE_UINT;
+        return false;
+    }
+
+    pRuntime->iNumInstances = pParticle->iMaxParticles;
+    pRuntime->vecInstances.resize(pRuntime->iNumInstances);
+    pRuntime->vecSpeeds.resize(pRuntime->iNumInstances);
+    pRuntime->hTexture = pParticle->hTexture;
+
+    for (_uint i = 0; i < pRuntime->iNumInstances; ++i)
+    {
+        const _float fScale = CRandomUtil::Get_Float(pParticle->vScale.x, pParticle->vScale.y);
+        pRuntime->vecSpeeds[i] = CRandomUtil::Get_Float(pParticle->vSpeed.x, pParticle->vSpeed.y);
+
+        pRuntime->vecInstances[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
+        pRuntime->vecInstances[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
+        pRuntime->vecInstances[i].vLook = _float4(0.f, 0.f, fScale, 0.f);
+        pRuntime->vecInstances[i].vTranslation = _float4(
+            CRandomUtil::Get_Float(pParticle->vCenter.x - pParticle->vRange.x * 0.5f, pParticle->vCenter.x + pParticle->vRange.x * 0.5f),
+            CRandomUtil::Get_Float(pParticle->vCenter.y - pParticle->vRange.y * 0.5f, pParticle->vCenter.y + pParticle->vRange.y * 0.5f),
+            CRandomUtil::Get_Float(pParticle->vCenter.z - pParticle->vRange.z * 0.5f, pParticle->vCenter.z + pParticle->vRange.z * 0.5f),
+            1.f);
+
+        pRuntime->vecInstances[i].vLifeTime = _float2(
+            CRandomUtil::Get_Float(pParticle->vLifeTime.x, pParticle->vLifeTime.y),
+            0.f);
+    }
+
+    if (!Create_ParticleBuffers(pRuntime))
+    {
+        Release_ParticleRuntime(pData->iParticleRuntime);
+        pData->iParticleRuntime = INVALID_HANDLE_UINT;
+        return false;
+    }
+
+    pRuntime->bInitialized = true;
+    return true;
+}
+
+uint32_t CMeshRenderer_Processor::Allocate_ParticleRuntime()
+{
+    if (!m_vecFreeParticleRuntime.empty())
+    {
+        const uint32_t iRuntime = m_vecFreeParticleRuntime.back();
+        m_vecFreeParticleRuntime.pop_back();
+
+        m_vecParticleRuntime[iRuntime] = PARTICLE_RUNTIME{};
+        return iRuntime;
+    }
+
+    const uint32_t iRuntime = To<uint32_t>(m_vecParticleRuntime.size());
+    m_vecParticleRuntime.push_back(PARTICLE_RUNTIME{});
+    return iRuntime;
+}
+
+void CMeshRenderer_Processor::Release_ParticleRuntime(uint32_t iRuntime)
+{
+    if (iRuntime == INVALID_HANDLE_UINT || iRuntime >= m_vecParticleRuntime.size())
+        return;
+
+    m_vecParticleRuntime[iRuntime] = PARTICLE_RUNTIME{};
+    m_vecFreeParticleRuntime.push_back(iRuntime);
+}
+
+PARTICLE_RUNTIME* CMeshRenderer_Processor::Get_ParticleRuntime(uint32_t iRuntime)
+{
+    if (iRuntime == INVALID_HANDLE_UINT || iRuntime >= m_vecParticleRuntime.size())
+        return nullptr;
+
+    return &m_vecParticleRuntime[iRuntime];
 }
 
 std::unique_ptr<CMeshRenderer_Processor> CMeshRenderer_Processor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

@@ -74,6 +74,12 @@
     <Filter Include="Common\Attacher">
       <UniqueIdentifier>{cb722e92-1ff7-4688-b7a9-e0169e39c874}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{50213548-4e4d-4c4e-83d7-cc9160b05b6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Environment">
+      <UniqueIdentifier>{4f9c8e1e-a1ab-4a64-93e7-c2f3fe223e2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -259,6 +265,9 @@
     <ClInclude Include="..\Public\Attacher.h">
       <Filter>Common\Attacher</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Environment_Controller.h">
+      <Filter>Game\Environment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -414,6 +423,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Attacher.cpp">
       <Filter>Common\Attacher</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Environment_Controller.cpp">
+      <Filter>Game\Environment</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

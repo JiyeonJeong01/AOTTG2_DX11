@@ -190,6 +190,9 @@
     <Filter Include="01. Utility\04. Component\02. Physics\UniformGrid">
       <UniqueIdentifier>{f350eb42-5611-4d88-b584-f5f484ce1df3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\05. Resource\09. Particle">
+      <UniqueIdentifier>{e4e1c907-0c40-4cd5-b616-ed410d7a7e23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -519,6 +522,9 @@
     <ClInclude Include="..\Public\Uniform_Grid.h" />
     <ClInclude Include="..\Public\Nav_Struct.h">
       <Filter>99. Defines\Engine_Struct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Particle.h">
+      <Filter>01. Utility\05. Resource\09. Particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

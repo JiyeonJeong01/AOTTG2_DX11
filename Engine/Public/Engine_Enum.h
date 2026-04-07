@@ -25,47 +25,48 @@ namespace Engine
         END
     };
 
-    enum                                    { COMPONENT_MAX = static_cast<uint32_t>(COMPONENT_TYPE::END) };
-    enum                                    { COMPONENT_PROCESSOR_MAX = static_cast<uint32_t>(PROCESSOR_ID::END) };
+    enum                                        { COMPONENT_MAX = static_cast<uint32_t>(COMPONENT_TYPE::END) };
+    enum                                        { COMPONENT_PROCESSOR_MAX = static_cast<uint32_t>(PROCESSOR_ID::END) };
 
     /* --- Render --- */
-    enum class DRAW_TYPE    : uint8_t       { MESH = 0, CANVAS, LINE, TEXT };
-    enum class RENDER_LAYER : uint8_t       { PRIORITY = 0, NONBLEND, BLEND, UI, SKY, END };
-    enum RENDER_FLAGS : uint32_t            { RF_NONE = 0, RF_CAST_SHADOW = 1 << 0, RF_RECEIVE_SHADOW = 1 << 1, RF_DISABLE_CULL = 1 << 2, };
-    enum CANVAS_FLAGS : uint32_t            { CF_NONE = 0, CF_CLIP_RECT = 1u << 0, CF_PIXEL_SNAP = 1u << 1, };
-    enum class VERTEX_DECL : uint8_t        { VTXCOL = 0, VTXTEX, VTXNORTEX, VTXMESH, VTXANIMMESH, VTXCUBE, END };
-    enum class PARAM_TYPE : uint8_t         { FLOAT, FLOAT4, FLOAT4X4, TEXTURE_HANDLE };
-    enum class MODEL_TYPE : uint8_t         { NONANIM = 0, ANIM, };
-    enum class MESH_MODE : uint8_t          { NONE = 0, PARTS, ATTACH };
-    enum class DEBUG_DRAW : uint8_t         { NONE = 0, ALL, SELECT, ALL_GRID, SELECT_GRID, ALL_NAV, SELECT_NAV, NAV };
+    enum class DRAW_TYPE    : uint8_t           { MESH = 0, CANVAS, LINE, TEXT };
+    enum class RENDER_LAYER : uint8_t           { PRIORITY = 0, NONBLEND, BLEND, UI, SKY, END };
+    enum RENDER_FLAGS : uint32_t                { RF_NONE = 0, RF_CAST_SHADOW = 1 << 0, RF_RECEIVE_SHADOW = 1 << 1, RF_DISABLE_CULL = 1 << 2, };
+    enum CANVAS_FLAGS : uint32_t                { CF_NONE = 0, CF_CLIP_RECT = 1u << 0, CF_PIXEL_SNAP = 1u << 1, };
+    enum class VERTEX_DECL : uint8_t            { VTXCOL = 0, VTXTEX, VTXNORTEX, VTXMESH, VTXANIMMESH, VTXCUBE, VTXPOS, VTXPARTICLEPOINT, END };
+    enum class PARAM_TYPE : uint8_t             { FLOAT, FLOAT4, FLOAT4X4, TEXTURE_HANDLE };
+    enum class MODEL_TYPE : uint8_t             { NONANIM = 0, ANIM, };
+    enum class MESH_MODE : uint8_t              { NONE = 0, PARTS, ATTACH, PARTICLE };
+    enum class DEBUG_DRAW : uint8_t             { NONE = 0, ALL, SELECT, ALL_GRID, SELECT_GRID, ALL_NAV, SELECT_NAV, NAV };
+    enum class PARTICLE_SIMULATION : uint8_t    { NONE = 0, DROP, SPREAD, };
 
     /* --- Physics --- */
-	enum class SHAPE : uint8_t              { BOX, SPHERE, PLANE, CAPSULE, END };
-	enum class BODY_TYPE : uint8_t          { DYNAMIC, KINEMATIC, END };
-	enum class COLLISION : uint8_t          { ENTER, STAY, EXIT, END };
+	enum class SHAPE : uint8_t                  { BOX, SPHERE, PLANE, CAPSULE, END };
+	enum class BODY_TYPE : uint8_t              { DYNAMIC, KINEMATIC, END };
+	enum class COLLISION : uint8_t              { ENTER, STAY, EXIT, END };
 
     /* --- UI --- */
-	enum class UI_TYPE : uint8_t            { BUTTON, IMAGE, PANEL, SLOT, END };
-    enum class UI_BTN_STATE : uint8_t       { Normal, Hover, Pressed, Disabled };
+	enum class UI_TYPE : uint8_t                { BUTTON, IMAGE, PANEL, SLOT, END };
+    enum class UI_BTN_STATE : uint8_t           { Normal, Hover, Pressed, Disabled };
 
     /* --- Asset --- */
-    enum class ASSET_TYPE : uint8_t         { UNKNOWN = 0, FOLDER, TEXTURE, MESH, SHADER, MODEL, MATERIAL, SCENE, PROTOTYPE, SCRIPT, FONT };
-    enum class ASSET_SRC : uint8_t          { FILE, BUILTIN };
+    enum class ASSET_TYPE : uint8_t             { UNKNOWN = 0, FOLDER, TEXTURE, MESH, SHADER, MODEL, MATERIAL, SCENE, PROTOTYPE, SCRIPT, FONT, PARTICLE };
+    enum class ASSET_SRC : uint8_t              { FILE, BUILTIN };
 
     /* --- Scene --- */
-    enum class APP_MODE : uint8_t           { GAME_PLAY = 0, EDITOR_EDIT };
-    enum class SCENE_STATE : uint8_t        { PLAY = 0, PAUSE, EDIT };
+    enum class APP_MODE : uint8_t               { GAME_PLAY = 0, EDITOR_EDIT };
+    enum class SCENE_STATE : uint8_t            { PLAY = 0, PAUSE, EDIT };
 
     /* --- Environment --- */
-    enum class LIGHT_TYPE : uint8_t         { DIRECTIONAL = 0, POINT, SPOT };
+    enum class LIGHT_TYPE : uint8_t             { DIRECTIONAL = 0, POINT, SPOT };
 
     /* ------ LOG ------ */
-	enum class SEVERITY_TYPE : uint8_t      { INFO, WARN, ERR, ASSERTION, END };
-	enum class DOMAIN_TYPE : uint8_t        { ENGINE, CLIENT, EDITOR, END };
+	enum class SEVERITY_TYPE : uint8_t          { INFO, WARN, ERR, ASSERTION, END };
+	enum class DOMAIN_TYPE : uint8_t            { ENGINE, CLIENT, EDITOR, END };
 
     /* ------ INPUT ------ */
-    enum class MOUSE_MOVE_AXIS : uint8_t    { HORIZONTAL, VERTICAL, DEPTH, END };
-    enum class MOUSE_BUTTON : uint8_t       { LEFT, RIGHT, MIDDLE, END };
+    enum class MOUSE_MOVE_AXIS : uint8_t        { HORIZONTAL, VERTICAL, DEPTH, END };
+    enum class MOUSE_BUTTON : uint8_t           { LEFT, RIGHT, MIDDLE, END };
 
     /* --- Utils --- */
     enum class SCRIPT_FIELD_TYPE : uint8_t  { INT = 0, FLOAT, FLOAT2, FLOAT3, FLOAT4, OBJECT_REF, ASSET_GUID, CHAR32 };

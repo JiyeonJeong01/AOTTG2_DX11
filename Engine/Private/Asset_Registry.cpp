@@ -140,6 +140,7 @@ void CAsset_Registry::Distribute_Assets_To_Handlers()
     std::vector<ASSET_GUID> vMesh;
     std::vector<ASSET_GUID> vModel;
     std::vector<ASSET_GUID> vFont;
+    std::vector<ASSET_GUID> vParticle;
 
     std::vector<ASSET_GUID> vPrototype;
     std::vector<std::pair<ASSET_GUID, std::filesystem::path>> vScene;
@@ -199,6 +200,10 @@ void CAsset_Registry::Distribute_Assets_To_Handlers()
             vFont.emplace_back(tGUID.first);
             break;
 
+        case ASSET_TYPE::PARTICLE:
+            vParticle.emplace_back(tGUID.first);
+            break;
+
         default:
             break;
         }
@@ -222,6 +227,9 @@ void CAsset_Registry::Distribute_Assets_To_Handlers()
 
     for (const auto& tGUID : vFont)
         SYS_RESOURCE.Load_Font(tGUID);
+
+    for (const auto& tGUID : vParticle)
+        SYS_RESOURCE.Load_Particle(tGUID);
 
     /* Scene: GUID->Path 등록 */
     for (const auto& it : vScene)
@@ -319,6 +327,9 @@ const ASSET_TYPE CAsset_Registry::Detect_Type(const std::filesystem::path& path,
 
     if (szExt == ".spritefont")
         return ASSET_TYPE::FONT;
+
+    if (szExt == ".particle")
+        return ASSET_TYPE::PARTICLE;
 
     return ASSET_TYPE::UNKNOWN;
 

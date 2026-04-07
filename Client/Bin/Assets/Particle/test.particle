@@ -1,0 +1,13 @@
+{
+  "GUID": "CFF84B0B-FD89-464F-BDEC-F000A1410954",
+  "TextureGUID": "BA0D3CE6-5299-4159-92E0-683D7A88CC8B",
+  "MaxParticles": 2000,
+  "LifeTime": [3.0, 5.0],
+  "Speed": [4.0, 7.0],
+  "Scale": [0.5, 2.0],
+  "Center": [0.0, 0.0, 0.0],
+  "Range": [-200.0, 50.0, 200.0],
+  "Pivot": [0.0, 0.0, 0.0],
+  "IsLoop": true,
+  "Simulation": 1
+}

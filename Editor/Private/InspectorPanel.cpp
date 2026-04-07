@@ -975,12 +975,13 @@ void CInspectorPanel::Draw_MeshRenderer()
 
     if (m_pTarget->Get_Parent() != nullptr)
     {
-        const char* items[] = { "None", "Parts", "Attach" };
+        const char* items[] = { "None", "Parts", "Attach", "Particle" };
 
         if (!m_bEditModeInitialized)
         {
             m_eEditMode = pData->eMode;
             m_strEditAttachBoneName = pData->strAttachBoneName;
+            m_iEditParticleHandle = pData->hParticle;
             m_bEditModeInitialized = true;
         }
 
@@ -1050,6 +1051,25 @@ void CInspectorPanel::Draw_MeshRenderer()
                 }
             }
         }
+        else if (m_eEditMode == MESH_MODE::PARTICLE)
+        {
+            ImGui::Text("Particle Handle: %u", m_iEditParticleHandle);
+
+            Editor_Util::Draw_DropTarget_GUID_Typed(
+                "Particle",
+                "ASSET_GUID",
+                ASSET_TYPE::PARTICLE,
+                [&](const ASSET_GUID& dropped)
+                {
+                    const uint32_t newHandle = SYS_RESOURCE.Load_Particle(dropped);
+                    if (newHandle != INVALID_HANDLE_UINT)
+                    {
+                        m_iEditParticleHandle = newHandle;
+                    }
+                },
+                "Drop Particle Asset"
+            );
+        }
 
 
         ImGui::SameLine();
@@ -1089,7 +1109,32 @@ void CInspectorPanel::Draw_MeshRenderer()
                     m_pMeshRenderer_Processor->Resolve_AttachReference(mr.Get_Handle());
             }
             break;
+            case MESH_MODE::PARTICLE:
+            {
+                if (m_iEditParticleHandle == INVALID_HANDLE_UINT)
+                    break;
+
+                m_pMeshRenderer_Processor->Clear_AttachReference(pMRData);
+                m_pMeshRenderer_Processor->Clear_SkinningReference(pMRData);
+
+                pData->strAttachBoneName.clear();
+                pData->iAttachBoneIdx = INVALID_HANDLE_UINT;
+                pData->matFinalAttach = Math::Identity();
+
+                if (pData->iParticleRuntime != INVALID_HANDLE_UINT)
+                {
+                    m_pMeshRenderer_Processor->Release_ParticleRuntime(pData->iParticleRuntime);
+                    pData->iParticleRuntime = INVALID_HANDLE_UINT;
+                }
+
+                pData->hParticle = m_iEditParticleHandle;
+                pData->bParticlePlaying = true;
+                pData->eMode = MESH_MODE::PARTICLE;
             }
+            break;
+
+            }
+
 
             m_bAttachInputActive = false;
         }

@@ -214,8 +214,10 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::MESH_RENDERER)
 
-    ASSET_GUID      meshGUID{};
+        ASSET_GUID      meshGUID{};
     ASSET_GUID      materialGUID{};
+    ASSET_GUID      particleGUID{};
+
     uint32_t        flags = RF_NONE;
     RENDER_LAYER    layer = RENDER_LAYER::NONBLEND;
     _float          sortZ = 0.f;
@@ -223,6 +225,9 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
 
     MESH_MODE       eMode = MESH_MODE::NONE;
     std::string     strAttachBoneName;
+
+    _bool           bParticlePlaying = false;
+    _float3         vParticlePivot{};
 
     std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
     {
@@ -234,6 +239,8 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
         j["Type"] = SCAST(_uint, Get_Type());
         j["MeshGUID"] = meshGUID.To_String_Utf8();
         j["MaterialGUID"] = materialGUID.To_String_Utf8();
+        j["ParticleGUID"] = particleGUID.To_String_Utf8();
+
         j["Flags"] = flags;
         j["Layer"] = SCAST(uint32_t, layer);
         j["SortZ"] = sortZ;
@@ -241,31 +248,37 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
 
         j["Mode"] = SCAST(uint32_t, eMode);
         j["AttachBoneName"] = strAttachBoneName;
+
+        j["ParticlePlaying"] = bParticlePlaying;
+        j["ParticlePivot"] = { vParticlePivot.x, vParticlePivot.y, vParticlePivot.z };
     }
 
     _bool FromJson(const json& j) override
     {
         if (!Read_SpecType(j, Get_Type()))
             return false;
-        if (!Read_GUID(j, "MeshGUID", meshGUID))
-            return false;
-        if (!Read_GUID(j, "MaterialGUID", materialGUID))
-            return false;
+
+        Read_GUID(j, "MeshGUID", meshGUID);
+        Read_GUID(j, "MaterialGUID", materialGUID);
+        Read_GUID(j, "ParticleGUID", particleGUID);
+
         if (!Read_UInt(j, "Flags", flags))
             return false;
+
         {
             uint32_t layerValue = 0;
             if (!Read_UInt(j, "Layer", layerValue))
                 return false;
             layer = SCAST(RENDER_LAYER, layerValue);
         }
+
         if (!Read_Float(j, "SortZ", sortZ))
             return false;
         if (!Read_Bool(j, "Enabled", bEnable))
             return false;
+
         sortZ = Clamp01(sortZ);
 
-        /* Mesh Mode */
         eMode = MESH_MODE::NONE;
         uint32_t modeValue = To<uint32_t>(eMode);
         if (Read_UInt(j, "Mode", modeValue))
@@ -275,6 +288,16 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
         auto it = j.find("AttachBoneName");
         if (it != j.end() && it->is_string())
             strAttachBoneName = it->get<std::string>();
+
+        Read_Bool(j, "ParticlePlaying", bParticlePlaying);
+
+        auto itPivot = j.find("ParticlePivot");
+        if (itPivot != j.end() && itPivot->is_array() && itPivot->size() == 3)
+        {
+            vParticlePivot.x = (*itPivot)[0].get<_float>();
+            vParticlePivot.y = (*itPivot)[1].get<_float>();
+            vParticlePivot.z = (*itPivot)[2].get<_float>();
+        }
 
         return true;
     }

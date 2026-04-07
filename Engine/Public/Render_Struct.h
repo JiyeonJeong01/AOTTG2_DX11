@@ -94,6 +94,34 @@ typedef struct tagVertexCube
     };
 } VTXCUBE;
 
+typedef struct tagVertexPosition
+{
+    XMFLOAT3			vPosition;
+
+    static const unsigned int iNumElements = 1;
+    static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    };
+} VTXPOS;
+
+typedef struct tagVertexParticlePointInstanceDesc
+{
+    static const unsigned int iNumElements = 6;
+
+    static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA,   0 },
+
+        { "WORLD",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0,  D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+        { "WORLD",    1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+        { "WORLD",    2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+        { "WORLD",    3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+    };
+} VTXPARTICLE_POINTINSTANCE_DESC;
+
 typedef struct ENGINE_DLL tagILDesc
 {
     const D3D11_INPUT_ELEMENT_DESC* pDesc;
@@ -102,12 +130,14 @@ typedef struct ENGINE_DLL tagILDesc
 
 /* Blueprints for gpu to interpret memory chuncks  */
 static constexpr IL_DESC g_IL_TABLE[] = {
-    { VTXCOL::Elements, VTXCOL::iNumElements },
-    { VTXTEX::Elements, VTXTEX::iNumElements },
-    { VTXNORTEX::Elements, VTXNORTEX::iNumElements },
-    { VTXMESH::Elements, VTXMESH::iNumElements },
-    { VTXANIMMESH::Elements, VTXANIMMESH::iNumElements },
-    { VTXCUBE::Elements, VTXCUBE::iNumElements }
+    { VTXCOL::Elements, VTXCOL::iNumElements },                                             // 0
+    { VTXTEX::Elements, VTXTEX::iNumElements },                                             // 1
+    { VTXNORTEX::Elements, VTXNORTEX::iNumElements },                                       // 2 
+    { VTXMESH::Elements, VTXMESH::iNumElements },                                           // 3
+    { VTXANIMMESH::Elements, VTXANIMMESH::iNumElements },                                   // 4
+    { VTXCUBE::Elements, VTXCUBE::iNumElements },                                           // 5 
+    { VTXPOS::Elements, VTXPOS::iNumElements },                                             // 6
+    { VTXPARTICLE_POINTINSTANCE_DESC::Elements, VTXPARTICLE_POINTINSTANCE_DESC::iNumElements },     // 7
 };
 
 typedef struct ENGINE_DLL tagDrawCmd final
@@ -132,10 +162,13 @@ typedef struct ENGINE_DLL tagDrawCmd final
             uint32_t        indexCount = INVALID_HANDLE_UINT;
             uint32_t        hPerObjectParams = INVALID_HANDLE_UINT;
 
+            uint32_t        iParticleRuntime = INVALID_HANDLE_UINT;
+
             const std::vector<_float4x4>*   pSkinningMatrices = nullptr;
 
             MESH_MODE                       eMode = MESH_MODE::NONE;
             _float4x4                       matAttach{};
+
         } mesh;
 
         struct
@@ -365,5 +398,13 @@ private:
     std::vector<uint32_t> m_Free;
 };
 
+typedef struct tagParticleInstanceVertex
+{
+    _float4 vRight;
+    _float4 vUp;
+    _float4 vLook;
+    _float4 vTranslation;
+    _float2 vLifeTime;
+} VTXPARTICLE_INSTANCE;
 
 NS_END

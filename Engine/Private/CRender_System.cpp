@@ -11,6 +11,7 @@
 #include "Transform_Processor.h"
 #include "RectTransform_Processor.h"
 #include "Animator_Processor.h"
+#include "MeshRenderer_Processor.h"
 
 // resource types
 #include "BuiltIn_GUID.h"
@@ -88,11 +89,15 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 
         m_pAnimator_Processor = SYS_COMPONENT.Bind_Processor<CAnimator_Processor>();
         IF_NULL_RETURN_MSG_BREAK(m_pAnimator_Processor, E_FAIL, "Animator processor bind failed");
+
+        m_pMeshRenderer_Processor = SYS_COMPONENT.Bind_Processor<CMeshRenderer_Processor>();
+        IF_NULL_RETURN_MSG_BREAK(m_pMeshRenderer_Processor, E_FAIL, "Animator processor bind failed");
     }
 
     m_upRenderContext = CRender_Context::Create(iWidth, iHeight);
 
     m_hVtxColShader = SYS_RESOURCE.Load_Shader(DEFAULT_ASSET_GUID::SHADER_VTXCOL);
+    m_hVtxParticlePoint = SYS_RESOURCE.Load_Shader(DEFAULT_ASSET_GUID::SHADER_VTXPARTICLEPOINT);
     return S_OK;
 }
 
@@ -360,6 +365,12 @@ void CRender_System::Execute_Draw(const DRAW_CMD& cmd)
 
 void CRender_System::Execute_Draw_Mesh(const DRAW_CMD& cmd)
 {
+    if (cmd.mesh.eMode == MESH_MODE::PARTICLE)
+    {
+        Execute_Draw_Particle(cmd);
+        return;
+    }
+
     if (!SYS_RESOURCE.Is_ModelHandle(cmd.mesh.hMesh))
     {
         Execute_Draw_Mesh_Inner(cmd.mesh.hMesh, cmd.mesh.hMaterial, cmd.mesh.hTransform, cmd.mesh.hAnimator, cmd.mesh.hPerObjectParams,
@@ -500,8 +511,6 @@ void CRender_System::Execute_Draw_Line(const DRAW_CMD& tCmd)
     if (!pPass)
         return;
 
-  
-
     ID3DX11Effect* pFx = pShader->pEffect.Get();
     ID3DX11EffectMatrixVariable* pWorld = nullptr;
     ID3DX11EffectMatrixVariable* pView = nullptr;
@@ -569,6 +578,80 @@ void CRender_System::Render()
     m_pContext->RSSetState(m_rsNoScissor.Get());
     Build_RenderQueue();
     Execute_RenderQueue();
+}
+
+void CRender_System::Execute_Draw_Particle(const DRAW_CMD& cmd)
+{
+    PARTICLE_RUNTIME* pRuntime = m_pMeshRenderer_Processor->Get_ParticleRuntime(cmd.mesh.iParticleRuntime);
+    if (!pRuntime)
+        return;
+
+    auto* pTr = To<TRANSFORM_DATA*>(m_pTransform_Processor->Get_DataPtr(COMPONENT_TYPE::TRANSFORM, cmd.mesh.hTransform));
+    if (!pTr)
+        return;
+
+    SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(m_hVtxParticlePoint);
+    if (!pShader || !pShader->pEffect)
+        return;
+
+    if (pShader->pPasses.empty() || !pShader->pPasses[0].pInputLayout)
+        return;
+
+    TEXTURE_ENTRY* pTextureEntry = SYS_RESOURCE.Get_Texture(pRuntime->hTexture);
+    if (!pTextureEntry || !pTextureEntry->pSRV)
+        return;
+
+    m_pContext->IASetInputLayout(pShader->pPasses[0].pInputLayout.Get());
+
+    ID3D11Buffer* pBuffers[] =
+    {
+        pRuntime->pPointVB.Get(),
+        pRuntime->pInstanceVB.Get()
+    };
+
+    UINT strides[] =
+    {
+        sizeof(VTXPOS),
+        sizeof(VTXPARTICLE_INSTANCE)
+    };
+
+    UINT offsets[] = { 0, 0 };
+
+    m_pContext->IASetVertexBuffers(0, 2, pBuffers, strides, offsets);
+    m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+    ID3DX11EffectMatrixVariable* pWorld =
+        pShader->pEffect->GetVariableByName("g_WorldMatrix")->AsMatrix();
+    ID3DX11EffectMatrixVariable* pView =
+        pShader->pEffect->GetVariableByName("g_ViewMatrix")->AsMatrix();
+    ID3DX11EffectMatrixVariable* pProj =
+        pShader->pEffect->GetVariableByName("g_ProjMatrix")->AsMatrix();
+
+    ID3DX11EffectShaderResourceVariable* pBaseMap =
+        pShader->pEffect->GetVariableByName("g_BaseMap")->AsShaderResource();
+
+    ID3DX11EffectVectorVariable* pCamPosition =
+        pShader->pEffect->GetVariableByName("g_vCamPosition")->AsVector();
+
+    if (!pWorld || !pView || !pProj || !pBaseMap || !pCamPosition)
+        return;
+
+    _float3 vCamPos3 = SYS_RENDER.Contexts()->Get_CamPosition();
+    _float4 vCamPosition = _float4(vCamPos3.x, vCamPos3.y, vCamPos3.z, 1.f);
+
+    pWorld->SetMatrix(reinterpret_cast<const float*>(&pTr->matWorld));
+    pView->SetMatrix(reinterpret_cast<const float*>(&m_matView));
+    pProj->SetMatrix(reinterpret_cast<const float*>(&m_matProj));
+    pBaseMap->SetResource(pTextureEntry->pSRV.Get());
+    pCamPosition->SetFloatVector(reinterpret_cast<const float*>(&vCamPosition));
+
+    ID3DX11EffectPass* pPass = pShader->pEffect->GetTechniqueByIndex(0)->GetPassByIndex(0);
+    if (!pPass)
+        return;
+
+    pPass->Apply(0, m_pContext);
+    m_pContext->DrawInstanced(1, pRuntime->iNumInstances, 0, 0);
+    m_pContext->GSSetShader(nullptr, nullptr, 0);
 }
 
 

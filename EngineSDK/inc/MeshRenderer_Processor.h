@@ -29,6 +29,7 @@ public:
 
     _bool   Resolve_AttachReference(COMPONENT_HANDLE hComponent);
     _bool   Resolve_SkinningReference(COMPONENT_HANDLE hComponent);
+
     void    Clear_AttachReference(MESH_RENDERER_DATA* pData);
     void    Clear_SkinningReference(MESH_RENDERER_DATA* pData);
 
@@ -36,19 +37,33 @@ private :
     void Initialize_Component_Data(COMPONENT_HANDLE hComponent) override;
     uint64_t Make_SortKey(const MESH_RENDERER_DATA& d) const;
 
-
     void    Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, MESH_RENDERER_DATA* pData);
+
     _bool   Build_Skinning_BoneRemap(MESH_RENDERER_DATA* pData);
     _bool   Build_SkinnedPart_BoneMatrices(MESH_RENDERER_DATA* pData);
 
     _bool   Find_Attach_BoneIndex(MESH_RENDERER_DATA* pData);
     _bool   Build_Attach_BoneMatrix(MESH_RENDERER_DATA* pData);
 
+    /* --- Particle --- */
+public :
+    uint32_t            Allocate_ParticleRuntime();
+    void                Release_ParticleRuntime(uint32_t iRuntime);
+    PARTICLE_RUNTIME* Get_ParticleRuntime(uint32_t iRuntime);
+
+private:
+    void                Update_Particle(MESH_RENDERER_DATA* pData, _float fDT);
+    _bool               Create_ParticleBuffers(PARTICLE_RUNTIME* pRuntime);
+    _bool               Ensure_ParticleRuntime(MESH_RENDERER_DATA* pData);
+
 private :
     ID3D11Device*               m_pDevice{};
     ID3D11DeviceContext*        m_pContext{};
     CTransform_Processor*       m_pTransformProcessor{};
     CAnimator_Processor*        m_pAnimatorProcessor{};
+
+    std::vector<PARTICLE_RUNTIME>  m_vecParticleRuntime;
+    std::vector<uint32_t>          m_vecFreeParticleRuntime;
 
 public:
     static std::unique_ptr<CMeshRenderer_Processor> Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

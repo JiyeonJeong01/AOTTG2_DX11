@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Engine_Macro.h"
 #include "Material.h"
+#include "Particle.h"
 #include "Shader.h"
 
 NS_BEGIN(Engine)
@@ -12,6 +13,8 @@ public:
     static HRESULT Load_MaterialDesc(const std::filesystem::path& filePath, MATERIAL_ENTRY& outDesc);
     static HRESULT Load_Default_UI(MATERIAL_ENTRY& outDesc);
     static HRESULT Load_Default_VTXTEX(MATERIAL_ENTRY& outDesc);
+    static HRESULT Load_ParticleDesc(const std::filesystem::path& filePath, PARTICLE_ENTRY& outDesc);
+
 };
 
 NS_END

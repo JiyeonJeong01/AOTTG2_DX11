@@ -8,6 +8,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Model.h"
+#include "Particle.h"
 
 NS_BEGIN(Engine)
     /*
@@ -31,6 +32,7 @@ public:
     uint32_t Load_Shader(const ASSET_GUID& tGUID);
     uint32_t Load_Texture(const ASSET_GUID& tGUID);
     uint32_t Load_Font(const ASSET_GUID& tGUID);
+    uint32_t Load_Particle(const ASSET_GUID& tGUID);
 
     uint32_t Register_MeshEntry(MESH_ENTRY&& pEntry);
 
@@ -40,6 +42,7 @@ public:
     SHADER_ENTRY*       Get_Shader(uint32_t handle);
     TEXTURE_ENTRY*      Get_Texture(uint32_t handle);
     FONT_ENTRY*         Get_Font(uint32_t handle);
+    PARTICLE_ENTRY*     Get_Particle(uint32_t handle);
 
     const ASSET_GUID&       Find_GUID_By_Handle(ASSET_TYPE eType, _uint iHandle);
     const std::string&      Find_Name_By_GUID(const ASSET_GUID& tGUID);
@@ -83,6 +86,10 @@ private :
     /* ---- FONT ---- */
     std::vector<FONT_ENTRY> m_Fonts;
     std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_FontGUIDMap;
+
+    /* ---- PARTICLE ---- */
+    std::vector<PARTICLE_ENTRY> m_Particles;
+    std::unordered_map<ASSET_GUID, uint32_t, ASSET_GUID_HASHER> m_ParticleGUIDMap;
 
     /* ---- Object Param ---- */
     CPerObjectParamPool m_PerObjectParamPool;

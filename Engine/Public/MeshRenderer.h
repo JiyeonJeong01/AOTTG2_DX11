@@ -1,8 +1,26 @@
 ﻿#pragma once
 #include "CComponent_Proxy_Base.h"
 #include "Engine_Math.h"
+#include "Render_Struct.h"
 
 NS_BEGIN(Engine)
+
+typedef struct tagParticleRuntime
+{
+    Microsoft::WRL::ComPtr<ID3D11Buffer> pPointVB;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> pInstanceVB;
+
+    uint32_t        hTexture = INVALID_HANDLE_UINT;
+
+    _uint           iInstanceStride = sizeof(VTXPARTICLE_INSTANCE);
+    _uint           iNumInstances = 0;
+
+    std::vector<VTXPARTICLE_INSTANCE> vecInstances;
+    std::vector<_float> vecSpeeds;
+
+    _bool           bInitialized = false;
+
+} PARTICLE_RUNTIME;
 
 typedef struct ENGINE_DLL tagMeshRendererData final
 {
@@ -17,6 +35,9 @@ typedef struct ENGINE_DLL tagMeshRendererData final
     uint32_t            hMesh = INVALID_HANDLE_UINT;
     uint32_t            hMaterial = INVALID_HANDLE_UINT;
     uint32_t            hPerObjectParams = INVALID_HANDLE_UINT;
+    uint32_t            hParticle = INVALID_HANDLE_UINT;
+
+    uint32_t            iParticleRuntime = INVALID_HANDLE_UINT;
 
     uint32_t            flags = RF_NONE;
     RENDER_LAYER        layer = RENDER_LAYER::NONBLEND;
@@ -31,6 +52,10 @@ typedef struct ENGINE_DLL tagMeshRendererData final
     uint32_t                iAttachBoneIdx = INVALID_HANDLE_UINT;
     std::string             strAttachBoneName;
     _float4x4               matFinalAttach = Math::Identity();
+
+    /* -------- PARTICLE -------- */
+    _bool                   bParticlePlaying = false;
+    _float3                 vParticlePivot{};
 } MESH_RENDERER_DATA;
 
 class ENGINE_DLL CMeshRenderer : public CComponent_Proxy_Base<MESH_RENDERER_DATA, CMeshRenderer, COMPONENT_TYPE::MESH_RENDERER>
@@ -52,7 +77,7 @@ public:
     void Remove_Flags(uint32_t f);
     void Set_SortZ(float z);
 
-public:
+
     // Getters
     COMPONENT_HANDLE Get_Transform() const;
     uint32_t         Get_Mesh() const;
@@ -60,6 +85,17 @@ public:
     uint32_t         Get_Flags() const;
     RENDER_LAYER     Get_Layer() const;
     float            Get_SortZ() const;
+
+public:
+    void Set_Mode(MESH_MODE e);
+    void Set_Particle(uint32_t hParticle);
+    void Set_ParticlePlaying(_bool bPlaying);
+    void Set_ParticlePivot(const _float3& vPivot);
+
+    MESH_MODE Get_Mode() const;
+    uint32_t Get_Particle() const;
+    _bool Get_ParticlePlaying() const;
+    const _float3& Get_ParticlePivot() const;
 };
 
 NS_END
