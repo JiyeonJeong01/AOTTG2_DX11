@@ -722,7 +722,9 @@ typedef struct tagUITextSpec final : public COMPONENT_SPEC_BASE
     uint32_t                    flags = 0;
     _float                      sortZ = 0.f;
     RECT_F                      rcClip{};
-    uint8_t                     pad[2] = {};
+    _float2                     vOffset = {};
+    _bool                       bCenter = true;
+    uint8_t                     pad[3] = {};
 
 private:
     static std::string To_UTF8_String(const std::basic_string<_tchar>& str)
@@ -785,6 +787,8 @@ public:
         j["Flags"] = flags;
         j["SortZ"] = sortZ;
         j["ClipRect"] = { rcClip.fLeft, rcClip.fTop, rcClip.fRight, rcClip.fBottom };
+        j["Offset"] = { vOffset.x, vOffset.y };
+        j["Center"] = bCenter;
     }
 
     _bool FromJson(const json& j) override
@@ -830,6 +834,9 @@ public:
 
         if (!Read_RECTF(j, "ClipRect", rcClip))
             return false;
+
+        Read_Vec2(j, "Offset", vOffset);
+        Read_Bool(j, "Center", bCenter);
 
         Sanitize_Color(color);
         Sanitize_ClipRect(rcClip);

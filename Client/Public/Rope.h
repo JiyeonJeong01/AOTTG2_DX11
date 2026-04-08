@@ -19,6 +19,7 @@ public:
     void Initialize();
     void Update(_float fTimeDelta);
     void Set_Offset(const _float3& vOffset);
+    void Set_MaxLength(_float fLength);
 
 public:
     void Start_Extending_Success(_fvector vStartPoint, _fvector vAnchorPoint);
@@ -57,7 +58,7 @@ private:
     _int                            m_iNumWave = 2;
     _int                            m_iNumPoints = 30;
     _float                          m_fExtendVel = 120.f;
-    _float                          m_fRopMaxLength = 200.f;
+    _float                          m_fRopMaxLength = 130.f;
 
     CEvent<ROPE_STATE, SIDE>        m_OnChanged_RopeState;
 

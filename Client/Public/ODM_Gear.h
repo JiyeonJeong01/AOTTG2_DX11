@@ -14,11 +14,11 @@ typedef struct tagTryGrapplingInfo
     _float3 vCamOrigin{};
     _float3 vRayDir{};
     _float  fDist{};
-} TYR_GRAPPLING_INFO;
+} TRY_GRAPPLING_INFO;
 
 typedef struct tagGasState
 {
-    const _float    fMax = 100.f;
+    const _float    fMax = 10.f;
     _float          fCurrent = fMax;
 } GAS_STATE;
 
@@ -51,14 +51,14 @@ private :
     GAS_STATE               m_tGas{};
 
     _float3                 m_vAnchor{};
-    _float                  m_fRopeMaxDist = 150.f;
+    _float                  m_fRopeMaxDist = 130.f;
     _uint                   m_flagUsingSide = 0;
 
     CEvent<_uint, _uint>    m_OnSuccessAnchored;
     _float                  m_fSpringNormal = 0.f;
     _float                  m_fDamperNormal = 0.f;
-    _float                  m_fSpringReel = 7.f;
-    _float                  m_fDamperReel = 3.f;
+    _float                  m_fSpringReel = 0.f;
+    _float                  m_fDamperReel = 0.f;
 
     _bool                   m_bReelBoost = false;
 
@@ -74,8 +74,8 @@ public :
     void            Try_Grappling(SIDE eSide);
     void            Finish_Grappling(SIDE eSide);
 
-    _bool           Detect_GrapplingPoint(TYR_GRAPPLING_INFO& tInfo);
-    static _bool    Detect_GrapplingDist(_float* fDist);
+    _bool           Detect_GrapplingPoint(TRY_GRAPPLING_INFO& tInfo);
+    _bool           Detect_GrapplingDist(_float* fDist);
 
     _uint           Get_UsingFlag();
     void            Set_ReelBoost(_bool bEnable);
@@ -86,6 +86,7 @@ public :
     /* --- Gas --- */
     _bool           Can_UseGas() const;
     void            Fill_Max();
+    GAS_STATE       Get_GasState() const;
 
     /* --- Common ---*/
     void            Bind_PlayerContext(const PLAYER_CONTEXT& tContext);

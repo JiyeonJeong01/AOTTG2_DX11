@@ -3223,6 +3223,21 @@ void CInspectorPanel::Draw_UIText()
         );
     }
 
+    bool bCenter = (pData->bCenter != 0);
+    if (ImGui::Checkbox("##bCenter", &bCenter))
+    {
+        pData->bCenter = bCenter ? 1 : 0;
+        pData->dirty = true;
+    }
+
+    ImGui::SameLine();
+    _float2 vOffset = pData->vOffset;
+    if (ImGui::DragFloat2("Offset", (_float*)&vOffset, 1.f, 0.f))
+    {
+        pData->vOffset = vOffset;
+        pData->dirty = true;
+    }
+
     ImGui::SeparatorText("Text");
 
     {

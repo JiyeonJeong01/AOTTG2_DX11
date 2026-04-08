@@ -129,7 +129,9 @@ void CUI_Processor::Build_RenderQueue(std::vector<DRAW_CMD>& outCmds)
                 pData->fScale,
                 pData->visualPriority,
                 &pData->strText,
-                pData->rcClip
+                pData->rcClip,
+                pData->vOffset,
+                pData->bCenter
             );
 
             tCmd.sortKey = Make_Text_SortKey(*pData);
@@ -262,6 +264,8 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CUI_Processor::Build_Spec(COMPONENT_TYPE eC
         spec.flags = pData->flags;
         spec.sortZ = pData->sortZ;
         spec.rcClip = pData->rcClip;
+        spec.bCenter = pData->bCenter;
+        spec.vOffset = pData->vOffset;
 
         return std::make_unique<UI_TEXT_SPEC>(spec);
     }
@@ -552,6 +556,9 @@ HRESULT CUI_Processor::Initialize_From_Spec_UIText(COMPONENT_HANDLE hComponent, 
     pData->flags = p->flags;
     pData->sortZ = p->sortZ;
     pData->rcClip = p->rcClip;
+
+    pData->bCenter = p->bCenter;
+    pData->vOffset = p->vOffset;
 
     return S_OK;
 }

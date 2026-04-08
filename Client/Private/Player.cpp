@@ -71,17 +71,17 @@ void CPlayer::Start(void* pCtx)
     }
 
     /* 플레이어 상태에게 전달 */
-    PLAYER_CONTEXT tContext;
-    tContext.tComponents = m_tComponents;
-    tContext.tRef = m_tRef;
-    tContext.pStats = &m_tStats;
-    tContext.pHitBox = m_goPlayer->Get_Script_InChildren<CHitBox>();
+    m_tContext.tComponents = m_tComponents;
+    m_tContext.tRef = m_tRef;
+    m_tContext.pStats = &m_tStats;
+    m_tContext.pBlade = &m_tBlade;
+    m_tContext.pHitBox = m_goPlayer->Get_Script_InChildren<CHitBox>();
 
     /* 컨트롤러 */
-    tContext.pSkillController = m_upSkillController.get();
+    m_tContext.pSkillController = m_upSkillController.get();
 
-    m_upStateMachine->Cache_PlayerInfos(tContext);
-    m_tRef.pGear->Bind_PlayerContext(tContext);
+    m_upStateMachine->Cache_PlayerInfos(m_tContext);
+    m_tRef.pGear->Bind_PlayerContext(m_tContext);
 
     auto allHitBoxes = m_goPlayer->Get_AllScripts_InChildren<CHitBox>();
 
@@ -92,6 +92,8 @@ void CPlayer::Start(void* pCtx)
 
         auto [iter, bInserted] = m_AllHitBoxes.emplace(string(goHitBox->Get_Label()), hit);
         IF_TRUE_RETURN_MSG_BREAK(!bInserted, , "duplicated hitbox label");
+
+        hit->Subscribe_OnSuccessHit(&CPlayer::On_BladeHit, this);
     }
 
     /* 히트박스 전부 끄기 */
@@ -172,18 +174,24 @@ void CPlayer::On_CollisionExit(const COLLISION_DESC& tDesc)
         LOG_INFO("================================================== COLLISION_EXIT ====================================== ");
 }
 
+void CPlayer::On_BladeHit(CGameObject* goCounter)
+{
+    if (!goCounter)
+        return;
+
+    if (!goCounter->Has_Mask(O_TITAN))
+        return;
+
+    if (!m_tBlade.Can_ConsumeBladeAtk())
+        return;
+
+    m_tBlade.Consume_Blade();
+}
+
 PLAYER_CONTEXT CPlayer::Get_PlayerContext()
 {
     /* 플레이어 상태에게 전달 */
-    PLAYER_CONTEXT tContext;
-    tContext.tComponents = m_tComponents;
-    tContext.tRef = m_tRef;
-    tContext.pStats = &m_tStats;
-
-    /* 컨트롤러 */
-    tContext.pSkillController = m_upSkillController.get();
-
-    return tContext;
+    return m_tContext;
 }
 
 NS_END;

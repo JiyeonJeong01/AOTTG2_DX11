@@ -8,7 +8,6 @@
 #include "ThrownBlade.h"
 #include "HitBox.h"
 
-
 CPlayerState_AirborneAttack::CPlayerState_AirborneAttack(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
     : CPlayerState(goPlayer, scPlayer, eState)
 {
@@ -109,9 +108,6 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
         else
             m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::ATTACK_2);/* ATTACK2 = AIRBORNE_ATTACK::NORMAL 동작으로 사용 */
 
-        if (m_pHitBox)
-            m_pHitBox->Set_Active(true);
-
         return;
     }
 
@@ -126,9 +122,6 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::ATTACK_1); /* ATTACK1 = SpinH 시작 동작으로 사용 */
         m_bAnimFinished = false;
         m_bKeepAttack = true;
-
-        if (m_pHitBox)
-            m_pHitBox->Set_Active(true);
 
         return;
     }
@@ -172,9 +165,6 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::ATTACK_3_1);
         m_bAnimFinished = false;
         m_bKeepAttack = true;
-
-        if (m_pHitBox)
-            m_pHitBox->Set_Active(true);
 
         return;
     }
@@ -399,6 +389,9 @@ _bool CPlayerState_AirborneAttack::Can_Start_BladeHitBox() const
         return false;
 
     if (m_bBladeHitBoxStarted)
+        return false;
+
+    if (!m_pBlade->Can_ConsumeBladeAtk())
         return false;
 
     const _float fTrackPosition = m_tComponents.animator->fTrackPosition;

@@ -44,6 +44,9 @@ private:
     PLAYER_RUNTIME_REF  m_tRef{};
     PLAYER_STATS        m_tStats{};
     PLAYER_SKILLSET     m_tSkillSet{};
+    BLADE_DURABILITY    m_tBlade{};
+
+    PLAYER_CONTEXT      m_tContext{};
 
     std::unique_ptr<CPlayer_InputController>    m_upInputController{};
     std::unique_ptr<CPlayer_SkillController>    m_upSkillController{};
@@ -64,6 +67,8 @@ private :
     void On_CollisionEnter(const COLLISION_DESC& tDesc);
     void On_CollisionStay(const COLLISION_DESC& tDesc);
     void On_CollisionExit(const COLLISION_DESC& tDesc);
+
+    void On_BladeHit(CGameObject* goCounter);
 
 public :
     PLAYER_CONTEXT Get_PlayerContext();

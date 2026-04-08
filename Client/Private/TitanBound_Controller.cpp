@@ -333,7 +333,7 @@ void CTitanBound_Controller::Handle_GrabState(SIDE eSide, CGameObject* pTarget, 
             return;
         m_pHuman = pHuman;
         m_goGrabbed = pTarget;
-        pHuman->On_Grabbed(eSide, pTitan);
+
         pTitan->On_Grab(eSide, pHuman);
     }
 }

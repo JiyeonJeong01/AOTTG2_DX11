@@ -58,6 +58,7 @@ protected:
     PLAYER_COMPONENTS       m_tComponents{};
     PLAYER_RUNTIME_REF      m_tRef{};
     PLAYER_STATS*           m_pStats{};
+    BLADE_DURABILITY*       m_pBlade{};
 
     class CPlayer_SkillController*  m_pSkillController{};
 

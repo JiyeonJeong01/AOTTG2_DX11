@@ -11,11 +11,6 @@ void CODM_Gear::Handle_RopeState(CRope::ROPE_STATE eState, SIDE eSide)
 {
     if (eState == CRope::ROPE_STATE::ANCHORED)
     {
-        if (!Can_UseGas())
-        {
-            
-        }
-
         m_sj.Set_Enable(true);
         m_sj.Set_Anchor(m_vAnchor);
         m_sj.Set_UseSpring(true);
@@ -62,7 +57,7 @@ void CODM_Gear::Try_Grappling(SIDE eSide)
         return;
     }
 
-    TYR_GRAPPLING_INFO tInfo{};
+    TRY_GRAPPLING_INFO tInfo{};
 
     _vector vLook =  XMVector3Normalize(m_tr.Get_StateXM(STATE::LOOK));
     _vector vUp = XMVector3Normalize(m_tr.Get_StateXM(STATE::UP));
@@ -117,7 +112,7 @@ void CODM_Gear::Finish_Grappling(SIDE eSide)
         m_sj.Set_UseSpring(false);
 }
 
-_bool CODM_Gear::Detect_GrapplingPoint(TYR_GRAPPLING_INFO& tInfo)
+_bool CODM_Gear::Detect_GrapplingPoint(TRY_GRAPPLING_INFO& tInfo)
 {
     POINT pt = SYS_INPUT.Get_GameCenterPos();
     RAY tRay{ };
@@ -132,9 +127,29 @@ _bool CODM_Gear::Detect_GrapplingPoint(TYR_GRAPPLING_INFO& tInfo)
 
     if (allHits.iNumHits > 0)
     {
-        tInfo.vPoint = allHits.primaryHit.vHitPos;
-        tInfo.fDist = allHits.primaryHit.fDist;
-        return true;
+        sort(allHits.allHits.begin(), allHits.allHits.end(), [](const RAYCAST_HIT& a, const RAYCAST_HIT& b)
+            {
+                return a.fDist < b.fDist;
+            });
+
+
+        for (const auto& hit : allHits.allHits)
+        {
+            _float3 vCamPos3 = GAME_INSTANCE.Cam_Position();
+            _vector vCamPos = XMLoadFloat3(&vCamPos3);
+            _float3 vTargetPos3 = hit.vHitPos;
+            _vector vTargetPos = XMLoadFloat3(&vTargetPos3);
+
+            _float fCamToPlayerDistSq = XMVectorGetX(XMVector3LengthSq(XMLoadFloat3(&m_tr->vPosition) - vCamPos));
+            _float fCamToTargetDistSq = XMVectorGetX(XMVector3LengthSq(vTargetPos - vCamPos));
+
+            if (fCamToPlayerDistSq < fCamToTargetDistSq)
+            {
+                tInfo.vPoint = hit.vHitPos;
+                tInfo.fDist = hit.fDist;
+                return true;
+            }
+        }
     }
     return false;
 }
@@ -143,7 +158,7 @@ _bool CODM_Gear::Detect_GrapplingDist(_float* fDist)
 {
     POINT pt = SYS_INPUT.Get_GameCenterPos();
     RAY tRay{ };
-    tRay.fMaxDist = 200.f;
+    tRay.fMaxDist = m_fRopeMaxDist;
     tRay.fMinDist = 0.f;
     RAYCAST_HITS allHits;
 
@@ -205,6 +220,11 @@ void CODM_Gear::Fill_Max()
     m_tGas.fCurrent = m_tGas.fMax;
 }
 
+GAS_STATE CODM_Gear::Get_GasState() const
+{
+    return m_tGas;
+}
+
 void CODM_Gear::Bind_PlayerContext(const PLAYER_CONTEXT& tContext)
 {
     m_fSpringNormal = tContext.pStats->fSpringNormal;
@@ -233,6 +253,9 @@ void CODM_Gear::Start(void* pCtx)
     m_upLeftRope->Subscribe_On_RopeState_Changed(&CODM_Gear::Handle_RopeState, this);
     m_upRightRope = CRope::Create(SIDE::RIGHT);
     m_upRightRope->Subscribe_On_RopeState_Changed(&CODM_Gear::Handle_RopeState, this);
+
+    m_upLeftRope->Set_MaxLength(m_fRopeMaxDist);
+    m_upRightRope->Set_MaxLength(m_fRopeMaxDist);
 }
 
 void CODM_Gear::Priority_Update(void* pCtx, _float fDT)
@@ -241,8 +264,18 @@ void CODM_Gear::Priority_Update(void* pCtx, _float fDT)
 
 void CODM_Gear::Update(void* pCtx, _float fDT)
 {
-    /* 로프 시작 위치 갱신 */
+    const _uint flagUsingSide = m_flagUsingSide;
 
+    if (!Can_UseGas() && flagUsingSide != 0)
+    {
+        if (flagUsingSide & To<_uint>(SIDE::LEFT))
+            Finish_Grappling(SIDE::LEFT);
+
+        if (flagUsingSide & To<_uint>(SIDE::RIGHT))
+            Finish_Grappling(SIDE::RIGHT);
+    }
+
+    /* 로프 시작 위치 갱신 */
     _vector vLook = XMVector3Normalize(m_tr.Get_StateXM(STATE::LOOK));
     _vector vUp = XMVector3Normalize(m_tr.Get_StateXM(STATE::UP));
     _float3 vRopeStart;
@@ -264,6 +297,7 @@ void CODM_Gear::Update(void* pCtx, _float fDT)
         m_tGas.fCurrent -= fDT;
         m_tGas.fCurrent = fmaxf(m_tGas.fCurrent, 0.f);
     }
+
 }
 
 void CODM_Gear::Late_Update(void* pCtx, _float fDT)

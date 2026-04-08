@@ -1,0 +1,2 @@
+C:\>MakeSpriteFont.exe "Paperlogy 4 Regular" "%USERPROFILE%\Desktop\PaperLogy_Light_16.spritefont" /FontSize:16 /FastPack /CharacterRegion:0x20-0x7F /CharacterRegion:0xAC00-0xD7A3
+cmd 관리자 실행 후 최상위 C 폴더로 이동하여 

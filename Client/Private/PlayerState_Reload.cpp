@@ -70,6 +70,8 @@ void CPlayerState_Reload::Enter(_uint iDetailFlag)
 
     if (m_eReloadState == RELOAD::GROUNDED)
     {
+        if (m_pBlade && m_pBlade->Can_ReloadBlade())
+            m_pBlade->Reload_Blade();
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::CHANGE_BLADE);
         cout << "[RELOAD] ENTER GROUNDED\n";
         return;
@@ -77,6 +79,8 @@ void CPlayerState_Reload::Enter(_uint iDetailFlag)
 
     if (m_eReloadState == RELOAD::AIR)
     {
+        if (m_pBlade && m_pBlade->Can_ReloadBlade())
+            m_pBlade->Reload_Blade();
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::CHANGE_BLADE_AIR);
         cout << "[RELOAD] ENTER AIR\n";
         return;

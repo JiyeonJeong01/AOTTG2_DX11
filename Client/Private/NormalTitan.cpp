@@ -186,6 +186,7 @@ void CNormalTitan::On_Grab(SIDE eSide, CHuman* pHuman)
         eGrabbed = TITAN_GRAB::RIGHT;
 
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::GRAB), To<_uint>(eGrabbed));
+    pHuman->On_Grabbed(eSide, this);
 }
 
 void CNormalTitan::On_Dead(const _float fAccuracy)

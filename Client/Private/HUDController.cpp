@@ -1,8 +1,11 @@
 ﻿#include "HUDController.h"
 
+#include "ODM_Gear.h"
 #include "UI_BladeController.h"
 #include "UI_GasController.h"
 #include "UI_SkillController.h"
+
+#include "Player.h"
 
 NS_BEGIN(Client)
 
@@ -11,11 +14,11 @@ void CHUDController::Awake(void* pCtx)
     CGameObject* pOwner = GAME_INSTANCE.Find_GameObject(m_hObject);
     IF_NULL_RETURN_MSG_BREAK(pOwner, , "pOwner is nullptr");
 
-    m_pBlade = pOwner->Get_Script_InChildren<CUI_BladeController>();
-    IF_NULL_RETURN_MSG_BREAK(m_pBlade, , "m_pBlade is nullptr");
+    m_pBladeCtrl = pOwner->Get_Script_InChildren<CUI_BladeController>();
+    IF_NULL_RETURN_MSG_BREAK(m_pBladeCtrl, , "m_pBladeCtrl is nullptr");
 
-    m_pGas = pOwner->Get_Script_InChildren<CUI_GasController>();
-    IF_NULL_RETURN_MSG_BREAK(m_pGas, , "m_pGas is nullptr");
+    m_pGasCtrl = pOwner->Get_Script_InChildren<CUI_GasController>();
+    IF_NULL_RETURN_MSG_BREAK(m_pGasCtrl, , "m_pGasCtrl is nullptr");
 
     m_pSkill = pOwner->Get_Script_InChildren<CUI_SkillController>();
     IF_NULL_RETURN_MSG_BREAK(m_pSkill, , "m_pSkill is nullptr");
@@ -23,10 +26,36 @@ void CHUDController::Awake(void* pCtx)
 
 void CHUDController::Start(void* pCtx)
 {
+
 }
 
 void CHUDController::Priority_Update(void* pCtx, _float fDT)
 {
+    if (!m_bInitialized)
+    {
+        CGameObject* goPlayer = GAME_INSTANCE.Find_GameObject(m_refPlayer.hObject);
+        IF_NULL_RETURN_MSG_BREAK(goPlayer, , "goPlayer is nullptr");
+
+        CPlayer* scPlayer = goPlayer->Get_Script_InChildren<CPlayer>();
+        IF_NULL_RETURN_MSG_BREAK(scPlayer, , "scPlayer is nullptr");
+
+        const auto& tContext = scPlayer->Get_PlayerContext();
+
+        m_pGasCtrl->Bind_PlayerContext(tContext);
+        m_pBladeCtrl->Bind_PlayerContext(tContext);
+        // m_pSkill->Bind_PlayerContext(tContext);
+
+        m_pGear = tContext.tRef.pGear;
+        IF_NULL_RETURN_MSG_BREAK(m_pGear, , "m_pGear is nullptr");
+
+        m_goCursor = GAME_INSTANCE.Find_GameObject(m_refCursor.hObject);
+        IF_NULL_RETURN_MSG_BREAK(m_goCursor, , "m_goCursor is nullptr");
+
+        m_txtCursor = m_goCursor->Get_Component<CUIText>();
+        IF_TRUE_RETURN_MSG_BREAK(!m_txtCursor.Is_Valid(), , "m_txtCursor is invalid");
+
+        m_bInitialized = true;
+    }
 }
 
 void CHUDController::Update(void* pCtx, _float fDT)
@@ -35,6 +64,24 @@ void CHUDController::Update(void* pCtx, _float fDT)
 
 void CHUDController::Late_Update(void* pCtx, _float fDT)
 {
+    if (!m_txtCursor.Is_Valid())  return;
+    if (!m_pGear) return;
+
+    TRY_GRAPPLING_INFO tInfo{};
+    if (m_pGear->Detect_GrapplingPoint(tInfo))
+    {
+        wstring strDist = to_wstring(To<_uint>(tInfo.fDist));
+        const size_t iTargetWidth = 4;
+        if (strDist.length() < iTargetWidth)
+            strDist = wstring((iTargetWidth - strDist.length()) / 2, L' ') + strDist;
+        m_txtCursor.Set_Text(strDist);
+        m_txtCursor.Set_Color(m_vValidTargetColor);
+    }
+    else
+    {
+        m_txtCursor.Set_Text(L"????");
+        m_txtCursor.Set_Color(m_vInvalidTargetColor);
+    }
 }
 
 NS_END;

@@ -203,6 +203,8 @@ typedef struct ENGINE_DLL tagDrawCmd final
             _float          fScale = 1.f;
             const std::basic_string<_tchar>* pText = nullptr;
             RECT_F           rcClip = { 0.f, 0.f, 0.f, 0.f };
+            _float2         vOffset = {};
+            _bool           bCenter = true;
         } text;
     };
 
@@ -247,7 +249,7 @@ public:
     }
     static tagDrawCmd Create_Text(uint32_t hFont, COMPONENT_HANDLE hRectTr, uint32_t flags,
         float sortZ, const _float4& color, float fScale, uint8_t visualPriority,
-        const std::basic_string<_tchar>* pText, const RECT_F& clip)
+        const std::basic_string<_tchar>* pText, const RECT_F& clip, _float2 vOffset, _bool bCenter)
     {
         tagDrawCmd c{};
         c.kind = DRAW_TYPE::TEXT;
@@ -260,6 +262,8 @@ public:
         c.text.visualPriority = visualPriority;
         c.text.pText = pText;
         c.text.rcClip = clip;
+        c.text.vOffset = vOffset;
+        c.text.bCenter = bCenter;
         return c;
     }
 

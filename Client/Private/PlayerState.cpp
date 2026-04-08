@@ -221,16 +221,20 @@ _bool CPlayerState::Set_HitBoxActive(const std::string& strHitBox, _bool bActive
     if (it == m_tRef.pAllHitBoxes->end())
         return false;
 
-    it->second->Set_Active(bActive);
+    if (bActive && m_pBlade && !m_pBlade->Can_ConsumeBladeAtk())
+        return false;
 
     if (bActive)
         Sync_HiBox(strHitBox);
+
+    it->second->Set_Active(bActive);
 
     return true;
 }
 
 void CPlayerState::Sync_HiBox(const std::string& strHitBox)
 {
+    /* 위치 동기화 */
     auto it = m_tRef.pAllHitBoxes->find(strHitBox);
     if (it == m_tRef.pAllHitBoxes->end())
         return;
@@ -272,6 +276,7 @@ void CPlayerState::Cache_PlayerContext(const PLAYER_CONTEXT& tContext)
     m_tRef = tContext.tRef;
     m_pStats = tContext.pStats;
     m_pSkillController = tContext.pSkillController;
+    m_pBlade = tContext.pBlade;
 }
 
 PLAYER_STATE CPlayerState::Get_State() const

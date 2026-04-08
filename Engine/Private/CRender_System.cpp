@@ -560,13 +560,25 @@ void CRender_System::Execute_Draw_Text(const DRAW_CMD& tCmd)
 
     m_pSpriteBatch->Begin();
 
+    DirectX::XMFLOAT2 vOrigin = { 0.f, 0.f };
+    if (tCmd.text.bCenter)
+    {
+        const wchar_t* pText = tCmd.text.pText ? tCmd.text.pText->c_str() : TEXT("");
+        DirectX::XMVECTOR vMeasure = pFontEntry->pFont->MeasureString(pText);
+        DirectX::XMFLOAT2 vTextSize{};
+        DirectX::XMStoreFloat2(&vTextSize, vMeasure);
+
+        vOrigin = { vTextSize.x * 0.5f, vTextSize.y * 0.5f };
+    }
+
+
     pFontEntry->pFont->DrawString(
         m_pSpriteBatch.get(),
         tCmd.text.pText ? tCmd.text.pText->c_str() : TEXT(""),
-        DirectX::XMFLOAT2(vPos.x, vPos.y),
+        DirectX::XMFLOAT2(vPos.x + tCmd.text.vOffset.x, vPos.y + tCmd.text.vOffset.y),
         vColor,
         0.f,
-        DirectX::XMFLOAT2(0.f, 0.f),
+        vOrigin,
         tCmd.text.fScale
     );
 

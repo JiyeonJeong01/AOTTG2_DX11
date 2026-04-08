@@ -20,6 +20,8 @@ typedef struct ENGINE_DLL tagUITextData
     _float4             color{ 1.f, 1.f, 1.f, 1.f };
 
     _float              fScale = 1.f;
+    _float2             vOffset = { 0.f, 0.f };
+    _bool               bCenter = true;
 
     uint8_t             visualPriority = 0;
     _bool               dirty = true;
@@ -47,6 +49,8 @@ public:
     void Set_Text(const _tchar* pText);
     void Set_Color(const _float4& vColor);
     void Set_Scale(_float fScale);
+    void Set_CenterAlign(_bool bCenter);
+    void Set_Offset(_float2 vOffset);
     void Set_VisualPriority(uint8_t p);
 
 public:

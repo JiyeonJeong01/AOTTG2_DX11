@@ -42,7 +42,7 @@ void CPlayerState_GroundedAttack::Late_Update(_float fDT)
 {
     CPlayerState::Late_Update(fDT);
 
-    if (m_bHitBoxActive)
+    if (m_bHitBoxActive && m_eGroundedAttackState == GROUNDED_ATTACK::ATK)
         CPlayerState::Sync_HiBox(PLAYER_BLADE_ATTACK);
 
     Decide_NextState();
@@ -52,18 +52,16 @@ void CPlayerState_GroundedAttack::Enter(_uint iDetailFlag)
 {
     CPlayerState::Enter(iDetailFlag);
 
-    /* 혹시 모르니 동기화 한 뒤 켜기 */
-    CPlayerState::Sync_HiBox(PLAYER_BLADE_ATTACK);
-    if (!CPlayerState::Set_HitBoxActive(PLAYER_BLADE_ATTACK, true))
-    {
-        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::IDLE), 0);
-        return;
-    }
-
     if (iDetailFlag == To<_uint>(GROUNDED_ATTACK::ATK))
     {
         m_eGroundedAttackState = GROUNDED_ATTACK::ATK;
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::ATTACK_2);
+    }
+
+    if (!CPlayerState::Set_HitBoxActive(PLAYER_BLADE_ATTACK, true))
+    {
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::IDLE), 0);
+        return;
     }
 
     m_bHitBoxActive = true;

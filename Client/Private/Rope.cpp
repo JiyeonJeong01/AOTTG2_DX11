@@ -54,6 +54,13 @@ void CRope::Set_Offset(const _float3& vOffset)
     m_vRopeOffset = vOffset;
 }
 
+void CRope::Set_MaxLength(_float fLength)
+{
+    if (fLength < 0.f)
+        return;
+    m_fRopMaxLength = fLength;
+}
+
 void CRope::Start_Extending_Success(_fvector vStartPoint, _fvector vAnchorPoint)
 {
     XMStoreFloat3(&m_vStartPoint, vStartPoint);

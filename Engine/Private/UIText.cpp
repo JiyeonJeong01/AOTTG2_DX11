@@ -54,6 +54,24 @@ void CUIText::Set_Scale(_float fScale)
     m_pData->dirty = true;
 }
 
+void CUIText::Set_CenterAlign(_bool bCenter)
+{
+    if (!m_pData)
+        return;
+
+    m_pData->bCenter = bCenter;
+    m_pData->dirty = true;
+}
+
+void CUIText::Set_Offset(_float2 vOffset)
+{
+    if (!m_pData)
+        return;
+
+    m_pData->vOffset = vOffset;
+    m_pData->dirty = true;
+}
+
 void CUIText::Set_VisualPriority(uint8_t p)
 {
     if (!m_pData)

@@ -24,6 +24,7 @@ public :
 
 private:
     void Decide_NextState() override;
+    void Decide_NextAnim() override;
 
     void On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData);
     void On_DashLandFinished(const Engine::ANIMATION_EVENT_DATA& tData);
@@ -31,11 +32,10 @@ private:
 private:
     GROUNDED_MOVE   m_eGroundedMoveState = GROUNDED_MOVE::RUN;
     _float          m_fOriginDrag = 0.f;
-    const _float    m_fSlidingDrag = 0.2f;
+    const _float    m_fSlidingDrag = 0.1f;
+    const _float    m_fRunCorrectionDT = 8.f;
+    const _float    m_fSlideThreshold = 4.f;
 
-private :
-    void Move(_float fDT);
-    void Slide(_float fDT);
 public :
     static std::shared_ptr<CPlayerState_GroundedMove> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
 };

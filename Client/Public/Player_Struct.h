@@ -100,6 +100,44 @@ typedef struct tagPlayerSkillSET
     PLAYER_SKILL                skills[3];
 } PLAYER_SKILLSET;
 
+typedef struct tagBladeDurability
+{
+    const _int     iNumAtkPerBlade = 8;                /* 칼날 당 최대 공격 횟수 */
+    const _int     iTotalNumBlades = 5;                /* 전체 칼날 개수 */
+
+    _int           iCurAtkRemain = iNumAtkPerBlade;    /* 현재 남은 공격 횟수 */
+    _int           iCurBladesRemain = iTotalNumBlades; /* 현재 남은 칼날 개수 */
+
+    _bool   Can_ConsumeBladeAtk()
+    {
+        return iCurAtkRemain > 0;
+    }
+
+    _bool Consume_Blade()
+    {
+        if (!Can_ConsumeBladeAtk())
+            return false;
+
+        --iCurAtkRemain;
+        return true;
+    }
+
+    _bool Can_ReloadBlade()
+    {
+        return iCurBladesRemain > 0;
+    }
+
+    _bool Reload_Blade()
+    {
+        if (!Can_ReloadBlade())
+            return false;
+
+        --iCurBladesRemain;
+        iCurAtkRemain = iNumAtkPerBlade;
+        return true;
+    }
+} BLADE_DURABILITY;
+
 typedef struct tagPlayerContext
 {
     /* 포인터 자체를 소유한 구조체들 */
@@ -108,7 +146,7 @@ typedef struct tagPlayerContext
 
     /* 플레이어가 소유한 변수의 포인터를 가진 구조체들 */
     PLAYER_STATS*           pStats = nullptr;
-
+    BLADE_DURABILITY*       pBlade = nullptr;
     /* 헬퍼 */
     class CPlayer_SkillController*  pSkillController = nullptr;
 

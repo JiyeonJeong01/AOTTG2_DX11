@@ -25,6 +25,8 @@ private :
     HIT_INFO        m_tHitInfo{};
 
     CTransform      m_trHitBox;
+    Engine::CEvent<Engine::CGameObject*>        m_OnSuccessHit;
+
 
 public :
     CGameObject*    Get_HitBoxObject() const;
@@ -33,6 +35,13 @@ public :
     void            Set_Position(_fvector vPos);
 
     void OnTriggerEnter(const COLLISION_DESC& tDesc);
+
+
+    template <typename T>
+    ListenerID Subscribe_OnSuccessHit(void(T::* func)(Engine::CGameObject*), T* pInstance)
+    {
+        return m_OnSuccessHit.Add_Listener(func, pInstance);
+    }
 
 private :
     SCRIPT_OBJECT_REF   m_refOwner;

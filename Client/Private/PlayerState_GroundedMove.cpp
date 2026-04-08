@@ -38,6 +38,9 @@ void CPlayerState_GroundedMove::Update(_float fDT)
 
     if (m_eGroundedMoveState == GROUNDED_MOVE::DASH_LAND)
         return;
+    if (m_eGroundedMoveState == GROUNDED_MOVE::SLIDE)
+        return;
+
     CPlayerState::GroundedMove(fDT);
 }
 
@@ -45,6 +48,7 @@ void CPlayerState_GroundedMove::Late_Update(_float fDT)
 {
     CPlayerState::Late_Update(fDT);
 
+    Decide_NextAnim();
     Decide_NextState();
 }
 
@@ -58,8 +62,9 @@ void CPlayerState_GroundedMove::Enter(_uint iDetailFlag)
     {
         cout << "[GROUNDED_MOVE] ENTER RUN\n";
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);
+        CPlayerState::GroundedMove(m_fRunCorrectionDT); /* 바로 run으로 들어오는 경우 움직임 끊겨보인다. */
     }
-    else if (iDetailFlag == To<_uint>(GROUNDED_MOVE::DASH_LAND))
+    else if (iDetailFlag == To<_uint>(GROUNDED_MOVE::DASH_LAND)) /* 착지 */
     {
         cout << "[GROUNDED_MOVE] ENTER DASH_LAND\n";
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::DASH_LAND);
@@ -72,6 +77,14 @@ void CPlayerState_GroundedMove::Enter(_uint iDetailFlag)
         m_fOriginDrag = m_tComponents.rigidbody.Get_Drag();
         m_tComponents.rigidbody.Set_Drag(m_fSlidingDrag);
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::SLIDE);
+
+        /* 슬라이딩 방향으로 힘 줘서 슬라이딩 효과 유지하기 */
+        _float3 vVel = m_tComponents.rigidbody.Get_LinearVel();
+        const _float fVelScale = 0.45f;
+        vVel.x *= fVelScale;
+        vVel.y = 0.f; 
+        vVel.z *= fVelScale;
+        m_tComponents.rigidbody.Add_LinearImpulse(vVel);
     }
 }
 
@@ -121,7 +134,7 @@ void CPlayerState_GroundedMove::Decide_NextState()
         {
             const _float3 vLinearVel = m_tComponents.rigidbody.Get_LinearVel();
             _float fLinearVelSq = vLinearVel.x * vLinearVel.x + vLinearVel.z * vLinearVel.z;
-            if (fLinearVelSq > 5.f) return; /* 슬라이딩 속도가 일정 이하인 경우 IDLE로 전환 */
+            if (fLinearVelSq > m_fSlideThreshold) return; /* 슬라이딩 속도가 일정 이하인 경우 IDLE로 전환 */
         }
 
         cout << "[GROUNDED_MOVE] -> IDLE\n";
@@ -158,6 +171,29 @@ void CPlayerState_GroundedMove::Decide_NextState()
     }
 }
 
+void CPlayerState_GroundedMove::Decide_NextAnim()
+{
+    /* SLIDE -> RUN */
+    _bool bInputMove = !XMVector3Equal(XMLoadFloat3(&m_tInputCmd.vMove), XMVectorZero());
+    if (bInputMove)
+    {
+        if (m_eGroundedMoveState == GROUNDED_MOVE::SLIDE)
+        {
+            const _float3 vLinearVel = m_tComponents.rigidbody.Get_LinearVel();
+            _float fLinearVelSq = vLinearVel.x * vLinearVel.x + vLinearVel.z * vLinearVel.z;
+            if (fLinearVelSq < m_fSlideThreshold)
+            {
+                m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);
+                m_eGroundedMoveState = GROUNDED_MOVE::RUN;
+                m_tComponents.rigidbody.Set_Drag(m_fOriginDrag);
+                GroundedMove(m_fRunCorrectionDT);
+
+                cout << "[GROUNDED_MOVE] SLIDE -> RUN\n";
+            }
+        }
+    }
+}
+
 void CPlayerState_GroundedMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
 {
     if (!m_bAcivated)
@@ -190,43 +226,6 @@ void CPlayerState_GroundedMove::On_DashLandFinished(const Engine::ANIMATION_EVEN
         m_eGroundedMoveState = GROUNDED_MOVE::RUN;
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);   
     }
-}
-
-void CPlayerState_GroundedMove::Move(_float fDT)
-{
-    //const _float fMaxSpeed = m_pStats->fMaxSpeed;
-    //const _float fCurSpeed = m_pStats->fCurSpeed;
-
-    ///* 플레이어의 현재 속도 */
-    //_float3 vLinearVel = m_tComponents.rigidbody.Get_LinearVel();
-
-    //_float3 vMoveDir{};
-    //vMoveDir.x = m_tInputCmd.vMove.x;
-    //vMoveDir.z = m_tInputCmd.vMove.z;
-
-    //const _float fMoveLenSq = vMoveDir.x * vMoveDir.x + vMoveDir.z * vMoveDir.z;
-
-    ///* 입력 없음 */
-    //if (fMoveLenSq <= 0.f)
-    //    return;
-
-    //_float3 vHorizontalVel{};
-    //vHorizontalVel.x = vLinearVel.x;
-    //vHorizontalVel.z = vLinearVel.z;
-
-    //const _float fHorizontalSpeedSq =
-    //    vHorizontalVel.x * vHorizontalVel.x +
-    //    vHorizontalVel.z * vHorizontalVel.z;
-
-    ///* 최대 속도 제한 */
-    //if (fHorizontalSpeedSq < fMaxSpeed * fMaxSpeed)
-    //{
-    //    _float3 vForce{};
-    //    vForce.x = vMoveDir.x * fCurSpeed * fCurSpeed;
-    //    vForce.z = vMoveDir.z * fCurSpeed * fCurSpeed;
-
-    //    m_tComponents.rigidbody.Add_Force(vForce);
-    //}
 }
 
 std::shared_ptr<CPlayerState_GroundedMove> CPlayerState_GroundedMove::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
