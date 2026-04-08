@@ -4,29 +4,26 @@
 
 #include "Titan_Struct.h"
 
-NS_BEGIN(Engine)
-class CNavMesh;
-NS_END
 NS_BEGIN(Client)
-class CNormalTitanStateMachine;
+class CAbnormalTitanStateMachine;
 class CTargetSensor;
 class CTitanState;
 NS_END
 
 NS_BEGIN(Client)
 
-class CNormalTitan : public IScript, public CTitan
+class CAbnormalTitan : public IScript, public CTitan
 {
 public:
     char        m_szState[32] = {};
 
-SCRIPT_FIELDS_BEGIN(CNormalTitan)
-    SCRIPT_FIELD_CHAR(m_szState)
-SCRIPT_FIELDS_END(CNormalTitan)
+    SCRIPT_FIELDS_BEGIN(CAbnormalTitan)
+        SCRIPT_FIELD_CHAR(m_szState)
+    SCRIPT_FIELDS_END(CAbnormalTitan)
 
 public:
-    CNormalTitan();
-    ~CNormalTitan();
+    CAbnormalTitan();
+    ~CAbnormalTitan();
 
 public:
     void Awake(void* pCtx) override;
@@ -36,24 +33,23 @@ public:
     void Update(void* pCtx, _float fDT) override;
     void Late_Update(void* pCtx, _float fDT) override;
 
-private :
-    CGameObject*            m_goTitan = nullptr;
-    CGameObject*            m_goTarget = nullptr;
+private:
+    CGameObject* m_goTitan = nullptr;
+    CGameObject* m_goTarget = nullptr;
 
     TITAN_COMPONENTS        m_tComponents{};
     TITAN_RUNTIME_REF       m_tRef{};
     TITAN_STATS             m_tStats{};
     TITAN_POSE              m_ePose = TITAN_POSE::END;
 
-    std::unique_ptr<CNormalTitanStateMachine>   m_upStateMachine{};
+    std::unique_ptr<CAbnormalTitanStateMachine>   m_upStateMachine{};
     std::shared_ptr<CTitanState>                m_spCurState{};
-    std::unique_ptr<CNavMesh>                   m_upNav{};
 
     std::unordered_map<std::string, CHitBox*>   m_AllHitBoxes;
 
     Engine::CEvent<Engine::CGameObject*>        m_OnChanged_Target;
 
-public :
+public:
     TITAN_CONTEXT Get_TitanContext();
 
     template <typename T>
@@ -69,7 +65,7 @@ public :
     _bool               Has_Target() const;
     _bool               Is_ValidTarget(Engine::CGameObject* pTarget);
 
-    CGameObject*        Get_CurTarget() const;
+    CGameObject* Get_CurTarget() const;
 
 private:
     void On_Grab(SIDE eSide, CHuman* pHuman) override;

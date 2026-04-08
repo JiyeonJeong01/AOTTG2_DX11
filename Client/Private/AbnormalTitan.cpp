@@ -1,31 +1,29 @@
-﻿#include "NormalTitan.h"
+﻿#include "AbNormalTitan.h"
 #include "TitanState.h"
-#include "NormalTitanStateMachine.h"
+#include "AbnormalTitanStateMachine.h"
 #include "TargetSensor.h"
 #include "TitanBound_Controller.h"
 #include "HitBox.h"
 #include "HurtBox.h"
-#include "NavMesh.h"
 
 NS_BEGIN(Client)
-    CNormalTitan::CNormalTitan()
+CAbnormalTitan::CAbnormalTitan()
 {
 }
 
-CNormalTitan::~CNormalTitan()
+CAbnormalTitan::~CAbnormalTitan()
 {
 }
 
-void CNormalTitan::Awake(void* pCtx)
+void CAbnormalTitan::Awake(void* pCtx)
 {
     m_goTitan = SYS_GAMEOBJECT.Get_Wrapper(m_hObject);
-    m_upStateMachine = CNormalTitanStateMachine::Create(m_goTitan, this);
-    m_upNav = GAME_INSTANCE.Create_NavMesh(L"../../Client/Bin/Assets/DataFiles/NavMesh.dat");
+    m_upStateMachine = CAbnormalTitanStateMachine::Create(m_goTitan, this);
 
     IF_NULL_RETURN_MSG_BREAK(m_upStateMachine, , "m_upStateMachine is nullptr");
 }
 
-void CNormalTitan::Start(void* pCtx)
+void CAbnormalTitan::Start(void* pCtx)
 {
     /* 컴포넌트 참조 */
     {
@@ -56,9 +54,6 @@ void CNormalTitan::Start(void* pCtx)
         m_tRef.pBoundCtlr = m_goTitan->Get_Script_InChildren<CTitanBound_Controller>();
         IF_NULL_RETURN_MSG_BREAK(m_tRef.pBoundCtlr, , "m_tRef.pBoundCtlr is nullptr");
 
-
-        m_tRef.pNav = m_upNav.get();
-
         /* 히트박스 캐싱 */
         auto allHitBoxes = m_goTitan->Get_AllScripts_InChildren<CHitBox>();
         for (auto& hit : allHitBoxes)
@@ -74,7 +69,7 @@ void CNormalTitan::Start(void* pCtx)
         auto allHurtBoxes = m_goTitan->Get_AllScripts_InChildren<CHurtBox>();
         for (auto& hurt : allHurtBoxes)
         {
-            hurt->Subscribe_OnHurt(&CNormalTitan::On_Hurt, this);
+            hurt->Subscribe_OnHurt(&CAbnormalTitan::On_Hurt, this);
         }
 
         m_tRef.pAllHitBoxes = &m_AllHitBoxes;
@@ -90,31 +85,31 @@ void CNormalTitan::Start(void* pCtx)
 
     m_upStateMachine->Cache_TitanInfos(tContext);
 
-    m_tRef.pSensor->Subscribe_OnDetectedHuman(&CNormalTitan::On_DetectedHuman, this);
-    m_upStateMachine->Subscribe_OnChangedCurState(&CNormalTitan::OnChange_CurState, this);
+    m_tRef.pSensor->Subscribe_OnDetectedHuman(&CAbnormalTitan::On_DetectedHuman, this);
+    m_upStateMachine->Subscribe_OnChangedCurState(&CAbnormalTitan::OnChange_CurState, this);
 
     /* 히트박스 전부 끄기 */
     for (auto& hit : m_AllHitBoxes)
         hit.second->Set_Active(false);
 }
 
-void CNormalTitan::Priority_Update(void* pCtx, _float fDT)
+void CAbnormalTitan::Priority_Update(void* pCtx, _float fDT)
 {
     Validate_Target();
     m_upStateMachine->Priority_Update(fDT);
 }
 
-void CNormalTitan::Update(void* pCtx, _float fDT)
+void CAbnormalTitan::Update(void* pCtx, _float fDT)
 {
     m_upStateMachine->Update(fDT);
 }
 
-void CNormalTitan::Late_Update(void* pCtx, _float fDT)
+void CAbnormalTitan::Late_Update(void* pCtx, _float fDT)
 {
     m_upStateMachine->Late_Update(fDT);
 }
 
-TITAN_CONTEXT CNormalTitan::Get_TitanContext()
+TITAN_CONTEXT CAbnormalTitan::Get_TitanContext()
 {
     /* 플레이어 상태에게 전달 */
     TITAN_CONTEXT tContext;
@@ -125,7 +120,7 @@ TITAN_CONTEXT CNormalTitan::Get_TitanContext()
     return tContext;
 }
 
-void CNormalTitan::Set_Target(Engine::CGameObject* pTarget)
+void CAbnormalTitan::Set_Target(Engine::CGameObject* pTarget)
 {
     if (m_goTarget == pTarget)
         return;
@@ -143,17 +138,17 @@ void CNormalTitan::Set_Target(Engine::CGameObject* pTarget)
     m_OnChanged_Target.Invoke(m_goTarget);
 }
 
-void CNormalTitan::Clear_Target()
+void CAbnormalTitan::Clear_Target()
 {
     Set_Target(nullptr);
 }
 
-_bool CNormalTitan::Has_Target() const
+_bool CAbnormalTitan::Has_Target() const
 {
     return m_goTarget != nullptr;
 }
 
-_bool CNormalTitan::Is_ValidTarget(Engine::CGameObject* pTarget)
+_bool CAbnormalTitan::Is_ValidTarget(Engine::CGameObject* pTarget)
 {
     if (!pTarget)
         return false;
@@ -168,12 +163,12 @@ _bool CNormalTitan::Is_ValidTarget(Engine::CGameObject* pTarget)
     return true;
 }
 
-CGameObject* CNormalTitan::Get_CurTarget() const
+CGameObject* CAbnormalTitan::Get_CurTarget() const
 {
     return m_goTarget;
 }
 
-void CNormalTitan::On_Grab(SIDE eSide, CHuman* pHuman)
+void CAbnormalTitan::On_Grab(SIDE eSide, CHuman* pHuman)
 {
     TITAN_STATE eState = m_spCurState->Get_State();
     if (eState == TITAN_STATE::GRAB || eState == TITAN_STATE::HURT || eState == TITAN_STATE::DEAD)
@@ -188,7 +183,7 @@ void CNormalTitan::On_Grab(SIDE eSide, CHuman* pHuman)
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::GRAB), To<_uint>(eGrabbed));
 }
 
-void CNormalTitan::On_Dead(const _float fAccuracy)
+void CAbnormalTitan::On_Dead(const _float fAccuracy)
 {
     TITAN_STATE eState = m_spCurState->Get_State();
     if (eState == TITAN_STATE::DEAD)
@@ -197,7 +192,7 @@ void CNormalTitan::On_Dead(const _float fAccuracy)
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
 }
 
-void CNormalTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox)
+void CAbnormalTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox)
 {
     UNREFERENCED_PARAMETER(tHitInfo);
 
@@ -237,7 +232,7 @@ void CNormalTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtB
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::HURT), To<_uint>(eHurt));
 }
 
-void CNormalTitan::Validate_Target()
+void CAbnormalTitan::Validate_Target()
 {
     if (!m_goTarget)
         return;
@@ -248,7 +243,7 @@ void CNormalTitan::Validate_Target()
     }
 }
 
-void CNormalTitan::On_DetectedHuman(CGameObject* goHuman)
+void CAbnormalTitan::On_DetectedHuman(CGameObject* goHuman)
 {
 
     if (Has_Target() || !Is_ValidTarget(goHuman))
@@ -264,7 +259,7 @@ void CNormalTitan::On_DetectedHuman(CGameObject* goHuman)
     }
 }
 
-void CNormalTitan::OnChange_CurState(std::shared_ptr<CTitanState> spNewState)
+void CAbnormalTitan::OnChange_CurState(std::shared_ptr<CTitanState> spNewState)
 {
     IF_NULL_RETURN_MSG_BREAK(spNewState, , "spNewState is nullptr");
 

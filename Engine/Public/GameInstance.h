@@ -10,6 +10,7 @@ class CGameObject;
 class CPhysics_Processor;
 class CLine;
 class CTransform;
+class CNavMesh;
 typedef struct tagRay RAY;
 typedef struct tagRaycastHit RAYCAST_HIT;
 typedef struct tagRaycastHits RAYCAST_HITS;
@@ -67,6 +68,8 @@ public :/* ---------- Built-in ---------- */
     void                Test_LineRibbonMesh();
 
     uint32_t            Get_ResourceHandle(ASSET_TYPE eType, const ASSET_GUID& tGUID);
+
+    std::unique_ptr<CNavMesh> Create_NavMesh(const wchar_t* pFilePath);
 
 private :
     ID3D11Device*               m_pDevice = nullptr;

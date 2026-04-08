@@ -186,6 +186,8 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\LayerHelper.h" />
     <ClInclude Include="..\Public\Light.h" />
     <ClInclude Include="..\Public\Model.h" />
+    <ClInclude Include="..\public\NavBuilder.h" />
+    <ClInclude Include="..\Public\NavMesh.h" />
     <ClInclude Include="..\Public\Nav_Struct.h" />
     <ClInclude Include="..\Public\Particle.h" />
     <ClInclude Include="..\Public\Physics_Processor.h" />
@@ -283,6 +285,8 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Collision_Detector.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
     <ClCompile Include="..\Private\Line.cpp" />
+    <ClCompile Include="..\Private\NavBuilder.cpp" />
+    <ClCompile Include="..\Private\NavMesh.cpp" />
     <ClCompile Include="..\Private\Physics_Processor.cpp" />
     <ClCompile Include="..\Private\Raycast.cpp" />
     <ClCompile Include="..\Private\Rigidbody.cpp" />

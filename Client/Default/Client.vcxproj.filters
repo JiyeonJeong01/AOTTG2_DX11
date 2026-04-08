@@ -80,6 +80,12 @@
     <Filter Include="Game\Environment">
       <UniqueIdentifier>{4f9c8e1e-a1ab-4a64-93e7-c2f3fe223e2e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Titan\AbnormalTitan">
+      <UniqueIdentifier>{cdb52e2f-72aa-4426-be38-36224bf7414b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Titan\AbnormalTitan\AbnormalTitanState">
+      <UniqueIdentifier>{27887c3e-6155-4e1b-b736-7a3dface8649}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -268,6 +274,33 @@
     <ClInclude Include="..\Public\Environment_Controller.h">
       <Filter>Game\Environment</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AbnormalTitanState_Idle.h">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AbnormalTitan.h">
+      <Filter>Titan\AbnormalTitan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AbnormalTitanStateMachine.h">
+      <Filter>Titan\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TitanStateMachine.h">
+      <Filter>Titan\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AbnormalTitanState_Move.h">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AbnormalTitanState_Chase.h">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AbnormalTitanState_Grab.h">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AbnormalTitanState_Hurt.h">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AbnormalTitanState_Dead.h">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -426,6 +459,33 @@
     </ClCompile>
     <ClCompile Include="..\Private\Environment_Controller.cpp">
       <Filter>Game\Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AbnormalTitanState_Idle.cpp">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AbnormalTitan.cpp">
+      <Filter>Titan\AbnormalTitan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AbnormalTitanStateMachine.cpp">
+      <Filter>Titan\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TitanStateMachine.cpp">
+      <Filter>Titan\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AbnormalTitanState_Move.cpp">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AbnormalTitanState_Chase.cpp">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AbnormalTitanState_Grab.cpp">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AbnormalTitanState_Hurt.cpp">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AbnormalTitanState_Dead.cpp">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

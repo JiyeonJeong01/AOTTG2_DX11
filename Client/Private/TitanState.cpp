@@ -1,5 +1,7 @@
 ﻿#include "TitanState.h"
 
+#include <NavMesh.h>
+
 HRESULT CTitanState::Initialize()
 {
     return S_OK;
@@ -40,7 +42,8 @@ void CTitanState::Setup_CachedTitanContext()
 
 _vector CTitanState::Get_WanderMoveDir()
 {
-    return { 1.f, 0.f, 0.f };
+    _float3 vDir = m_tRef.pNav->Get_Dir(m_tComponents.transform->vPosition);
+    return XMLoadFloat3(&vDir);
 }
 
 void CTitanState::GroundedMove(_fvector vDir, float fDT)

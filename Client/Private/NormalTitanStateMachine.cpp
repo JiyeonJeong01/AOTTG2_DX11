@@ -48,30 +48,6 @@ void CNormalTitanStateMachine::Late_Update(_float fDT)
     m_spCurState->Late_Update(fDT);
 }
 
-void CNormalTitanStateMachine::Cache_TitanInfos(const TITAN_CONTEXT& tContext)
-{
-    for (auto& pState : m_States)
-        if (pState)
-            pState->Cache_TitanContext(tContext);
-
-    for (auto& pState : m_States)
-        if (pState)
-            pState->Setup_CachedTitanContext();
-}
-
-void CNormalTitanStateMachine::Change_State(_uint iStateKey, _uint iDetailFlag)
-{
-    if (iStateKey >= m_States.size())
-        return;
-
-    m_spCurState->Exit();
-
-    m_spCurState = m_States[iStateKey];
-    m_spCurState->Enter(iDetailFlag);
-
-    m_OnChanged_CurState.Invoke(m_spCurState);
-}
-
 std::unique_ptr<CNormalTitanStateMachine> CNormalTitanStateMachine::Create(CGameObject* goTitan, CTitan* scTitan)
 {
     auto pInstance = std::make_unique<CNormalTitanStateMachine>();

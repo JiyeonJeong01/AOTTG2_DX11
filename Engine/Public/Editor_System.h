@@ -97,12 +97,15 @@ private :
 private:
     std::vector<NAV_POINT> m_vecNavPoints;                              // 전체 Nav 점 목록
     std::vector<NAV_CELL>  m_vecNavCells;                               // 삼각형 셀 목록
-            
+
+    std::vector<NAV_POINT> m_vecSavedNavPoints;                         // 저장된 Nav 점 목록
+    std::vector<NAV_CELL>  m_vecSavedNavCells;                          // 저장된 Nav 셀 목록
+
     _int                   m_iPickedPointIndices[3] = { -1, -1, -1 };   // 지금 찍는 중인 점 세 개의 인덱스 임시 저장
     _int                   m_iPickedPointCount = 0;                     // 현재 몇 개 찍었는지
-        
+
     _float                 m_fNavCellY = 0.f;
-    _float                 m_fPointSnapRange = 0.1f;                    // 이 범위 내면 같은 점으로 판단
+    _float                 m_fPointSnapRange = 0.5f;                    // 이 범위 내면 같은 점으로 판단
 
 
 public:
@@ -111,6 +114,8 @@ public:
     void    Add_CellPoint(const _float3& vPoint);
     void    Clear_PickedCellPoints();
     void    Render_NavCells(CDebug_Renderer* pDebugRenderer);
+    void    Save_Nav();
+    _bool   Load_SavedNav(const wchar_t* pFilePath);
 };
 
 NS_END

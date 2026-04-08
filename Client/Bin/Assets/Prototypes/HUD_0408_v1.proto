@@ -1,0 +1,775 @@
+{
+  "prototype": {
+    "children": [
+      {
+        "components": [
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "ScriptGuid": "6A3FCF60-FAB8-4E2D-AFC8-9C88DFD39358",
+                "Type": 4
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "PosPx": [
+                  960.0,
+                  972.0
+                ],
+                "SizePx": [
+                  800.0,
+                  120.0
+                ],
+                "Type": 11
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+                "TextureGUID": "DB589A4C-A27B-4134-8873-FC51287B5FFE",
+                "Type": 12,
+                "flags": 0,
+                "layer": 1,
+                "rcClip": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "rcUV": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "sortZ": 0.0,
+                "vColor": [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "Color": [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Enabled": true,
+                "TextureGuid": "DB589A4C-A27B-4134-8873-FC51287B5FFE",
+                "Type": 13,
+                "UV": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "VisualPriority": 0
+              }
+            }
+          ],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": true,
+        "name": "Blade"
+      },
+      {
+        "components": [
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "ScriptGuid": "92E57873-96E8-4D20-87EF-AC6D06031EFD",
+                "Type": 4
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "PosPx": [
+                  960.0,
+                  976.0
+                ],
+                "SizePx": [
+                  637.0,
+                  88.0
+                ],
+                "Type": 11
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+                "TextureGUID": "7E26D598-90A6-4FA4-9100-4E5B0C31353E",
+                "Type": 12,
+                "flags": 0,
+                "layer": 1,
+                "rcClip": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "rcUV": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "sortZ": 0.0,
+                "vColor": [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "Color": [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Enabled": true,
+                "TextureGuid": "7E26D598-90A6-4FA4-9100-4E5B0C31353E",
+                "Type": 13,
+                "UV": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "VisualPriority": 0
+              }
+            }
+          ],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": true,
+        "name": "Gas"
+      },
+      {
+        "children": [
+          {
+            "components": [
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [
+                {
+                  "data": {
+                    "PosPx": [
+                      1556.0,
+                      972.0
+                    ],
+                    "SizePx": [
+                      79.0,
+                      65.0
+                    ],
+                    "Type": 11
+                  }
+                }
+              ],
+              [
+                {
+                  "data": {
+                    "Enabled": true,
+                    "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+                    "TextureGUID": "FAB11140-02A6-450A-9AF0-BDFB31500182",
+                    "Type": 12,
+                    "flags": 1,
+                    "layer": 1,
+                    "rcClip": [
+                      0.0,
+                      65.0,
+                      0.0,
+                      0.0
+                    ],
+                    "rcUV": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "sortZ": 0.0,
+                    "vColor": [
+                      1.0,
+                      1.0,
+                      1.0,
+                      1.0
+                    ]
+                  }
+                }
+              ],
+              [
+                {
+                  "data": {
+                    "Color": [
+                      1.0,
+                      1.0,
+                      1.0,
+                      1.0
+                    ],
+                    "Enabled": true,
+                    "TextureGuid": "FAB11140-02A6-450A-9AF0-BDFB31500182",
+                    "Type": 13,
+                    "UV": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "VisualPriority": 0
+                  }
+                }
+              ],
+              [],
+              []
+            ],
+            "iObjMask": 0,
+            "isUI": true,
+            "name": "SpinH_CoolDown"
+          },
+          {
+            "components": [
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [
+                {
+                  "data": {
+                    "PosPx": [
+                      1657.0,
+                      972.0
+                    ],
+                    "SizePx": [
+                      79.0,
+                      65.0
+                    ],
+                    "Type": 11
+                  }
+                }
+              ],
+              [
+                {
+                  "data": {
+                    "Enabled": true,
+                    "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+                    "TextureGUID": "FAB11140-02A6-450A-9AF0-BDFB31500182",
+                    "Type": 12,
+                    "flags": 1,
+                    "layer": 1,
+                    "rcClip": [
+                      0.0,
+                      65.0,
+                      0.0,
+                      0.0
+                    ],
+                    "rcUV": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "sortZ": 0.0,
+                    "vColor": [
+                      1.0,
+                      1.0,
+                      1.0,
+                      1.0
+                    ]
+                  }
+                }
+              ],
+              [
+                {
+                  "data": {
+                    "Color": [
+                      1.0,
+                      1.0,
+                      1.0,
+                      1.0
+                    ],
+                    "Enabled": true,
+                    "TextureGuid": "FAB11140-02A6-450A-9AF0-BDFB31500182",
+                    "Type": 13,
+                    "UV": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "VisualPriority": 0
+                  }
+                }
+              ],
+              [],
+              []
+            ],
+            "iObjMask": 0,
+            "isUI": true,
+            "name": "Throw_CoolDown"
+          },
+          {
+            "components": [
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [
+                {
+                  "data": {
+                    "PosPx": [
+                      1760.0,
+                      966.0
+                    ],
+                    "SizePx": [
+                      91.0,
+                      71.0
+                    ],
+                    "Type": 11
+                  }
+                }
+              ],
+              [
+                {
+                  "data": {
+                    "Enabled": true,
+                    "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+                    "TextureGUID": "FAB11140-02A6-450A-9AF0-BDFB31500182",
+                    "Type": 12,
+                    "flags": 1,
+                    "layer": 1,
+                    "rcClip": [
+                      0.0,
+                      71.0,
+                      0.0,
+                      0.0
+                    ],
+                    "rcUV": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    "sortZ": 0.0,
+                    "vColor": [
+                      1.0,
+                      1.0,
+                      1.0,
+                      1.0
+                    ]
+                  }
+                }
+              ],
+              [
+                {
+                  "data": {
+                    "Color": [
+                      1.0,
+                      1.0,
+                      1.0,
+                      1.0
+                    ],
+                    "Enabled": true,
+                    "TextureGuid": "FAB11140-02A6-450A-9AF0-BDFB31500182",
+                    "Type": 13,
+                    "UV": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    "VisualPriority": 0
+                  }
+                }
+              ],
+              [],
+              []
+            ],
+            "iObjMask": 0,
+            "isUI": true,
+            "name": "SpinV_CoolDown"
+          }
+        ],
+        "components": [
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "ExposedFields": {
+                  "ClassName": "CUI_SkillController",
+                  "Fields": [
+                    {
+                      "Name": "m_refPlayer",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "C758073A-D827-495D-8A1C-E4EE3060F3AF"
+                      }
+                    },
+                    {
+                      "Name": "m_tRefSkill_Image",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "BFCE0C5B-8A9F-4EB5-810F-B513315A6661"
+                      }
+                    },
+                    {
+                      "Name": "m_vCoolDownSmallSize",
+                      "Type": 2,
+                      "Value": [
+                        79.0,
+                        65.0
+                      ]
+                    },
+                    {
+                      "Name": "m_vCoolDownBigSize",
+                      "Type": 2,
+                      "Value": [
+                        91.0,
+                        71.0
+                      ]
+                    },
+                    {
+                      "Name": "m_tRefSpinH_CoolDown_Image",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "204B0366-0568-4B85-B065-69123668F093"
+                      }
+                    },
+                    {
+                      "Name": "m_tRefThrow_CoolDown_Image",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "F0DE0A73-073D-4F37-B2D1-04962C4E7773"
+                      }
+                    },
+                    {
+                      "Name": "m_tRefSpinV_CoolDown_Image",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "F72721C4-3EE0-4B55-9C08-89741A253C4F"
+                      }
+                    },
+                    {
+                      "Name": "m_SpinH_Texture",
+                      "Type": 6,
+                      "Value": {
+                        "GUID": "C212BB34-F7FE-440A-9A89-348437E93C4A"
+                      }
+                    },
+                    {
+                      "Name": "m_Throw_Texture",
+                      "Type": 6,
+                      "Value": {
+                        "GUID": "43909CC7-975A-4F95-8328-1C13BD927403"
+                      }
+                    },
+                    {
+                      "Name": "m_SpinV_Texture",
+                      "Type": 6,
+                      "Value": {
+                        "GUID": "29085E95-8FA2-4160-A444-EDE76E0F9B34"
+                      }
+                    },
+                    {
+                      "Name": "m_CoolDownSmall",
+                      "Type": 6,
+                      "Value": {
+                        "GUID": "FAB11140-02A6-450A-9AF0-BDFB31500182"
+                      }
+                    },
+                    {
+                      "Name": "m_CoolDownBig",
+                      "Type": 6,
+                      "Value": {
+                        "GUID": "FAB11140-02A6-450A-9AF0-BDFB31500182"
+                      }
+                    }
+                  ]
+                },
+                "ScriptGuid": "0034A54C-20D0-413F-A4E4-2D731C2AE613",
+                "Type": 4
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "PosPx": [
+                  1662.0,
+                  969.0
+                ],
+                "SizePx": [
+                  300.0,
+                  92.0
+                ],
+                "Type": 11
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+                "TextureGUID": "29085E95-8FA2-4160-A444-EDE76E0F9B34",
+                "Type": 12,
+                "flags": 0,
+                "layer": 1,
+                "rcClip": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "rcUV": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "sortZ": 0.0,
+                "vColor": [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "Color": [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Enabled": true,
+                "TextureGuid": "29085E95-8FA2-4160-A444-EDE76E0F9B34",
+                "Type": 13,
+                "UV": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "VisualPriority": 0
+              }
+            }
+          ],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": true,
+        "name": "Skill"
+      },
+      {
+        "components": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "PosPx": [
+                  960.0,
+                  540.0
+                ],
+                "SizePx": [
+                  50.0,
+                  50.0
+                ],
+                "Type": 11
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+                "TextureGUID": "DF143D6E-8F08-425E-B7AD-7CC47D99447E",
+                "Type": 12,
+                "flags": 0,
+                "layer": 1,
+                "rcClip": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "rcUV": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "sortZ": 0.0,
+                "vColor": [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "Color": [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Enabled": true,
+                "TextureGuid": "DF143D6E-8F08-425E-B7AD-7CC47D99447E",
+                "Type": 13,
+                "UV": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "VisualPriority": 10
+              }
+            }
+          ],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": true,
+        "name": "cursor"
+      }
+    ],
+    "components": [
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              540.0
+            ],
+            "SizePx": [
+              100.0,
+              100.0
+            ],
+            "Type": 11
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      []
+    ],
+    "iObjMask": 0,
+    "isUI": true,
+    "name": "HUD_0408_v1"
+  },
+  "version": 1
+}

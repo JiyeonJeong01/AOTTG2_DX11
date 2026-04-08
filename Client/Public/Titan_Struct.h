@@ -27,8 +27,8 @@ typedef struct tagTitanComponents
 
 typedef struct tagTitanStats
 {
-    _float          fCurSpeed = 3.f;
-    _float          fMaxSpeed = 5.f;
+    _float          fCurSpeed = 8.f;
+    _float          fMaxSpeed = 10.f;
 
     _float          fJump = 4.f;
     _float          fJumpDash = 0.02f;
@@ -38,9 +38,10 @@ typedef struct tagTitanStats
 
 typedef struct tagTitanRuntimeRef
 {
-    class CNormalTitanStateMachine* pFSM = nullptr;
+    class CTitanStateMachine*       pFSM = nullptr;
     class CTargetSensor*            pSensor = nullptr;
     class CTitanBound_Controller*   pBoundCtlr = nullptr;
+    class Engine::CNavMesh*         pNav = nullptr;
     unordered_map<std::string, class CHitBox*>*  pAllHitBoxes;
 
     TITAN_POSE*                     pPose = nullptr;

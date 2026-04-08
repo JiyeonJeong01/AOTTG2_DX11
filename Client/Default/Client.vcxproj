@@ -20,6 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Publict\Equipment_Struct.h" />
+    <ClInclude Include="..\Public\AbnormalTitan.h" />
+    <ClInclude Include="..\Public\AbnormalTitanStateMachine.h" />
+    <ClInclude Include="..\Public\AbnormalTitanState_Chase.h" />
+    <ClInclude Include="..\Public\AbnormalTitanState_Dead.h" />
+    <ClInclude Include="..\Public\AbnormalTitanState_Grab.h" />
+    <ClInclude Include="..\Public\AbnormalTitanState_Hurt.h" />
+    <ClInclude Include="..\Public\AbnormalTitanState_Idle.h" />
+    <ClInclude Include="..\Public\AbnormalTitanState_Move.h" />
     <ClInclude Include="..\Public\AnimationClip_Player.h" />
     <ClInclude Include="..\Public\AnimationClip_Titan.h" />
     <ClInclude Include="..\Public\Attacher.h" />
@@ -75,6 +83,7 @@
     <ClInclude Include="..\Public\TitanBound_Controller.h" />
     <ClInclude Include="..\Public\TitanState.h" />
     <ClInclude Include="..\Public\NormalTitanStateMachine.h" />
+    <ClInclude Include="..\Public\TitanStateMachine.h" />
     <ClInclude Include="..\Public\Titan_Hand.h" />
     <ClInclude Include="..\Public\Titan_Struct.h" />
     <ClInclude Include="..\Public\UIManager.h" />
@@ -83,6 +92,14 @@
     <ClInclude Include="..\Public\UI_SkillController.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\AbnormalTitan.cpp" />
+    <ClCompile Include="..\Private\AbnormalTitanStateMachine.cpp" />
+    <ClCompile Include="..\Private\AbnormalTitanState_Chase.cpp" />
+    <ClCompile Include="..\Private\AbnormalTitanState_Dead.cpp" />
+    <ClCompile Include="..\Private\AbnormalTitanState_Grab.cpp" />
+    <ClCompile Include="..\Private\AbnormalTitanState_Hurt.cpp" />
+    <ClCompile Include="..\Private\AbnormalTitanState_Idle.cpp" />
+    <ClCompile Include="..\Private\AbnormalTitanState_Move.cpp" />
     <ClCompile Include="..\Private\Attacher.cpp" />
     <ClCompile Include="..\Private\CameraController.cpp" />
     <ClCompile Include="..\Private\Environment_Controller.cpp" />
@@ -131,6 +148,7 @@
     <ClCompile Include="..\Private\TitanBound_Controller.cpp" />
     <ClCompile Include="..\Private\TitanState.cpp" />
     <ClCompile Include="..\Private\NormalTitanStateMachine.cpp" />
+    <ClCompile Include="..\Private\TitanStateMachine.cpp" />
     <ClCompile Include="..\Private\Titan_Hand.cpp" />
     <ClCompile Include="..\Private\UIManager.cpp" />
     <ClCompile Include="..\Private\UI_BladeController.cpp" />

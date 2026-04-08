@@ -4,6 +4,7 @@
 #include "Script_Handler.h"
 #include "Script_Register.h"
 
+#include "AbnormalTitan.h"
 #include "Attacher.h"
 #include "CameraController.h"
 #include "Environment_Controller.h"
@@ -31,6 +32,10 @@ NS_BEGIN(Client)
 void Register_AllScripts()
 {
     auto& handler = SYS_ASSET.Scripts();
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\AbnormalTitan.script");
+        handler.Register_VTable(guid, ScriptBinder<CAbnormalTitan>::Build());
+    }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Attacher.script");
         handler.Register_VTable(guid, ScriptBinder<CAttacher>::Build());

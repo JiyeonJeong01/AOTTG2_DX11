@@ -18,6 +18,7 @@
 #include "Render_Context.h"
 #include "MeshRenderer.h"
 #include "Debug_Renderer.h"
+#include "NavBuilder.h"
 
 IMPLEMENT_SINGLETON(CEditor_System)
 
@@ -708,7 +709,42 @@ void CEditor_System::Clear_PickedCellPoints()
 
 void CEditor_System::Render_NavCells(CDebug_Renderer* pDebugRenderer)
 {
-    /* ---------------- 완성된 Cell ---------------- */
+    /* ---------------- 저장된 Cell 추후 디버깅 용도로 남겨둠  ---------------- */ 
+    //for (const NAV_CELL& tCell : m_vecSavedNavCells)
+    //{
+    //    const _int iPointA = tCell.iPoints[0];
+    //    const _int iPointB = tCell.iPoints[1];
+    //    const _int iPointC = tCell.iPoints[2];
+
+    //    if (iPointA < 0 || iPointB < 0 || iPointC < 0)
+    //        continue;
+
+    //    if (iPointA >= (_int)m_vecSavedNavPoints.size() ||
+    //        iPointB >= (_int)m_vecSavedNavPoints.size() ||
+    //        iPointC >= (_int)m_vecSavedNavPoints.size())
+    //        continue;
+
+    //    _float3 vA = m_vecSavedNavPoints[iPointA].vPos;
+    //    _float3 vB = m_vecSavedNavPoints[iPointB].vPos;
+    //    _float3 vC = m_vecSavedNavPoints[iPointC].vPos;
+
+    //    vA.y += 0.03f;
+    //    vB.y += 0.03f;
+    //    vC.y += 0.03f;
+
+    //    pDebugRenderer->Draw_NavCell(vA, vB, vC, DirectX::Colors::Cyan);
+    //}
+
+    /* ---------------- 저장된 Point ---------------- */
+    for (const NAV_POINT& tPoint : m_vecSavedNavPoints)
+    {
+        _float3 vDrawPos = tPoint.vPos;
+        vDrawPos.y += 0.05f;
+
+        pDebugRenderer->Draw_NavPoint(vDrawPos, 0.22f, DirectX::Colors::Orange);
+    }
+
+    /* ---------------- 편집 중인 Cell ---------------- */
     for (const NAV_CELL& tCell : m_vecNavCells)
     {
         const _int iPointA = tCell.iPoints[0];
@@ -734,7 +770,7 @@ void CEditor_System::Render_NavCells(CDebug_Renderer* pDebugRenderer)
         pDebugRenderer->Draw_NavCell(vA, vB, vC, DirectX::Colors::Lime);
     }
 
-    /* ---------------- 전체 Point ---------------- */
+    /* ---------------- 편집 중인 Point ---------------- */
     for (const NAV_POINT& tPoint : m_vecNavPoints)
     {
         _float3 vDrawPos = tPoint.vPos;
@@ -742,4 +778,32 @@ void CEditor_System::Render_NavCells(CDebug_Renderer* pDebugRenderer)
 
         pDebugRenderer->Draw_NavPoint(vDrawPos, 0.3f, DirectX::Colors::Yellow);
     }
+}
+
+void CEditor_System::Save_Nav()
+{
+    std::vector<NAV_CELL> vecBuiltCells;
+    CNavBuilder::Build_NavCellNeighbors(m_vecNavCells, vecBuiltCells);
+
+    if (CNavBuilder::Save_Nav(L"../../Client/Bin/Assets/DataFiles/NavMesh.dat", m_vecNavPoints, vecBuiltCells))
+    {
+        m_vecNavCells = vecBuiltCells;
+    }
+}
+
+_bool CEditor_System::Load_SavedNav(const wchar_t* pFilePath)
+{
+    std::vector<NAV_POINT> vecNavPoints;
+    std::vector<NAV_CELL> vecNavCells;
+
+    if (false == CNavBuilder::Load_Nav(pFilePath, vecNavPoints, vecNavCells))
+    {
+        m_vecNavPoints.clear();
+        m_vecNavCells.clear();
+        return false;
+    }
+
+    m_vecNavPoints = std::move(vecNavPoints);
+    m_vecNavCells = std::move(vecNavCells);
+    return true;
 }

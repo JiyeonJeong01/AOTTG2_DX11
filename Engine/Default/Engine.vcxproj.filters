@@ -193,6 +193,9 @@
     <Filter Include="01. Utility\05. Resource\09. Particle">
       <UniqueIdentifier>{e4e1c907-0c40-4cd5-b616-ed410d7a7e23}</UniqueIdentifier>
     </Filter>
+    <Filter Include="08. NavMesh">
+      <UniqueIdentifier>{024d29e4-52a8-4280-b67e-e52609ba5cbb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -526,6 +529,12 @@
     <ClInclude Include="..\Public\Particle.h">
       <Filter>01. Utility\05. Resource\09. Particle</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\NavBuilder.h">
+      <Filter>08. NavMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NavMesh.h">
+      <Filter>08. NavMesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -721,6 +730,12 @@
       <Filter>01. Utility\04. Component\9. UI_Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Uniform_Grid.cpp" />
+    <ClCompile Include="..\Private\NavBuilder.cpp">
+      <Filter>08. NavMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NavMesh.cpp">
+      <Filter>08. NavMesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Public\Component_System.inl">

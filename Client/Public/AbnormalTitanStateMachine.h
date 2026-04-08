@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "StateMachine.h"
 #include "Titan_Struct.h"
 #include "TitanStateMachine.h"
 
@@ -7,11 +6,11 @@ NS_BEGIN(Client)
 
 class CTitanState;
 
-class CNormalTitanStateMachine : public CTitanStateMachine
+class CAbnormalTitanStateMachine : public CTitanStateMachine
 {
 public:
-    CNormalTitanStateMachine();
-    ~CNormalTitanStateMachine() override;
+    CAbnormalTitanStateMachine();
+    ~CAbnormalTitanStateMachine() override;
 
 public:
     HRESULT Initialize(Engine::CGameObject* goTitan, CTitan* scTitan);
@@ -20,7 +19,7 @@ public:
     void Late_Update(_float fDT);
 
 public:
-    static std::unique_ptr<CNormalTitanStateMachine> Create(CGameObject* goTitan, CTitan* scTitan);
+    static std::unique_ptr<CAbnormalTitanStateMachine> Create(CGameObject* goTitan, CTitan* scTitan);
 };
 
 NS_END

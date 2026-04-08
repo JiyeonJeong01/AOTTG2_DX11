@@ -1,23 +1,23 @@
-﻿#include "NormalTitanState_Idle.h"
+﻿#include "AbnormalTitanState_Idle.h"
 
 #include "AnimationClip_Titan.h"
-#include "NormalTitanStateMachine.h"
-#include "NormalTitanStateMachine.h"
+#include "AbnormalTitanStateMachine.h"
+#include "AbnormalTitanStateMachine.h"
 
 using namespace ANIM_TITAN;
 
 NS_BEGIN(Client)
 
-CNormalTitanState_Idle::CNormalTitanState_Idle(Engine::CGameObject* goTitan, CTitan* scTitan, TITAN_STATE eState)
+CAbnormalTitanState_Idle::CAbnormalTitanState_Idle(Engine::CGameObject* goTitan, CTitan* scTitan, TITAN_STATE eState)
     : CTitanState(goTitan, scTitan, eState)
 {
 }
 
-CNormalTitanState_Idle::~CNormalTitanState_Idle()
+CAbnormalTitanState_Idle::~CAbnormalTitanState_Idle()
 {
 }
 
-HRESULT CNormalTitanState_Idle::Initialize()
+HRESULT CAbnormalTitanState_Idle::Initialize()
 {
     IF_NULL_RETURN_MSG_BREAK(m_goTitan, E_FAIL, "m_goTitan is nullptr.");
     IF_NULL_RETURN_MSG_BREAK(m_scTitan, E_FAIL, "m_scTitan is nullptr.");
@@ -25,26 +25,26 @@ HRESULT CNormalTitanState_Idle::Initialize()
     return S_OK;
 }
 
-void CNormalTitanState_Idle::Priority_Update(_float fDT)
+void CAbnormalTitanState_Idle::Priority_Update(_float fDT)
 {
     CTitanState::Priority_Update(fDT);
 }
 
-void CNormalTitanState_Idle::Update(_float fDT)
+void CAbnormalTitanState_Idle::Update(_float fDT)
 {
     CTitanState::Update(fDT);
 }
 
-void CNormalTitanState_Idle::Late_Update(_float fDT)
+void CAbnormalTitanState_Idle::Late_Update(_float fDT)
 {
     CTitanState::Late_Update(fDT);
 
     m_fElapsedIdleTime += fDT;
 
-    Decide_NextState();
+    //Decide_NextState();
 }
 
-void CNormalTitanState_Idle::Enter(_uint iDetailFlag)
+void CAbnormalTitanState_Idle::Enter(_uint iDetailFlag)
 {
     CTitanState::Enter(iDetailFlag);
 
@@ -86,22 +86,22 @@ void CNormalTitanState_Idle::Enter(_uint iDetailFlag)
         break;
     }
 }
-void CNormalTitanState_Idle::Exit()
+void CAbnormalTitanState_Idle::Exit()
 {
     CTitanState::Exit();
 }
 
-void CNormalTitanState_Idle::Setup_CachedTitanContext()
+void CAbnormalTitanState_Idle::Setup_CachedTitanContext()
 {
     CTitanState::Setup_CachedTitanContext();
 }
 
-_uint CNormalTitanState_Idle::Get_DetailState() const
+_uint CAbnormalTitanState_Idle::Get_DetailState() const
 {
     return To<_uint>(m_eIdleState);
 }
 
-void CNormalTitanState_Idle::Decide_NextState()
+void CAbnormalTitanState_Idle::Decide_NextState()
 {
     /* 공통 유틸(Detect / Chase / Wander / Hurt / Dead 판정)은 추후 분리 예정 */
 
@@ -111,17 +111,17 @@ void CNormalTitanState_Idle::Decide_NextState()
     }
 }
 
-void CNormalTitanState_Idle::Decide_NextAnim()
+void CAbnormalTitanState_Idle::Decide_NextAnim()
 {
     /* idle 내부 변형 애니메이션 선택 로직이 필요해지면 여기서 처리 */
 }
 
-std::shared_ptr<CNormalTitanState_Idle> CNormalTitanState_Idle::Create(
+std::shared_ptr<CAbnormalTitanState_Idle> CAbnormalTitanState_Idle::Create(
     Engine::CGameObject* goTitan,
     CTitan* scTitan,
     TITAN_STATE eState)
 {
-    auto pInstance = std::make_shared<CNormalTitanState_Idle>(goTitan, scTitan, eState);
+    auto pInstance = std::make_shared<CAbnormalTitanState_Idle>(goTitan, scTitan, eState);
 
     IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(), nullptr, "pInstance create failed");
     return pInstance;

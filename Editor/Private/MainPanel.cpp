@@ -62,6 +62,8 @@ HRESULT CMainPanel::Initialize()
     if (pRec) m_scenePath = pRec->path.wstring();
     m_bSceneDirty = false;
 
+    SYS_EDITOR.Load_SavedNav(L"../../Client/Bin/Assets/DataFiles/NavMesh.dat");
+
     return S_OK;
 }
 
@@ -491,18 +493,30 @@ void CMainPanel::Draw_Toolbar()
                 m_bPlaying = true;
                 SYS_EDITOR.Toggle_DebugCamera(false);
             }
+
             ImGui::SameLine(0, 20.0f);
-            bool bNavEdit = (m_ePickMode == EDITOR_PICK_MODE::NAV_EDIT);
-            if (ImGui::Checkbox("NAV", &bNavEdit))
+
+            const bool bNavEdit = (m_ePickMode == EDITOR_PICK_MODE::NAV_EDIT);
+            if (bNavEdit)
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.6f, 0.2f, 1.f));
+
+            if (ImGui::Button(bNavEdit ? "SAVE_NAV" : "EDIT_NAV", ImVec2( button_size + 10, 35)))
             {
                 if (bNavEdit)
-                    m_ePickMode = EDITOR_PICK_MODE::NAV_EDIT;
-                else
+                {
+                    SYS_EDITOR.Save_Nav();
                     m_ePickMode = EDITOR_PICK_MODE::NORMAL;
+                }
+                else
+                {
+                    m_ePickMode = EDITOR_PICK_MODE::NAV_EDIT;
+                }
             }
 
-            ImGui::SameLine();
+            if (bNavEdit)
+                ImGui::PopStyleColor();
 
+            ImGui::SameLine();
         }
         else
         {

@@ -24,6 +24,8 @@
 #include "MeshBuilder.h"
 #include "Line.h"
 
+#include "NavMesh.h"
+
 IMPLEMENT_SINGLETON(CGameInstance)
 
 CGameInstance::~CGameInstance()
@@ -299,6 +301,21 @@ uint32_t CGameInstance::Get_ResourceHandle(ASSET_TYPE eType, const ASSET_GUID& t
     default:
         return INVALID_HANDLE_UINT;
     }
+}
+
+std::unique_ptr<CNavMesh> CGameInstance::Create_NavMesh(const wchar_t* pFilePath)
+{
+    if (pFilePath == nullptr)
+        return nullptr;
+
+    std::unique_ptr<CNavMesh> upNavMesh = std::make_unique<CNavMesh>();
+    if (!upNavMesh)
+        return nullptr;
+
+    if (false == upNavMesh->Load(pFilePath))
+        return nullptr;
+
+    return upNavMesh;
 }
 
 _bool CGameInstance::Read_GameConfig()

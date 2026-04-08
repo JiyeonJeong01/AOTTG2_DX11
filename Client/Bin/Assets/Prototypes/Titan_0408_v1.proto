@@ -1,0 +1,3060 @@
+{
+  "prototype": {
+    "children": [
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "eyes_0",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "F8089D6E-5E8B-467F-A7E4-4ABDD8CFF6C9",
+                "MeshGUID": "F454ACF3-1946-4D2F-9C7A-128B82CF8F35",
+                "Mode": 2,
+                "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+                "ParticlePivot": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "ParticlePlaying": false,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "eye"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  -1.2999999523162842,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.25,
+                  1.2999999523162842,
+                  1.25
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "head",
+                "Enabled": true,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "8D3A2683-075F-421E-A893-E7DDEBA088D1",
+                "MeshGUID": "E0124909-9B33-43AE-B946-5D3F7ADAC189",
+                "Mode": 2,
+                "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+                "ParticlePivot": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "ParticlePlaying": false,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "hair"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  17.306886672973633,
+                  1.0599998235702515,
+                  -2.2168304920196533
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "HalfExtentsLocal": [
+                  10.0,
+                  10.0,
+                  10.0
+                ],
+                "Offset": [
+                  0.0,
+                  5.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 0,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "ExposedFields": {
+                  "ClassName": "CTargetSensor",
+                  "Fields": [
+                    {
+                      "Name": "m_refTitan",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE"
+                      }
+                    }
+                  ]
+                },
+                "ScriptGuid": "A087260F-7DDD-4E48-A09E-4F0AC3B2637D",
+                "Type": 4
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "Sensor"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  12.175106048583984,
+                  9.5600004196167,
+                  -11.485857009887695
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 3.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabAirFarL"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  7.514944076538086,
+                  9.5600004196167,
+                  -6.262552261352539
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 3.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabAirFarR"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  15.15985107421875,
+                  9.5600004196167,
+                  -8.822906494140625
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 3.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabAirShortL"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  10.499689102172852,
+                  9.5600004196167,
+                  -3.5996031761169434
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 3.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabAirShortR"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  22.661937713623047,
+                  6.060000419616699,
+                  -1.4595708847045898
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 3.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabBackL"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  18.667512893676758,
+                  6.060000419616699,
+                  3.0175464153289795
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 3.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabBackR"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  20.957368850708008,
+                  1.0599998235702515,
+                  -0.30006706714630127
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 2.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabGroundBackL"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  19.62589454650879,
+                  1.0599998235702515,
+                  1.192305326461792
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 2.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabGroundBackR"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  17.065540313720703,
+                  1.0599998235702515,
+                  -6.452601432800293
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 2.5,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabGroundFrontL"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  13.071115493774414,
+                  1.0599998235702515,
+                  -1.9754841327667236
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 2.5,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabGroundFrontR"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  19.4993896484375,
+                  10.0600004196167,
+                  -2.2709298133850098
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 2.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabHeadBackL"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  17.42755889892578,
+                  10.0600004196167,
+                  -0.09894514083862305
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 2.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabHeadBackR"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  16.440027236938477,
+                  10.0600004196167,
+                  -5.000453472137451
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 2.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabHeadFrontL"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  14.442814826965332,
+                  10.0600004196167,
+                  -2.761894702911377
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 2.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabHeadFrontR"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  15.57316780090332,
+                  15.060001373291016,
+                  -7.784076690673828
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 3.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabHighL"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  11.578742980957031,
+                  15.060001373291016,
+                  -3.3069589138031006
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 3.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabHighR"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  16.77289581298828,
+                  6.060000419616699,
+                  -5.373546600341797
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 2.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabStomachL"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  14.109946250915527,
+                  6.060000419616699,
+                  -2.3888015747070313
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 2.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "GrabStomachR"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  17.67997932434082,
+                  12.0600004196167,
+                  -1.883961796760559
+                ],
+                "Rotation": [
+                  -0.0,
+                  -0.40881699323654175,
+                  0.0,
+                  -0.9126164317131042
+                ],
+                "Scale": [
+                  0.9999956488609314,
+                  1.0,
+                  0.9999953508377075
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": true,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 1.559999942779541,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "WeakPoint"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  20.23269271850586,
+                  4.708468437194824,
+                  -3.828235626220703
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": true,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 0.5,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "HandL"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  14.407073974609375,
+                  4.379219055175781,
+                  0.11818599700927734
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": true,
+                "Enabled": true,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 0.5,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "HandR"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  19.623939514160156,
+                  7.924605369567871,
+                  -3.5824506282806396
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": true,
+                "Enabled": true,
+                "HalfExtentsLocal": [
+                  1.0,
+                  1.5,
+                  1.0
+                ],
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 0,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "ExposedFields": {
+                  "ClassName": "CHurtBox",
+                  "Fields": [
+                    {
+                      "Name": "m_refOwner",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE"
+                      }
+                    }
+                  ]
+                },
+                "ScriptGuid": "ADF0B44D-E3EA-4595-9FEC-EE5701E3B228",
+                "Type": 4
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 512,
+        "isUI": false,
+        "name": "HurtBox_ArmL"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  15.004735946655273,
+                  7.555675983428955,
+                  -0.2301805019378662
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": true,
+                "Enabled": true,
+                "HalfExtentsLocal": [
+                  1.0,
+                  1.5,
+                  1.0
+                ],
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 0,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "ExposedFields": {
+                  "ClassName": "CHurtBox",
+                  "Fields": [
+                    {
+                      "Name": "m_refOwner",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE"
+                      }
+                    }
+                  ]
+                },
+                "ScriptGuid": "ADF0B44D-E3EA-4595-9FEC-EE5701E3B228",
+                "Type": 4
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 512,
+        "isUI": false,
+        "name": "HurtBox_ArmR"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  17.13111114501953,
+                  2.8728716373443604,
+                  -4.450229644775391
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": true,
+                "Enabled": true,
+                "HalfExtentsLocal": [
+                  1.2999999523162842,
+                  0.699999988079071,
+                  0.5
+                ],
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 0,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "ExposedFields": {
+                  "ClassName": "CHurtBox",
+                  "Fields": [
+                    {
+                      "Name": "m_refOwner",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE"
+                      }
+                    }
+                  ]
+                },
+                "ScriptGuid": "ADF0B44D-E3EA-4595-9FEC-EE5701E3B228",
+                "Type": 4
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 512,
+        "isUI": false,
+        "name": "HurtBox_LegL"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  16.045207977294922,
+                  2.852898120880127,
+                  -1.4387315511703491
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": true,
+                "Enabled": true,
+                "HalfExtentsLocal": [
+                  1.2999999523162842,
+                  0.699999988079071,
+                  0.5
+                ],
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 0,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "ExposedFields": {
+                  "ClassName": "CHurtBox",
+                  "Fields": [
+                    {
+                      "Name": "m_refOwner",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE"
+                      }
+                    }
+                  ]
+                },
+                "ScriptGuid": "ADF0B44D-E3EA-4595-9FEC-EE5701E3B228",
+                "Type": 4
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 512,
+        "isUI": false,
+        "name": "HurtBox_LegR"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  20.23269271850586,
+                  4.708468437194824,
+                  -3.828235626220703
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": true,
+                "Enabled": false,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 1.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "ExposedFields": {
+                  "ClassName": "CHitBox",
+                  "Fields": [
+                    {
+                      "Name": "m_refOwner",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE"
+                      }
+                    },
+                    {
+                      "Name": "m_tHitInfo.fDamage",
+                      "Type": 1,
+                      "Value": 100.0
+                    }
+                  ]
+                },
+                "ScriptGuid": "E1B5B9DB-631C-4F89-BE60-34053FA300C4",
+                "Type": 4
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 384,
+        "isUI": false,
+        "name": "HitBox_HandL"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  14.407073974609375,
+                  4.379219055175781,
+                  0.11818599700927734
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": true,
+                "Enabled": false,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 1.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "ExposedFields": {
+                  "ClassName": "CHitBox",
+                  "Fields": [
+                    {
+                      "Name": "m_refOwner",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE"
+                      }
+                    },
+                    {
+                      "Name": "m_tHitInfo.fDamage",
+                      "Type": 1,
+                      "Value": 100.0
+                    }
+                  ]
+                },
+                "ScriptGuid": "E1B5B9DB-631C-4F89-BE60-34053FA300C4",
+                "Type": 4
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 384,
+        "isUI": false,
+        "name": "HitBox_HandR"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  17.669471740722656,
+                  1.9581743478775024,
+                  -3.483656406402588
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": true,
+                "Enabled": false,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 1.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "ExposedFields": {
+                  "ClassName": "CHitBox",
+                  "Fields": [
+                    {
+                      "Name": "m_refOwner",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE"
+                      }
+                    },
+                    {
+                      "Name": "m_tHitInfo.fDamage",
+                      "Type": 1,
+                      "Value": 100.0
+                    }
+                  ]
+                },
+                "ScriptGuid": "E1B5B9DB-631C-4F89-BE60-34053FA300C4",
+                "Type": 4
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 384,
+        "isUI": false,
+        "name": "HitBox_LegL"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  16.663618087768555,
+                  1.57694411277771,
+                  -1.2144746780395508
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": true,
+                "Enabled": false,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RadiusLocal": 1.0,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 1,
+                "Static": false,
+                "Trigger": true,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "ExposedFields": {
+                  "ClassName": "CHitBox",
+                  "Fields": [
+                    {
+                      "Name": "m_refOwner",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE"
+                      }
+                    },
+                    {
+                      "Name": "m_tHitInfo.fDamage",
+                      "Type": 1,
+                      "Value": 100.0
+                    }
+                  ]
+                },
+                "ScriptGuid": "E1B5B9DB-631C-4F89-BE60-34053FA300C4",
+                "Type": 4
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 384,
+        "isUI": false,
+        "name": "HitBox_LegR"
+      }
+    ],
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              17.306617736816406,
+              1.059999704360962,
+              -2.2170701026916504
+            ],
+            "Rotation": [
+              0.0,
+              -0.40881699323654175,
+              0.0,
+              -0.9126164317131042
+            ],
+            "Scale": [
+              0.3499999940395355,
+              0.3499999940395355,
+              0.3499999940395355
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "DebugDraw": false,
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              3.0,
+              18.0,
+              3.4200000762939453
+            ],
+            "Offset": [
+              0.0,
+              6.239999771118164,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Static": false,
+            "Trigger": false,
+            "Type": 1
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "AngularDrag": 0.0,
+            "BodyType": 0,
+            "Drag": 0.0,
+            "Enabled": true,
+            "Friction": 1.0,
+            "Gravity": true,
+            "Mass": 10.0,
+            "PositionLock": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Restitution": 0.0,
+            "RotationLock": [
+              1.0,
+              0.0,
+              1.0
+            ],
+            "Shape": 0,
+            "Type": 2
+          }
+        }
+      ],
+      [],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CNormalTitan",
+              "Fields": [
+                {
+                  "Name": "m_szState",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "CHASE"
+                  }
+                }
+              ]
+            },
+            "ScriptGuid": "284DB806-B2F6-4ACA-A4B9-5DE396AE515A",
+            "Type": 4
+          }
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CTitanBound_Controller",
+              "Fields": [
+                {
+                  "Name": "m_refOwner",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "474E58E5-348B-4F3B-A7ED-E2A6C7343BDE"
+                  }
+                },
+                {
+                  "Name": "m_refWeak",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "30A829CF-D304-440A-88B9-1815F265660E"
+                  }
+                },
+                {
+                  "Name": "m_vWeakOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    11.0,
+                    0.5
+                  ]
+                },
+                {
+                  "Name": "m_refHandL",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "B327063F-8BD2-43C4-A134-AEF484C30303"
+                  }
+                },
+                {
+                  "Name": "m_szHandL",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "hand.L.001"
+                  }
+                },
+                {
+                  "Name": "m_refHandR",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "818AC5AC-E14A-44AC-960D-21225B82CA5D"
+                  }
+                },
+                {
+                  "Name": "m_szHandR",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "hand.R.001"
+                  }
+                },
+                {
+                  "Name": "m_refHitBoxHandL",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "781B9E42-D4FA-4FC0-BBB0-6F4BB208580D"
+                  }
+                },
+                {
+                  "Name": "m_szHitBoxHandL",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "hand.L.001"
+                  }
+                },
+                {
+                  "Name": "m_refHitBoxHandR",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "0E36C245-3586-48A6-9681-FCCF5AB67FA0"
+                  }
+                },
+                {
+                  "Name": "m_szHitBoxHandR",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "hand.R.001"
+                  }
+                },
+                {
+                  "Name": "m_refHitBoxLegL",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "6EF8EFE3-DAF0-4F87-AA86-A772ECF1FEE2"
+                  }
+                },
+                {
+                  "Name": "m_szHitBoxLegL",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "foot.L"
+                  }
+                },
+                {
+                  "Name": "m_refHitBoxLegR",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "DACBC097-CB3E-49EE-8E3A-88E781E6C3AD"
+                  }
+                },
+                {
+                  "Name": "m_szHitBoxLegR",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "foot.R"
+                  }
+                },
+                {
+                  "Name": "m_refHurtBoxArmL",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "0F8C9303-DE3E-4404-8A85-4D1AF351AA1F"
+                  }
+                },
+                {
+                  "Name": "m_szHurtBoxArmL",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "forearm.L"
+                  }
+                },
+                {
+                  "Name": "m_refHurtBoxArmR",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "38E6854A-DEC4-4BEF-828E-5379C28E8752"
+                  }
+                },
+                {
+                  "Name": "m_szHurtBoxArmR",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "forearm.R"
+                  }
+                },
+                {
+                  "Name": "m_refHurtBoxLegL",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "41B068C6-367B-4A55-9AA5-017C5B301204"
+                  }
+                },
+                {
+                  "Name": "m_szHurtBoxLegL",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "shin.L"
+                  }
+                },
+                {
+                  "Name": "m_refHurtBoxLegR",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "D8B25FAE-F8B8-4681-9ED5-8CF04CD0CCCA"
+                  }
+                },
+                {
+                  "Name": "m_szHurtBoxLegR",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "shin.R"
+                  }
+                },
+                {
+                  "Name": "m_refGrabAirFarL",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "064837D1-D422-4D52-A656-8A37E20A67AB"
+                  }
+                },
+                {
+                  "Name": "m_vGrabAirFarLOffset",
+                  "Type": 3,
+                  "Value": [
+                    3.5,
+                    8.5,
+                    -10.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabAirFarR",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "0C4DAD53-3E98-4199-AE29-C6B626DAA08C"
+                  }
+                },
+                {
+                  "Name": "m_vGrabAirFarROffset",
+                  "Type": 3,
+                  "Value": [
+                    -3.5,
+                    8.5,
+                    -10.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabAirShortL",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "46EB4F5D-12D0-488B-BB2C-77BEDBCA474D"
+                  }
+                },
+                {
+                  "Name": "m_vGrabAirShortLOffset",
+                  "Type": 3,
+                  "Value": [
+                    3.5,
+                    8.5,
+                    -6.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabAirShortR",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "2FA69255-E865-4AF0-8F14-819CC3026BCA"
+                  }
+                },
+                {
+                  "Name": "m_vGrabAirShortROffset",
+                  "Type": 3,
+                  "Value": [
+                    -3.5,
+                    8.5,
+                    -6.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabBackL",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "3E9AA4F0-7AED-4749-99FF-94E6EBFEFEE0"
+                  }
+                },
+                {
+                  "Name": "m_vGrabBackLOffset",
+                  "Type": 3,
+                  "Value": [
+                    3.0,
+                    5.0,
+                    4.5
+                  ]
+                },
+                {
+                  "Name": "m_refGrabBackR",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "F5BCC738-1A9A-4EE9-B7FE-0E7AAE970E8D"
+                  }
+                },
+                {
+                  "Name": "m_vGrabBackROffset",
+                  "Type": 3,
+                  "Value": [
+                    -3.0,
+                    5.0,
+                    4.5
+                  ]
+                },
+                {
+                  "Name": "m_refGrabGroundBackL",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "C4686F3E-B905-4BF5-8353-C85BEBD93C87"
+                  }
+                },
+                {
+                  "Name": "m_vGrabGroundBackLOffset",
+                  "Type": 3,
+                  "Value": [
+                    1.0,
+                    0.0,
+                    4.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabGroundBackR",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "10575331-7189-4E30-90A9-3095B11F5C4F"
+                  }
+                },
+                {
+                  "Name": "m_vGrabGroundBackROffset",
+                  "Type": 3,
+                  "Value": [
+                    -1.0,
+                    0.0,
+                    4.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabGroundFrontL",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "E58588B1-1778-47CF-9208-7716E84B4D18"
+                  }
+                },
+                {
+                  "Name": "m_vGrabGroundFrontLOffset",
+                  "Type": 3,
+                  "Value": [
+                    3.0,
+                    0.0,
+                    -3.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabGroundFrontR",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "7DF7B5CC-5AB3-417A-BABA-F803314C46A0"
+                  }
+                },
+                {
+                  "Name": "m_vGrabGroundFrontROffset",
+                  "Type": 3,
+                  "Value": [
+                    -3.0,
+                    0.0,
+                    -3.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabHeadBackL",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "C02FE6D8-B683-44DB-91F9-9B2D6CAB5163"
+                  }
+                },
+                {
+                  "Name": "m_vGrabHeadBackLOffset",
+                  "Type": 3,
+                  "Value": [
+                    1.5,
+                    9.0,
+                    1.600000023841858
+                  ]
+                },
+                {
+                  "Name": "m_refGrabHeadBackR",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "50B12933-34E7-4B48-A2D4-6425E5830755"
+                  }
+                },
+                {
+                  "Name": "m_vGrabHeadBackROffset",
+                  "Type": 3,
+                  "Value": [
+                    -1.5,
+                    9.0,
+                    1.5
+                  ]
+                },
+                {
+                  "Name": "m_refGrabHeadFrontL",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "EAEF067D-8080-4B93-AD7E-4F29AF29FD19"
+                  }
+                },
+                {
+                  "Name": "m_vGrabHeadFrontLOffset",
+                  "Type": 3,
+                  "Value": [
+                    1.5,
+                    9.0,
+                    -2.5
+                  ]
+                },
+                {
+                  "Name": "m_refGrabHeadFrontR",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "3F51380A-DC16-4B88-AC78-E63105E03903"
+                  }
+                },
+                {
+                  "Name": "m_vGrabHeadFrontROffset",
+                  "Type": 3,
+                  "Value": [
+                    -1.5,
+                    9.0,
+                    -2.5
+                  ]
+                },
+                {
+                  "Name": "m_refGrabHighL",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "D7AD3F87-DDF4-4D1B-BC33-EC873CF622E4"
+                  }
+                },
+                {
+                  "Name": "m_vGrabHighLOffset",
+                  "Type": 3,
+                  "Value": [
+                    3.0,
+                    14.0,
+                    -5.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabHighR",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "8B800360-76CB-4578-B153-75AA2A7E6B21"
+                  }
+                },
+                {
+                  "Name": "m_vGrabHighROffset",
+                  "Type": 3,
+                  "Value": [
+                    -3.0,
+                    14.0,
+                    -5.0
+                  ]
+                },
+                {
+                  "Name": "m_refGrabStomachL",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "503301B1-304D-4EF7-A3B3-9F840393108C"
+                  }
+                },
+                {
+                  "Name": "m_vGrabStomachLOffset",
+                  "Type": 3,
+                  "Value": [
+                    2.0,
+                    5.0,
+                    -2.5
+                  ]
+                },
+                {
+                  "Name": "m_refGrabStomachR",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "F7CD368D-2499-4918-AFE5-788166193424"
+                  }
+                },
+                {
+                  "Name": "m_vGrabStomachROffset",
+                  "Type": 3,
+                  "Value": [
+                    -2.0,
+                    5.0,
+                    -2.5
+                  ]
+                }
+              ]
+            },
+            "ScriptGuid": "EC4E30FD-88C9-4BF4-BC56-F2DB1EEA06B9",
+            "Type": 4
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "6C740313-CCF4-4B50-AF11-86CDBE35CAF0",
+            "MeshGUID": "9467EA3F-1BA0-4831-95B2-FB5BCFEC0731",
+            "Mode": 0,
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "AnimationClip": 99,
+            "BlendDuration": 0.0,
+            "BlendMap": [],
+            "Enabled": true,
+            "LoopMap": [
+              {
+                "Clip": 98,
+                "Loop": true
+              },
+              {
+                "Clip": 97,
+                "Loop": true
+              },
+              {
+                "Clip": 105,
+                "Loop": true
+              },
+              {
+                "Clip": 96,
+                "Loop": true
+              },
+              {
+                "Clip": 95,
+                "Loop": true
+              },
+              {
+                "Clip": 107,
+                "Loop": true
+              },
+              {
+                "Clip": 108,
+                "Loop": true
+              },
+              {
+                "Clip": 100,
+                "Loop": false
+              },
+              {
+                "Clip": 91,
+                "Loop": true
+              },
+              {
+                "Clip": 92,
+                "Loop": true
+              },
+              {
+                "Clip": 90,
+                "Loop": true
+              },
+              {
+                "Clip": 99,
+                "Loop": true
+              }
+            ],
+            "PlaySpeed": 1.0,
+            "Playing": true,
+            "Type": 6
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "iObjMask": 2,
+    "isUI": false,
+    "name": "Titan_0408_v1"
+  },
+  "version": 1
+}
