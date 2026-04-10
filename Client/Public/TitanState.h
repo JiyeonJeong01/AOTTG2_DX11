@@ -29,7 +29,7 @@ public:
     virtual void    Setup_CachedTitanContext();
 
     /* commons */
-    virtual _vector Get_WanderMoveDir();
+    virtual _vector Get_PatrolMoveDir();
     void            GroundedMove(_fvector vDir, _float fDT);
     void            Look_To(_fvector vDir, _float fDT);
     void            Detect_Human();
@@ -51,6 +51,7 @@ protected:
     TITAN_COMPONENTS        m_tComponents{};
     TITAN_RUNTIME_REF       m_tRef{};
     TITAN_STATS*            m_pStats{};
+    PATROL_INFO*            m_pPatrol{};
 
 protected:
     _bool                   m_bAcivated = false;

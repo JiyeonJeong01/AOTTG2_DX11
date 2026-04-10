@@ -75,6 +75,25 @@ namespace Client
 
     } HIT_INFO;
 
+    typedef struct tagPatrolInfo
+    {
+        _float3 vPos[2] = {};
+
+        _uint   iPatrolIndex = 0;
+        _float3 Get_CurPatrolPos()
+        {
+            if (iPatrolIndex >= 2) iPatrolIndex %= 2;
+
+            return vPos[iPatrolIndex];
+        }
+        void Update_PatrolPos()
+        {
+            iPatrolIndex++;
+            if (iPatrolIndex >= 2)
+                iPatrolIndex %= 2;
+        }
+    } PATROL_INFO;
+
 
 }
 

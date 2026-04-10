@@ -87,6 +87,8 @@ void CNormalTitan::Start(void* pCtx)
     tContext.tComponents = m_tComponents;
     tContext.tRef = m_tRef;
     tContext.pStats = &m_tStats;
+    tContext.pPatrol = &m_tPatrol;
+    m_tRef.m_pStunnedAcc = &m_iStunnedAcc;
 
     m_upStateMachine->Cache_TitanInfos(tContext);
     m_spCurState = m_upStateMachine->Sync_StateMachine();

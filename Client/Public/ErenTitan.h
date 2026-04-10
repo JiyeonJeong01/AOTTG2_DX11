@@ -22,32 +22,33 @@ public:
 
 private :
     /* ----- Utils ----- */
-    CGameObject*            m_goEren{};
-    CGroundChecker*         m_pGroundChecker{};
-    CTargetSensor*          m_pSensor{};
+    CGameObject*                        m_goEren{};
+    CGroundChecker*                     m_pGroundChecker{};
+    CTargetSensor*                      m_pSensor{};
     std::unordered_map<std::string, CHitBox*>   m_AllHitBoxes;
 
     /* ----- Eren Stats ----- */
-    const _float        m_fMaxSpeed = 10.f;
+    const _float                        m_fMaxSpeed = 10.f;     /* rigidbody 기반 이동에 대한 제한 */
+    _float                              m_fWalkSpeed = 2.f;     
+    _float                              m_fRunSpeed = 4.f;
 
     /* Rotation */
-    _float3             m_vPrevLook{};
-    _float              m_fRotateSharpness = 0.5f;
-    _float              m_fCurrentYaw = 0.f;
-    _bool               m_bYawInitialized = false;
+    _float3                             m_vPrevLook{};
+    _float                              m_fRotateSharpness = 4.5f;  /* 회전 반응 정도 */
+    _float                              m_fCurrentYaw = 0.f;        
+    _bool                               m_bYawInitialized = false;
 
     /* ----- Components ----- */
-    CTransform          m_trEren{};
-    CRigidbody          m_rbEren{};
-    CAnimator           m_animEren{};
-    _int                m_iNumCombatTitans = 0;
+    CTransform                          m_trEren{};
+    CRigidbody                          m_rbEren{};
+    CAnimator                           m_animEren{};
 
     /* ----- Step Type ----- */
-    EREN_STEP_TYPE      m_eStepType = EREN_STEP_TYPE::NONE;
+    EREN_STEP_TYPE                      m_eStepType = EREN_STEP_TYPE::NONE;
 
     /* ----- Born ----- */
-    EREN_BORN           m_eBorn = EREN_BORN::END;
-    _bool               m_bBornCompleted = false;
+    EREN_BORN                           m_eBorn = EREN_BORN::END;
+    _bool                               m_bBornCompleted = false;
 
     /* ----- Combat ------ */
     EREN_COMBAT                         m_eCombat = EREN_COMBAT::END;
@@ -56,16 +57,23 @@ private :
     CTransform                          m_trLastestCombatTarget{};
     std::vector<EREN_COMBAT_PATTERN>    m_CombatPattern;
 
-    _bool                       m_bCombatAttacking = false;
-    _int                        m_iCurComboIndex = 0;
-    _int                        m_iTotalComboIndex = 0;
-    _float                      m_fElapsedAttackInterval = 0.f;
-    const _float                m_fCombatSpeed = 4.f;
-    const _float                m_fAttackInterval = 1.5f;
-    _float                      m_fShouldRunDistanceSq = 400.f;
-    _float                      m_fKeepDistanceSq = 0.f;
-    _int                        m_iCurCombatCnt = 0;
+    _bool                               m_bCombatAttacking = false;
+    _int                                m_iCurComboIndex = 0;
+    _int                                m_iTotalComboIndex = 0;
+    _float                              m_fElapsedAttackInterval = 0.f;
+    _float                              m_fCombatSpeed = 4.f;
+    const _float                        m_fAttackInterval = 1.f;
+    _float                              m_fShouldRunDistance = 13.5f;
+    _float                              m_fKeepDistance = 0.f;
+    _int                                m_iCurCombatCnt = 0;
 
+    /* ----- Move To ----- */
+    _float3                             m_vTargetPos{};
+    _float                              m_fMoveToArriveDist = 3.f;       /* 목표 지점 도착 판정 거리 */
+    _float                              m_fMoveToResumeDist = 18.f;      /* 전투 중 이 거리보다 멀어지면 다시 목표 지점으로 복귀 */
+    _float                              m_fShouldAttackDist = 15.5f;
+    _bool                               m_bMoveToArrived = false;        /* 목표 지점 도착 여부 */
+    
 
 private :
     void    Move_To(_fvector vDir, _float fDT, _float fSpeed);
@@ -74,6 +82,7 @@ private :
 private :
     void    Process_Born(_float fDT);
     void    Process_Combat(_float fDT);
+    void    Process_MoveTo(_float fDT);
 
     void    On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData);
     void    On_AnimBornFinished(const _uint iIndex);
@@ -87,6 +96,9 @@ public :
     void    Set_ErenStep(EREN_STEP_TYPE eType);
     void    Start_Born();
     void    Start_Combat();
+    void    Start_MoveTo();
+
+    void    Activate_Hitbox(const std::string& strKey, _bool bActive);
 
     _bool   Is_CombatAttacking() const;
     _bool   Validate_Target();

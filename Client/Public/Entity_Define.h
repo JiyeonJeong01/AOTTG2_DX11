@@ -18,12 +18,20 @@ protected :
 
 class CTitan
 {
-public:
+public :
     virtual ~CTitan() = default;
     virtual void On_Grab(SIDE eSide, CHuman* pHuman) = 0;
     virtual void On_Dead(const _float fAccuracy) {};
     virtual void On_Stunned() {};
 
+    _bool       Is_Alive() const {
+        return m_bAlive;
+    }
+    void        Set_Dead() {
+        m_bAlive = false;
+    }
+private :
+    _bool   m_bAlive = true;
 };
 
 

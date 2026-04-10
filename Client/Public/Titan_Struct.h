@@ -35,6 +35,8 @@ typedef struct tagTitanStats
     _float          fJumpDash = 0.02f;
 
     _float          fRotateSharpness = 3.f;
+
+    const _uint     iMaxStunned = 3;
 } TITAN_STATS;
 
 typedef struct tagTitanRuntimeRef
@@ -46,17 +48,20 @@ typedef struct tagTitanRuntimeRef
     unordered_map<std::string, class CHitBox*>*  pAllHitBoxes;
 
     TITAN_POSE*                     pPose = nullptr;
+
+    _uint*                          m_pStunnedAcc = nullptr;
 } TITAN_RUNTIME_REF;
 
 typedef struct tagTitanContext
 {
     /* 포인터 자체를 소유한 구조체들 */
-    TITAN_COMPONENTS       tComponents{};
+    TITAN_COMPONENTS        tComponents{};
 
     TITAN_RUNTIME_REF       tRef{};
 
     /* 플레이어가 소유한 변수의 포인터를 가진 구조체들 */
-    TITAN_STATS* pStats = nullptr;
+    TITAN_STATS*            pStats = nullptr;
+    PATROL_INFO*            pPatrol = nullptr;
 
     /* 헬퍼 */
 

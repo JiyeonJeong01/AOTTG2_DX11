@@ -72,8 +72,8 @@ void CAbnormalTitan::Start(void* pCtx)
             hurt->Subscribe_OnHurt(&CAbnormalTitan::On_Hurt, this);
         }
 
+        m_tRef.m_pStunnedAcc = &m_iStunnedAcc;
         m_tRef.pAllHitBoxes = &m_AllHitBoxes;
-
         m_tRef.pPose = &m_ePose;
     }
 
@@ -118,6 +118,7 @@ TITAN_CONTEXT CAbnormalTitan::Get_TitanContext()
     tContext.tComponents = m_tComponents;
     tContext.tRef = m_tRef;
     tContext.pStats = &m_tStats;
+    tContext.pPatrol = &m_tPatrol;
 
     return tContext;
 }

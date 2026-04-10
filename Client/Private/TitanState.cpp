@@ -34,15 +34,29 @@ void CTitanState::Cache_TitanContext(const TITAN_CONTEXT& tContext)
     m_tComponents = tContext.tComponents;
     m_tRef = tContext.tRef;
     m_pStats = tContext.pStats;
+    m_pPatrol = tContext.pPatrol;
 }
 
 void CTitanState::Setup_CachedTitanContext()
 {  
 }
 
-_vector CTitanState::Get_WanderMoveDir()
+_vector CTitanState::Get_PatrolMoveDir()
 {
-    _float3 vDir = m_tRef.pNav->Get_Dir(m_tComponents.transform->vPosition);
+    if (!m_tRef.pNav)
+        return {1.f, 0.f, 0.f, 0.f};
+
+    if (!m_pPatrol)
+        return { 1.f, 0.f, 0.f, 0.f };
+
+    const _float3 vCurPos = m_tComponents.transform->vPosition;
+    if (m_tRef.pNav->Is_Arrived(vCurPos))
+    {
+        m_pPatrol->Update_PatrolPos();
+        m_tRef.pNav->Set_TargetPosition(vCurPos, m_pPatrol->Get_CurPatrolPos());
+    }
+
+    _float3 vDir = m_tRef.pNav->Get_Dir(vCurPos);
     return XMLoadFloat3(&vDir);
 }
 

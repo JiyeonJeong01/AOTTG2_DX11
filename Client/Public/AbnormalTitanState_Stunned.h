@@ -25,7 +25,7 @@ private:
 
     _uint   m_iPrevState = 0;
     _float  m_fElapsedStunnedTime = 0.f;
-    _float  m_fMaxStunnedTime = 1.f;
+    _float  m_fMaxStunnedTime = 0.5f;
 
 public:
     static std::shared_ptr<CAbnormalTitanState_Stunned> Create(

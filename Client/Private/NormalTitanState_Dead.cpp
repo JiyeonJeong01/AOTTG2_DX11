@@ -44,6 +44,8 @@ void CNormalTitanState_Dead::Enter(_uint iDetailFlag)
         m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::SIT_DIE);
     else if (*m_tRef.pPose == TITAN_POSE::CRAWL)
         m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::CRAWLER_DIE);
+
+    m_scTitan->Set_Dead();
 }
 
 void CNormalTitanState_Dead::Exit()

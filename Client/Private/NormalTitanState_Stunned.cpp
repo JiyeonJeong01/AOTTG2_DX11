@@ -46,8 +46,15 @@ void CNormalTitanState_Stunned::Enter(_uint iDetailFlag)
 {
     CTitanState::Enter(iDetailFlag);
 
-    m_iPrevState = To<_uint>(iDetailFlag);
+    (*m_tRef.m_pStunnedAcc)++;
 
+    if (*m_tRef.m_pStunnedAcc > m_pStats->iMaxStunned)
+    {
+        m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
+        return;
+    }
+
+    m_iPrevState = To<_uint>(iDetailFlag);
     m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::TITAN_FALLING);
 }
 

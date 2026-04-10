@@ -26,6 +26,8 @@ HRESULT CAbnormalTitanState_AttackEren::Initialize()
     IF_NULL_RETURN_MSG_BREAK(m_goTitan, E_FAIL, "m_goTitan is nullptr.");
     IF_NULL_RETURN_MSG_BREAK(m_scTitan, E_FAIL, "m_scTitan is nullptr.");
 
+    m_fOriginRotateSharpness = m_fRotateSharpness;
+
     return S_OK;
 }
 
@@ -80,6 +82,8 @@ void CAbnormalTitanState_AttackEren::Enter(_uint iDetailFlag)
     m_iAttackAnimClip = INVALID_ANIM_CLIP_INDEX;
     m_fAttackDist = 0.f;
 
+    m_fRotateSharpness = m_fAttackRotateSharpness;
+
     Try_CachePunchHitBox();
     Set_PunchHitBoxActive(false);
 
@@ -106,6 +110,8 @@ void CAbnormalTitanState_AttackEren::Exit()
     m_bAttackAnimPlaying = false;
     m_bUsePunch = false;
     m_iAttackAnimClip = INVALID_ANIM_CLIP_INDEX;
+
+    m_fRotateSharpness = m_fOriginRotateSharpness;
 
     CTitanState::Exit();
 }

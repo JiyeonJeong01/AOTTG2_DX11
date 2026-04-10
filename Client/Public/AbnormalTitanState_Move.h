@@ -27,13 +27,12 @@ private:
     void    Decide_NextState() override;
     void    Decide_NextAnim() override;
 
-    void    Move(_float fDT);
-
 private:
     TITAN_MOVE  m_eMoveState = TITAN_MOVE::WALK;
 
     _float      m_fElapsedMoveTime = 0.f;
-    _float      m_fMaxMoveTime = 3.f;
+    _float      m_fMaxMoveTime = 8.f;
+    _float3     m_vPatrolPos = {};
 
 public:
     static std::shared_ptr<CAbnormalTitanState_Move> Create(Engine::CGameObject* goTitan, CTitan* scTitan, TITAN_STATE eState);

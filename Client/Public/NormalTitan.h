@@ -19,9 +19,10 @@ class CNormalTitan : public IScript, public CTitan
 {
 public:
     char        m_szState[32] = {};
-
 SCRIPT_FIELDS_BEGIN(CNormalTitan)
     SCRIPT_FIELD_CHAR(m_szState)
+    SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[0]);
+    SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[1]);
 SCRIPT_FIELDS_END(CNormalTitan)
 
 public:
@@ -44,6 +45,8 @@ private :
     TITAN_RUNTIME_REF       m_tRef{};
     TITAN_STATS             m_tStats{};
     TITAN_POSE              m_ePose = TITAN_POSE::END;
+    PATROL_INFO             m_tPatrol{};
+    _uint                   m_iStunnedAcc = 0;
 
     std::unique_ptr<CNormalTitanStateMachine>   m_upStateMachine{};
     std::shared_ptr<CTitanState>                m_spCurState{};

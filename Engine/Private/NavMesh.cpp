@@ -121,6 +121,7 @@ _bool CNavMesh::Build_Path_AStar(_int iStartCellIndex, _int iGoalCellIndex)
     if (iStartCellIndex < 0 || iGoalCellIndex < 0)
         return false;
 
+    /* 셀 개수만큼 ASTAR_NODE 생성하기 */
     std::vector<ASTAR_NODE> vecNodes(m_vecNavCells.size());
 
     auto Heuristic = [&](int iFrom, int iTo) -> _float
@@ -136,30 +137,33 @@ _bool CNavMesh::Build_Path_AStar(_int iStartCellIndex, _int iGoalCellIndex)
     std::vector<_int> vecOpen;
     vecOpen.push_back(iStartCellIndex);
 
-    vecNodes[iStartCellIndex].fG = 0.f;
-    vecNodes[iStartCellIndex].fH = Heuristic(iStartCellIndex, iGoalCellIndex);
-    vecNodes[iStartCellIndex].fF = vecNodes[iStartCellIndex].fH;
+    vecNodes[iStartCellIndex].fG = 0.f;                                                     /* G : 시작점 ~ 현재 노드까지 걸린 실제 비용 */
+    vecNodes[iStartCellIndex].fH = Heuristic(iStartCellIndex, iGoalCellIndex);      /* H : 현재 노드 ~ 도착점까지 예상되는 비용 */
+    vecNodes[iStartCellIndex].fF = vecNodes[iStartCellIndex].fH;                            /* F : G + H */
     vecNodes[iStartCellIndex].iParent = -1;
     vecNodes[iStartCellIndex].bOpened = true;
 
     while (false == vecOpen.empty())
     {
+        /* 가장 좋은 후보 찾기 */
         _int iBestOpenIndex = 0;
         _int iCurrentCellIndex = vecOpen[0];
 
         for (_uint i = 1; i < vecOpen.size(); ++i)
         {
             const _int iCellIndex = vecOpen[i];
+            /* 1. F 값이 가장 작은 셀 */
             if (vecNodes[iCellIndex].fF < vecNodes[iCurrentCellIndex].fF)
             {
                 iCurrentCellIndex = iCellIndex;
-                iBestOpenIndex = (_int)i;
+                iBestOpenIndex = To<_int>(i);
             }
         }
 
         vecOpen.erase(vecOpen.begin() + iBestOpenIndex);
         vecNodes[iCurrentCellIndex].bClosed = true;
 
+        /* 도착 */
         if (iCurrentCellIndex == iGoalCellIndex)
         {
             m_vecPathCells.clear();
@@ -175,6 +179,7 @@ _bool CNavMesh::Build_Path_AStar(_int iStartCellIndex, _int iGoalCellIndex)
             return true;
         }
 
+        /* 이웃 탐색 */
         const NAV_CELL& tCell = m_vecNavCells[iCurrentCellIndex];
 
         for (_int i = 0; i < 3; ++i)
@@ -187,21 +192,21 @@ _bool CNavMesh::Build_Path_AStar(_int iStartCellIndex, _int iGoalCellIndex)
                 continue;
 
             const _float fNewG =
-                vecNodes[iCurrentCellIndex].fG +
-                Heuristic(iCurrentCellIndex, iNeighborCellIndex);
+                vecNodes[iCurrentCellIndex].fG + Heuristic(iCurrentCellIndex, iNeighborCellIndex);
 
-            if (false == vecNodes[iNeighborCellIndex].bOpened ||
-                fNewG < vecNodes[iNeighborCellIndex].fG)
+            /* 비용 계산 */
+            if (false == vecNodes[iNeighborCellIndex].bOpened || fNewG < vecNodes[iNeighborCellIndex].fG)
             {
                 vecNodes[iNeighborCellIndex].fG = fNewG;
                 vecNodes[iNeighborCellIndex].fH = Heuristic(iNeighborCellIndex, iGoalCellIndex);
                 vecNodes[iNeighborCellIndex].fF = vecNodes[iNeighborCellIndex].fG + vecNodes[iNeighborCellIndex].fH;
-                vecNodes[iNeighborCellIndex].iParent = iCurrentCellIndex;
+                vecNodes[iNeighborCellIndex].iParent = iCurrentCellIndex; /* 내 인덱스로 부모 인덱스 갱신 */
 
+                /* 새로 발견한 셀 */
                 if (false == vecNodes[iNeighborCellIndex].bOpened)
                 {
                     vecNodes[iNeighborCellIndex].bOpened = true;
-                    vecOpen.push_back(iNeighborCellIndex);
+                    vecOpen.push_back(iNeighborCellIndex); 
                 }
             }
         }

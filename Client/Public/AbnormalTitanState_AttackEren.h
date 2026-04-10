@@ -44,6 +44,8 @@ private:
 
     _float              m_fAttackDist = 0.f;
     _float              m_fPunchAttackRange = 20.f;
+    _float              m_fOriginRotateSharpness = 0.f;
+    _float              m_fAttackRotateSharpness = 0.9f;
 
     _uint               m_iAttackAnimClip = INVALID_ANIM_CLIP_INDEX;
     _bool               m_bAttackAnimPlaying = false;

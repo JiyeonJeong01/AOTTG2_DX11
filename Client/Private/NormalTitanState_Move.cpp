@@ -32,10 +32,12 @@ void CNormalTitanState_Move::Priority_Update(_float fDT)
     if (!m_bAcivated)
         return;
 
-    const _vector vMoveDir = Get_WanderMoveDir();
-    if (!XMVector3Equal(vMoveDir, XMVectorZero()))
-        Look_To(vMoveDir, fDT);
-    Move(fDT);
+    _vector vMoveDir = Get_PatrolMoveDir();
+    if (XMVector3Equal(vMoveDir, XMVectorZero()))
+        vMoveDir = { 0.f, 0.f, 1.f, 0.f };
+
+    Look_To(vMoveDir, fDT);
+    GroundedMove(vMoveDir, fDT);
 }
 
 void CNormalTitanState_Move::Update(_float fDT)
@@ -49,14 +51,20 @@ void CNormalTitanState_Move::Late_Update(_float fDT)
 {
     CTitanState::Late_Update(fDT);
 
-    //Decide_NextState();
+    Decide_NextState();
 }
 
 void CNormalTitanState_Move::Enter(_uint iDetailFlag)
 {
     CTitanState::Enter(iDetailFlag);
+    /* 정찰할 위치를 navigation 목표로 설정하기 */
+    if (!m_pPatrol)
+    {
+        m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::IDLE), To<_uint>(TITAN_IDLE::DEFAULT));
+        return;
+    }
 
-    m_tRef.pNav->Set_TargetPosition( m_tComponents.transform->vPosition, { -21.f, 0.f, 0.f });
+    m_tRef.pNav->Set_TargetPosition(m_tComponents.transform->vPosition, m_pPatrol->Get_CurPatrolPos());
 
     if (iDetailFlag >= To<_uint>(TITAN_MOVE::END))
     {
@@ -93,7 +101,6 @@ _uint CNormalTitanState_Move::Get_DetailState() const
 
 void CNormalTitanState_Move::Decide_NextState()
 {
-    /* 공통 유틸(Detect / Chase / Hurt / Dead 판정)은 추후 분리 예정 */
     if (m_fElapsedMoveTime >= m_fMaxMoveTime)
     {
         _int iNextAnim = CRandomUtil::Get_Int(0, To<_int>(TITAN_IDLE::END) - 1);
@@ -104,17 +111,6 @@ void CNormalTitanState_Move::Decide_NextState()
 
 void CNormalTitanState_Move::Decide_NextAnim()
 {
-}
-
-void CNormalTitanState_Move::Move(_float fDT)
-{
-    if (m_tRef.pNav->Is_Arrived(m_tComponents.transform->vPosition))
-    {
-        m_tRef.pNav->Set_TargetPosition(m_tComponents.transform->vPosition, { -21.f, 0.f, -78.f });
-    }
-
-    _float3 vDir3 = m_tRef.pNav->Get_Dir(m_tComponents.transform->vPosition);
-    GroundedMove(XMLoadFloat3(&vDir3), fDT);
 }
 
 std::shared_ptr<CNormalTitanState_Move> CNormalTitanState_Move::Create(

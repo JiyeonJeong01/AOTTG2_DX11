@@ -24,6 +24,7 @@ public:
     _bool       Load(const wchar_t* pFilePath);
 
 private:
+    /* 인덱스 버퍼 구조 */
     std::vector<NAV_POINT> m_vecNavPoints;
     std::vector<NAV_CELL>  m_vecNavCells;
 
