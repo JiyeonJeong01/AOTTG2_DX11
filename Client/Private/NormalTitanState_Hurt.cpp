@@ -19,7 +19,7 @@ CNormalTitanState_Hurt::~CNormalTitanState_Hurt()
 
 HRESULT CNormalTitanState_Hurt::Initialize()
 {
-    IF_NULL_RETURN_MSG_BREAK(m_goTitan, E_FAIL, "m_goTitan is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_goTitan, E_FAIL, "m_goOwner is nullptr.");
     IF_NULL_RETURN_MSG_BREAK(m_scTitan, E_FAIL, "m_scTitan is nullptr.");
 
     return S_OK;

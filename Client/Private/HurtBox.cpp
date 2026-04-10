@@ -40,4 +40,9 @@ void CHurtBox::Try_ApplyHit(const HIT_INFO& tHitBox)
     m_OnHurt.Invoke(tHitBox, string(pHurtBox->Get_Label()));
 }
 
+CGameObject* CHurtBox::Get_Owner() const
+{
+    return m_pOwner;
+}
+
 NS_END;

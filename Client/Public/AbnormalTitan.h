@@ -70,9 +70,10 @@ public:
 private:
     void On_Grab(SIDE eSide, CHuman* pHuman) override;
     void On_Dead(const _float fAccuracy) override;
+    void On_Stunned() override;
     void On_Hurt(const HIT_INFO& tHitBox, const std::string& strHurtBox);
 
-    void On_DetectedHuman(CGameObject* goHuman);
+    void On_DetectedHumanSide(CGameObject* goHuman);
     void OnChange_CurState(std::shared_ptr<CTitanState> spNewState);
 };
 

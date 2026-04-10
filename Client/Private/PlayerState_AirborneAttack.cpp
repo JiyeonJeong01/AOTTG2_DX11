@@ -19,8 +19,6 @@ CPlayerState_AirborneAttack::~CPlayerState_AirborneAttack()
 
 HRESULT CPlayerState_AirborneAttack::Initialize()
 {
-    m_pThrownBlade = m_goPlayer->Get_Script_InChildren<CThrownBlade>();
-    IF_NULL_RETURN_MSG_BREAK(m_pThrownBlade, E_FAIL, "m_pThrownBlade is nullptr");
 
     return CPlayerState::Initialize();
 }
@@ -76,6 +74,9 @@ void CPlayerState_AirborneAttack::Late_Update(_float fDT)
 void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
 {
     CPlayerState::Enter(iDetailFlag);
+
+    if (!m_pThrownBlade)
+        m_pThrownBlade = m_goPlayer->Get_Script_InChildren<CThrownBlade>();
 
     Set_InitialValue();
     m_bBladeHitBoxStarted = false;
@@ -359,7 +360,8 @@ void CPlayerState_AirborneAttack::Throw_Blade(_float fDT)
             m_bThrewAlready = true;
             _vector vPos = XMLoadFloat3(&m_tComponents.transform->vPosition);
             _float3 vDir = GAME_INSTANCE.Cam_Look();
-            m_pThrownBlade->Start_Throw(vPos, XMLoadFloat3(&vDir));
+            if (!m_pThrownBlade)
+                m_pThrownBlade->Start_Throw(vPos, XMLoadFloat3(&vDir));
         }
     }
 }

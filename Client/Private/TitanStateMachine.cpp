@@ -25,10 +25,16 @@ void CTitanStateMachine::Change_State(_uint iStateKey, _uint iDetailFlag)
     if (iStateKey >= m_States.size())
         return;
 
-    m_spCurState->Exit();
+    if (m_spCurState)
+        m_spCurState->Exit();
 
     m_spCurState = m_States[iStateKey];
     m_spCurState->Enter(iDetailFlag);
 
     m_OnChanged_CurState.Invoke(m_spCurState);
+}
+
+std::shared_ptr<CTitanState> CTitanStateMachine::Sync_StateMachine() const
+{
+    return m_spCurState;
 }

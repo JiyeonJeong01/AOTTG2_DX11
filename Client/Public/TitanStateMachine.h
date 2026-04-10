@@ -14,6 +14,7 @@ protected :
 public:
     void Cache_TitanInfos(const TITAN_CONTEXT& tContext);
     void Change_State(_uint iStateKey, _uint iDetailFlag = 0);
+    std::shared_ptr<CTitanState>    Sync_StateMachine() const;
 
 protected:
     Engine::CGameObject*    m_goTitan{};

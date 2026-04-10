@@ -23,6 +23,7 @@ private :
 
 public :
     void Try_ApplyHit(const HIT_INFO& tHitBox);
+    CGameObject*    Get_Owner() const;
 
     template <typename T>
     ListenerID Subscribe_OnHurt(void(T::* func)(const HIT_INFO&, const string&), T* pInstance)

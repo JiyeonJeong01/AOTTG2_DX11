@@ -36,7 +36,8 @@ namespace Client
         O_HUMAN_ATK   = 1 << 6,
         O_TITAN_ATK   = 1 << 7,
         O_HITBOX      = 1 << 8,
-        O_HURTBOX     = 1 << 9, 
+        O_HURTBOX     = 1 << 9,
+        O_EREN        = 1 << 10
     };
 
     typedef struct tagDisplacement

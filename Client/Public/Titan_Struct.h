@@ -7,13 +7,14 @@ NS_BEGIN(Client)
 
 enum class TITAN_POSE { STAND, SIT, CRAWL, END };
 
-enum class TITAN_STATE { IDLE = 0, MOVE, CHASE, ATTACK, GRAB, HURT, DEAD, END };
+enum class TITAN_STATE { IDLE = 0, MOVE, CHASE, ATTACK, GRAB, HURT, STUNNED, ATTACK_EREN, DEAD, END };
 enum class TITAN_IDLE { DEFAULT = 0, SIT, DEFENSE, END };
 enum class TITAN_MOVE { WALK = 0, END };
 enum class TITAN_CHASE { END };
 enum class TITAN_ATTACK { END };
 enum class TITAN_GRAB { LEFT, RIGHT, END };
 enum class TITAN_HURT { STAND_EYE = 0, STAND_ARM_L, STAND_ARM_R, STAND_LEG_L, STAND_LEG_R, SIT_EYE, CRAWL_EYE, END };
+enum class TITAN_ATTACK_EREN { WAIT, THROW, PUNCH };
 enum class TITAN_DEAD { };
 
 typedef struct tagTitanComponents
@@ -61,5 +62,8 @@ typedef struct tagTitanContext
 
 
 } TITAN_CONTEXT;
+
+inline constexpr const char* TITAN_PUNCH_ATTACK_L = "Hand_Attack_L";
+inline constexpr const char* TITAN_PUNCH_ATTACK_R = "Hand_Attack_R";
 
 NS_END

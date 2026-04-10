@@ -42,6 +42,7 @@ HRESULT CPlayerStateMachine::Initialize(CGameObject* goPlayer, CPlayer* scPlayer
     m_States[To<_uint>(PLAYER_STATE::GRABBED)] = CPlayerState_Grabbed::Create(goPlayer, scPlayer, PLAYER_STATE::GRABBED);
 
     m_spCurState = m_States[To<_uint>(PLAYER_STATE::IDLE)];
+    m_OnChanged_CurState.Invoke(m_spCurState);
 
     return S_OK;
 }
@@ -82,7 +83,8 @@ void CPlayerStateMachine::Change_State(_uint iStateKey, _uint iDetailFlag)
     if (iStateKey >= m_States.size())
         return;
 
-    m_spCurState->Exit();
+    if (m_spCurState)
+        m_spCurState->Exit();
 
     m_spCurState = m_States[iStateKey];
 

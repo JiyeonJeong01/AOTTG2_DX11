@@ -16,13 +16,13 @@ CTargetSensor::~CTargetSensor()
 
 void CTargetSensor::Awake(void* pCtx)
 {
-    m_goTitan = GAME_INSTANCE.Find_GameObject(m_refTitan.hObject);
-    IF_NULL_RETURN_MSG_BREAK(m_goTitan, , "m_goTitan is nullptr");
+    m_goOwner = GAME_INSTANCE.Find_GameObject(m_refTitan.hObject);
+    IF_NULL_RETURN_MSG_BREAK(m_goOwner, , "m_goOwner is nullptr");
 
     CGameObject* pBound = GAME_INSTANCE.Find_GameObject(m_hObject);
-    IF_NULL_RETURN_MSG_BREAK(pBound, , "m_goTitan is nullptr");
+    IF_NULL_RETURN_MSG_BREAK(pBound, , "m_goOwner is nullptr");
 
-    m_trTitan = m_goTitan->Get_Component<CTransform>();
+    m_trTitan = m_goOwner->Get_Component<CTransform>();
     IF_TRUE_RETURN_MSG_BREAK(!m_trTitan.Is_Valid(), , "m_trTitan is invalid");
 
     m_trSensor = pBound->Get_Component<CTransform>();
@@ -69,6 +69,11 @@ void CTargetSensor::Set_Target(Engine::CGameObject* goTarget)
     m_tDisplacement = Detect_Target(goTarget);
 }
 
+void CTargetSensor::Set_TargetMask(_int iMask)
+{
+    m_iTargetMask |= iMask;
+}
+
 void CTargetSensor::Clear_Target()
 {
     m_goTarget = nullptr;
@@ -87,7 +92,7 @@ Engine::CGameObject* CTargetSensor::Get_Target() const
 
 DISPLACEMENT CTargetSensor::Detect_Target(Engine::CGameObject* goTarget)
 {
-    if (!m_goTitan || !m_trTitan.Is_Valid() || !goTarget)
+    if (!m_goOwner || !m_trTitan.Is_Valid() || !goTarget)
         return DISPLACEMENT(_float3{});
 
     CTransform trTarget = goTarget->Get_Component<CTransform>();
@@ -116,9 +121,9 @@ void CTargetSensor::OnTriggerEnter(const COLLISION_DESC& tDesc)
     if (!pObject)
         return;
 
-    if (pObject->Has_Mask(O_HUMAN))
+    if (pObject->Has_Mask(m_iTargetMask))
     {
-        m_OnDetected_Human.Invoke(pObject);
+        m_OnDetected_Target.Invoke(pObject);
     }
 }
 

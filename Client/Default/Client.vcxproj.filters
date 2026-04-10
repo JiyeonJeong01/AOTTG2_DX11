@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="헤더 파일">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="MainApp">
       <UniqueIdentifier>{f1ab0385-4b32-4754-98f6-57ff549c7c58}</UniqueIdentifier>
     </Filter>
@@ -86,6 +82,13 @@
     <Filter Include="Titan\AbnormalTitan\AbnormalTitanState">
       <UniqueIdentifier>{27887c3e-6155-4e1b-b736-7a3dface8649}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Eren">
+      <UniqueIdentifier>{0e0a138a-9bca-40d3-b802-b27527572c67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Titan\AbnormalTitan\AbnormalTitanState\헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -125,7 +128,7 @@
       <Filter>Player</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Client_Define.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState\헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Player_InputController.h">
       <Filter>Player\PlayerController</Filter>
@@ -254,7 +257,7 @@
       <Filter>Player\PlayerState</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UIManager.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState\헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NormalTitanState_Dead.h">
       <Filter>Titan\NormalTitan\NormalTitanState</Filter>
@@ -299,6 +302,30 @@
       <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AbnormalTitanState_Dead.h">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ErenSequenceDirector.h">
+      <Filter>Eren</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Eren_Struct.h">
+      <Filter>Eren</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AnimationClip_Eren.h">
+      <Filter>Eren</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ErenTitan.h">
+      <Filter>Eren</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NormalTitanState_Stunned.h">
+      <Filter>Titan\NormalTitan\NormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AbnormalTitanState_Stunned.h">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AbnormalTitanState_Attack.h">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AbnormalTitanState_AttackEren.h">
       <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
     </ClInclude>
   </ItemGroup>
@@ -485,6 +512,24 @@
       <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AbnormalTitanState_Dead.cpp">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ErenSequenceDirector.cpp">
+      <Filter>Eren</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ErenTitan.cpp">
+      <Filter>Eren</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NormalTitanState_Stunned.cpp">
+      <Filter>Titan\NormalTitan\NormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AbnormalTitanState_Stunned.cpp">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AbnormalTitanState_Attack.cpp">
+      <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AbnormalTitanState_AttackEren.cpp">
       <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
     </ClCompile>
   </ItemGroup>

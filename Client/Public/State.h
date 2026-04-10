@@ -8,7 +8,7 @@ class CState abstract
 {
 public :
     CState() = default;
-    ~CState() = default;
+    virtual ~CState() = default;
 
     virtual void Enter(_uint iDetailFlag) = 0;
     virtual void Exit() = 0;

@@ -5,6 +5,7 @@
 #include "NormalTitanState_Chase.h"
 #include "NormalTitanState_Grab.h"
 #include "NormalTitanState_Hurt.h"
+#include "NormalTitanState_Stunned.h"
 #include "NormalTitanState_Dead.h"
 
 CNormalTitanStateMachine::CNormalTitanStateMachine()
@@ -26,6 +27,7 @@ HRESULT CNormalTitanStateMachine::Initialize(CGameObject* goTitan, CTitan* scTit
     m_States[To<_uint>(TITAN_STATE::CHASE)] = CNormalTitanState_Chase::Create(goTitan, scTitan, TITAN_STATE::CHASE);
     m_States[To<_uint>(TITAN_STATE::GRAB)] = CNormalTitanState_Grab::Create(goTitan, scTitan, TITAN_STATE::GRAB);
     m_States[To<_uint>(TITAN_STATE::HURT)] = CNormalTitanState_Hurt::Create(goTitan, scTitan, TITAN_STATE::HURT);
+    m_States[To<_uint>(TITAN_STATE::STUNNED)] = CNormalTitanState_Stunned::Create(goTitan, scTitan, TITAN_STATE::STUNNED);
     m_States[To<_uint>(TITAN_STATE::DEAD)] = CNormalTitanState_Dead::Create(goTitan, scTitan, TITAN_STATE::DEAD);
 
     m_spCurState = m_States[To<_uint>(TITAN_STATE::IDLE)];

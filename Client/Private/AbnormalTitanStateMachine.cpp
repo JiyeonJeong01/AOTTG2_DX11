@@ -5,6 +5,8 @@
 #include "AbnormalTitanState_Chase.h"
 #include "AbnormalTitanState_Grab.h"
 #include "AbnormalTitanState_Hurt.h"
+#include "AbnormalTitanState_Stunned.h"
+#include "AbnormalTitanState_AttackEren.h"
 #include "AbnormalTitanState_Dead.h"
 
 CAbnormalTitanStateMachine::CAbnormalTitanStateMachine()
@@ -26,6 +28,8 @@ HRESULT CAbnormalTitanStateMachine::Initialize(CGameObject* goTitan, CTitan* scT
     m_States[To<_uint>(TITAN_STATE::CHASE)] = CAbnormalTitanState_Chase::Create(goTitan, scTitan, TITAN_STATE::CHASE);
     m_States[To<_uint>(TITAN_STATE::GRAB)] = CAbnormalTitanState_Grab::Create(goTitan, scTitan, TITAN_STATE::GRAB);
     m_States[To<_uint>(TITAN_STATE::HURT)] = CAbnormalTitanState_Hurt::Create(goTitan, scTitan, TITAN_STATE::HURT);
+    m_States[To<_uint>(TITAN_STATE::STUNNED)] = CAbnormalTitanState_Stunned::Create(goTitan, scTitan, TITAN_STATE::STUNNED);
+    m_States[To<_uint>(TITAN_STATE::ATTACK_EREN)] = CAbnormalTitanState_AttackEren::Create(goTitan, scTitan, TITAN_STATE::ATTACK_EREN);
     m_States[To<_uint>(TITAN_STATE::DEAD)] = CAbnormalTitanState_Dead::Create(goTitan, scTitan, TITAN_STATE::DEAD);
 
     m_spCurState = m_States[To<_uint>(TITAN_STATE::IDLE)];

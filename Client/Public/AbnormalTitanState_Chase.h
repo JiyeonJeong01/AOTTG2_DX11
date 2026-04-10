@@ -29,7 +29,7 @@ private:
     void    Decide_NextAnim() override;
 
 private:
-    CGameObject* m_goTarget{};
+    CGameObject*    m_goTarget{};
     _float3         m_vChaseDir{};
     _float          m_fChaseDist = FLT_MAX;
 
@@ -38,10 +38,9 @@ private:
     _float          m_fGrabAnimCooldown = 0.f;
     _uint           m_iGrabAnimClip = INVALID_ANIM_CLIP_INDEX;
 
-
     TITAN_CHASE     m_eChaseState = TITAN_CHASE::END;
+
 private:
-    _float  Get_ChaseDist();
     void    Move(_float fDT);
     void    Try_PlayTriggeredGrabAnim();
     void    On_SuccessGrabHuman(SIDE eSid, _float3* vGrabPoint, CHuman* pHuman);

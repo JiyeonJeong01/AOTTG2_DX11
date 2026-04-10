@@ -237,6 +237,7 @@ void CInspectorPanel::Draw_Basic_Info()
             { "O_TITAN_ATK",     Client::O_TITAN_ATK },
             { "O_HITBOX",     Client::O_HITBOX },
             { "O_HURTBOX", Client::O_HURTBOX },
+            { "O_EREN", Client::O_EREN },
         };
 
         for (const auto& tItem : arrMaskItems)

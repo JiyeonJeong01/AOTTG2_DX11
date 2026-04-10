@@ -1,0 +1,321 @@
+﻿#include "ErenSequenceDirector.h"
+#include "AnimationClip_Eren.h"
+#include "ErenTitan.h"
+
+NS_BEGIN(Client)
+
+CErenSequenceDirector::CErenSequenceDirector()
+{
+}
+
+CErenSequenceDirector::~CErenSequenceDirector()
+{
+}
+
+void CErenSequenceDirector::Awake(void* pCtx)
+{
+    UNREFERENCED_PARAMETER(pCtx);
+
+    m_goEren = GAME_INSTANCE.Find_GameObject(m_hObject);
+    IF_NULL_RETURN_MSG_BREAK(m_goEren, , "m_goEren is nullptr.");
+
+    m_scEren = m_goEren->Get_Script_InChildren<CErenTitan>();
+    IF_NULL_RETURN_MSG_BREAK(m_scEren, , "m_scEren is nullptr.");
+
+    m_trEren = m_goEren->Get_Component<CTransform>();
+    IF_TRUE_RETURN_MSG_BREAK(m_trEren.Is_Valid() == false, , "m_trEren is invalid.");
+
+    m_animEren = m_goEren->Get_Component<CAnimator>();
+    IF_TRUE_RETURN_MSG_BREAK(m_animEren.Is_Valid() == false, , "m_animEren is invalid.");
+}
+
+void CErenSequenceDirector::Start(void* pCtx)
+{
+    UNREFERENCED_PARAMETER(pCtx);
+
+    Build_DefaultSequence();
+
+    m_iCurStep = 0;
+    m_fStepElapsed = 0.f;
+    m_bSequenceEnd = m_vecSteps.empty();
+
+    if (m_bSequenceEnd == false)
+        Enter_CurrentStep();
+}
+
+void CErenSequenceDirector::Priority_Update(void* pCtx, _float fDT)
+{
+    IScript::Priority_Update(pCtx, fDT);
+}
+
+void CErenSequenceDirector::Late_Update(void* pCtx, _float fDT)
+{
+    IScript::Late_Update(pCtx, fDT);
+}
+
+void CErenSequenceDirector::Update(void* pCtx, _float fDT)
+{
+    UNREFERENCED_PARAMETER(pCtx);
+
+    if (m_bSequenceEnd)
+        return;
+
+    if (m_iCurStep >= m_vecSteps.size())
+    {
+        m_bSequenceEnd = true;
+        return;
+    }
+
+    m_fStepElapsed += fDT;
+
+    if (Is_CurrentStepFinished())
+        Next_Step();
+}
+
+void CErenSequenceDirector::Build_DefaultSequence()
+{
+    /* BORNE -> COMBAT -> MOVE_TO -> LIFT_ROCK -> WALK_ROCK -> FIX_ROCK -> END */
+    m_vecSteps.clear();
+
+    {
+        {
+            EREN_DIRECTOR_STEP tStep{};
+            tStep.eType = EREN_STEP_TYPE::BORNE;
+            m_vecSteps.push_back(tStep);
+        }
+        {
+            EREN_DIRECTOR_STEP tStep{};
+            tStep.eType = EREN_STEP_TYPE::COMBAT;
+            m_vecSteps.push_back(tStep);
+        }
+        {
+            EREN_DIRECTOR_STEP tStep{};
+            tStep.eType = EREN_STEP_TYPE::PLAY_ANIM;
+            tStep.szAnims.push_back(ANIM_EREN_TITAN::BORN);
+            m_vecSteps.push_back(tStep);
+        }
+        {
+            EREN_DIRECTOR_STEP tStep{};
+            tStep.eType = EREN_STEP_TYPE::COMBAT;
+            tStep.vTargetPos = _float3(50.f, 0.f, -10.f);
+            m_vecSteps.push_back(tStep);
+        }
+        {
+            EREN_DIRECTOR_STEP tStep{};
+            tStep.eType = EREN_STEP_TYPE::LIFT_ROCK;
+            m_vecSteps.push_back(tStep);
+        }
+        {
+            EREN_DIRECTOR_STEP tStep{};
+            tStep.eType = EREN_STEP_TYPE::WALK_ROCK;
+            m_vecSteps.push_back(tStep);
+        }
+        {
+            EREN_DIRECTOR_STEP tStep{};
+            tStep.eType = EREN_STEP_TYPE::FIX_ROCK;
+            m_vecSteps.push_back(tStep);
+        }
+        {
+            EREN_DIRECTOR_STEP tStep{};
+            tStep.eType = EREN_STEP_TYPE::END;
+            m_vecSteps.push_back(tStep);
+        }
+    }
+}
+
+void CErenSequenceDirector::Enter_CurrentStep()
+{
+    if (m_iCurStep >= m_vecSteps.size())
+    {
+        m_bSequenceEnd = true;
+        return;
+    }
+
+    m_fStepElapsed = 0.f;
+
+    const EREN_DIRECTOR_STEP& tStep = m_vecSteps[m_iCurStep];
+
+    switch (tStep.eType)
+    {
+    case EREN_STEP_TYPE::BORNE:
+        Command_Born();
+        break;
+
+    case EREN_STEP_TYPE::COMBAT:
+        Command_Combat();
+        break;
+
+    case EREN_STEP_TYPE::MOVE_TO:
+        Command_MoveTo(m_vLiftRockSpot);
+        break;
+
+    case EREN_STEP_TYPE::LIFT_ROCK:
+        Command_LiftRock();
+        break;
+
+    case EREN_STEP_TYPE::WALK_ROCK:
+        Command_WalkRock(m_vFixRockSpot);
+        break;
+
+    case EREN_STEP_TYPE::FIX_ROCK:
+        Command_FixRock(m_vFixRockSpot);
+        break;
+
+    case EREN_STEP_TYPE::END:
+        Command_Ending();
+        m_bSequenceEnd = true;
+        break;
+
+    default:
+        break;
+    }
+}
+
+_bool CErenSequenceDirector::Is_CurrentStepFinished()
+{
+    if (m_iCurStep >= m_vecSteps.size())
+        return true;
+
+    const EREN_DIRECTOR_STEP& tStep = m_vecSteps[m_iCurStep];
+
+    switch (tStep.eType)
+    {
+    case EREN_STEP_TYPE::BORNE:
+        return Check_BornFinished();
+    case EREN_STEP_TYPE::COMBAT:
+        return Check_CombatFinished();
+    case EREN_STEP_TYPE::MOVE_TO:
+        return Check_MoveToFinished(tStep.vTargetPos);
+    case EREN_STEP_TYPE::LIFT_ROCK:
+        return Check_LiftRockFinished();
+    case EREN_STEP_TYPE::WALK_ROCK:
+        return Check_WalkRockFinished(tStep.vTargetPos);
+    case EREN_STEP_TYPE::FIX_ROCK:
+        return Check_WalkRockFinished(tStep.vTargetPos);
+    case EREN_STEP_TYPE::END:
+        return true;
+    }
+
+    return true;
+}
+
+void CErenSequenceDirector::Next_Step()
+{
+    ++m_iCurStep;
+
+    if (m_iCurStep >= m_vecSteps.size())
+    {
+        m_bSequenceEnd = true;
+        return;
+    }
+
+    Enter_CurrentStep();
+}
+
+void CErenSequenceDirector::Command_Born()
+{
+    m_scEren->Start_Born();
+}
+
+void CErenSequenceDirector::Command_MoveTo(const _float3& vTargetPos)
+{
+    UNREFERENCED_PARAMETER(vTargetPos);
+
+    /* 여기서 NPC 이동 시스템에 목표 위치 전달
+       예:
+       m_pNPC->Set_MoveTarget(vTargetPos);
+       m_pNPC->Set_State(ALLY_STATE::MOVE);
+    */
+
+    if (m_trEren.Is_Valid() == false)
+        return;
+
+    _vector vCurPos = m_trEren.Get_StateXM(STATE::POSITION);
+    _vector vDiff = XMLoadFloat3(&vTargetPos) - vCurPos;
+
+    const _float fDistSq = XMVectorGetX(XMVector3LengthSq(vDiff));
+}
+
+void CErenSequenceDirector::Command_PlayAnim(const _char* pAnimName)
+{
+    if (m_animEren.Is_Valid() == false)
+        return;
+
+    UNREFERENCED_PARAMETER(pAnimName);
+
+    /* 예:
+       m_animEren->Play_Animation(pAnimName, false);
+    */
+}
+
+void CErenSequenceDirector::Command_Combat()
+{
+    m_scEren->Start_Combat();
+}
+
+
+_bool CErenSequenceDirector::Check_AnimFinished() const
+{
+    if (m_animEren.Is_Valid() == false)
+        return true;
+
+    /*
+       return m_animEren->Is_Finished();
+    */
+
+    return true;
+}
+
+void CErenSequenceDirector::Command_LiftRock()
+{
+}
+
+void CErenSequenceDirector::Command_WalkRock(const _float3& vTargetPos)
+{
+}
+
+void CErenSequenceDirector::Command_FixRock(const _float3& vTargetPos)
+{
+}
+
+void CErenSequenceDirector::Command_Ending()
+{
+}
+
+_bool CErenSequenceDirector::Check_BornFinished() const
+{
+    return m_scEren->Is_BornCompleted();
+}
+
+_bool CErenSequenceDirector::Check_CombatFinished() const
+{
+    return m_scEren->Get_CurCombatTitans() >= m_iNumTotalCombatTitans;
+}
+
+_bool CErenSequenceDirector::Check_MoveToFinished(const _float3& vTargetPos) const
+{
+    const _float fEpsilon = 0.2f;
+    const _float3 vEpsilon = { fEpsilon , fEpsilon , fEpsilon };
+    return XMVector3NearEqual(XMLoadFloat3(&m_trEren->vPosition), XMLoadFloat3(&vTargetPos), XMLoadFloat3(&vEpsilon));
+}
+
+_bool CErenSequenceDirector::Check_LiftRockFinished() const
+{
+    return m_scEren->Is_LiftCompleted();
+}
+
+_bool CErenSequenceDirector::Check_WalkRockFinished(const _float3& vTargetPos) const
+{
+    const _float fEpsilon = 0.2f;
+    const _float3 vEpsilon = { fEpsilon , fEpsilon , fEpsilon };
+    return XMVector3NearEqual(XMLoadFloat3(&m_trEren->vPosition), XMLoadFloat3(&vTargetPos), XMLoadFloat3(&vEpsilon));
+}
+
+_bool CErenSequenceDirector::Check_FixRockFinished() const
+{
+    return m_scEren->Is_FixCompleted();
+}
+
+
+
+NS_END

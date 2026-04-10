@@ -23,16 +23,19 @@ private :
     CCollider       m_cldrHit;
 
     HIT_INFO        m_tHitInfo{};
+    _int            m_iTargetMask = 0;
+    _int            m_iDiscardtMask = 0;
 
     CTransform      m_trHitBox;
     Engine::CEvent<Engine::CGameObject*>        m_OnSuccessHit;
-
 
 public :
     CGameObject*    Get_HitBoxObject() const;
     void            Set_Active(_bool bActive);
     _bool           Get_Active() const;
     void            Set_Position(_fvector vPos);
+    void            Set_TargetMask(_int iMask);
+    void            Set_DiscardMask(_int iMask);
 
     void OnTriggerEnter(const COLLISION_DESC& tDesc);
 

@@ -24,20 +24,22 @@ public:
     void Late_Update(void* pCtx, _float fDT) override;
 
 private:
-    Engine::CGameObject*    m_goTitan{};
+    Engine::CGameObject*    m_goOwner{};
     Engine::CGameObject*    m_goTarget{};
     CTransform              m_trTitan{};
     CTransform              m_trSensor{};
 
     DISPLACEMENT            m_tDisplacement{ _float3{} };
+    _int                    m_iTargetMask = 0;
 
-    Engine::CEvent<Engine::CGameObject*>        m_OnDetected_Human;
+    Engine::CEvent<Engine::CGameObject*>        m_OnDetected_Target;
 
 private :
     void OnTriggerEnter(const COLLISION_DESC& tDesc);
 
 public :
     void                    Set_Target(Engine::CGameObject* goTarget);
+    void                    Set_TargetMask(_int iMask);
     void                    Clear_Target();
     _bool                   Has_Target() const;
     Engine::CGameObject*    Get_Target() const;
@@ -46,9 +48,9 @@ public :
     DISPLACEMENT            Get_TargetDisplacement() const;
 
     template <typename T>
-    ListenerID Subscribe_OnDetectedHuman(void(T::* func)(Engine::CGameObject*), T* pInstance)
+    ListenerID Subscribe_OnDetectedTarget(void(T::* func)(Engine::CGameObject*), T* pInstance)
     {
-        return m_OnDetected_Human.Add_Listener(func, pInstance);
+        return m_OnDetected_Target.Add_Listener(func, pInstance);
     }
 };
 

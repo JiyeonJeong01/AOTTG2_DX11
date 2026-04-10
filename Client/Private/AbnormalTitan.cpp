@@ -84,8 +84,10 @@ void CAbnormalTitan::Start(void* pCtx)
     tContext.pStats = &m_tStats;
 
     m_upStateMachine->Cache_TitanInfos(tContext);
+    m_spCurState = m_upStateMachine->Sync_StateMachine();
 
-    m_tRef.pSensor->Subscribe_OnDetectedHuman(&CAbnormalTitan::On_DetectedHuman, this);
+    m_tRef.pSensor->Set_TargetMask(O_HUMAN | O_EREN);
+    m_tRef.pSensor->Subscribe_OnDetectedTarget(&CAbnormalTitan::On_DetectedHumanSide, this);
     m_upStateMachine->Subscribe_OnChangedCurState(&CAbnormalTitan::OnChange_CurState, this);
 
     /* 히트박스 전부 끄기 */
@@ -153,7 +155,7 @@ _bool CAbnormalTitan::Is_ValidTarget(Engine::CGameObject* pTarget)
     if (!pTarget)
         return false;
 
-    if (!pTarget->Has_Mask(O_HUMAN))
+    if (!pTarget->Has_Mask(O_HUMAN | O_EREN))
         return false;
 
     CTransform trTarget = pTarget->Get_Component<CTransform>();
@@ -192,9 +194,24 @@ void CAbnormalTitan::On_Dead(const _float fAccuracy)
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
 }
 
+void CAbnormalTitan::On_Stunned()
+{
+    TITAN_STATE eState = m_spCurState->Get_State();
+    if (eState == TITAN_STATE::DEAD)
+        return;
+
+    m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::STUNNED), To<_uint>(eState));
+}
+
 void CAbnormalTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox)
 {
     UNREFERENCED_PARAMETER(tHitInfo);
+
+    if (tHitInfo.goAttacker->Has_Mask(O_EREN | O_HITBOX))
+        return;
+
+    if (tHitInfo.goAttacker->Has_Mask(O_TITAN | O_HITBOX))
+        return;
 
     TITAN_HURT eHurt = TITAN_HURT::END;
 
@@ -243,16 +260,27 @@ void CAbnormalTitan::Validate_Target()
     }
 }
 
-void CAbnormalTitan::On_DetectedHuman(CGameObject* goHuman)
+void CAbnormalTitan::On_DetectedHumanSide(CGameObject* goHuman)
 {
-
-    if (Has_Target() || !Is_ValidTarget(goHuman))
+    if (!Is_ValidTarget(goHuman))
         return;
+
+    if (Has_Target())
+    {
+        if (m_goTarget->Get_Mask() == goHuman->Get_Mask())
+            return;
+    }
 
     Set_Target(goHuman);
 
+    if (goHuman->Has_Mask(O_EREN))
+    {
+        m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::ATTACK_EREN));
+        return;
+    }
+
     TITAN_STATE eCur = m_spCurState ? m_spCurState->Get_State() : TITAN_STATE::IDLE;
-    _bool bToChase = eCur == TITAN_STATE::IDLE || eCur == TITAN_STATE::MOVE;
+    _bool bToChase = eCur == TITAN_STATE::IDLE || eCur == TITAN_STATE::MOVE || eCur == TITAN_STATE::ATTACK_EREN;
     if (bToChase)
     {
         m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::CHASE));

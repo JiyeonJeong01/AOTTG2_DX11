@@ -70,6 +70,16 @@ void CHitBox::Set_Position(_fvector vPos)
     m_trHitBox.Set_Position(vPos);
 }
 
+void CHitBox::Set_TargetMask(_int iMask)
+{
+    m_iTargetMask |= iMask;
+}
+
+void CHitBox::Set_DiscardMask(_int iMask)
+{
+    m_iDiscardtMask |= iMask;
+}
+
 void CHitBox::OnTriggerEnter(const COLLISION_DESC& tDesc)
 {
     if (!Get_Active())
@@ -79,10 +89,13 @@ void CHitBox::OnTriggerEnter(const COLLISION_DESC& tDesc)
     if (!pOther)
         return;
 
-    if (!pOther->Has_Mask(O_HURTBOX))
+    if (pOther->Has_Mask(m_iDiscardtMask))
         return;
 
-    CHurtBox* pHurtBox = pOther->Get_Script_InChildren<CHurtBox>();
+    if (!pOther->Has_Mask(O_HURTBOX) && !pOther->Has_Mask(m_iTargetMask))
+        return;
+
+    CHurtBox* pHurtBox = pOther->Get_Script<CHurtBox>();
     if (!pHurtBox)
         return;
 
