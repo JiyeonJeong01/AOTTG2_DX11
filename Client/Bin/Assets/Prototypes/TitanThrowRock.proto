@@ -1,0 +1,117 @@
+{
+  "prototype": {
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              2.6145527362823486,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "DebugDraw": false,
+            "Enabled": true,
+            "Offset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnCol": false,
+            "RadiusLocal": 1.0299999713897705,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 1,
+            "Static": false,
+            "Trigger": false,
+            "Type": 1
+          }
+        }
+      ],
+      [],
+      [],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CHitBox",
+              "Fields": [
+                {
+                  "Name": "m_refOwner",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "00000000-0000-0000-0000-000000000000"
+                  }
+                },
+                {
+                  "Name": "m_tHitInfo.fDamage",
+                  "Type": 1,
+                  "Value": 0.0
+                }
+              ]
+            },
+            "ScriptGuid": "E1B5B9DB-631C-4F89-BE60-34053FA300C4",
+            "Type": 4
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "7B369D24-0267-4A49-8AE7-77BF45CF0BE1",
+            "MeshGUID": "5C908C0E-526A-4342-9295-0DE255ECCA91",
+            "Mode": 0,
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "iObjMask": 256,
+    "isUI": false,
+    "name": "TitanThrowRock"
+  },
+  "version": 1
+}

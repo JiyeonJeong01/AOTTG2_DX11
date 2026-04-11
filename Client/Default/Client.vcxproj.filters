@@ -328,6 +328,9 @@
     <ClInclude Include="..\Public\AbnormalTitanState_AttackEren.h">
       <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UI_ErenController.h">
+      <Filter>UI\HUD</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -468,7 +471,6 @@
     <ClCompile Include="..\Private\PlayerState_Grabbed.cpp">
       <Filter>Player\PlayerState</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UIManager.cpp" />
     <ClCompile Include="..\Private\NormalTitanState_Dead.cpp">
       <Filter>Titan\NormalTitan\NormalTitanState</Filter>
     </ClCompile>
@@ -531,6 +533,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\AbnormalTitanState_AttackEren.cpp">
       <Filter>Titan\AbnormalTitan\AbnormalTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIManager.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_ErenController.cpp">
+      <Filter>UI\HUD</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

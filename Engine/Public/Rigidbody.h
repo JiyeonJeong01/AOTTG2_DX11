@@ -117,6 +117,8 @@ public:
     void        Add_Force(const _float3& vForce);
     void        Add_Torque(const _float3& vTorque);
 
+    void        Refresh();
+
 private :
     TRANSFORM_DATA* m_pTrData{};
 

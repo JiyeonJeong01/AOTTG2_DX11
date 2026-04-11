@@ -6,6 +6,7 @@
 #include "Engine_Math.h"
 #include "GameInstance.h"
 #include "magic_enum.hpp"
+#include "Input_System.h"
 
 extern HWND g_hWnd;
 extern HINSTANCE g_hInst;
@@ -27,17 +28,24 @@ namespace Client
 
     enum OBJECT_MASK
     {
-        O_HUMAN       = 1 << 0,
-        O_TITAN       = 1 << 1,
-        O_PLAYER      = 1 << 2,
-        O_NPC         = 1 << 3,
-        O_ALLY        = 1 << 4, 
-        O_WALKABLE    = 1 << 5,
-        O_HUMAN_ATK   = 1 << 6,
-        O_TITAN_ATK   = 1 << 7,
-        O_HITBOX      = 1 << 8,
-        O_HURTBOX     = 1 << 9,
-        O_EREN        = 1 << 10
+        O_NONE = 0,
+
+        O_PLAYER = 1 << 0,
+        O_CROPS = 1 << 1,
+        O_EREN = 1 << 2,
+
+        O_ENEMY = 1 << 3,
+
+        O_HITBOX = 1 << 4,
+        O_HURTBOX = 1 << 5,
+
+        O_WALKABLE = 1 << 6,
+
+        O_ETC1 = 1 << 7,
+        O_ETC2 = 1 << 8,
+        O_ETC3 = 1 << 9,
+        O_ETC4 = 1 << 10,
+        O_ETC5 = 1 << 11
     };
 
     typedef struct tagDisplacement

@@ -227,17 +227,25 @@ void CInspectorPanel::Draw_Basic_Info()
 
         const MASK_ITEM arrMaskItems[] =
         {
-            { "O_HUMAN",   Client::O_HUMAN },
-            { "O_TITAN",   Client::O_TITAN },
             { "O_PLAYER",   Client::O_PLAYER },
-            { "O_NPC",    Client::O_NPC },
-            { "O_ALLY",     Client::O_ALLY },
-            { "O_WALKABLE", Client::O_WALKABLE },
-            { "O_HUMAN_ATK",     Client::O_HUMAN_ATK },
-            { "O_TITAN_ATK",     Client::O_TITAN_ATK },
-            { "O_HITBOX",     Client::O_HITBOX },
-            { "O_HURTBOX", Client::O_HURTBOX },
+            { "O_CROPS",    Client::O_CROPS },
             { "O_EREN", Client::O_EREN },
+
+            { "O_ENEMY",     Client::O_ENEMY },
+
+            { "O_HITBOX", Client::O_HITBOX },
+            { "O_HURTBOX",     Client::O_HURTBOX },
+
+            { "O_WALKABLE",     Client::O_WALKABLE },
+
+
+
+
+            { "O_ETC1",     Client::O_ETC1 },
+            { "O_ETC2",     Client::O_ETC2 },
+            { "O_ETC3",     Client::O_ETC3 },
+            { "O_ETC4",     Client::O_ETC4 },
+            { "O_ETC5",     Client::O_ETC5 }
         };
 
         for (const auto& tItem : arrMaskItems)

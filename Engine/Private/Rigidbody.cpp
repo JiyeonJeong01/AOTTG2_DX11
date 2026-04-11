@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "Core_System.h"
+#include "Collider.h"
 
 void CRigidbody::Set_Shape(SHAPE eShape)
 {
@@ -303,6 +304,21 @@ void CRigidbody::Add_Torque(const _float3& vTorque)
     const _vector vTorqueVec = Math::Load(vTorque);
 
     Math::Store(m_pData->vTorqueAccum, vTorqueAccum + vTorqueVec);
+}
+
+void CRigidbody::Refresh()
+{
+    if (!m_pData)
+        return;
+
+    CGameObject* goOwner = SYS_GAMEOBJECT.Get_Wrapper(m_pData->hObject);
+    CTransform tr = goOwner->Get_Component<CTransform>();
+    m_pData->hTransform = tr.Get_Handle();
+
+    CCollider cldr = goOwner->Get_Component<CCollider>();
+    if (!cldr.Is_Valid())
+        return;
+    m_pData->hCollider = cldr.Get_Handle();
 }
 
 TRANSFORM_DATA* CRigidbody::Find_Transform()

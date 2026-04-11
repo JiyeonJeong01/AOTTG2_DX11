@@ -53,11 +53,6 @@ CGameObject* CHitBox::Get_HitBoxObject() const
 void CHitBox::Set_Active(_bool bActive)
 {
     m_cldrHit->bEnable = bActive;
-
-    if (bActive)
-        LOG_INFO("hitbox on");
-    else
-        LOG_INFO("hitbox off");
 }
 
 _bool CHitBox::Get_Active() const
@@ -70,12 +65,12 @@ void CHitBox::Set_Position(_fvector vPos)
     m_trHitBox.Set_Position(vPos);
 }
 
-void CHitBox::Set_TargetMask(_int iMask)
+void CHitBox::Add_TargetMask(_int iMask)
 {
     m_iTargetMask |= iMask;
 }
 
-void CHitBox::Set_DiscardMask(_int iMask)
+void CHitBox::Add_DiscardMask(_int iMask)
 {
     m_iDiscardtMask |= iMask;
 }

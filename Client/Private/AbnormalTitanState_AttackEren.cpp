@@ -28,6 +28,8 @@ HRESULT CAbnormalTitanState_AttackEren::Initialize()
 
     m_fOriginRotateSharpness = m_fRotateSharpness;
 
+    m_goThrowRockPool.clear();
+
     return S_OK;
 }
 
@@ -40,6 +42,14 @@ void CAbnormalTitanState_AttackEren::Priority_Update(_float fDT)
 
     const DISPLACEMENT& tInfo = m_tRef.pSensor->Get_TargetDisplacement();
     m_fAttackDist = tInfo.fDist;
+
+    if (m_bFlushThrow)
+    {
+        Flush_Throw();
+        m_bFlushThrow = false;
+        m_bThrown = true;
+        m_fElapsedThrownTime = 0.f;
+    }
 }
 
 void CAbnormalTitanState_AttackEren::Update(_float fDT)
@@ -57,6 +67,26 @@ void CAbnormalTitanState_AttackEren::Update(_float fDT)
 
     if (!XMVector3Equal(vDir, XMVectorZero()))
         Look_To(vDir, fDT);
+
+    if (m_eAtkEren == TITAN_ATTACK_EREN::THROW)
+    {
+        if(m_tComponents.animator->fTrackPosition >= 75.f && !m_bThrown)
+        {
+            m_bFlushThrow = true;
+            Ready_Throw();
+        }
+
+        if (m_bThrown)
+        {
+            m_fElapsedThrownTime += fDT;
+            if (m_fElapsedThrownTime > m_fTotalThrownTime)
+            {
+                for (auto* goObj : m_goThrowRockPool)
+                    goObj->Set_Enable(false);
+                Finish_Attack();
+            }
+        }
+    }
 }
 
 void CAbnormalTitanState_AttackEren::Late_Update(_float fDT)
@@ -64,9 +94,6 @@ void CAbnormalTitanState_AttackEren::Late_Update(_float fDT)
     CTitanState::Late_Update(fDT);
 
     UNREFERENCED_PARAMETER(fDT);
-
-    if (!m_bAcivated)
-        return;
 
     if (!Has_Target() && !m_bAttackAnimPlaying)
         Finish_Attack();
@@ -81,14 +108,18 @@ void CAbnormalTitanState_AttackEren::Enter(_uint iDetailFlag)
     m_bUsePunch = false;
     m_iAttackAnimClip = INVALID_ANIM_CLIP_INDEX;
     m_fAttackDist = 0.f;
+    m_bThrown = false;
+    m_bFlushThrow = false;
+    m_fElapsedThrownTime = 0.f;
 
     m_fRotateSharpness = m_fAttackRotateSharpness;
 
-    Try_CachePunchHitBox();
+    Try_CacheHitBox();
     Set_PunchHitBoxActive(false);
 
     if (!Has_Target())
     {
+        Disable_ThrowRocks();
         Finish_Attack();
         return;
     }
@@ -112,6 +143,7 @@ void CAbnormalTitanState_AttackEren::Exit()
     m_iAttackAnimClip = INVALID_ANIM_CLIP_INDEX;
 
     m_fRotateSharpness = m_fOriginRotateSharpness;
+    Disable_ThrowRocks();
 
     CTitanState::Exit();
 }
@@ -129,9 +161,11 @@ _uint CAbnormalTitanState_AttackEren::Get_DetailState() const
     return 0;
 }
 
-void CAbnormalTitanState_AttackEren::Try_CachePunchHitBox()
+void CAbnormalTitanState_AttackEren::Try_CacheHitBox()
 {
-    if (m_pPunchHitBoxL != nullptr && m_pPunchHitBoxR != nullptr)
+    /* punch */
+    if (m_pPunchHitBoxL != nullptr && m_pPunchHitBoxR != nullptr
+        && (m_goThrowRockPool.size() == std::size(m_strRocks)))
         return;
 
     if (m_tRef.pAllHitBoxes == nullptr)
@@ -158,6 +192,26 @@ void CAbnormalTitanState_AttackEren::Try_CachePunchHitBox()
     {
         m_pPunchHitBoxR = nullptr;
     }
+
+    /* Rock */
+    if (m_goThrowRockPool.size() != std::size(m_strRocks))
+    {
+        m_goThrowRockPool.clear();
+        for (const auto& strRock : m_strRocks)
+        {
+            CGameObject* goRock = nullptr;
+            auto itRock = m_tRef.pAllHitBoxes->find(strRock);
+            if (itRock != m_tRef.pAllHitBoxes->end())
+            {
+                goRock = itRock->second->Get_HitBoxObject();
+                if (!goRock) continue;
+                goRock->Set_Enable(false);
+                itRock->second->Set_Active(false);
+
+                m_goThrowRockPool.push_back(goRock);
+            }
+        }
+    }
 }
 
 void CAbnormalTitanState_AttackEren::Set_PunchHitBoxActive(_bool bActive)
@@ -175,11 +229,13 @@ void CAbnormalTitanState_AttackEren::Select_AttackAnim()
     if (m_fAttackDist <= m_fPunchAttackRange)
     {
         pAnimName = ANIM_TITAN::ATTACK_COMBO_PUNCH;
+        m_eAtkEren = TITAN_ATTACK_EREN::PUNCH;
         m_bUsePunch = true;
     }
     else
     {
         pAnimName = ANIM_TITAN::ATTACK_THROW;
+        m_eAtkEren = TITAN_ATTACK_EREN::THROW;
         m_bUsePunch = false;
     }
 
@@ -197,16 +253,50 @@ void CAbnormalTitanState_AttackEren::Select_AttackAnim()
     {
         Set_PunchHitBoxActive(true);
     }
-    else
-    {
-        Attack_Throw();
-    }
 
     m_tComponents.animator.Set_NextAnimationClip(m_iAttackAnimClip);
 }
 
-void CAbnormalTitanState_AttackEren::Attack_Throw()
+void CAbnormalTitanState_AttackEren::Ready_Throw()
 {
+    _vector vStartPos = XMLoadFloat3(&m_tComponents.transform->vPosition);
+    _vector vUp = { 0.f, 1.f, 0.f, 0.f };
+    _vector vLook = m_tComponents.transform.Get_StateXM(STATE::LOOK);
+
+    vStartPos += vUp * m_vRockOffset.y;
+    vStartPos += vLook * m_vRockOffset.z;
+
+    for (auto* goObj : m_goThrowRockPool)
+        goObj->Set_Enable(true);
+
+    for (const auto& strRock : m_strRocks)
+    {
+        auto it = m_tRef.pAllHitBoxes->find(strRock);
+        if (it == m_tRef.pAllHitBoxes->end())
+            continue;
+        if (it->second == nullptr)
+            continue;
+        it->second->Set_Active(true);
+    }
+
+    for (_int i = 0; i < m_goThrowRockPool.size(); ++i)
+    {
+        CGameObject* goRock = m_goThrowRockPool[i];
+        if (!goRock)
+            continue;
+
+        CTransform trRock = goRock->Get_Component<CTransform>();
+        XMStoreFloat3(&trRock->vPosition, vStartPos);
+
+        CRigidbody rbRock = goRock->Get_Component<CRigidbody>();
+        if (rbRock.Is_Valid())
+        {
+            rbRock.Set_LinearVel(_float3(0.f, 0.f, 0.f));
+            rbRock.Set_AngularVel(_float3(0.f, 0.f, 0.f));
+        }
+    }
+
+    m_fElapsedThrownTime = 0.f;
 }
 
 void CAbnormalTitanState_AttackEren::Finish_Attack()
@@ -238,6 +328,60 @@ _bool CAbnormalTitanState_AttackEren::Has_Target() const
     return scTitan->Has_Target();
 }
 
+void CAbnormalTitanState_AttackEren::Flush_Throw()
+{
+    _vector vDirs[20];
+
+    m_fElapsedThrownTime = 0.f;
+    Make_ThrowDirs(vDirs, m_tRef.pSensor->Get_TargetDisplacement());
+
+    for (_int i = 0; i < m_goThrowRockPool.size(); ++i)
+    {
+        CGameObject* goRock = m_goThrowRockPool[i];
+        if (!goRock) continue;
+
+        CRigidbody rbRock = goRock->Get_Component<CRigidbody>();
+
+        if (!rbRock.Is_Valid())
+            continue;
+
+        _float3 vImpulse;
+        XMStoreFloat3(&vImpulse, vDirs[i] * m_fThrowImpulse);
+
+        rbRock.Add_LinearImpulse(vImpulse);
+    }
+}
+
+void CAbnormalTitanState_AttackEren::Disable_ThrowRocks()
+{
+    for (_int i = 0; i < m_goThrowRockPool.size(); ++i)
+    {
+        CGameObject* goRock = m_goThrowRockPool[i];
+        if (!goRock)
+            continue;
+
+        CRigidbody rbRock = goRock->Get_Component<CRigidbody>();
+        if (rbRock.Is_Valid())
+        {
+            rbRock.Set_LinearVel(_float3(0.f, 0.f, 0.f));
+            rbRock.Set_AngularVel(_float3(0.f, 0.f, 0.f));
+        }
+
+        goRock->Set_Enable(false);
+    }
+
+    for (const auto& strRock : m_strRocks)
+    {
+        auto it = m_tRef.pAllHitBoxes->find(strRock);
+        if (it == m_tRef.pAllHitBoxes->end())
+            continue;
+        if (it->second == nullptr)
+            continue;
+
+        it->second->Set_Active(false);
+    }
+}
+
 void CAbnormalTitanState_AttackEren::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
 {
     if (!m_bAcivated)
@@ -252,7 +396,61 @@ void CAbnormalTitanState_AttackEren::On_AnimFinished(const Engine::ANIMATION_EVE
     if (tData.iAnimationClip != m_iAttackAnimClip)
         return;
 
+    if (m_eAtkEren == TITAN_ATTACK_EREN::THROW)
+    {
+        /* 돌을 이미 던졌다면, 타이머가 끝날 때까지 Update에서 정리 */
+        if (m_bThrown)
+            return;
+    }
+
     Finish_Attack();
+}
+
+void CAbnormalTitanState_AttackEren::Make_ThrowDirs(_vector vDirs[20], const DISPLACEMENT& tInfo)
+{
+    _vector vForward = XMLoadFloat3(&tInfo.vDir);
+
+    if (XMVectorGetX(XMVector3LengthSq(vForward)) <= 1e-6f)
+        vForward = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+    else
+        vForward = XMVector3Normalize(vForward);
+
+    /* 기준 up */
+    _vector vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+    /* forward가 up이랑 거의 평행이면 다른 축 사용 */
+    if (fabs(XMVectorGetX(XMVector3Dot(vForward, vWorldUp))) > 0.98f)
+        vWorldUp = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+
+    /* forward 기준 직교 basis 생성 */
+    _vector vRight = XMVector3Normalize(XMVector3Cross(vWorldUp, vForward));
+    _vector vUp = XMVector3Normalize(XMVector3Cross(vForward, vRight));
+
+    /* 원뿔 반각 */
+    const _float fMaxAngleDeg = 10.f;
+    const _float fMaxAngleRad = XMConvertToRadians(fMaxAngleDeg);
+
+    for (_int i = 0; i < 20; ++i)
+    {
+        /* 0 ~ 1 */
+        const _float u1 = static_cast<_float>(rand()) / static_cast<_float>(RAND_MAX);
+        const _float u2 = static_cast<_float>(rand()) / static_cast<_float>(RAND_MAX);
+
+        /* cone 내부에서 고르게 퍼지도록 */
+        const _float fTheta = XM_2PI * u1;
+        const _float fAngle = fMaxAngleRad * sqrtf(u2);
+
+        const _float fSin = sinf(fAngle);
+        const _float fCos = cosf(fAngle);
+
+        /* local cone offset */
+        _vector vLocal =
+            vRight * (cosf(fTheta) * fSin) +
+            vUp * (sinf(fTheta) * fSin) +
+            vForward * fCos;
+
+        vDirs[i] = XMVector3Normalize(vLocal);
+    }
 }
 
 std::shared_ptr<CAbnormalTitanState_AttackEren> CAbnormalTitanState_AttackEren::Create(

@@ -39,10 +39,12 @@ private :
 
 public :
     SCRIPT_OBJECT_REF       m_refPlayer;
+    SCRIPT_OBJECT_REF       m_refEren;
     SCRIPT_OBJECT_REF       m_refCursor;
 
 SCRIPT_FIELDS_BEGIN(CHUDController)
     SCRIPT_FIELD_OBJECT_REF(m_refPlayer)
+    SCRIPT_FIELD_OBJECT_REF(m_refEren)
     SCRIPT_FIELD_OBJECT_REF(m_refCursor)
 SCRIPT_FIELDS_END(CHUDController)
 };

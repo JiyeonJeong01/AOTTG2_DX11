@@ -36,7 +36,7 @@ typedef struct tagTitanStats
 
     _float          fRotateSharpness = 3.f;
 
-    const _uint     iMaxStunned = 3;
+    const _uint     iMaxStunned = 5;
 } TITAN_STATS;
 
 typedef struct tagTitanRuntimeRef
@@ -70,5 +70,10 @@ typedef struct tagTitanContext
 
 inline constexpr const char* TITAN_PUNCH_ATTACK_L = "Hand_Attack_L";
 inline constexpr const char* TITAN_PUNCH_ATTACK_R = "Hand_Attack_R";
+inline constexpr const char* TITAN_ROCK_1 = "TitanThrowRock1";
+inline constexpr const char* TITAN_ROCK_2 = "TitanThrowRock2";
+inline constexpr const char* TITAN_ROCK_3 = "TitanThrowRock3";
+inline constexpr const char* TITAN_ROCK_4 = "TitanThrowRock4";
+inline constexpr const char* TITAN_ROCK_5 = "TitanThrowRock5";
 
 NS_END

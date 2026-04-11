@@ -179,7 +179,7 @@ void CPlayer::On_BladeHit(CGameObject* goCounter)
     if (!goCounter)
         return;
 
-    if (!goCounter->Has_Mask(O_TITAN))
+    if (!goCounter->Has_Mask(O_ENEMY))
         return;
 
     if (!m_tBlade.Can_ConsumeBladeAtk())

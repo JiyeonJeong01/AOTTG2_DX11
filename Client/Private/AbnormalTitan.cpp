@@ -86,7 +86,7 @@ void CAbnormalTitan::Start(void* pCtx)
     m_upStateMachine->Cache_TitanInfos(tContext);
     m_spCurState = m_upStateMachine->Sync_StateMachine();
 
-    m_tRef.pSensor->Set_TargetMask(O_HUMAN | O_EREN);
+    m_tRef.pSensor->Set_TargetMask(O_EREN | O_CROPS | O_PLAYER);
     m_tRef.pSensor->Subscribe_OnDetectedTarget(&CAbnormalTitan::On_DetectedHumanSide, this);
     m_upStateMachine->Subscribe_OnChangedCurState(&CAbnormalTitan::OnChange_CurState, this);
 
@@ -156,9 +156,6 @@ _bool CAbnormalTitan::Is_ValidTarget(Engine::CGameObject* pTarget)
     if (!pTarget)
         return false;
 
-    if (!pTarget->Has_Mask(O_HUMAN | O_EREN))
-        return false;
-
     CTransform trTarget = pTarget->Get_Component<CTransform>();
     if (!trTarget.Is_Valid())
         return false;
@@ -198,20 +195,23 @@ void CAbnormalTitan::On_Dead(const _float fAccuracy)
 void CAbnormalTitan::On_Stunned()
 {
     TITAN_STATE eState = m_spCurState->Get_State();
-    if (eState == TITAN_STATE::DEAD)
+    if (eState == TITAN_STATE::STUNNED || eState == TITAN_STATE::DEAD)
         return;
+
+    LOG_INFO("Abnormal titan changed state to -> [ Stunned ]");
 
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::STUNNED), To<_uint>(eState));
 }
 
+/* hurt는 플레이어와 아군에게만 진입 */
 void CAbnormalTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox)
 {
     UNREFERENCED_PARAMETER(tHitInfo);
 
-    if (tHitInfo.goAttacker->Has_Mask(O_EREN | O_HITBOX))
-        return;
-
-    if (tHitInfo.goAttacker->Has_Mask(O_TITAN | O_HITBOX))
+    const _int iPlayerAtkMask = O_PLAYER | O_HITBOX;
+    const _int iCropsAtkMask = O_CROPS | O_HITBOX;
+    const _int iAttackerMask = tHitInfo.goAttacker->Get_Mask();
+    if (!((iPlayerAtkMask == iAttackerMask) || (iCropsAtkMask == iAttackerMask)))
         return;
 
     TITAN_HURT eHurt = TITAN_HURT::END;
@@ -266,21 +266,28 @@ void CAbnormalTitan::On_DetectedHumanSide(CGameObject* goHuman)
     if (!Is_ValidTarget(goHuman))
         return;
 
-    if (Has_Target())
-    {
-        if (m_goTarget->Get_Mask() == goHuman->Get_Mask())
+    const uint32_t iNewMask = goHuman->Get_Mask();
+    const uint32_t iPrevMask = m_goTarget ? m_goTarget->Get_Mask() : 0;
+
+    if (!(iNewMask == O_PLAYER || iNewMask == O_EREN || iNewMask == O_CROPS)) /* 타겟이 될 수 있는 대상 */
+        return;
+
+    if (Has_Target() && (iPrevMask == iNewMask)) /* 다른 마스크의 대상에는 타겟 변경 가능 */
             return;
-    }
 
     Set_Target(goHuman);
+    TITAN_STATE eCur = m_spCurState ? m_spCurState->Get_State() : TITAN_STATE::IDLE;
 
-    if (goHuman->Has_Mask(O_EREN))
+    if (iNewMask == O_EREN)
     {
-        m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::ATTACK_EREN));
-        return;
+        _bool CantAtkEren = eCur == TITAN_STATE::ATTACK_EREN || eCur == TITAN_STATE::DEAD;
+        if (!CantAtkEren)
+        {
+            m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::ATTACK_EREN));
+            return;
+        }
     }
 
-    TITAN_STATE eCur = m_spCurState ? m_spCurState->Get_State() : TITAN_STATE::IDLE;
     _bool bToChase = eCur == TITAN_STATE::IDLE || eCur == TITAN_STATE::MOVE || eCur == TITAN_STATE::ATTACK_EREN;
     if (bToChase)
     {

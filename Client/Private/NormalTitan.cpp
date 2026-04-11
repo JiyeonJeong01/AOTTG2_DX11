@@ -93,7 +93,7 @@ void CNormalTitan::Start(void* pCtx)
     m_upStateMachine->Cache_TitanInfos(tContext);
     m_spCurState = m_upStateMachine->Sync_StateMachine();
 
-    m_tRef.pSensor->Set_TargetMask(O_HUMAN);
+    m_tRef.pSensor->Set_TargetMask(O_CROPS | O_PLAYER);
     m_tRef.pSensor->Subscribe_OnDetectedTarget(&CNormalTitan::On_DetectedHumanSide, this);
 
     m_upStateMachine->Subscribe_OnChangedCurState(&CNormalTitan::OnChange_CurState, this);
@@ -163,7 +163,7 @@ _bool CNormalTitan::Is_ValidTarget(Engine::CGameObject* pTarget)
     if (!pTarget)
         return false;
 
-    if (!pTarget->Has_Mask(O_HUMAN))
+    if (!pTarget->Is_ExactMask(O_PLAYER) && !pTarget->Is_ExactMask(O_CROPS))
         return false;
 
     CTransform trTarget = pTarget->Get_Component<CTransform>();
@@ -267,6 +267,7 @@ void CNormalTitan::On_DetectedHumanSide(CGameObject* goHuman)
 {
     if (!Is_ValidTarget(goHuman))
         return;
+
     if (goHuman->Has_Mask(O_EREN))
     {
         return;
@@ -281,7 +282,7 @@ void CNormalTitan::On_DetectedHumanSide(CGameObject* goHuman)
     Set_Target(goHuman);
 
     TITAN_STATE eCur = m_spCurState ? m_spCurState->Get_State() : TITAN_STATE::IDLE;
-    _bool bToChase = eCur == TITAN_STATE::IDLE || eCur == TITAN_STATE::MOVE || eCur == TITAN_STATE::ATTACK_EREN;
+    _bool bToChase = eCur == TITAN_STATE::IDLE || eCur == TITAN_STATE::MOVE;
     if (bToChase)
     {
         m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::CHASE));

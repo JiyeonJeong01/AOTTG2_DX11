@@ -6,6 +6,7 @@ NS_BEGIN(Client)
 class CGroundChecker;
 class CTargetSensor;
 class CHitBox;
+class CHurtBox;
 NS_END
 
 NS_BEGIN(Client)
@@ -26,11 +27,15 @@ private :
     CGroundChecker*                     m_pGroundChecker{};
     CTargetSensor*                      m_pSensor{};
     std::unordered_map<std::string, CHitBox*>   m_AllHitBoxes;
+    CHurtBox*                           m_scHurtBox = nullptr;
+    _uint                               m_iHurtAnimIndex = INVALID_ANIM_CLIP_INDEX;
 
     /* ----- Eren Stats ----- */
     const _float                        m_fMaxSpeed = 10.f;     /* rigidbody 기반 이동에 대한 제한 */
     _float                              m_fWalkSpeed = 2.f;     
     _float                              m_fRunSpeed = 4.f;
+    const _float                        m_fTotalLife = 100.f;
+    _float                              m_fCurLife = m_fTotalLife;
 
     /* Rotation */
     _float3                             m_vPrevLook{};
@@ -60,9 +65,7 @@ private :
     _bool                               m_bCombatAttacking = false;
     _int                                m_iCurComboIndex = 0;
     _int                                m_iTotalComboIndex = 0;
-    _float                              m_fElapsedAttackInterval = 0.f;
     _float                              m_fCombatSpeed = 4.f;
-    const _float                        m_fAttackInterval = 1.f;
     _float                              m_fShouldRunDistance = 13.5f;
     _float                              m_fKeepDistance = 0.f;
     _int                                m_iCurCombatCnt = 0;
@@ -73,7 +76,9 @@ private :
     _float                              m_fMoveToResumeDist = 18.f;      /* 전투 중 이 거리보다 멀어지면 다시 목표 지점으로 복귀 */
     _float                              m_fShouldAttackDist = 15.5f;
     _bool                               m_bMoveToArrived = false;        /* 목표 지점 도착 여부 */
-    
+
+    /* ----- Etc ----- */
+    CEvent<_float>                      m_OnDamaged;
 
 private :
     void    Move_To(_fvector vDir, _float fDT, _float fSpeed);
@@ -109,6 +114,14 @@ public :
     _int    Get_CurCombatTitans() const;
     _bool   Is_LiftCompleted() const;
     _bool   Is_FixCompleted() const;
+
+public :
+    template <typename T>
+    ListenerID Subscribe_OnDamaged(void(T::* func)(_float), T* pInstance)
+    {
+        return m_OnDamaged.Add_Listener(func, pInstance);
+    }
+
 
 };
 

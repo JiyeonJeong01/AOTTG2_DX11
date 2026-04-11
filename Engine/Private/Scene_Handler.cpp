@@ -269,6 +269,9 @@ _bool CScene_Handler::Deserialize_SceneObjectSpec(const json& j, SCENE_OBJECT_SP
     out.layer = (Layer::LAYER_ID)j.value("layer", (uint32_t)Layer::DEFAULT_LAYER);
     out.iObjMask = j.value("iObjMask", 0);
 
+    if (out.iObjMask > 64)
+        __debugbreak();
+
     /* 부모 UUID는 비어있을 수 있다. */
     const std::string parentStr = j.value("parent", "");
     if (!parentStr.empty())

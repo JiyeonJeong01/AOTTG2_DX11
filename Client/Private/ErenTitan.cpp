@@ -31,7 +31,7 @@ void CErenTitan::Awake(void* pCtx)
         __debugbreak();
     }
 
-    m_pSensor->Set_TargetMask(O_TITAN);
+    m_pSensor->Set_TargetMask(O_ENEMY);
     m_pSensor->Subscribe_OnDetectedTarget(&CErenTitan::On_DetectedCombatTargets, this);
 
     m_animEren->OnAnimationFinished.Add_Listener(&CErenTitan::On_AnimFinished, this);
@@ -49,7 +49,7 @@ void CErenTitan::Start(void* pCtx)
         auto [iter, bInserted] = m_AllHitBoxes.emplace(string(goHitBox->Get_Label()), hit);
         IF_TRUE_RETURN_MSG_BREAK(!bInserted, , "duplicated hitbox label");
 
-        hit->Set_TargetMask(O_TITAN);
+        hit->Add_TargetMask(O_ENEMY);
         hit->Subscribe_OnSuccessHit(&CErenTitan::On_SuccessAttack, this);
     }
 
@@ -63,10 +63,20 @@ void CErenTitan::Start(void* pCtx)
     /* 히트박스 전부 끄기 */
     for (auto& hit : m_AllHitBoxes)
         hit.second->Set_Active(false);
+
+    m_iHurtAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::HIT_ANNIE_1);
 }
 
 void CErenTitan::Priority_Update(void* pCtx, _float fDT)
 {
+    /* TODO _______________________________________________________________________________________________ */
+    if (SYS_INPUT.Get_KeyDown('L'))
+    {
+        m_fCurLife -= 10.f;
+        if (m_fCurLife < 0.f)
+            m_fCurLife = 0.f;
+        m_OnDamaged.Invoke(m_fCurLife);
+    }
 }
 
 void CErenTitan::Update(void* pCtx, _float fDT)
@@ -218,8 +228,6 @@ void CErenTitan::Process_Combat(_float fDT)
     if (Is_CombatAttacking())
         return;
 
-    m_fElapsedAttackInterval += fDT;
-
     const EREN_COMBAT_PATTERN& tPattern = m_CombatPattern[m_iCurComboIndex];
     m_fKeepDistance = tPattern.fKeepDistance;
 
@@ -243,15 +251,7 @@ void CErenTitan::Process_Combat(_float fDT)
         return;
     }
 
-    /* 공격 거리 안이지만 아직 공격 쿨이 아님 -> 뒤로 잠시 빠꾸 */
-    if (m_fElapsedAttackInterval < m_fAttackInterval)
-    {
-        m_eCombat = EREN_COMBAT::APPROACHING;
-        m_fCombatSpeed = m_fWalkSpeed;
-        return;
-    }
-
-    m_fElapsedAttackInterval = 0.f;
+    /* TODO : 쿨다운 없애고 일단 바로 공격하도록 설정 */
     Start_ComboAttack(tPattern.eCombatType);
 
     ++m_iCurComboIndex;
@@ -264,6 +264,15 @@ void CErenTitan::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
     const _uint iIndex = tData.iAnimationClip;
     if (iIndex == INVALID_ANIM_CLIP_INDEX)
         return;
+
+    if (iIndex == m_iHurtAnimIndex)
+    {
+        for (auto& hit : m_AllHitBoxes)
+            hit.second->Set_Active(false);
+
+        m_eCombat = EREN_COMBAT::WAIT;
+        return;
+    }
 
     if (m_eStepType == EREN_STEP_TYPE::BORNE)
     {
@@ -294,7 +303,7 @@ void CErenTitan::Start_Combat()
         {
             EREN_COMBAT_PATTERN kick{};
             kick.eCombatType = EREN_COMBAT::KICK;
-            kick.fKeepDistance = 11.f;
+            kick.fKeepDistance = 12.5f;
             m_CombatPattern.push_back(kick);
         }
         {
@@ -324,9 +333,7 @@ void CErenTitan::Start_Combat()
     }
 
     m_iCurComboIndex = 0;
-    m_iCurCombatCnt = 0;
     m_iTotalComboIndex = To<_int>(m_CombatPattern.size());
-    m_fElapsedAttackInterval = m_fAttackInterval;   /* 시작하자마자 공격 가능하게 */
     m_fKeepDistance = 0.f;
     m_eCombat = EREN_COMBAT::WAIT;
     for (auto& hit : m_AllHitBoxes)
@@ -374,7 +381,6 @@ void CErenTitan::Start_MoveTo()
 
     m_iCurComboIndex = 0;
     m_iTotalComboIndex = To<_int>(m_CombatPattern.size());
-    m_fElapsedAttackInterval = m_fAttackInterval;
     m_fKeepDistance = 0.f;
     m_eCombat = EREN_COMBAT::WAIT;
 
@@ -438,7 +444,7 @@ void CErenTitan::Process_MoveTo(_float fDT)
             return;
         }
 
-        /** 한 번 전투 대상으로 잡혔더라도 충분히 멀어졌으면 MOVE_TO 본래 목적 복귀 */
+        /* 한 번 전투 대상으로 잡혔더라도 충분히 멀어졌으면 MOVE_TO 본래 목적 복귀 */
         if (fTargetDist >= m_fMoveToResumeDist)
         {
             m_goLatestCombatTarget = nullptr;
@@ -447,14 +453,14 @@ void CErenTitan::Process_MoveTo(_float fDT)
         }
     }
 
-    /** 목표 지점으로 이동 */
+    /* 목표 지점으로 이동 */
     const _vector vMoveDiff =
         XMLoadFloat3(&m_vTargetPos) -
         XMLoadFloat3(&m_trEren->vPosition);
 
     const _float fMoveDist = XMVectorGetX(XMVector3Length(vMoveDiff));
 
-    /** 목표 지점 도착 */
+    /* 목표 지점 도착 */
     if (fMoveDist <= m_fMoveToArriveDist)
     {
         m_bMoveToArrived = true;
@@ -496,8 +502,14 @@ _bool CErenTitan::Validate_Target()
         if (!scTitan)
             return false;
 
-        if (scTitan->Is_Alive() && m_trLastestCombatTarget.Is_Valid())
-            return true;
+        if (m_trLastestCombatTarget.Is_Valid())
+        {
+            if (scTitan->Is_Alive())
+                return true;
+            else
+                m_iCurCombatCnt++;
+        }
+
 
         m_goLatestCombatTarget = nullptr;
     }
@@ -572,7 +584,7 @@ _vector CErenTitan::Get_AttackPower()
     _vector vRight = XMVector3Normalize(m_trEren.Get_StateXM(STATE::RIGHT));
     _vector vWorldUp = { 0.f, 0.2f, 0.f, 0.f };
 
-    _float fBase = 80.f;
+    _float fBase = 50.f;
 
     switch (m_eCombat)
     {
@@ -669,13 +681,7 @@ void CErenTitan::On_AnimCombatFinished(const _uint iIndex)
 
 void CErenTitan::On_DetectedCombatTargets(CGameObject* goTitan)
 {
-    if (!goTitan->Has_Mask(O_TITAN))
-        return;
-
-    if (goTitan->Has_Mask(O_HURTBOX))
-        return;
-
-    if (goTitan->Has_Mask(O_HITBOX))
+    if (goTitan->Get_Mask() != O_ENEMY)
         return;
 
     /* BORNE이나 COMBAT, MOVE_TO 상태에서 감지된 타겟만 받는다. */
@@ -700,7 +706,24 @@ void CErenTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox
 {
     UNREFERENCED_PARAMETER(tHitInfo);
 
+    if (!tHitInfo.goAttacker)
+        return;
+
+    if (!tHitInfo.goAttacker->Has_Mask(O_ENEMY | O_HITBOX))
+        return;
+
     /* 다쳤을 때 이벤트 */
+    m_fCurLife -= tHitInfo.fDamage;
+    if (m_fCurLife <= 0.f)
+        m_fCurLife = 0.f;
+
+    /* hurt 애니메이션은 특정 상황에서만 재생 */
+    if (m_eStepType == EREN_STEP_TYPE::COMBAT || m_eStepType == EREN_STEP_TYPE::MOVE_TO)
+    {
+        m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::HIT_ANNIE_1);
+    }
+
+    m_OnDamaged.Invoke(m_fCurLife);
 }
 
 void CErenTitan::On_SuccessAttack(CGameObject* goTitan)

@@ -269,7 +269,7 @@ void CTitanBound_Controller::Try_QueueGrabAnim(const char* pAnimName, const COLL
         return;
 
     /* 플레이어 + HUMAN만 받기 */
-    if (!pCounter->Has_Mask(O_HUMAN))
+    if (!pCounter->Is_ExactMask(O_CROPS) && !pCounter->Is_ExactMask(O_PLAYER))
         return;
 
     m_strPendingGrabAnim = pAnimName;
@@ -319,23 +319,23 @@ _float3* CTitanBound_Controller::Get_GrabbedPoint()
 
 void CTitanBound_Controller::Handle_GrabState(SIDE eSide, CGameObject* pTarget, CGameObject* pHand)
 {
-    if (pTarget->Has_Mask(O_HUMAN))
-    {
-        CTransform tr = pHand->Get_Component<CTransform>();
+    if (!pTarget->Is_ExactMask(O_CROPS) && !pTarget->Is_ExactMask(O_PLAYER))
+        return;
 
-        m_pGrabbedPoint = &tr._Data()->vPosition;
+    CTransform tr = pHand->Get_Component<CTransform>();
 
-        /* class Player : public IScript, public CHuman 이므로 다중 상속 가능 */
-        CHuman* pHuman = pTarget->Get_Script_InChildren<CHuman>();
-        /* class NormalTitan : public IScript, public CTitan 이므로 다중 상속 가능 */
-        CTitan* pTitan = m_pOwner->Get_Script<CTitan>();
-        if (nullptr == pHuman || nullptr == pTitan)
-            return;
-        m_pHuman = pHuman;
-        m_goGrabbed = pTarget;
+    m_pGrabbedPoint = &tr._Data()->vPosition;
 
-        pTitan->On_Grab(eSide, pHuman);
-    }
+    /* class Player : public IScript, public CHuman 이므로 다중 상속 가능 */
+    CHuman* pHuman = pTarget->Get_Script_InChildren<CHuman>();
+    /* class NormalTitan : public IScript, public CTitan 이므로 다중 상속 가능 */
+    CTitan* pTitan = m_pOwner->Get_Script<CTitan>();
+    if (nullptr == pHuman || nullptr == pTitan)
+        return;
+    m_pHuman = pHuman;
+    m_goGrabbed = pTarget;
+
+    pTitan->On_Grab(eSide, pHuman);
 }
 
 void CTitanBound_Controller::OnTriggerEnter_Weak(const COLLISION_DESC& tDesc)
@@ -346,7 +346,7 @@ void CTitanBound_Controller::OnTriggerEnter_Weak(const COLLISION_DESC& tDesc)
     if (!pCounter)
         return;
 
-    if (pCounter->Has_Mask(O_HUMAN_ATK))
+    if (pCounter->Is_ExactMask(O_PLAYER | O_HITBOX)) /* 플레이어의 공격만 받는다 */
     {
         CGameObject* pWeakPoint = GAME_INSTANCE.Find_GameObject(m_refWeak.hObject);
         if (!pWeakPoint)

@@ -27,6 +27,7 @@
 #include "TitanBound_Controller.h"
 #include "Titan_Hand.h"
 #include "UI_BladeController.h"
+#include "UI_ErenController.h"
 #include "UI_GasController.h"
 #include "UI_SkillController.h"
 
@@ -125,6 +126,10 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\UI_BladeController.script");
         handler.Register_VTable(guid, ScriptBinder<CUI_BladeController>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\UI_ErenController.script");
+        handler.Register_VTable(guid, ScriptBinder<CUI_ErenController>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\UI_GasController.script");

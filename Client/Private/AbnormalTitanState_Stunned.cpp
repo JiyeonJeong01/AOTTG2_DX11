@@ -50,6 +50,9 @@ void CAbnormalTitanState_Stunned::Enter(_uint iDetailFlag)
 
     (*m_tRef.m_pStunnedAcc)++;
 
+    LOG_INFO("Abnormal titan entered-> [ Stunned ] : %u", *m_tRef.m_pStunnedAcc);
+
+
     if (*m_tRef.m_pStunnedAcc > m_pStats->iMaxStunned)
     {
         m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
@@ -57,7 +60,7 @@ void CAbnormalTitanState_Stunned::Enter(_uint iDetailFlag)
     }
 
     m_iPrevState = To<_uint>(iDetailFlag);
-    m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::TITAN_FALLING);
+    m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::ARM_HURT_L);
 }
 
 void CAbnormalTitanState_Stunned::Exit()

@@ -34,8 +34,8 @@ public :
     void            Set_Active(_bool bActive);
     _bool           Get_Active() const;
     void            Set_Position(_fvector vPos);
-    void            Set_TargetMask(_int iMask);
-    void            Set_DiscardMask(_int iMask);
+    void            Add_TargetMask(_int iMask);
+    void            Add_DiscardMask(_int iMask);
 
     void OnTriggerEnter(const COLLISION_DESC& tDesc);
 

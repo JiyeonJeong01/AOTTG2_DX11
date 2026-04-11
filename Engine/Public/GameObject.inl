@@ -207,6 +207,12 @@ void CGameObject::Set_Mask(T eMask)
 }
 
 template <typename T>
+bool CGameObject::Is_ExactMask(T eMask)
+{
+    return m_iMask == static_cast<uint32_t>(eMask);
+}
+
+template <typename T>
 bool CGameObject::Has_Mask(T eMask) const
 {
     return (m_iMask & static_cast<uint32_t>(eMask)) != 0;
