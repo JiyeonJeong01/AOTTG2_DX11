@@ -27,13 +27,13 @@ private:
     void Next_Step();
 
 private:
-    /* BORNE -> COMBAT -> PLAY_ANIM -> MOVE_TO -> LIFT_ROCK -> WALK_ROCK -> FIX_ROCK -> END */
+    /* BORNE -> COMBAT -> PLAY_ANIM -> MOVE_TO -> LIFT_ROCK -> MOVE_ROCK -> FIX_ROCK -> END */
     void Command_Born();
     void Command_Combat();
     void Command_MoveTo(const _float3& vTargetPos);
     void Command_PlayAnim(const _char* pAnimName);
     void Command_LiftRock();
-    void Command_WalkRock(const _float3& vTargetPos);
+    void Command_MoveRock(const _float3& vTargetPos);
     void Command_FixRock(const _float3& vTargetPos);
     void Command_Ending();
 
@@ -61,7 +61,7 @@ private:
 private :
     _float3                     m_vLiftRockSpot = {};
     _float3                     m_vFixRockSpot = {};
-    const _int                  m_iNumTotalCombatTitans = 3;
+    const _int                  m_iNumTotalCombatTitans = 1;
 
 SCRIPT_FIELDS_BEGIN(CErenSequenceDirector)
     SCRIPT_FIELD_FLOAT3(m_vLiftRockSpot)

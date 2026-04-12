@@ -237,7 +237,7 @@ void CPhysics_Processor::Process_SpringJoints(_float fDT)
 
             _float3 vForce3{};
             Math::Store(vForce3, vForce);
-
+            vForce3.y *= 1.5f;
             rigidbody.Add_Force(vForce3);
         }
     }

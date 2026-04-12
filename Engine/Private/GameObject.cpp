@@ -280,6 +280,7 @@ CGameObject* CGameObject::Clone()
 
     dstObjData.tProtoGUID = srcObjData.tProtoGUID;
     dstObjData.layer = srcObjData.layer;
+    dstObjData.iMask = srcObjData.iMask;
 
     const Component::COMPONENT_MASK srcMask = Get_ComponentMask();
 

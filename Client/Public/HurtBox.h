@@ -19,11 +19,14 @@ public:
 
 private :
     CGameObject*            m_pOwner{};
+    CGameObject*            m_goHurtBox{};
+
     CEvent<const HIT_INFO&, const string&> m_OnHurt;
 
 public :
     void Try_ApplyHit(const HIT_INFO& tHitBox);
     CGameObject*    Get_Owner() const;
+    CGameObject*    Get_HurtBoxObject() const;
 
     template <typename T>
     ListenerID Subscribe_OnHurt(void(T::* func)(const HIT_INFO&, const string&), T* pInstance)

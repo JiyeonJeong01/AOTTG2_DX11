@@ -18,7 +18,7 @@ typedef struct tagTryGrapplingInfo
 
 typedef struct tagGasState
 {
-    const _float    fMax = 10.f;
+    const _float    fMax = 1000.f;
     _float          fCurrent = fMax;
 } GAS_STATE;
 

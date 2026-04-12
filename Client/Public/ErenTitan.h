@@ -7,6 +7,7 @@ class CGroundChecker;
 class CTargetSensor;
 class CHitBox;
 class CHurtBox;
+class CAttacher;
 NS_END
 
 NS_BEGIN(Client)
@@ -29,6 +30,7 @@ private :
     std::unordered_map<std::string, CHitBox*>   m_AllHitBoxes;
     CHurtBox*                           m_scHurtBox = nullptr;
     _uint                               m_iHurtAnimIndex = INVALID_ANIM_CLIP_INDEX;
+    CAttacher*                          m_scAttach{};
 
     /* ----- Eren Stats ----- */
     const _float                        m_fMaxSpeed = 10.f;     /* rigidbody 기반 이동에 대한 제한 */
@@ -73,9 +75,15 @@ private :
     /* ----- Move To ----- */
     _float3                             m_vTargetPos{};
     _float                              m_fMoveToArriveDist = 3.f;       /* 목표 지점 도착 판정 거리 */
-    _float                              m_fMoveToResumeDist = 18.f;      /* 전투 중 이 거리보다 멀어지면 다시 목표 지점으로 복귀 */
+    _float                              m_fMoveToResumeDist = 25.f;      /* 전투 중 이 거리보다 멀어지면 다시 목표 지점으로 복귀 */
     _float                              m_fShouldAttackDist = 15.5f;
     _bool                               m_bMoveToArrived = false;        /* 목표 지점 도착 여부 */
+
+    /* ----- Lift ----- */
+    _bool                               m_bLiftUp = false;
+
+    /* ----- Fix Rock ----- */
+
 
     /* ----- Etc ----- */
     CEvent<_float>                      m_OnDamaged;
@@ -88,10 +96,12 @@ private :
     void    Process_Born(_float fDT);
     void    Process_Combat(_float fDT);
     void    Process_MoveTo(_float fDT);
+    void    Process_Lift(_float fDT);
 
     void    On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData);
     void    On_AnimBornFinished(const _uint iIndex);
     void    On_AnimCombatFinished(const _uint iIndex);
+    void    On_AnimLiftFinished(const _uint iIndex);
 
     void    On_DetectedCombatTargets(CGameObject* goTitan);
     void    On_Hurt(const HIT_INFO& tHitBox, const std::string& strHurtBox);
@@ -101,7 +111,10 @@ public :
     void    Set_ErenStep(EREN_STEP_TYPE eType);
     void    Start_Born();
     void    Start_Combat();
-    void    Start_MoveTo();
+    void    Start_MoveTo(const _float3& vTargetPos);
+    void    Start_LiftUp();
+    void    Start_MoveRock(const _float3& vTargetPos);
+    void    Start_FixRock(const _float3& vTargetPos);
 
     void    Activate_Hitbox(const std::string& strKey, _bool bActive);
 
@@ -113,6 +126,7 @@ public :
     _bool   Is_BornCompleted() const;
     _int    Get_CurCombatTitans() const;
     _bool   Is_LiftCompleted() const;
+    _bool   Is_MoveRockCompleted() const;
     _bool   Is_FixCompleted() const;
 
 public :

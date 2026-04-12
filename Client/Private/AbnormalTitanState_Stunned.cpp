@@ -4,6 +4,7 @@
 
 #include "AnimationClip_Titan.h"
 #include "NormalTitanStateMachine.h"
+#include "TargetSensor.h"
 
 using namespace ANIM_TITAN;
 
@@ -83,7 +84,24 @@ void CAbnormalTitanState_Stunned::Decide_NextState()
 
     if (fStunnedVel < 10.f)
     {
-        m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::ATTACK_EREN));
+        if (m_tRef.pSensor)
+        {
+            auto* goTarget = m_tRef.pSensor->Get_Target();
+            if (goTarget)
+            {
+                if (goTarget->Is_ExactMask(O_EREN))
+                {
+                    m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::ATTACK_EREN));
+                    return;
+                }
+                else
+                {
+                    m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::CHASE));
+                    return;
+                }
+            }
+        }
+        m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::IDLE));
     }
 }
 

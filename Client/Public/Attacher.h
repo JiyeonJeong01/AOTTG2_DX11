@@ -16,6 +16,10 @@ public:
     void Update(void* pCtx, _float fDT) override;
     void Late_Update(void* pCtx, _float fDT) override;
 
+    CGameObject*    Get_AttachObject() const;
+    void            Stop_Attach();
+    void            Start_Attach();
+
 private:
     struct ATTACH_NODE
     {
@@ -28,6 +32,7 @@ private:
 
         CTransform          trChild{};
     };
+    _bool                   m_bCanAttach = true;
 
 private:
     void Register_Attach(ATTACH_NODE& tNode);
@@ -35,6 +40,7 @@ private:
 
 private:
     Engine::CGameObject* m_pOwner = nullptr;
+    Engine::CGameObject* m_goAttach = nullptr;
     CTransform              m_trOwner{};
 
 public:

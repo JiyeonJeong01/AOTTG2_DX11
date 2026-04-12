@@ -5,6 +5,7 @@
 #include "TargetSensor.h"
 #include "HitBox.h"
 #include "HurtBox.h"
+#include "Attacher.h"
 
 NS_BEGIN(Client)
 
@@ -65,6 +66,22 @@ void CErenTitan::Start(void* pCtx)
         hit.second->Set_Active(false);
 
     m_iHurtAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::HIT_ANNIE_1);
+
+    auto scripts = m_goEren->Get_AllScripts_InChildren<CAttacher>();
+    for (auto script : scripts)
+    {
+        CGameObject* goAttach = script->Get_AttachObject();
+        if (!goAttach)
+            continue;
+
+        if (goAttach->Get_Label() == "Rock")
+        {
+            m_scAttach = script;
+            script->Stop_Attach();
+            CTransform tr = goAttach->Get_Component<CTransform>();
+            tr->vPosition = _float3(100.f, 0.f, -148.f);
+        }
+    }
 }
 
 void CErenTitan::Priority_Update(void* pCtx, _float fDT)
@@ -98,7 +115,7 @@ void CErenTitan::Update(void* pCtx, _float fDT)
     case EREN_STEP_TYPE::LIFT_ROCK :
         break;
 
-    case EREN_STEP_TYPE::WALK_ROCK :
+    case EREN_STEP_TYPE::MOVE_ROCK :
         return;
 
     case EREN_STEP_TYPE::FIX_ROCK :
@@ -283,6 +300,10 @@ void CErenTitan::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
     {
         On_AnimCombatFinished(iIndex);
     }
+    else if (m_eStepType == EREN_STEP_TYPE::LIFT_ROCK)
+    {
+        On_AnimLiftFinished(iIndex);
+    }
 
 }
 
@@ -340,23 +361,25 @@ void CErenTitan::Start_Combat()
         hit.second->Set_Active(false);
 }
 
-void CErenTitan::Start_MoveTo()
+void CErenTitan::Start_MoveTo(const _float3& vTargetPos)
 {
     m_eStepType = EREN_STEP_TYPE::MOVE_TO;
     m_bMoveToArrived = false;
+
+    m_vTargetPos = vTargetPos;
 
     m_CombatPattern.clear();
     {
         {
             EREN_COMBAT_PATTERN kick{};
             kick.eCombatType = EREN_COMBAT::KICK;
-            kick.fKeepDistance = 14.5f;
+            kick.fKeepDistance = 12.5f;
             m_CombatPattern.push_back(kick);
         }
         {
             EREN_COMBAT_PATTERN fullCombo{};
             fullCombo.eCombatType = EREN_COMBAT::FULL_COMBO;
-            fullCombo.fKeepDistance = 14.f;
+            fullCombo.fKeepDistance = 13.f;
             m_CombatPattern.push_back(fullCombo);
         }
         {
@@ -388,6 +411,38 @@ void CErenTitan::Start_MoveTo()
         hit.second->Set_Active(false);
 
     m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::RUN);
+}
+
+void CErenTitan::Start_LiftUp()
+{
+    m_eStepType = EREN_STEP_TYPE::LIFT_ROCK;
+    m_bLiftUp = false;
+    m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::ROCK_LIFT);
+
+    auto scripts = m_goEren->Get_AllScripts_InChildren<CAttacher>();
+
+    for (auto& script : scripts)
+    {
+        CGameObject* goAttach = script->Get_AttachObject();
+        if (!goAttach)
+            continue;
+
+        if (goAttach->Get_Label() == "Rock")
+            script->Start_Attach();
+    }
+
+
+}
+
+void CErenTitan::Start_MoveRock(const _float3& vTargetPos)
+{
+    m_eStepType = EREN_STEP_TYPE::MOVE_ROCK;
+    m_vTargetPos = vTargetPos;
+}
+
+void CErenTitan::Start_FixRock(const _float3& vTargetPos)
+{
+
 }
 
 void CErenTitan::Activate_Hitbox(const std::string& strKey, _bool bActive)
@@ -483,6 +538,11 @@ void CErenTitan::Process_MoveTo(_float fDT)
     m_fCombatSpeed = m_fRunSpeed;
     m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::RUN);
     Move_To(vMoveDir, fDT, m_fCombatSpeed);
+}
+
+void CErenTitan::Process_Lift(_float fDT)
+{
+
 }
 
 _bool CErenTitan::Is_CombatAttacking() const
@@ -679,6 +739,14 @@ void CErenTitan::On_AnimCombatFinished(const _uint iIndex)
     }
 }
 
+void CErenTitan::On_AnimLiftFinished(const _uint iIndex)
+{
+    if (iIndex == m_animEren->NameToClipIndex[ANIM_EREN_TITAN::ROCK_LIFT])
+    {
+        m_bLiftUp = true;
+    }
+}
+
 void CErenTitan::On_DetectedCombatTargets(CGameObject* goTitan)
 {
     if (goTitan->Get_Mask() != O_ENEMY)
@@ -751,8 +819,6 @@ void CErenTitan::On_SuccessAttack(CGameObject* goTitan)
     if (!trTitan.Is_Valid())
         return;
 
-    m_iCurCombatCnt++;
-
     _float3 vAttack;
     XMStoreFloat3(&vAttack, Get_AttackPower());
     rbTitan.Set_Restitution(1.f);
@@ -775,7 +841,12 @@ _int CErenTitan::Get_CurCombatTitans() const
 
 _bool CErenTitan::Is_LiftCompleted() const
 {
-    return false;
+    return m_bLiftUp;
+}
+
+_bool CErenTitan::Is_MoveRockCompleted() const
+{
+    return m_bLiftUp;
 }
 
 _bool CErenTitan::Is_FixCompleted() const

@@ -8,6 +8,7 @@ NS_BEGIN(Client)
 class CAbnormalTitanStateMachine;
 class CTargetSensor;
 class CTitanState;
+class CHurtBox;
 NS_END
 
 NS_BEGIN(Client)
@@ -49,8 +50,10 @@ private:
     std::shared_ptr<CTitanState>                m_spCurState{};
 
     std::unordered_map<std::string, CHitBox*>   m_AllHitBoxes;
+    CGameObject*                                m_goWeakPoint = nullptr;
 
     Engine::CEvent<Engine::CGameObject*>        m_OnChanged_Target;
+
 
 public:
     TITAN_CONTEXT Get_TitanContext();

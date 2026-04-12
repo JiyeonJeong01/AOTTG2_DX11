@@ -10,7 +10,7 @@ enum class EREN_STEP_TYPE : _uint
     COMBAT,
     MOVE_TO,
     LIFT_ROCK,
-    WALK_ROCK,
+    MOVE_ROCK,
     FIX_ROCK,
     PLAY_ANIM,
     END

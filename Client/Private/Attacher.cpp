@@ -55,6 +55,21 @@ void CAttacher::Late_Update(void* pCtx, _float fDT)
     Sync_Attach(m_tAttachObject);
 }
 
+CGameObject* CAttacher::Get_AttachObject() const
+{
+    return m_goAttach;
+}
+
+void CAttacher::Stop_Attach()
+{
+    m_bCanAttach = false;
+}
+
+void CAttacher::Start_Attach()
+{
+    m_bCanAttach = true;
+}
+
 void CAttacher::Register_Attach(ATTACH_NODE& tNode)
 {
     if (!tNode.refObject.Is_Valid())
@@ -63,20 +78,25 @@ void CAttacher::Register_Attach(ATTACH_NODE& tNode)
     if (tNode.szBoneName[0] == '\0')
         return;
 
-    Engine::CGameObject* pChildObject = GAME_INSTANCE.Find_GameObject(tNode.refObject.hObject);
-    if (!pChildObject)
+    m_goAttach = GAME_INSTANCE.Find_GameObject(tNode.refObject.hObject);
+    if (!m_goAttach)
         return;
 
-    tNode.trChild = pChildObject->Get_Component<CTransform>();
+    tNode.trChild = m_goAttach->Get_Component<CTransform>();
     if (tNode.trChild.Is_Valid() == false)
         return;
 
     if (!GAME_INSTANCE.Find_AttachBoneInfo(m_hObject, tNode.szBoneName, tNode.pAnimData, tNode.iBoneIndex))
         return;
+
+    m_bCanAttach = true;
 }
 
 void CAttacher::Sync_Attach(ATTACH_NODE& tNode)
 {
+    if (!m_bCanAttach)
+        return;
+
     if (!tNode.refObject.Is_Valid())
         return;
 
@@ -94,8 +114,10 @@ void CAttacher::Sync_Attach(ATTACH_NODE& tNode)
         XMLoadFloat4x4(&vecCombined[tNode.iBoneIndex]) *
         XMLoadFloat4x4(&m_trOwner->matWorld);
 
-    _vector vWorldPos = matBoneWorld.r[3];
-    vWorldPos += XMVectorSet(tNode.vOffset.x, tNode.vOffset.y, tNode.vOffset.z, 0.f);
+    const _vector vLocalOffset = XMVectorSet(tNode.vOffset.x, tNode.vOffset.y, tNode.vOffset.z, 0.f);
+    const _vector vWorldOffset = XMVector3TransformNormal(vLocalOffset, matBoneWorld);
+
+    _vector vWorldPos = matBoneWorld.r[3] + vWorldOffset;
 
     tNode.trChild.Set_Position(vWorldPos);
 }

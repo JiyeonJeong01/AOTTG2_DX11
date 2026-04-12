@@ -35,7 +35,7 @@ void CPlayerState::Control_Camera()
 {
     if (m_tRef.pCameraController)
     {
-        m_tRef.pCameraController->Add_Yaw_Input(m_tInputCmd.vMouseDelta.x);
+        m_tRef.pCameraController->Add_Yaw_Input(-m_tInputCmd.vMouseDelta.x);
         m_tRef.pCameraController->Add_Pitch_Input(m_tInputCmd.vMouseDelta.y);
     }
 }

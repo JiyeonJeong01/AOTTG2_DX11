@@ -47,8 +47,6 @@ private:
     void Bind_Trigger(const SCRIPT_OBJECT_REF& refBound, void (CTitanBound_Controller::* pFunc)(const COLLISION_DESC&));
     void Try_QueueGrabAnim(const char* pAnimName, const COLLISION_DESC& tDesc);
 
-    void OnTriggerEnter_Weak(const COLLISION_DESC& tDesc);
-
     void OnTriggerEnter_HandL(const COLLISION_DESC& tDesc);
     void OnTriggerEnter_HandR(const COLLISION_DESC& tDesc);
 
@@ -109,9 +107,6 @@ private :
 public:
     SCRIPT_FIELDS_BEGIN(CTitanBound_Controller)
         SCRIPT_FIELD_OBJECT_REF(m_refOwner)
-
-        SCRIPT_FIELD_OBJECT_REF(m_refWeak)
-        SCRIPT_FIELD_FLOAT3(m_vWeakOffset)
 
         /* -------- PLAYER_GRAB_POINT -------- */
         SCRIPT_FIELD_OBJECT_REF(m_refHandL)
@@ -190,8 +185,6 @@ public:
 
 private:
     SCRIPT_OBJECT_REF               m_refOwner{};
-    SCRIPT_OBJECT_REF               m_refWeak{};
-    _float3                         m_vWeakOffset{ 0.f, 0.f, 0.f };
 
     /* -------- PLAYER_GRAB_POINT -------- */
     SCRIPT_OBJECT_REF               m_refHandL{};

@@ -1,6 +1,7 @@
 ﻿#include "AbNormalTitan.h"
 #include "TitanState.h"
 #include "AbnormalTitanStateMachine.h"
+#include "AnimationClip_Titan.h"
 #include "TargetSensor.h"
 #include "TitanBound_Controller.h"
 #include "HitBox.h"
@@ -69,13 +70,26 @@ void CAbnormalTitan::Start(void* pCtx)
         auto allHurtBoxes = m_goTitan->Get_AllScripts_InChildren<CHurtBox>();
         for (auto& hurt : allHurtBoxes)
         {
+            if (!hurt) continue;
             hurt->Subscribe_OnHurt(&CAbnormalTitan::On_Hurt, this);
+
+            //auto* goHurt = hurt->Get_HurtBoxObject();
+            //if (goHurt && goHurt->Get_Label() == TITAN_WEAK_POINT)
+            //{
+            //    m_goWeakPoint = goHurt;
+            //}
         }
+        //IF_NULL_RETURN_MSG_BREAK(m_goWeakPoint, , "m_goWeakPoint is nullptr");
 
         m_tRef.m_pStunnedAcc = &m_iStunnedAcc;
         m_tRef.pAllHitBoxes = &m_AllHitBoxes;
         m_tRef.pPose = &m_ePose;
     }
+
+    m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::IDLE);
+
+    m_tStats.fCurSpeed = 12.f;
+    m_tStats.fMaxSpeed = 12.f;
 
     /* 플레이어 상태에게 전달 */
     TITAN_CONTEXT tContext;
@@ -243,6 +257,26 @@ void CAbnormalTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHur
         if (m_ePose == TITAN_POSE::STAND)
             eHurt = TITAN_HURT::STAND_LEG_R;
     }
+    //else if (strHurtBox == TITAN_WEAK_POINT)
+    //{
+    //    if (tHitInfo.goAttacker->Is_ExactMask(O_PLAYER | O_HITBOX)) /* 플레이어의 공격만 받는다 */
+    //    {
+    //        CTransform tr = m_goWeakPoint->Get_Component<CTransform>();
+    //        const _vector vPoint = XMLoadFloat3(&tr->vPosition);
+    //        _vector vDiff = vPoint - XMLoadFloat3(&tHitInfo.vHitPoint);
+    //        _float fDiff = XMVectorGetX(XMVector3Length(vDiff));
+
+    //        On_Dead(fDiff);
+    //    }
+
+    //    if (m_ePose == TITAN_POSE::STAND)
+    //        m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), To<_uint>(TITAN_DEAD::STAND_DEAD));
+    //    else if (m_ePose == TITAN_POSE::SIT)
+    //        m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), To<_uint>(TITAN_DEAD::SIT_DEAD));
+    //    else if (m_ePose == TITAN_POSE::CRAWL)
+    //        m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), To<_uint>(TITAN_DEAD::CRAWL_DEAD));
+    //    return;
+    //}
 
     if (eHurt == TITAN_HURT::END)
         return;
@@ -272,8 +306,11 @@ void CAbnormalTitan::On_DetectedHumanSide(CGameObject* goHuman)
     if (!(iNewMask == O_PLAYER || iNewMask == O_EREN || iNewMask == O_CROPS)) /* 타겟이 될 수 있는 대상 */
         return;
 
-    if (Has_Target() && (iPrevMask == iNewMask)) /* 다른 마스크의 대상에는 타겟 변경 가능 */
-            return;
+    if (Has_Target())
+    {
+        if (iNewMask >= iPrevMask) /* O_EREN(6) >= O_PLAYER(1) -> 무시 */
+            return; /* 다르거나 우선순위가 높은 마스크의 대상에는 타겟 변경 가능 */
+    }
 
     Set_Target(goHuman);
     TITAN_STATE eCur = m_spCurState ? m_spCurState->Get_State() : TITAN_STATE::IDLE;

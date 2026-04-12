@@ -43,8 +43,6 @@ void CTitanBound_Controller::Awake(void* pCtx)
 
     /* Register */
     {
-        Register_Bound(m_vecBounds, m_refWeak, m_vWeakOffset);
-
         Register_Bound(m_vecBounds, m_refGrabAirFarL, m_vGrabAirFarLOffset);
         Register_Bound(m_vecBounds, m_refGrabAirFarR, m_vGrabAirFarROffset);
 
@@ -75,8 +73,6 @@ void CTitanBound_Controller::Awake(void* pCtx)
 
     /* Bind Trigger */
     {
-        Bind_Trigger(m_refWeak, &CTitanBound_Controller::OnTriggerEnter_Weak);
-
         Bind_Trigger(m_refHandL, &CTitanBound_Controller::OnTriggerEnter_HandL);
         Bind_Trigger(m_refHandR, &CTitanBound_Controller::OnTriggerEnter_HandR);
 
@@ -336,32 +332,6 @@ void CTitanBound_Controller::Handle_GrabState(SIDE eSide, CGameObject* pTarget, 
     m_goGrabbed = pTarget;
 
     pTitan->On_Grab(eSide, pHuman);
-}
-
-void CTitanBound_Controller::OnTriggerEnter_Weak(const COLLISION_DESC& tDesc)
-{
-    UNREFERENCED_PARAMETER(tDesc);
-
-    CGameObject* pCounter = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
-    if (!pCounter)
-        return;
-
-    if (pCounter->Is_ExactMask(O_PLAYER | O_HITBOX)) /* 플레이어의 공격만 받는다 */
-    {
-        CGameObject* pWeakPoint = GAME_INSTANCE.Find_GameObject(m_refWeak.hObject);
-        if (!pWeakPoint)
-            return;
-
-        CTitan* pTitan = m_pOwner->Get_Script<CTitan>();
-        if (nullptr == pTitan)
-            return;
-
-        const _vector vPoint = XMLoadFloat3(&pWeakPoint->Get_Component<CTransform>()->vPosition);
-        _vector vDiff = vPoint - XMLoadFloat3(&tDesc.vPoint);
-        _float fDiff = XMVectorGetX(XMVector3Length(vDiff));
-
-        pTitan->On_Dead(fDiff);
-    }
 }
 
 void CTitanBound_Controller::OnTriggerEnter_HandL(const COLLISION_DESC& tDesc)

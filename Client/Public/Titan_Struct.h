@@ -15,7 +15,7 @@ enum class TITAN_ATTACK { END };
 enum class TITAN_GRAB { LEFT, RIGHT, END };
 enum class TITAN_HURT { STAND_EYE = 0, STAND_ARM_L, STAND_ARM_R, STAND_LEG_L, STAND_LEG_R, SIT_EYE, CRAWL_EYE, END };
 enum class TITAN_ATTACK_EREN { WAIT, THROW, PUNCH };
-enum class TITAN_DEAD { };
+enum class TITAN_DEAD { STAND_DEAD , SIT_DEAD, CRAWL_DEAD };
 
 typedef struct tagTitanComponents
 {
@@ -28,8 +28,8 @@ typedef struct tagTitanComponents
 
 typedef struct tagTitanStats
 {
-    _float          fCurSpeed = 8.f;
-    _float          fMaxSpeed = 10.f;
+    _float          fCurSpeed = 20.f;       /* 무게가 10임 */
+    _float          fMaxSpeed = 20.f;
 
     _float          fJump = 4.f;
     _float          fJumpDash = 0.02f;
@@ -68,6 +68,7 @@ typedef struct tagTitanContext
 
 } TITAN_CONTEXT;
 
+inline constexpr const char* TITAN_WEAK_POINT = "WeakPoint";
 inline constexpr const char* TITAN_PUNCH_ATTACK_L = "Hand_Attack_L";
 inline constexpr const char* TITAN_PUNCH_ATTACK_R = "Hand_Attack_R";
 inline constexpr const char* TITAN_ROCK_1 = "TitanThrowRock1";

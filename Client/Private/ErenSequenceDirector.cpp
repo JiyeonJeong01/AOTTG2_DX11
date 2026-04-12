@@ -74,7 +74,7 @@ void CErenSequenceDirector::Update(void* pCtx, _float fDT)
 
 void CErenSequenceDirector::Build_DefaultSequence()
 {
-    /* BORNE -> COMBAT -> MOVE_TO -> LIFT_ROCK -> WALK_ROCK -> FIX_ROCK -> END */
+    /* BORNE -> COMBAT -> MOVE_TO -> LIFT_ROCK -> MOVE_ROCK -> FIX_ROCK -> END */
     m_vecSteps.clear();
 
     {
@@ -90,14 +90,13 @@ void CErenSequenceDirector::Build_DefaultSequence()
         }
         {
             EREN_DIRECTOR_STEP tStep{};
-            tStep.eType = EREN_STEP_TYPE::PLAY_ANIM;
-            tStep.szAnims.push_back(ANIM_EREN_TITAN::BORN);
+            tStep.eType = EREN_STEP_TYPE::COMBAT;
             m_vecSteps.push_back(tStep);
         }
         {
             EREN_DIRECTOR_STEP tStep{};
-            tStep.eType = EREN_STEP_TYPE::COMBAT;
-            tStep.vTargetPos = _float3(50.f, 0.f, -10.f);
+            tStep.eType = EREN_STEP_TYPE::MOVE_TO;
+            tStep.vTargetPos = _float3(93.f, 0.f, -141.f);
             m_vecSteps.push_back(tStep);
         }
         {
@@ -107,7 +106,7 @@ void CErenSequenceDirector::Build_DefaultSequence()
         }
         {
             EREN_DIRECTOR_STEP tStep{};
-            tStep.eType = EREN_STEP_TYPE::WALK_ROCK;
+            tStep.eType = EREN_STEP_TYPE::MOVE_ROCK;
             m_vecSteps.push_back(tStep);
         }
         {
@@ -153,8 +152,8 @@ void CErenSequenceDirector::Enter_CurrentStep()
         Command_LiftRock();
         break;
 
-    case EREN_STEP_TYPE::WALK_ROCK:
-        Command_WalkRock(m_vFixRockSpot);
+    case EREN_STEP_TYPE::MOVE_ROCK:
+        Command_MoveRock(m_vFixRockSpot);
         break;
 
     case EREN_STEP_TYPE::FIX_ROCK:
@@ -188,7 +187,7 @@ _bool CErenSequenceDirector::Is_CurrentStepFinished()
         return Check_MoveToFinished(tStep.vTargetPos);
     case EREN_STEP_TYPE::LIFT_ROCK:
         return Check_LiftRockFinished();
-    case EREN_STEP_TYPE::WALK_ROCK:
+    case EREN_STEP_TYPE::MOVE_ROCK:
         return Check_WalkRockFinished(tStep.vTargetPos);
     case EREN_STEP_TYPE::FIX_ROCK:
         return Check_WalkRockFinished(tStep.vTargetPos);
@@ -221,12 +220,6 @@ void CErenSequenceDirector::Command_MoveTo(const _float3& vTargetPos)
 {
     UNREFERENCED_PARAMETER(vTargetPos);
 
-    /* 여기서 NPC 이동 시스템에 목표 위치 전달
-       예:
-       m_pNPC->Set_MoveTarget(vTargetPos);
-       m_pNPC->Set_State(ALLY_STATE::MOVE);
-    */
-
     if (m_trEren.Is_Valid() == false)
         return;
 
@@ -234,6 +227,8 @@ void CErenSequenceDirector::Command_MoveTo(const _float3& vTargetPos)
     _vector vDiff = XMLoadFloat3(&vTargetPos) - vCurPos;
 
     const _float fDistSq = XMVectorGetX(XMVector3LengthSq(vDiff));
+
+    m_scEren->Start_MoveTo(vTargetPos);
 }
 
 void CErenSequenceDirector::Command_PlayAnim(const _char* pAnimName)
@@ -243,7 +238,7 @@ void CErenSequenceDirector::Command_PlayAnim(const _char* pAnimName)
 
     UNREFERENCED_PARAMETER(pAnimName);
 
-    /* 예:
+    /*
        m_animEren->Play_Animation(pAnimName, false);
     */
 }
@@ -268,14 +263,17 @@ _bool CErenSequenceDirector::Check_AnimFinished() const
 
 void CErenSequenceDirector::Command_LiftRock()
 {
+    m_scEren->Start_LiftUp();
 }
 
-void CErenSequenceDirector::Command_WalkRock(const _float3& vTargetPos)
+void CErenSequenceDirector::Command_MoveRock(const _float3& vTargetPos)
 {
+    m_scEren->Start_MoveRock(vTargetPos);
 }
 
 void CErenSequenceDirector::Command_FixRock(const _float3& vTargetPos)
 {
+    m_scEren->Start_FixRock(vTargetPos);
 }
 
 void CErenSequenceDirector::Command_Ending()

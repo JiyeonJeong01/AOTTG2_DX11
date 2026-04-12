@@ -1,4 +1,6 @@
 ﻿#include "NormalTitan.h"
+
+#include "AnimationClip_Titan.h"
 #include "TitanState.h"
 #include "NormalTitanStateMachine.h"
 #include "TargetSensor.h"
@@ -82,7 +84,12 @@ void CNormalTitan::Start(void* pCtx)
         m_tRef.pPose = &m_ePose;
     }
 
+    m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::IDLE);
+
     /* 플레이어 상태에게 전달 */
+    m_tStats.fCurSpeed = 8.f;
+    m_tStats.fMaxSpeed = 8.f;
+
     TITAN_CONTEXT tContext;
     tContext.tComponents = m_tComponents;
     tContext.tRef = m_tRef;
@@ -126,6 +133,7 @@ TITAN_CONTEXT CNormalTitan::Get_TitanContext()
     tContext.tComponents = m_tComponents;
     tContext.tRef = m_tRef;
     tContext.pStats = &m_tStats;
+    tContext.pPatrol = &m_tPatrol;
 
     return tContext;
 }

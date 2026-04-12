@@ -103,8 +103,6 @@ _uint CAbnormalTitanState_Idle::Get_DetailState() const
 
 void CAbnormalTitanState_Idle::Decide_NextState()
 {
-    /* 공통 유틸(Detect / Chase / Wander / Hurt / Dead 판정)은 추후 분리 예정 */
-
     if (m_fElapsedIdleTime >= m_fMaxIdleTime)
     {
         m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::MOVE), To<_uint>(TITAN_MOVE::WALK));
@@ -113,7 +111,7 @@ void CAbnormalTitanState_Idle::Decide_NextState()
 
 void CAbnormalTitanState_Idle::Decide_NextAnim()
 {
-    /* idle 내부 변형 애니메이션 선택 로직이 필요해지면 여기서 처리 */
+
 }
 
 std::shared_ptr<CAbnormalTitanState_Idle> CAbnormalTitanState_Idle::Create(
