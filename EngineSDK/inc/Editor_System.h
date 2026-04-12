@@ -107,7 +107,7 @@ private:
     _float                 m_fNavCellY = 0.f;
     _float                 m_fPointSnapRange = 0.5f;                    // 이 범위 내면 같은 점으로 판단
 
-
+    std::vector<class CNavMesh*>    m_allNavDebug;
 public:
     _bool   Pick_Cell(_uint px, _uint py, _uint vpW, _uint vpH, _float3& vOutPoint);
     _int    Find_Or_Add_NavPoint(const _float3& vPoint);
@@ -116,6 +116,7 @@ public:
     void    Render_NavCells(CDebug_Renderer* pDebugRenderer);
     void    Save_Nav();
     _bool   Load_SavedNav(const wchar_t* pFilePath);
+    void    Add_NavDebugRenderer(class CNavMesh*);
 };
 
 NS_END

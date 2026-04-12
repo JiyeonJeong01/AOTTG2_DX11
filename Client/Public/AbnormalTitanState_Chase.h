@@ -21,7 +21,9 @@ public:
     void    Enter(_uint iDetailFlag) override;
     void    Exit() override;
 
+    void    Cache_TitanContext(const TITAN_CONTEXT& tContext) override;
     void    Setup_CachedTitanContext() override;
+
     _uint   Get_DetailState() const override;
 
 private:
@@ -45,7 +47,11 @@ private:
     _float          m_fSlowDownStartDist = 5.f;
     _float          m_fStopMoveDist = 2.f;
 
+    _float          m_fOriginalRotationSharpness = 0.f;
+    _float          m_fFastRotationSharpness = 5.f;
+
     TITAN_CHASE     m_eChaseState = TITAN_CHASE::END;
+    _char           m_szChaseAnimName[32];
 
 private:
     void    Move(_float fDT);

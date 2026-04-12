@@ -23,6 +23,10 @@ HRESULT CAbnormalTitanState_Chase::Initialize()
     IF_NULL_RETURN_MSG_BREAK(m_goTitan, E_FAIL, "m_goOwner is nullptr.");
     IF_NULL_RETURN_MSG_BREAK(m_scTitan, E_FAIL, "m_scTitan is nullptr.");
 
+    memset(m_szChaseAnimName, 0, sizeof(m_szChaseAnimName));
+
+    m_fOriginalRotationSharpness = m_fRotateSharpness;
+
     return S_OK;
 }
 
@@ -35,6 +39,11 @@ void CAbnormalTitanState_Chase::Priority_Update(_float fDT)
     m_vChaseDir = tInfo.vDirXZ;
     m_vDetectDir = tInfo.vDir;
     m_fChaseDist = tInfo.fDist;
+
+    if (m_fChaseDist > 12.f)
+        m_fRotateSharpness = m_fFastRotationSharpness;      /* 멀면 빠르게 회전하기 */
+    else
+        m_fRotateSharpness = m_fOriginalRotationSharpness;  /* 가까우면 천천히 돌기 */
 }
 
 void CAbnormalTitanState_Chase::Update(_float fDT)
@@ -145,8 +154,19 @@ void CAbnormalTitanState_Chase::Exit()
         m_tRef.pBoundCtlr->Clear_PendingGrabAnim();
         m_tRef.pBoundCtlr->Set_GrabTriggerEnabled(false);
     }
+    m_fRotateSharpness = m_fOriginalRotationSharpness;
 
     CTitanState::Exit();
+}
+
+void CAbnormalTitanState_Chase::Cache_TitanContext(const TITAN_CONTEXT& tContext)
+{
+    CTitanState::Cache_TitanContext(tContext);
+
+    if (tContext.pSO)
+    {
+        strncpy_s(m_szChaseAnimName, tContext.pSO->szMoveAnim, _TRUNCATE);
+    }
 }
 
 void CAbnormalTitanState_Chase::Setup_CachedTitanContext()
@@ -176,7 +196,7 @@ void CAbnormalTitanState_Chase::Decide_NextAnim()
         return;
     }
 
-    m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::RUN_ABNORMAL_1);
+    m_tComponents.animator.Set_NextAnimationClip(m_szChaseAnimName);
 }
 
 /* Pending된 애니메이션이 있다면 조건에 따라 실행하기 */

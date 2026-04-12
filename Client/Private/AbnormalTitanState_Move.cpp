@@ -25,6 +25,8 @@ HRESULT CAbnormalTitanState_Move::Initialize()
     IF_NULL_RETURN_MSG_BREAK(m_goTitan, E_FAIL, "m_goTitan is nullptr.");
     IF_NULL_RETURN_MSG_BREAK(m_scTitan, E_FAIL, "m_scTitan is nullptr.");
 
+    memset(m_szMoveAnimName, 0, sizeof(m_szMoveAnimName));
+    m_fOriginalRotationSharpness = m_fRotateSharpness;
     return S_OK;
 }
 
@@ -58,6 +60,7 @@ void CAbnormalTitanState_Move::Late_Update(_float fDT)
 void CAbnormalTitanState_Move::Enter(_uint iDetailFlag)
 {
     CTitanState::Enter(iDetailFlag);
+    m_fRotateSharpness = m_fFastRotationSharpness;  /* 회전 속도 상승 */
 
     /* 정찰할 위치를 navigation 목표로 설정하기 */
     if (!m_pPatrol)
@@ -82,13 +85,26 @@ void CAbnormalTitanState_Move::Enter(_uint iDetailFlag)
     if (iDetailFlag == To<_uint>(TITAN_MOVE::WALK))
     {
         cout << "[TITAN_MOVE] ENTER WALK\n";
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::RUN_ABNORMAL_3);
+        m_tComponents.animator.Set_NextAnimationClip(m_szMoveAnimName);
     }
 }
 
 void CAbnormalTitanState_Move::Exit()
 {
+    m_fRotateSharpness = m_fOriginalRotationSharpness;  /* 회전 속도 복구 */
+
     CTitanState::Exit();
+}
+
+void CAbnormalTitanState_Move::Cache_TitanContext(const TITAN_CONTEXT& tContext)
+{
+    CTitanState::Cache_TitanContext(tContext);
+
+    if (tContext.pSO)
+    {
+        m_fMaxMoveTime = tContext.pSO->fMaxMoveTime;
+        strncpy_s(m_szMoveAnimName, tContext.pSO->szMoveAnim, _TRUNCATE);
+    }
 }
 
 void CAbnormalTitanState_Move::Setup_CachedTitanContext()

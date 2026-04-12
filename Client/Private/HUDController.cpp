@@ -11,6 +11,11 @@ NS_BEGIN(Client)
 
 void CHUDController::Awake(void* pCtx)
 {
+
+}
+
+void CHUDController::Start(void* pCtx)
+{
     CGameObject* pOwner = GAME_INSTANCE.Find_GameObject(m_hObject);
     IF_NULL_RETURN_MSG_BREAK(pOwner, , "pOwner is nullptr");
 
@@ -22,11 +27,6 @@ void CHUDController::Awake(void* pCtx)
 
     m_pSkill = pOwner->Get_Script_InChildren<CUI_SkillController>();
     IF_NULL_RETURN_MSG_BREAK(m_pSkill, , "m_pSkill is nullptr");
-}
-
-void CHUDController::Start(void* pCtx)
-{
-
 }
 
 void CHUDController::Priority_Update(void* pCtx, _float fDT)

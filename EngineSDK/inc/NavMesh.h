@@ -12,8 +12,13 @@ typedef struct tagAStarNode
 
 NS_BEGIN(Engine)
 
+class CDebug_Renderer;
+
 class ENGINE_DLL CNavMesh
 {
+public :
+    CNavMesh();
+    ~CNavMesh();
 public:
     _bool       Set_TargetPosition(const _float3& vCurPos, const _float3& vTargetPos);
     _float3     Get_Dir(const _float3& vCurPos);
@@ -22,6 +27,7 @@ public:
     void        Clear_Target();
 
     _bool       Load(const wchar_t* pFilePath);
+    void        Debug_Render(CDebug_Renderer* pDebugRenderer) const;
 
 private:
     /* 인덱스 버퍼 구조 */
@@ -40,9 +46,10 @@ private:
 private:
     _int        Find_CellIndex(const _float3& vPos) const;
     _float3     Get_CellCenter(_int iCellIndex) const;
-
+    _float3     Get_SharedEdgeMidPoint(_int iCellIndexA, _int iCellIndexB) const;
     _bool       Build_Path_AStar(_int iStartCellIndex, _int iGoalCellIndex);
     void        Build_WayPoints();
+    _bool       Can_Advance_WayPoint(const _float3& vCurPos) const;
 
     _bool Point_In_TriangleXZ(const _float3& vPoint, const _float3& vA, const _float3& vB, const _float3& vC) const;
 };

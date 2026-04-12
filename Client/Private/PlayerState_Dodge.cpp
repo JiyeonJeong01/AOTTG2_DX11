@@ -63,10 +63,8 @@ void CPlayerState_Dodge::Enter(_uint iDetailFlag)
 
     m_bFinished = false;
 
-    m_vDodgeDir = GAME_INSTANCE.Cam_Look();
+    m_vDodgeDir = m_tInputCmd.vMove;
     m_vDodgeDir.y = 0.f;
-    m_vDodgeDir.x *= -1.f;
-    m_vDodgeDir.z *= -1.f;
 
     const _float fLenSq = m_vDodgeDir.x * m_vDodgeDir.x + m_vDodgeDir.z * m_vDodgeDir.z;
     if (fLenSq > 0.f)
@@ -125,17 +123,7 @@ void CPlayerState_Dodge::Decide_NextState()
     if (m_tRef.pGroundChecker->Get_OnWalkable())
     {
         cout << "[DODGE] -> GROUNDED_MOVE\n";
-        const float THREASHOLD = 4.f;
-
-        _float3 fLinearVel = m_tComponents.rigidbody.Get_LinearVel();
-
-        const _float fLinearVelSq = fLinearVel.x * fLinearVel.x + fLinearVel.z * fLinearVel.z;
-
-        if (fLinearVelSq > THREASHOLD)
-            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::SLIDE));
-        else
-            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::DASH_LAND));
-
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::GROUNDED_MOVE), To<_uint>(GROUNDED_MOVE::RUN));
         return;
     }
 

@@ -17,6 +17,20 @@ enum class TITAN_HURT { STAND_EYE = 0, STAND_ARM_L, STAND_ARM_R, STAND_LEG_L, ST
 enum class TITAN_ATTACK_EREN { WAIT, THROW, PUNCH };
 enum class TITAN_DEAD { STAND_DEAD , SIT_DEAD, CRAWL_DEAD };
 
+typedef struct tagTitanScriptablebject
+{
+    _float      fCurSpeed{};
+    _float      fMaxSpeed{};
+
+    _char       szIdleAnim[32];
+    _char       szMoveAnim[32];
+
+    _float      fMaxIdleTime{};
+    _float      fMaxMoveTime{};
+
+    CGameObject*    goEren = nullptr;
+}TITAN_SCRIPTABLE_OBJECT;
+
 typedef struct tagTitanComponents
 {
     CTransform      transform;
@@ -65,7 +79,8 @@ typedef struct tagTitanContext
 
     /* 헬퍼 */
 
-
+    /* 거인 정보 */
+    TITAN_SCRIPTABLE_OBJECT* pSO = nullptr;
 } TITAN_CONTEXT;
 
 inline constexpr const char* TITAN_WEAK_POINT = "WeakPoint";

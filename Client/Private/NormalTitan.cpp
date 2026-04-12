@@ -8,6 +8,7 @@
 #include "HitBox.h"
 #include "HurtBox.h"
 #include "NavMesh.h"
+#include "Titan_Scriptable_Object.h"
 
 NS_BEGIN(Client)
     CNormalTitan::CNormalTitan()
@@ -22,7 +23,7 @@ void CNormalTitan::Awake(void* pCtx)
 {
     m_goTitan = SYS_GAMEOBJECT.Get_Wrapper(m_hObject);
     m_upStateMachine = CNormalTitanStateMachine::Create(m_goTitan, this);
-    m_upNav = GAME_INSTANCE.Create_NavMesh(L"../../Client/Bin/Assets/DataFiles/NavMesh.dat");
+    m_upNav = GAME_INSTANCE.Create_NavMesh(L"../../Client/Bin/Assets/DataFiles/NavMesh.dat", true);
 
     IF_NULL_RETURN_MSG_BREAK(m_upStateMachine, , "m_upStateMachine is nullptr");
 }
@@ -87,14 +88,21 @@ void CNormalTitan::Start(void* pCtx)
     m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::IDLE);
 
     /* 플레이어 상태에게 전달 */
-    m_tStats.fCurSpeed = 8.f;
-    m_tStats.fMaxSpeed = 8.f;
+
+    auto* scTitanSO = m_goTitan->Get_Script<CTitan_Scriptable_Object>();
+    IF_NULL_RETURN_MSG_BREAK(scTitanSO, , "scTitanSO is nullptr");
+
+    TITAN_SCRIPTABLE_OBJECT tSO{};
+    tSO = scTitanSO->Get_Data();
+    m_tStats.fCurSpeed = tSO.fCurSpeed;
+    m_tStats.fMaxSpeed = tSO.fMaxSpeed;
 
     TITAN_CONTEXT tContext;
     tContext.tComponents = m_tComponents;
     tContext.tRef = m_tRef;
     tContext.pStats = &m_tStats;
     tContext.pPatrol = &m_tPatrol;
+    tContext.pSO = &tSO;
     m_tRef.m_pStunnedAcc = &m_iStunnedAcc;
 
     m_upStateMachine->Cache_TitanInfos(tContext);

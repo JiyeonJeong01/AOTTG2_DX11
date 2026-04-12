@@ -41,7 +41,7 @@ void CAbnormalTitanState_Idle::Late_Update(_float fDT)
 
     m_fElapsedIdleTime += fDT;
 
-    //Decide_NextState();
+    Decide_NextState();
 }
 
 void CAbnormalTitanState_Idle::Enter(_uint iDetailFlag)
@@ -89,6 +89,14 @@ void CAbnormalTitanState_Idle::Enter(_uint iDetailFlag)
 void CAbnormalTitanState_Idle::Exit()
 {
     CTitanState::Exit();
+}
+
+void CAbnormalTitanState_Idle::Cache_TitanContext(const TITAN_CONTEXT& tContext)
+{
+    CTitanState::Cache_TitanContext(tContext);
+
+    if (tContext.pSO)
+        m_fMaxIdleTime = tContext.pSO->fMaxIdleTime;
 }
 
 void CAbnormalTitanState_Idle::Setup_CachedTitanContext()

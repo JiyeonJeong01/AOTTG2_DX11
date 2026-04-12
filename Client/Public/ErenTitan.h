@@ -2,6 +2,10 @@
 #include "Eren_Struct.h"
 #include "Script.h"
 
+NS_BEGIN(Engine)
+class CNavMesh;
+NS_END
+
 NS_BEGIN(Client)
 class CGroundChecker;
 class CTargetSensor;
@@ -14,6 +18,9 @@ NS_BEGIN(Client)
 
 class CErenTitan : public IScript
 {
+public :
+    CErenTitan();
+    ~CErenTitan() override;
 public:
     void Awake(void* pCtx) override;
     void Start(void* pCtx) override;
@@ -33,9 +40,9 @@ private :
     CAttacher*                          m_scAttach{};
 
     /* ----- Eren Stats ----- */
-    const _float                        m_fMaxSpeed = 10.f;     /* rigidbody 기반 이동에 대한 제한 */
-    _float                              m_fWalkSpeed = 2.f;     
-    _float                              m_fRunSpeed = 4.f;
+    const _float                        m_fMaxSpeed = 14.f;     /* rigidbody 기반 이동에 대한 제한 */
+    _float                              m_fWalkSpeed = 11.f;     
+    _float                              m_fRunSpeed = 14.f;
     const _float                        m_fTotalLife = 100.f;
     _float                              m_fCurLife = m_fTotalLife;
 
@@ -74,13 +81,24 @@ private :
 
     /* ----- Move To ----- */
     _float3                             m_vTargetPos{};
-    _float                              m_fMoveToArriveDist = 3.f;       /* 목표 지점 도착 판정 거리 */
     _float                              m_fMoveToResumeDist = 25.f;      /* 전투 중 이 거리보다 멀어지면 다시 목표 지점으로 복귀 */
     _float                              m_fShouldAttackDist = 15.5f;
     _bool                               m_bMoveToArrived = false;        /* 목표 지점 도착 여부 */
+    std::vector<_float3>                m_vecMovePath;
+    _int                                m_iCurMovePathIndex = 0;
+    _float                              m_fMovePathReachDist = 4.f;
 
-    /* ----- Lift ----- */
+    /* ----- Lift Rock ----- */
     _bool                               m_bLiftUp = false;
+    _float                              m_fTotalDelayToLift = 0.5f;
+    _float                              m_fElapsedDelayToLift = 0.f;
+    _bool                               m_bLiftStarted = false;
+    _float                              m_fTotalWaitToAttach = 0.3f;
+    _float                              m_fElapsedWaitToAttach = 0.f;
+
+    /* ----- Move Rock ----- */
+    _bool                               m_bMoveRockCompleted = false;
+
 
     /* ----- Fix Rock ----- */
 
@@ -97,6 +115,7 @@ private :
     void    Process_Combat(_float fDT);
     void    Process_MoveTo(_float fDT);
     void    Process_Lift(_float fDT);
+    void    Process_MoveRock(_float fDT);
 
     void    On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData);
     void    On_AnimBornFinished(const _uint iIndex);
@@ -111,20 +130,14 @@ public :
     void    Set_ErenStep(EREN_STEP_TYPE eType);
     void    Start_Born();
     void    Start_Combat();
-    void    Start_MoveTo(const _float3& vTargetPos);
+    void    Start_MoveTo();
     void    Start_LiftUp();
-    void    Start_MoveRock(const _float3& vTargetPos);
-    void    Start_FixRock(const _float3& vTargetPos);
-
-    void    Activate_Hitbox(const std::string& strKey, _bool bActive);
-
-    _bool   Is_CombatAttacking() const;
-    _bool   Validate_Target();
-    void    Start_ComboAttack(EREN_COMBAT eCombat);
-    _vector Get_AttackPower();
+    void    Start_MoveRock();
+    void    Start_FixRock();
 
     _bool   Is_BornCompleted() const;
     _int    Get_CurCombatTitans() const;
+    _bool   Is_MoveToCompleted() const;
     _bool   Is_LiftCompleted() const;
     _bool   Is_MoveRockCompleted() const;
     _bool   Is_FixCompleted() const;
@@ -136,6 +149,14 @@ public :
         return m_OnDamaged.Add_Listener(func, pInstance);
     }
 
+
+private :
+    void    Activate_Hitbox(const std::string& strKey, _bool bActive);
+    _bool   Is_CombatAttacking() const;
+    _bool   Validate_Target();
+    void    Start_ComboAttack(EREN_COMBAT eCombat);
+    _vector Get_AttackPower();
+    _bool   Is_MovePathPointArrived(const _float3& vCurPos, const _float3& vTargetPos) const;
 
 };
 

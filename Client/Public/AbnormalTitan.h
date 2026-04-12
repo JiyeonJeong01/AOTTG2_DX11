@@ -4,6 +4,10 @@
 
 #include "Titan_Struct.h"
 
+NS_BEGIN(Engine)
+class CNavMesh;
+NS_END
+
 NS_BEGIN(Client)
 class CAbnormalTitanStateMachine;
 class CTargetSensor;
@@ -15,13 +19,6 @@ NS_BEGIN(Client)
 
 class CAbnormalTitan : public IScript, public CTitan
 {
-public:
-    char        m_szState[32] = {};
-
-    SCRIPT_FIELDS_BEGIN(CAbnormalTitan)
-        SCRIPT_FIELD_CHAR(m_szState)
-    SCRIPT_FIELDS_END(CAbnormalTitan)
-
 public:
     CAbnormalTitan();
     ~CAbnormalTitan();
@@ -35,8 +32,9 @@ public:
     void Late_Update(void* pCtx, _float fDT) override;
 
 private:
-    CGameObject* m_goTitan = nullptr;
-    CGameObject* m_goTarget = nullptr;
+    CGameObject*    m_goTitan = nullptr;
+    CGameObject*    m_goTarget = nullptr;
+    CGameObject*    m_goEren = nullptr;
 
     TITAN_COMPONENTS        m_tComponents{};
     TITAN_RUNTIME_REF       m_tRef{};
@@ -46,8 +44,9 @@ private:
 
     _uint                   m_iStunnedAcc = 0;
 
-    std::unique_ptr<CAbnormalTitanStateMachine>   m_upStateMachine{};
-    std::shared_ptr<CTitanState>                m_spCurState{};
+    std::unique_ptr<CAbnormalTitanStateMachine>     m_upStateMachine{};
+    std::shared_ptr<CTitanState>                    m_spCurState{};
+    std::unique_ptr<CNavMesh>                       m_upNav{};
 
     std::unordered_map<std::string, CHitBox*>   m_AllHitBoxes;
     CGameObject*                                m_goWeakPoint = nullptr;
@@ -81,6 +80,16 @@ private:
 
     void On_DetectedHumanSide(CGameObject* goHuman);
     void OnChange_CurState(std::shared_ptr<CTitanState> spNewState);
+
+private :
+public:
+    char        m_szState[32] = {};
+
+SCRIPT_FIELDS_BEGIN(CAbnormalTitan)
+    SCRIPT_FIELD_CHAR(m_szState)
+    SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[0]);
+    SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[1]);
+SCRIPT_FIELDS_END(CAbnormalTitan)
 };
 
 

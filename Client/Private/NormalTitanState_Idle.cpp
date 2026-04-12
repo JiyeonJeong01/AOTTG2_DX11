@@ -91,6 +91,14 @@ void CNormalTitanState_Idle::Exit()
     CTitanState::Exit();
 }
 
+void CNormalTitanState_Idle::Cache_TitanContext(const TITAN_CONTEXT& tContext)
+{
+    CTitanState::Cache_TitanContext(tContext);
+
+    if (tContext.pSO)
+        m_fMaxIdleTime = tContext.pSO->fMaxIdleTime;
+}
+
 void CNormalTitanState_Idle::Setup_CachedTitanContext()
 {
     CTitanState::Setup_CachedTitanContext();

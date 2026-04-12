@@ -46,6 +46,8 @@ void CAbnormalTitanState_Dead::Enter(_uint iDetailFlag)
         m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::CRAWLER_DIE);
 
     m_scTitan->Set_Dead();
+
+    m_tComponents.collider.Set_Enable(false);
 }
 
 void CAbnormalTitanState_Dead::Exit()

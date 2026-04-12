@@ -19,6 +19,7 @@
 #include "MeshRenderer.h"
 #include "Debug_Renderer.h"
 #include "NavBuilder.h"
+#include "NavMesh.h"
 
 IMPLEMENT_SINGLETON(CEditor_System)
 
@@ -778,15 +779,49 @@ void CEditor_System::Render_NavCells(CDebug_Renderer* pDebugRenderer)
 
         pDebugRenderer->Draw_NavPoint(vDrawPos, 0.3f, DirectX::Colors::Yellow);
     }
+
+    for (auto pNav : m_allNavDebug)
+    {
+        if (pNav)   
+            pNav->Debug_Render(pDebugRenderer);
+    }
 }
 
 void CEditor_System::Save_Nav()
 {
-    std::vector<NAV_CELL> vecBuiltCells;
-    CNavBuilder::Build_NavCellNeighbors(m_vecNavCells, vecBuiltCells);
+    if (m_vecNavCells.empty())
+        return;
 
-    if (CNavBuilder::Save_Nav(L"../../Client/Bin/Assets/DataFiles/NavMesh.dat", m_vecNavPoints, vecBuiltCells))
+    std::vector<NAV_POINT> vecUsedPoints;
+    std::vector<NAV_CELL> vecRemappedCells;
+    std::vector<_int> vecOldToNew(m_vecNavPoints.size(), -1);
+
+    vecRemappedCells = m_vecNavCells;
+
+    for (auto& tCell : vecRemappedCells)
     {
+        for (_int i = 0; i < 3; ++i)
+        {
+            const _int iOldPointIndex = tCell.iPoints[i];
+            if (iOldPointIndex < 0 || iOldPointIndex >= (_int)m_vecNavPoints.size())
+                continue;
+
+            if (vecOldToNew[iOldPointIndex] == -1)
+            {
+                vecOldToNew[iOldPointIndex] = (_int)vecUsedPoints.size();
+                vecUsedPoints.push_back(m_vecNavPoints[iOldPointIndex]);
+            }
+
+            tCell.iPoints[i] = vecOldToNew[iOldPointIndex];
+        }
+    }
+
+    std::vector<NAV_CELL> vecBuiltCells;
+    CNavBuilder::Build_NavCellNeighbors(vecRemappedCells, vecBuiltCells);
+
+    if (CNavBuilder::Save_Nav(L"../../Client/Bin/Assets/DataFiles/NavMesh.dat", vecUsedPoints, vecBuiltCells))
+    {
+        m_vecNavPoints = vecUsedPoints;
         m_vecNavCells = vecBuiltCells;
     }
 }
@@ -806,4 +841,9 @@ _bool CEditor_System::Load_SavedNav(const wchar_t* pFilePath)
     m_vecNavPoints = std::move(vecNavPoints);
     m_vecNavCells = std::move(vecNavCells);
     return true;
+}
+
+void CEditor_System::Add_NavDebugRenderer(CNavMesh* pNav)
+{
+    m_allNavDebug.push_back(pNav);
 }

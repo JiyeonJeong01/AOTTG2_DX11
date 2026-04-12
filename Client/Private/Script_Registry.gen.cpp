@@ -25,7 +25,7 @@
 #include "TargetSensor.h"
 #include "ThrownBlade.h"
 #include "TitanBound_Controller.h"
-#include "Titan_Hand.h"
+#include "Titan_Scriptable_Object.h"
 #include "UI_BladeController.h"
 #include "UI_ErenController.h"
 #include "UI_GasController.h"
@@ -120,8 +120,8 @@ void Register_AllScripts()
         handler.Register_VTable(guid, ScriptBinder<CTitanBound_Controller>::Build());
     }
     {
-        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Titan_Hand.script");
-        handler.Register_VTable(guid, ScriptBinder<CTitan_Hand>::Build());
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Titan_Scriptable_Object.script");
+        handler.Register_VTable(guid, ScriptBinder<CTitan_Scriptable_Object>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\UI_BladeController.script");

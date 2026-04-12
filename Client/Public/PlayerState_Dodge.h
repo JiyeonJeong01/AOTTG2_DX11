@@ -31,7 +31,7 @@ private:
     _bool   m_bFinished = false;
 
     _float3 m_vDodgeDir{};
-    _float  m_fDodgeImpulse = 18.f;
+    _float  m_fDodgeImpulse = 12.f;
     _float  m_fDodgeAssistForce = 5.f;
     _float  m_fDodgeMaxSpeedMul = 1.15f;
 

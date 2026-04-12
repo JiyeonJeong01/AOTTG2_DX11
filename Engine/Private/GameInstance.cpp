@@ -7,6 +7,7 @@
 #include "Logger.h"
 #include "CRender_System.h"
 #include "Render_Context.h"
+#include "Editor_System.h"
 
 #include "Asset_Registry.h"
 #include "Resource_System.h"
@@ -303,7 +304,7 @@ uint32_t CGameInstance::Get_ResourceHandle(ASSET_TYPE eType, const ASSET_GUID& t
     }
 }
 
-std::unique_ptr<CNavMesh> CGameInstance::Create_NavMesh(const wchar_t* pFilePath)
+std::unique_ptr<CNavMesh> CGameInstance::Create_NavMesh(const wchar_t* pFilePath, _bool bDebugRender)
 {
     if (pFilePath == nullptr)
         return nullptr;
@@ -314,6 +315,8 @@ std::unique_ptr<CNavMesh> CGameInstance::Create_NavMesh(const wchar_t* pFilePath
 
     if (false == upNavMesh->Load(pFilePath))
         return nullptr;
+
+    SYS_EDITOR.Add_NavDebugRenderer(upNavMesh.get());
 
     return upNavMesh;
 }

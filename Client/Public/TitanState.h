@@ -25,7 +25,7 @@ public:
     void            Enter(_uint iDetailFlag) override;
     void            Exit() override;
 
-    void            Cache_TitanContext(const TITAN_CONTEXT& tContext);
+    virtual void    Cache_TitanContext(const TITAN_CONTEXT& tContext);
     virtual void    Setup_CachedTitanContext();
 
     /* commons */

@@ -96,7 +96,6 @@ void CErenSequenceDirector::Build_DefaultSequence()
         {
             EREN_DIRECTOR_STEP tStep{};
             tStep.eType = EREN_STEP_TYPE::MOVE_TO;
-            tStep.vTargetPos = _float3(93.f, 0.f, -141.f);
             m_vecSteps.push_back(tStep);
         }
         {
@@ -145,7 +144,7 @@ void CErenSequenceDirector::Enter_CurrentStep()
         break;
 
     case EREN_STEP_TYPE::MOVE_TO:
-        Command_MoveTo(m_vLiftRockSpot);
+        Command_MoveTo();
         break;
 
     case EREN_STEP_TYPE::LIFT_ROCK:
@@ -153,11 +152,11 @@ void CErenSequenceDirector::Enter_CurrentStep()
         break;
 
     case EREN_STEP_TYPE::MOVE_ROCK:
-        Command_MoveRock(m_vFixRockSpot);
+        Command_MoveRock();
         break;
 
     case EREN_STEP_TYPE::FIX_ROCK:
-        Command_FixRock(m_vFixRockSpot);
+        Command_FixRock();
         break;
 
     case EREN_STEP_TYPE::END:
@@ -184,13 +183,13 @@ _bool CErenSequenceDirector::Is_CurrentStepFinished()
     case EREN_STEP_TYPE::COMBAT:
         return Check_CombatFinished();
     case EREN_STEP_TYPE::MOVE_TO:
-        return Check_MoveToFinished(tStep.vTargetPos);
+        return Check_MoveToFinished();
     case EREN_STEP_TYPE::LIFT_ROCK:
         return Check_LiftRockFinished();
     case EREN_STEP_TYPE::MOVE_ROCK:
-        return Check_WalkRockFinished(tStep.vTargetPos);
+        return Check_WalkRockFinished();
     case EREN_STEP_TYPE::FIX_ROCK:
-        return Check_WalkRockFinished(tStep.vTargetPos);
+        return Check_WalkRockFinished();
     case EREN_STEP_TYPE::END:
         return true;
     }
@@ -216,19 +215,12 @@ void CErenSequenceDirector::Command_Born()
     m_scEren->Start_Born();
 }
 
-void CErenSequenceDirector::Command_MoveTo(const _float3& vTargetPos)
+void CErenSequenceDirector::Command_MoveTo()
 {
-    UNREFERENCED_PARAMETER(vTargetPos);
-
     if (m_trEren.Is_Valid() == false)
         return;
 
-    _vector vCurPos = m_trEren.Get_StateXM(STATE::POSITION);
-    _vector vDiff = XMLoadFloat3(&vTargetPos) - vCurPos;
-
-    const _float fDistSq = XMVectorGetX(XMVector3LengthSq(vDiff));
-
-    m_scEren->Start_MoveTo(vTargetPos);
+    m_scEren->Start_MoveTo();
 }
 
 void CErenSequenceDirector::Command_PlayAnim(const _char* pAnimName)
@@ -266,14 +258,14 @@ void CErenSequenceDirector::Command_LiftRock()
     m_scEren->Start_LiftUp();
 }
 
-void CErenSequenceDirector::Command_MoveRock(const _float3& vTargetPos)
+void CErenSequenceDirector::Command_MoveRock()
 {
-    m_scEren->Start_MoveRock(vTargetPos);
+    m_scEren->Start_MoveRock();
 }
 
-void CErenSequenceDirector::Command_FixRock(const _float3& vTargetPos)
+void CErenSequenceDirector::Command_FixRock()
 {
-    m_scEren->Start_FixRock(vTargetPos);
+    m_scEren->Start_FixRock();
 }
 
 void CErenSequenceDirector::Command_Ending()
@@ -290,11 +282,9 @@ _bool CErenSequenceDirector::Check_CombatFinished() const
     return m_scEren->Get_CurCombatTitans() >= m_iNumTotalCombatTitans;
 }
 
-_bool CErenSequenceDirector::Check_MoveToFinished(const _float3& vTargetPos) const
+_bool CErenSequenceDirector::Check_MoveToFinished() const
 {
-    const _float fEpsilon = 0.2f;
-    const _float3 vEpsilon = { fEpsilon , fEpsilon , fEpsilon };
-    return XMVector3NearEqual(XMLoadFloat3(&m_trEren->vPosition), XMLoadFloat3(&vTargetPos), XMLoadFloat3(&vEpsilon));
+    return m_scEren->Is_MoveToCompleted();
 }
 
 _bool CErenSequenceDirector::Check_LiftRockFinished() const
@@ -302,11 +292,9 @@ _bool CErenSequenceDirector::Check_LiftRockFinished() const
     return m_scEren->Is_LiftCompleted();
 }
 
-_bool CErenSequenceDirector::Check_WalkRockFinished(const _float3& vTargetPos) const
+_bool CErenSequenceDirector::Check_WalkRockFinished() const
 {
-    const _float fEpsilon = 0.2f;
-    const _float3 vEpsilon = { fEpsilon , fEpsilon , fEpsilon };
-    return XMVector3NearEqual(XMLoadFloat3(&m_trEren->vPosition), XMLoadFloat3(&vTargetPos), XMLoadFloat3(&vEpsilon));
+    return {};
 }
 
 _bool CErenSequenceDirector::Check_FixRockFinished() const

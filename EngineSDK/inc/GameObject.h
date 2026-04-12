@@ -35,6 +35,9 @@ public:
     TScript* Get_Script();
 
     template <typename TScript>
+    std::vector<TScript*> Get_AllScripts();
+
+    template <typename TScript>
     TScript* Get_Script_InChildren();
 
     template <typename TScript>

@@ -69,7 +69,7 @@ public :/* ---------- Built-in ---------- */
 
     uint32_t            Get_ResourceHandle(ASSET_TYPE eType, const ASSET_GUID& tGUID);
 
-    std::unique_ptr<CNavMesh> Create_NavMesh(const wchar_t* pFilePath);
+    std::unique_ptr<CNavMesh> Create_NavMesh(const wchar_t* pFilePath, _bool bDebugRender = false);
 
 private :
     ID3D11Device*               m_pDevice = nullptr;

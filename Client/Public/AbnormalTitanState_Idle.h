@@ -18,6 +18,7 @@ public:
     void    Enter(_uint iDetailFlag) override;
     void    Exit() override;
 
+    void    Cache_TitanContext(const TITAN_CONTEXT& tContext) override;
     void    Setup_CachedTitanContext() override;
     _uint   Get_DetailState() const override;
 

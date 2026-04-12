@@ -542,7 +542,7 @@ void CMainPanel::Draw_Toolbar()
         ImGui::SameLine();
 
         ImGui::PushItemWidth(45.f);
-        ImGui::DragFloat("##Speed", &g_fPlaySpeed, 0.01f, 0.1f, 5.f);
+        ImGui::DragFloat("##Speed", &g_fPlaySpeed, 0.005f, 0.1f, 100.f);
         ImGui::PopItemWidth();
         ImGui::SameLine();
 

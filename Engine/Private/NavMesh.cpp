@@ -1,6 +1,16 @@
 ﻿#include "NavMesh.h"
 
 #include "NavBuilder.h"
+#include "Debug_Renderer.h"
+#include "Editor_System.h"
+
+CNavMesh::CNavMesh()
+{
+}
+
+CNavMesh::~CNavMesh()
+{
+}
 
 _bool CNavMesh::Set_TargetPosition(const _float3& vCurPos, const _float3& vTargetPos)
 {
@@ -47,7 +57,7 @@ _bool CNavMesh::Is_Arrived(const _float3& vCurPos) const
     const _float fZ = m_vTargetPos.z - vCurPos.z;
     const _float fDistSq = fX * fX + fZ * fZ;
 
-    return fDistSq <= (0.15f * 0.15f);
+    return fDistSq <= (0.4f * 0.4f);
 }
 
 void CNavMesh::Clear_Target()
@@ -69,6 +79,25 @@ _bool CNavMesh::Load(const wchar_t* pFilePath)
         return false;
 
     return true;
+}
+
+void CNavMesh::Debug_Render(CDebug_Renderer* pDebugRenderer) const
+{
+    if (!pDebugRenderer)
+        return;
+
+    _int iSize = m_vecWayPoints.size() - 1;
+    if (iSize < 0)
+        iSize = 0;
+
+    for (_uint i = 0; i < iSize; ++i)
+    {
+        _float3 vPoint = m_vecWayPoints[i];
+        _float3 vNextPoint = m_vecWayPoints[i + 1];
+        vPoint.y += 0.4f;
+
+        pDebugRenderer->Draw_Line(vPoint, vNextPoint, XMVECTOR{ 1.f, 0.f, 0.f, 1.f });
+    }
 }
 
 _int CNavMesh::Find_CellIndex(const _float3& vPos) const
@@ -223,13 +252,93 @@ void CNavMesh::Build_WayPoints()
     if (m_vecPathCells.empty())
         return;
 
-    for (_uint i = 1; i + 1 < m_vecPathCells.size(); ++i)
+    std::vector<_float3> vecRawWayPoints;
+
+    if (m_vecPathCells.size() == 1)
     {
-        const _int iCellIndex = m_vecPathCells[i];
-        m_vecWayPoints.push_back(Get_CellCenter(iCellIndex));
+        vecRawWayPoints.push_back(m_vTargetPos);
+    }
+    else
+    {
+        for (_uint i = 0; i + 1 < m_vecPathCells.size(); ++i)
+        {
+            const _int iCellIndexA = m_vecPathCells[i];
+            const _int iCellIndexB = m_vecPathCells[i + 1];
+
+            const _float3 vMidPoint = Get_SharedEdgeMidPoint(iCellIndexA, iCellIndexB);
+
+            if (!vecRawWayPoints.empty())
+            {
+                const _float3& vPrev = vecRawWayPoints.back();
+
+                const _float fDx = vMidPoint.x - vPrev.x;
+                const _float fDz = vMidPoint.z - vPrev.z;
+                const _float fDistSq = fDx * fDx + fDz * fDz;
+
+                if (fDistSq < 0.0001f)
+                    continue;
+            }
+
+            vecRawWayPoints.push_back(vMidPoint);
+        }
+
+        if (!vecRawWayPoints.empty())
+        {
+            const _float3& vPrev = vecRawWayPoints.back();
+
+            const _float fDx = m_vTargetPos.x - vPrev.x;
+            const _float fDz = m_vTargetPos.z - vPrev.z;
+            const _float fDistSq = fDx * fDx + fDz * fDz;
+
+            if (fDistSq >= 0.0001f)
+                vecRawWayPoints.push_back(m_vTargetPos);
+        }
+        else
+        {
+            vecRawWayPoints.push_back(m_vTargetPos);
+        }
     }
 
-    m_vecWayPoints.push_back(m_vTargetPos);
+    if (vecRawWayPoints.size() <= 2)
+    {
+        m_vecWayPoints = vecRawWayPoints;
+        return;
+    }
+
+    m_vecWayPoints.push_back(vecRawWayPoints[0]);
+
+    for (_uint i = 1; i + 1 < vecRawWayPoints.size(); ++i)
+    {
+        const _float3& vPrev = m_vecWayPoints.back();
+        const _float3& vCur = vecRawWayPoints[i];
+        const _float3& vNext = vecRawWayPoints[i + 1];
+
+        _float fAX = vCur.x - vPrev.x;
+        _float fAZ = vCur.z - vPrev.z;
+        _float fALen = sqrtf(fAX * fAX + fAZ * fAZ);
+
+        _float fBX = vNext.x - vCur.x;
+        _float fBZ = vNext.z - vCur.z;
+        _float fBLen = sqrtf(fBX * fBX + fBZ * fBZ);
+
+        if (fALen <= 0.0001f || fBLen <= 0.0001f)
+            continue;
+
+        fAX /= fALen;
+        fAZ /= fALen;
+        fBX /= fBLen;
+        fBZ /= fBLen;
+
+        const _float fDot = fAX * fBX + fAZ * fBZ;
+
+        /* 거의 같은 방향이면 가운데 점 제거 */
+        if (fDot >= 0.98f)
+            continue;
+
+        m_vecWayPoints.push_back(vCur);
+    }
+
+    m_vecWayPoints.push_back(vecRawWayPoints.back());
 }
 
 _float3 CNavMesh::Get_Dir(const _float3& vCurPos)
@@ -240,35 +349,135 @@ _float3 CNavMesh::Get_Dir(const _float3& vCurPos)
     if (m_iWayPointIndex >= m_vecWayPoints.size())
         return _float3(0.f, 0.f, 0.f);
 
-    _float3 vTarget = m_vecWayPoints[m_iWayPointIndex];
+    const _float fReachDist = 0.4f * 0.4f;
 
-    _float fX = vTarget.x - vCurPos.x;
-    _float fZ = vTarget.z - vCurPos.z;
-
-    const _float fDistSq = fX * fX + fZ * fZ;
-    const _float fReachDist = 0.15f * 0.15f;
-
-    if (fDistSq <= fReachDist)
+    while (m_iWayPointIndex < m_vecWayPoints.size())
     {
-        ++m_iWayPointIndex;
+        _float3 vTarget = m_vecWayPoints[m_iWayPointIndex];
 
-        if (m_iWayPointIndex >= m_vecWayPoints.size())
+        _float fX = vTarget.x - vCurPos.x;
+        _float fZ = vTarget.z - vCurPos.z;
+
+        const _float fDistSq = fX * fX + fZ * fZ;
+
+        _bool bAdvance = false;
+
+        /* 가까이 왔으면 다음 waypoint로 */
+        if (fDistSq <= fReachDist)
         {
-            Clear_Target();
-            return _float3(0.f, 0.f, 0.f);
+            bAdvance = true;
+        }
+        /* waypoint를 이미 지나쳤으면 다음 waypoint로 */
+        else if (m_iWayPointIndex > 0)
+        {
+            const _float3& vPrevTarget = m_vecWayPoints[m_iWayPointIndex - 1];
+
+            const _float fSegX = vTarget.x - vPrevTarget.x;
+            const _float fSegZ = vTarget.z - vPrevTarget.z;
+
+            const _float fToCurX = vCurPos.x - vTarget.x;
+            const _float fToCurZ = vCurPos.z - vTarget.z;
+
+            const _float fDot = fSegX * fToCurX + fSegZ * fToCurZ;
+
+            if (fDot > 0.f)
+                bAdvance = true;
         }
 
-        vTarget = m_vecWayPoints[m_iWayPointIndex];
-        fX = vTarget.x - vCurPos.x;
-        fZ = vTarget.z - vCurPos.z;
+        if (false == bAdvance)
+            break;
+
+        ++m_iWayPointIndex;
     }
+
+    if (m_iWayPointIndex >= m_vecWayPoints.size())
+    {
+        Clear_Target();
+        return _float3(0.f, 0.f, 0.f);
+    }
+
+    const _float3& vTarget = m_vecWayPoints[m_iWayPointIndex];
+
+    const _float fX = vTarget.x - vCurPos.x;
+    const _float fZ = vTarget.z - vCurPos.z;
 
     const _float fLen = sqrtf(fX * fX + fZ * fZ);
     if (fLen <= 0.0001f)
         return _float3(0.f, 0.f, 0.f);
 
-    /* 정규화 후 리턴 */
     return _float3(fX / fLen, 0.f, fZ / fLen);
+}
+
+_bool CNavMesh::Can_Advance_WayPoint(const _float3& vCurPos) const
+{
+    if (m_iWayPointIndex >= To<_int>(m_vecWayPoints.size()))
+        return false;
+
+    const _float3& vWayPoint = m_vecWayPoints[m_iWayPointIndex];
+
+    const _float fReachDistSq = 0.5f * 0.5f;
+
+    const _float fDx = vWayPoint.x - vCurPos.x;
+    const _float fDz = vWayPoint.z - vCurPos.z;
+    const _float fDistSq = fDx * fDx + fDz * fDz;
+
+    if (fDistSq <= fReachDistSq)
+        return true;
+
+    if (m_iWayPointIndex == 0)
+        return false;
+
+    const _float3& vPrevWayPoint = m_vecWayPoints[m_iWayPointIndex - 1];
+
+    const _float fSegX = vWayPoint.x - vPrevWayPoint.x;
+    const _float fSegZ = vWayPoint.z - vPrevWayPoint.z;
+
+    const _float fToCurX = vCurPos.x - vWayPoint.x;
+    const _float fToCurZ = vCurPos.z - vWayPoint.z;
+
+    const _float fDot = fSegX * fToCurX + fSegZ * fToCurZ;
+
+    return fDot > 0.f;
+}
+
+_float3 CNavMesh::Get_SharedEdgeMidPoint(_int iCellIndexA, _int iCellIndexB) const
+{
+    const NAV_CELL& tCellA = m_vecNavCells[iCellIndexA];
+    const NAV_CELL& tCellB = m_vecNavCells[iCellIndexB];
+
+    _int iSharedPointIndices[2] = { -1, -1 };
+    _int iSharedCount = 0;
+
+    for (_int i = 0; i < 3; ++i)
+    {
+        const _int iPointIndexA = tCellA.iPoints[i];
+
+        for (_int j = 0; j < 3; ++j)
+        {
+            const _int iPointIndexB = tCellB.iPoints[j];
+
+            if (iPointIndexA == iPointIndexB)
+            {
+                if (iSharedCount < 2)
+                    iSharedPointIndices[iSharedCount] = iPointIndexA;
+
+                ++iSharedCount;
+                break;
+            }
+        }
+    }
+
+    if (iSharedCount < 2)
+        return Get_CellCenter(iCellIndexB);
+
+    const _float3& vPoint0 = m_vecNavPoints[iSharedPointIndices[0]].vPos;
+    const _float3& vPoint1 = m_vecNavPoints[iSharedPointIndices[1]].vPos;
+
+    return _float3(
+        (vPoint0.x + vPoint1.x) * 0.5f,
+        (vPoint0.y + vPoint1.y) * 0.5f,
+        (vPoint0.z + vPoint1.z) * 0.5f
+    );
 }
 
 _bool CNavMesh::Point_In_TriangleXZ(const _float3& vPoint, const _float3& vA, const _float3& vB, const _float3& vC) const

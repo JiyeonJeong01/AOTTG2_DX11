@@ -29,8 +29,7 @@ HRESULT CNormalTitanState_Move::Initialize()
 
 void CNormalTitanState_Move::Priority_Update(_float fDT)
 {
-    if (!m_bAcivated)
-        return;
+    CTitanState::Priority_Update(fDT);
 
     _vector vMoveDir = Get_PatrolMoveDir();
     if (XMVector3Equal(vMoveDir, XMVectorZero()))
@@ -57,6 +56,7 @@ void CNormalTitanState_Move::Late_Update(_float fDT)
 void CNormalTitanState_Move::Enter(_uint iDetailFlag)
 {
     CTitanState::Enter(iDetailFlag);
+
     /* 정찰할 위치를 navigation 목표로 설정하기 */
     if (!m_pPatrol)
     {
@@ -87,6 +87,14 @@ void CNormalTitanState_Move::Enter(_uint iDetailFlag)
 void CNormalTitanState_Move::Exit()
 {
     CTitanState::Exit();
+}
+
+void CNormalTitanState_Move::Cache_TitanContext(const TITAN_CONTEXT& tContext)
+{
+    CTitanState::Cache_TitanContext(tContext);
+
+    if (tContext.pSO)
+        m_fMaxMoveTime = tContext.pSO->fMaxMoveTime;
 }
 
 void CNormalTitanState_Move::Setup_CachedTitanContext()

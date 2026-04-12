@@ -19,8 +19,6 @@ enum class EREN_STEP_TYPE : _uint
 typedef struct  tagErenDirectorStep final
 {
     EREN_STEP_TYPE      eType = EREN_STEP_TYPE::NONE;
-    _float3             vTargetPos = {};
-    _float              fDuration = 0.f;
     vector<std::string> szAnims;
 } EREN_DIRECTOR_STEP;
 

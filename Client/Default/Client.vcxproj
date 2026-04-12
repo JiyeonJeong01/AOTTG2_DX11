@@ -92,7 +92,7 @@
     <ClInclude Include="..\Public\TitanState.h" />
     <ClInclude Include="..\Public\NormalTitanStateMachine.h" />
     <ClInclude Include="..\Public\TitanStateMachine.h" />
-    <ClInclude Include="..\Public\Titan_Hand.h" />
+    <ClInclude Include="..\Public\Titan_Scriptable_Object.h" />
     <ClInclude Include="..\Public\Titan_Struct.h" />
     <ClInclude Include="..\Public\UIManager.h" />
     <ClInclude Include="..\Public\UI_BladeController.h" />
@@ -164,7 +164,7 @@
     <ClCompile Include="..\Private\TitanState.cpp" />
     <ClCompile Include="..\Private\NormalTitanStateMachine.cpp" />
     <ClCompile Include="..\Private\TitanStateMachine.cpp" />
-    <ClCompile Include="..\Private\Titan_Hand.cpp" />
+    <ClCompile Include="..\Private\Titan_Scriptable_Object.cpp" />
     <ClCompile Include="..\Private\UIManager.cpp" />
     <ClCompile Include="..\Private\UI_BladeController.cpp" />
     <ClCompile Include="..\Private\UI_ErenController.cpp" />

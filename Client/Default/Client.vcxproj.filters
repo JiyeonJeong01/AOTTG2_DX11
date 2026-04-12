@@ -89,6 +89,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="Titan\Common">
+      <UniqueIdentifier>{9eae63bd-7b8d-47f3-b4b8-2da4d1412835}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -202,9 +205,6 @@
     <ClInclude Include="..\Public\PlayerState_Dodge.h">
       <Filter>Player\PlayerState</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Titan_Struct.h">
-      <Filter>Titan</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\AnimationClip_Titan.h">
       <Filter>Titan</Filter>
     </ClInclude>
@@ -242,12 +242,6 @@
       <Filter>Titan\NormalTitan\NormalTitanState</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\TargetSensor.h">
-      <Filter>Titan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\TitanBound_Controller.h">
-      <Filter>Titan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Titan_Hand.h">
       <Filter>Titan</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NormalTitanState_Grab.h">
@@ -330,6 +324,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\UI_ErenController.h">
       <Filter>UI\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TitanBound_Controller.h">
+      <Filter>Titan\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Titan_Scriptable_Object.h">
+      <Filter>Titan\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Titan_Struct.h">
+      <Filter>Titan\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -459,12 +462,6 @@
     <ClCompile Include="..\Private\TargetSensor.cpp">
       <Filter>Titan</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\TitanBound_Controller.cpp">
-      <Filter>Titan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Titan_Hand.cpp">
-      <Filter>Titan</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\NormalTitanState_Grab.cpp">
       <Filter>Titan\NormalTitan\NormalTitanState</Filter>
     </ClCompile>
@@ -539,6 +536,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_ErenController.cpp">
       <Filter>UI\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TitanBound_Controller.cpp">
+      <Filter>Titan\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Titan_Scriptable_Object.cpp">
+      <Filter>Titan\Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

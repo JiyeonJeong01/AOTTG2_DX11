@@ -19,6 +19,7 @@ public:
     void    Enter(_uint iDetailFlag) override;
     void    Exit() override;
 
+    void    Cache_TitanContext(const TITAN_CONTEXT& tContext) override;
     void    Setup_CachedTitanContext() override;
 
     _uint   Get_DetailState() const override;
@@ -33,6 +34,11 @@ private:
     _float      m_fElapsedMoveTime = 0.f;
     _float      m_fMaxMoveTime = 8.f;
     _float3     m_vPatrolPos = {};
+
+    _char       m_szMoveAnimName[32];
+
+    _float          m_fOriginalRotationSharpness = 0.f;
+    _float          m_fFastRotationSharpness = 3.f;
 
 public:
     static std::shared_ptr<CAbnormalTitanState_Move> Create(Engine::CGameObject* goTitan, CTitan* scTitan, TITAN_STATE eState);

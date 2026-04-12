@@ -147,6 +147,25 @@ TScript* CGameObject::Get_Script()
 }
 
 template <typename TScript>
+std::vector<TScript*> CGameObject::Get_AllScripts()
+{
+    std::vector<TScript*> allScripts;
+
+    auto scripts = Get_Components<CScript>();
+    for (auto& sc : scripts)
+    {
+        CScript_Processor* pScriptProcessor = SYS_COMPONENT.Bind_Processor<CScript_Processor>();
+        IF_NULL_RETURN_MSG_BREAK(pScriptProcessor, allScripts, "pScriptProcessor can't bind");
+        IScript* pScript = pScriptProcessor->Get_Script_Instance(sc.Get_Handle());
+        TScript* pTypedScript = dynamic_cast<TScript*>(pScript);
+        if (pTypedScript)
+            allScripts.push_back(pTypedScript);
+    }
+
+    return allScripts;
+}
+
+template <typename TScript>
 TScript* CGameObject::Get_Script_InChildren()
 {
     TScript* pScript = Get_Script<TScript>();

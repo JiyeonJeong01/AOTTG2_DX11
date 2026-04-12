@@ -6,8 +6,16 @@
 #include "HitBox.h"
 #include "HurtBox.h"
 #include "Attacher.h"
+#include "NavMesh.h"
 
 NS_BEGIN(Client)
+CErenTitan::CErenTitan()
+{
+}
+
+CErenTitan::~CErenTitan()
+{
+}
 
 void CErenTitan::Awake(void* pCtx)
 {
@@ -67,7 +75,7 @@ void CErenTitan::Start(void* pCtx)
 
     m_iHurtAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::HIT_ANNIE_1);
 
-    auto scripts = m_goEren->Get_AllScripts_InChildren<CAttacher>();
+    auto scripts = m_goEren->Get_AllScripts<CAttacher>();
     for (auto script : scripts)
     {
         CGameObject* goAttach = script->Get_AttachObject();
@@ -113,9 +121,11 @@ void CErenTitan::Update(void* pCtx, _float fDT)
         break;
 
     case EREN_STEP_TYPE::LIFT_ROCK :
+        Process_Lift(fDT);
         break;
 
     case EREN_STEP_TYPE::MOVE_ROCK :
+        Process_MoveRock(fDT);
         return;
 
     case EREN_STEP_TYPE::FIX_ROCK :
@@ -276,35 +286,205 @@ void CErenTitan::Process_Combat(_float fDT)
         m_iCurComboIndex = 0;
 }
 
-void CErenTitan::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
+void CErenTitan::Process_MoveTo(_float fDT)
 {
-    const _uint iIndex = tData.iAnimationClip;
-    if (iIndex == INVALID_ANIM_CLIP_INDEX)
+    /* 현재 공격 애니메이션 재생 중이면 끝날 때까지 유지 */
+    if (Is_CombatAttacking())
         return;
 
-    if (iIndex == m_iHurtAnimIndex)
-    {
-        for (auto& hit : m_AllHitBoxes)
-            hit.second->Set_Active(false);
+    /* 유효한 전투 타겟 갱신 */
+    Validate_Target();
 
-        m_eCombat = EREN_COMBAT::WAIT;
+    /* 최신 타겟이 있고 충분히 가까우면 잠시 전투 */
+    if (m_goLatestCombatTarget != nullptr && m_trLastestCombatTarget.Is_Valid())
+    {
+        const _vector vTargetDiff = XMLoadFloat3(&m_trLastestCombatTarget->vPosition) - XMLoadFloat3(&m_trEren->vPosition);
+        const _float fTargetDist = XMVectorGetX(XMVector3Length(vTargetDiff));
+
+        _vector vTargetDir = XMVectorSetY(vTargetDiff, 0.f);
+
+        if (XMVectorGetX(XMVector3LengthSq(vTargetDir)) > 1e-6f)
+        {
+            vTargetDir = XMVector3Normalize(vTargetDir);
+            Look_To(vTargetDir, fDT);
+        }
+
+        if (fTargetDist <= m_fShouldAttackDist)
+        {
+            const EREN_COMBAT_PATTERN& tPattern = m_CombatPattern[m_iCurComboIndex];
+            m_fKeepDistance = tPattern.fKeepDistance;
+
+            if (fTargetDist > m_fKeepDistance)
+            {
+                m_eCombat = EREN_COMBAT::APPROACHING;
+                m_fCombatSpeed = m_fWalkSpeed;
+                m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::WALK);
+                Move_To(vTargetDir, fDT, m_fCombatSpeed);
+                return;
+            }
+
+            Start_ComboAttack(tPattern.eCombatType);
+
+            ++m_iCurComboIndex;
+            if (m_iCurComboIndex >= m_iTotalComboIndex)
+                m_iCurComboIndex = 0;
+
+            return;
+        }
+
+        if (fTargetDist >= m_fMoveToResumeDist)
+        {
+            m_goLatestCombatTarget = nullptr;
+            m_trLastestCombatTarget = {};
+            m_eCombat = EREN_COMBAT::WAIT;
+        }
+    }
+
+    const _float3& vCurPos = m_trEren->vPosition;
+
+    if (m_vecMovePath.empty() || m_iCurMovePathIndex >= To<_int>(m_vecMovePath.size()))
+    {
         return;
     }
 
-    if (m_eStepType == EREN_STEP_TYPE::BORNE)
+    _float3 vTargetPos = m_vecMovePath[m_iCurMovePathIndex];
+
+    if (Is_MovePathPointArrived(vCurPos, vTargetPos))
     {
-        On_AnimBornFinished(iIndex);
-    }
-    else if (m_eStepType == EREN_STEP_TYPE::COMBAT ||
-            m_eStepType == EREN_STEP_TYPE::MOVE_TO)
-    {
-        On_AnimCombatFinished(iIndex);
-    }
-    else if (m_eStepType == EREN_STEP_TYPE::LIFT_ROCK)
-    {
-        On_AnimLiftFinished(iIndex);
+        ++m_iCurMovePathIndex;
+
+        if (m_iCurMovePathIndex >= To<_int>(m_vecMovePath.size()))
+        {
+            m_bMoveToArrived = true;
+            m_fCombatSpeed = 0.f;
+            return;
+        }
+
+        vTargetPos = m_vecMovePath[m_iCurMovePathIndex];
     }
 
+    m_bMoveToArrived = false;
+
+    _float3 vMoveDir3{};
+    vMoveDir3.x = vTargetPos.x - vCurPos.x;
+    vMoveDir3.y = 0.f;
+    vMoveDir3.z = vTargetPos.z - vCurPos.z;
+
+    _vector vMoveDir = XMLoadFloat3(&vMoveDir3);
+    if (XMVectorGetX(XMVector3LengthSq(vMoveDir)) <= 1e-6f)
+        return;
+
+    vMoveDir = XMVector3Normalize(vMoveDir);
+
+    /* 마지막 점으로 가는 중에도 미리 원하는 방향으로 돌려놓음 */
+    const _int iLastIndex = To<_int>(m_vecMovePath.size()) - 1;
+    if (m_iCurMovePathIndex == iLastIndex)
+    {
+        _vector vFixedLookDir = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+        Look_To(vFixedLookDir, fDT);
+    }
+    else
+    {
+        Look_To(vMoveDir, fDT);
+    }
+
+    m_eCombat = EREN_COMBAT::APPROACHING;
+    m_fCombatSpeed = m_fRunSpeed;
+    m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::RUN);
+    Move_To(vMoveDir, fDT, m_fCombatSpeed);
+}
+
+void CErenTitan::Process_Lift(_float fDT)
+{
+    m_fElapsedDelayToLift += fDT;
+    if (m_fElapsedDelayToLift < m_fTotalDelayToLift)
+        return;
+    if (m_bLiftStarted)
+        return;
+
+    m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::ROCK_LIFT);
+
+    m_fElapsedWaitToAttach += fDT;
+    if (m_fElapsedWaitToAttach < m_fTotalWaitToAttach)
+        return;
+
+    auto scripts = m_goEren->Get_AllScripts<CAttacher>();
+
+    for (auto& script : scripts)
+    {
+        CGameObject* goAttach = script->Get_AttachObject();
+        if (!goAttach)
+            continue;
+
+        if (goAttach->Get_Label() == "Rock")
+            script->Start_Attach();
+    }
+
+    m_bLiftStarted = true;
+}
+
+void CErenTitan::Process_MoveRock(_float fDT)
+{
+    const _float3& vCurPos = m_trEren->vPosition;
+
+    /* 경로가 없거나 다 돌았으면 최종 도착 */
+    if (m_vecMovePath.empty() || m_iCurMovePathIndex >= To<_int>(m_vecMovePath.size()))
+    {
+        m_bMoveRockCompleted = true;
+        return;
+    }
+
+    _float3 vTargetPos = m_vecMovePath[m_iCurMovePathIndex];
+
+    /* 현재 목표점 도달 시 다음 점으로 넘김 */
+    if (Is_MovePathPointArrived(vCurPos, vTargetPos))
+    {
+        ++m_iCurMovePathIndex;
+
+        /* 마지막 점까지 도달 완료 */
+        if (m_iCurMovePathIndex >= To<_int>(m_vecMovePath.size()))
+        {
+            m_bMoveRockCompleted = true;
+
+            /* 월드 오른쪽(+X)을 보게 하고 싶다면 Look_To 내부의 -1 보정 때문에 -X를 넣음 */
+            _vector vFixedLookDir = XMVectorSet(-1.f, 0.f, 0.f, 0.f);
+            Look_To(vFixedLookDir, fDT);
+
+            m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::IDLE);
+            return;
+        }
+
+        vTargetPos = m_vecMovePath[m_iCurMovePathIndex];
+    }
+
+    m_bMoveRockCompleted = false;
+
+    _float3 vMoveDir3{};
+    vMoveDir3.x = vTargetPos.x - vCurPos.x;
+    vMoveDir3.y = 0.f;
+    vMoveDir3.z = vTargetPos.z - vCurPos.z;
+
+    _vector vMoveDir = XMLoadFloat3(&vMoveDir3);
+    if (XMVectorGetX(XMVector3LengthSq(vMoveDir)) <= 1e-6f)
+        return;
+
+    vMoveDir = XMVector3Normalize(vMoveDir);
+
+    const _int iLastIndex = To<_int>(m_vecMovePath.size()) - 1;
+    if (m_iCurMovePathIndex == iLastIndex)
+    {
+        /* 마지막 구간에서는 이동 방향 말고 고정 월드 방향을 봄 */
+        _vector vFixedLookDir = XMVectorSet(-1.f, 0.f, 0.f, 0.f);
+        Look_To(vFixedLookDir, fDT);
+    }
+    else
+    {
+        Look_To(vMoveDir, fDT);
+    }
+
+    m_fCombatSpeed = m_fWalkSpeed;
+    m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::ROCK_WALK);
+    Move_To(vMoveDir, fDT, m_fCombatSpeed);
 }
 
 void CErenTitan::Start_Born()
@@ -361,12 +541,24 @@ void CErenTitan::Start_Combat()
         hit.second->Set_Active(false);
 }
 
-void CErenTitan::Start_MoveTo(const _float3& vTargetPos)
+void CErenTitan::Start_MoveTo()
 {
     m_eStepType = EREN_STEP_TYPE::MOVE_TO;
     m_bMoveToArrived = false;
 
-    m_vTargetPos = vTargetPos;
+    m_vecMovePath.clear();
+    m_iCurMovePathIndex = 0;
+
+    {
+        _float fY = m_trEren->vPosition.y;
+
+        m_vecMovePath.push_back(_float3(0.f, fY, -66.f));
+        m_vecMovePath.push_back(_float3(40.f, fY, -70.f));
+        m_vecMovePath.push_back(_float3(75.f, fY, -95.f));
+        m_vecMovePath.push_back(_float3(80.f, fY, -127.f));
+        m_vecMovePath.push_back(_float3(82.f, fY, -143.f));
+        m_vecMovePath.push_back(_float3(83.f, fY, -146.f));
+    }
 
     m_CombatPattern.clear();
     {
@@ -417,30 +609,37 @@ void CErenTitan::Start_LiftUp()
 {
     m_eStepType = EREN_STEP_TYPE::LIFT_ROCK;
     m_bLiftUp = false;
-    m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::ROCK_LIFT);
+    m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::IDLE);
 
-    auto scripts = m_goEren->Get_AllScripts_InChildren<CAttacher>();
-
-    for (auto& script : scripts)
-    {
-        CGameObject* goAttach = script->Get_AttachObject();
-        if (!goAttach)
-            continue;
-
-        if (goAttach->Get_Label() == "Rock")
-            script->Start_Attach();
-    }
-
-
+    m_fElapsedDelayToLift = 0.f;
+    m_fElapsedWaitToAttach = 0.f;
 }
 
-void CErenTitan::Start_MoveRock(const _float3& vTargetPos)
+void CErenTitan::Start_MoveRock()
 {
     m_eStepType = EREN_STEP_TYPE::MOVE_ROCK;
-    m_vTargetPos = vTargetPos;
+    m_bMoveRockCompleted = false;
+
+    m_vecMovePath.clear();
+    m_iCurMovePathIndex = 0;
+
+    {
+        _float fY = m_trEren->vPosition.y;
+
+        m_vecMovePath.push_back(_float3(88.f, fY, -114.f));
+        m_vecMovePath.push_back(_float3(46.f, fY, -65.f));
+        m_vecMovePath.push_back(_float3(0.f, fY, -54.f));
+        m_vecMovePath.push_back(_float3(0.f, fY, 13.f));
+        m_vecMovePath.push_back(_float3(0.f, fY, 135.f));
+    }
+
+    if (!m_vecMovePath.empty())
+        m_vTargetPos = m_vecMovePath.back();
+
+    m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::ROCK_WALK);
 }
 
-void CErenTitan::Start_FixRock(const _float3& vTargetPos)
+void CErenTitan::Start_FixRock()
 {
 
 }
@@ -449,100 +648,6 @@ void CErenTitan::Activate_Hitbox(const std::string& strKey, _bool bActive)
 {
     if (auto iter = m_AllHitBoxes.find(strKey); iter != m_AllHitBoxes.end())
         iter->second->Set_Active(bActive);
-}
-
-void CErenTitan::Process_MoveTo(_float fDT)
-{
-    /* 현재 공격 애니메이션 재생 중이면 끝날 때까지 유지 */
-    if (Is_CombatAttacking())
-        return;
-
-    /* 유효한 전투 타겟 갱신 */
-    Validate_Target();
-
-    /* 최신 타겟이 있고 충분히 가까우면 잠시 전투 */
-    if (m_goLatestCombatTarget != nullptr && m_trLastestCombatTarget.Is_Valid())
-    {
-        const _vector vTargetDiff = XMLoadFloat3(&m_trLastestCombatTarget->vPosition) - XMLoadFloat3(&m_trEren->vPosition);
-        const _float fTargetDist = XMVectorGetX(XMVector3Length(vTargetDiff));
-
-        _vector vTargetDir = XMVectorSetY(vTargetDiff, 0.f);
-
-        if (XMVectorGetX(XMVector3LengthSq(vTargetDir)) > 1e-6f)
-        {
-            vTargetDir = XMVector3Normalize(vTargetDir);
-            Look_To(vTargetDir, fDT);
-        }
-
-        /* 공격 시작 가능한 거리 안이면 전투 우선 */
-        if (fTargetDist <= m_fShouldAttackDist)
-        {
-            const EREN_COMBAT_PATTERN& tPattern = m_CombatPattern[m_iCurComboIndex];
-            m_fKeepDistance = tPattern.fKeepDistance;
-
-            /* 너무 붙어 있지 않으면 살짝 접근 */
-            if (fTargetDist > m_fKeepDistance)
-            {
-                m_eCombat = EREN_COMBAT::APPROACHING;
-                m_fCombatSpeed = m_fWalkSpeed;
-                m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::WALK);
-                Move_To(vTargetDir, fDT, m_fCombatSpeed * 0.2f);
-                return;
-            }
-
-            Start_ComboAttack(tPattern.eCombatType);
-
-            ++m_iCurComboIndex;
-            if (m_iCurComboIndex >= m_iTotalComboIndex)
-                m_iCurComboIndex = 0;
-
-            return;
-        }
-
-        /* 한 번 전투 대상으로 잡혔더라도 충분히 멀어졌으면 MOVE_TO 본래 목적 복귀 */
-        if (fTargetDist >= m_fMoveToResumeDist)
-        {
-            m_goLatestCombatTarget = nullptr;
-            m_trLastestCombatTarget = {};
-            m_eCombat = EREN_COMBAT::WAIT;
-        }
-    }
-
-    /* 목표 지점으로 이동 */
-    const _vector vMoveDiff =
-        XMLoadFloat3(&m_vTargetPos) -
-        XMLoadFloat3(&m_trEren->vPosition);
-
-    const _float fMoveDist = XMVectorGetX(XMVector3Length(vMoveDiff));
-
-    /* 목표 지점 도착 */
-    if (fMoveDist <= m_fMoveToArriveDist)
-    {
-        m_bMoveToArrived = true;
-        m_eCombat = EREN_COMBAT::WAIT;
-        m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::IDLE);
-        return;
-    }
-
-    m_bMoveToArrived = false;
-
-    _vector vMoveDir = XMVectorSetY(vMoveDiff, 0.f);
-    if (XMVectorGetX(XMVector3LengthSq(vMoveDir)) <= 1e-6f)
-        return;
-
-    vMoveDir = XMVector3Normalize(vMoveDir);
-
-    Look_To(vMoveDir, fDT);
-
-    m_eCombat = EREN_COMBAT::APPROACHING;
-    m_fCombatSpeed = m_fRunSpeed;
-    m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::RUN);
-    Move_To(vMoveDir, fDT, m_fCombatSpeed);
-}
-
-void CErenTitan::Process_Lift(_float fDT)
-{
-
 }
 
 _bool CErenTitan::Is_CombatAttacking() const
@@ -663,6 +768,46 @@ _vector CErenTitan::Get_AttackPower()
     return XMVector3Normalize(vLook) * fBase;
 }
 
+_bool CErenTitan::Is_MovePathPointArrived(const _float3& vCurPos, const _float3& vTargetPos) const
+{
+    const _float fDX = vTargetPos.x - vCurPos.x;
+    const _float fDZ = vTargetPos.z - vCurPos.z;
+    const _float fDistSq = fDX * fDX + fDZ * fDZ;
+
+    return fDistSq <= (m_fMovePathReachDist * m_fMovePathReachDist);
+}
+
+void CErenTitan::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
+{
+    const _uint iIndex = tData.iAnimationClip;
+    if (iIndex == INVALID_ANIM_CLIP_INDEX)
+        return;
+
+    if (iIndex == m_iHurtAnimIndex)
+    {
+        for (auto& hit : m_AllHitBoxes)
+            hit.second->Set_Active(false);
+
+        m_eCombat = EREN_COMBAT::WAIT;
+        return;
+    }
+
+    if (m_eStepType == EREN_STEP_TYPE::BORNE)
+    {
+        On_AnimBornFinished(iIndex);
+    }
+    else if (m_eStepType == EREN_STEP_TYPE::COMBAT ||
+        m_eStepType == EREN_STEP_TYPE::MOVE_TO)
+    {
+        On_AnimCombatFinished(iIndex);
+    }
+    else if (m_eStepType == EREN_STEP_TYPE::LIFT_ROCK)
+    {
+        On_AnimLiftFinished(iIndex);
+    }
+
+}
+
 void CErenTitan::On_AnimBornFinished(const _uint iIndex)
 {
     if (iIndex == m_animEren->NameToClipIndex[ANIM_EREN_TITAN::JUMP_AIR])
@@ -675,7 +820,6 @@ void CErenTitan::On_AnimBornFinished(const _uint iIndex)
         m_bBornCompleted = true;
     }
 }
-
 
 void CErenTitan::On_AnimCombatFinished(const _uint iIndex)
 {
@@ -704,7 +848,7 @@ void CErenTitan::On_AnimCombatFinished(const _uint iIndex)
         iIndex == iFullCombo ||
         iIndex == iComb3)
     {
-        /** MOVE_TO 중에는 다음 프레임 Process_MoveTo가 다시 판단 */
+        /** MOVE_TO 중에는 다음 프레임 Process~ 가 다시 판단 */
         if (m_eStepType == EREN_STEP_TYPE::MOVE_TO)
         {
             m_eCombat = EREN_COMBAT::WAIT;
@@ -839,6 +983,11 @@ _int CErenTitan::Get_CurCombatTitans() const
     return m_iCurCombatCnt;
 }
 
+_bool CErenTitan::Is_MoveToCompleted() const
+{
+    return m_bMoveToArrived;
+}
+
 _bool CErenTitan::Is_LiftCompleted() const
 {
     return m_bLiftUp;
@@ -846,7 +995,7 @@ _bool CErenTitan::Is_LiftCompleted() const
 
 _bool CErenTitan::Is_MoveRockCompleted() const
 {
-    return m_bLiftUp;
+    return m_bMoveRockCompleted;
 }
 
 _bool CErenTitan::Is_FixCompleted() const
