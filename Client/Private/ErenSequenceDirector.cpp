@@ -189,7 +189,7 @@ _bool CErenSequenceDirector::Is_CurrentStepFinished()
     case EREN_STEP_TYPE::MOVE_ROCK:
         return Check_WalkRockFinished();
     case EREN_STEP_TYPE::FIX_ROCK:
-        return Check_WalkRockFinished();
+        return Check_FixRockFinished();
     case EREN_STEP_TYPE::END:
         return true;
     }
@@ -294,7 +294,7 @@ _bool CErenSequenceDirector::Check_LiftRockFinished() const
 
 _bool CErenSequenceDirector::Check_WalkRockFinished() const
 {
-    return {};
+    return m_scEren->Is_MoveRockCompleted();
 }
 
 _bool CErenSequenceDirector::Check_FixRockFinished() const

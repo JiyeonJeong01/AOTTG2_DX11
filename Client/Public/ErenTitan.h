@@ -40,9 +40,15 @@ private :
     CAttacher*                          m_scAttach{};
 
     /* ----- Eren Stats ----- */
-    const _float                        m_fMaxSpeed = 14.f;     /* rigidbody 기반 이동에 대한 제한 */
-    _float                              m_fWalkSpeed = 11.f;     
-    _float                              m_fRunSpeed = 14.f;
+
+    const _float                        m_fMaxSpeed = 30.f;     /* rigidbody 기반 이동에 대한 제한 */
+    _float                              m_fWalkSpeed = 30.f;     
+    _float                              m_fRunSpeed = 30.f;
+
+    /* TODO : 에렌_거인_테스트 */
+    //const _float                        m_fMaxSpeed = 14.f;     /* rigidbody 기반 이동에 대한 제한 */
+    //_float                              m_fWalkSpeed = 11.f;     
+    //_float                              m_fRunSpeed = 14.f;
     const _float                        m_fTotalLife = 100.f;
     _float                              m_fCurLife = m_fTotalLife;
 
@@ -89,18 +95,22 @@ private :
     _float                              m_fMovePathReachDist = 4.f;
 
     /* ----- Lift Rock ----- */
-    _bool                               m_bLiftUp = false;
+    _bool                               m_bLiftCompleted = false;
     _float                              m_fTotalDelayToLift = 0.5f;
     _float                              m_fElapsedDelayToLift = 0.f;
-    _bool                               m_bLiftStarted = false;
+    _bool                               m_bLiftAnimStarted = false;
     _float                              m_fTotalWaitToAttach = 0.3f;
     _float                              m_fElapsedWaitToAttach = 0.f;
 
     /* ----- Move Rock ----- */
     _bool                               m_bMoveRockCompleted = false;
 
-
     /* ----- Fix Rock ----- */
+    _bool                               m_bFixAnimStarted = false;
+    _bool                               m_bFixCompleted = false;
+    _bool                               m_bReleaseRock = false;
+    _float                              m_fElapsedDelayToFix = 0.f;
+    _float                              m_fTotalDelayToFix = 0.5f;
 
 
     /* ----- Etc ----- */
@@ -116,6 +126,7 @@ private :
     void    Process_MoveTo(_float fDT);
     void    Process_Lift(_float fDT);
     void    Process_MoveRock(_float fDT);
+    void    Process_FixRock(_float fDT);
 
     void    On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData);
     void    On_AnimBornFinished(const _uint iIndex);

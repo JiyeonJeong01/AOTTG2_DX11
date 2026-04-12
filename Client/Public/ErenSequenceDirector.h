@@ -59,7 +59,8 @@ private:
     _bool                       m_bSequenceEnd = false;
 
 private :
-    const _int                  m_iNumTotalCombatTitans = 1;
+    const _int                  m_iNumTotalCombatTitans = 0;
+    /* TODO : 에렌_거인_테스트 */
 };
 
 NS_END

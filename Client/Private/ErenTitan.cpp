@@ -129,6 +129,7 @@ void CErenTitan::Update(void* pCtx, _float fDT)
         return;
 
     case EREN_STEP_TYPE::FIX_ROCK :
+        Process_FixRock(fDT);
         return;
 
     case EREN_STEP_TYPE::END :
@@ -399,7 +400,7 @@ void CErenTitan::Process_Lift(_float fDT)
     m_fElapsedDelayToLift += fDT;
     if (m_fElapsedDelayToLift < m_fTotalDelayToLift)
         return;
-    if (m_bLiftStarted)
+    if (m_bLiftAnimStarted)
         return;
 
     m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::ROCK_LIFT);
@@ -420,7 +421,7 @@ void CErenTitan::Process_Lift(_float fDT)
             script->Start_Attach();
     }
 
-    m_bLiftStarted = true;
+    m_bLiftAnimStarted = true;
 }
 
 void CErenTitan::Process_MoveRock(_float fDT)
@@ -445,12 +446,6 @@ void CErenTitan::Process_MoveRock(_float fDT)
         if (m_iCurMovePathIndex >= To<_int>(m_vecMovePath.size()))
         {
             m_bMoveRockCompleted = true;
-
-            /* 월드 오른쪽(+X)을 보게 하고 싶다면 Look_To 내부의 -1 보정 때문에 -X를 넣음 */
-            _vector vFixedLookDir = XMVectorSet(-1.f, 0.f, 0.f, 0.f);
-            Look_To(vFixedLookDir, fDT);
-
-            m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::IDLE);
             return;
         }
 
@@ -470,21 +465,47 @@ void CErenTitan::Process_MoveRock(_float fDT)
 
     vMoveDir = XMVector3Normalize(vMoveDir);
 
-    const _int iLastIndex = To<_int>(m_vecMovePath.size()) - 1;
-    if (m_iCurMovePathIndex == iLastIndex)
-    {
-        /* 마지막 구간에서는 이동 방향 말고 고정 월드 방향을 봄 */
-        _vector vFixedLookDir = XMVectorSet(-1.f, 0.f, 0.f, 0.f);
-        Look_To(vFixedLookDir, fDT);
-    }
-    else
-    {
-        Look_To(vMoveDir, fDT);
-    }
+    Look_To(vMoveDir, fDT);
 
     m_fCombatSpeed = m_fWalkSpeed;
     m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::ROCK_WALK);
     Move_To(vMoveDir, fDT, m_fCombatSpeed);
+}
+
+void CErenTitan::Process_FixRock(_float fDT)
+{
+    m_fElapsedDelayToFix += fDT;
+    if (m_fElapsedDelayToFix < m_fTotalDelayToFix)
+        return;
+
+    if (m_bFixAnimStarted)
+    {
+        if (m_animEren->fTrackPosition >= 75.f && !m_bReleaseRock)
+        {
+            m_bReleaseRock = true;
+            auto scripts = m_goEren->Get_AllScripts<CAttacher>();
+            for (auto script : scripts)
+            {
+                CGameObject* goAttach = script->Get_AttachObject();
+                if (!goAttach)
+                    continue;
+
+                if (goAttach->Get_Label() == "Rock")
+                {
+                    m_scAttach = script;
+                    script->Stop_Attach();
+                    CTransform tr = goAttach->Get_Component<CTransform>();
+                    tr->vPosition = _float3(100.f, 0.f, -148.f);
+                }
+            }
+        }
+        return;
+
+    }
+
+    m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::ROCK_FIX_HOLE);
+
+    m_bFixAnimStarted = true;
 }
 
 void CErenTitan::Start_Born()
@@ -608,7 +629,7 @@ void CErenTitan::Start_MoveTo()
 void CErenTitan::Start_LiftUp()
 {
     m_eStepType = EREN_STEP_TYPE::LIFT_ROCK;
-    m_bLiftUp = false;
+    m_bLiftCompleted = false;
     m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::IDLE);
 
     m_fElapsedDelayToLift = 0.f;
@@ -641,7 +662,11 @@ void CErenTitan::Start_MoveRock()
 
 void CErenTitan::Start_FixRock()
 {
+    m_eStepType = EREN_STEP_TYPE::FIX_ROCK;
+    m_bFixAnimStarted = false;
+    m_bFixCompleted = false;
 
+    m_fElapsedDelayToFix = 0.f;
 }
 
 void CErenTitan::Activate_Hitbox(const std::string& strKey, _bool bActive)
@@ -887,7 +912,7 @@ void CErenTitan::On_AnimLiftFinished(const _uint iIndex)
 {
     if (iIndex == m_animEren->NameToClipIndex[ANIM_EREN_TITAN::ROCK_LIFT])
     {
-        m_bLiftUp = true;
+        m_bLiftCompleted = true;
     }
 }
 
@@ -912,7 +937,6 @@ void CErenTitan::On_DetectedCombatTargets(CGameObject* goTitan)
     m_goLatestCombatTarget = goTitan;
     m_trLastestCombatTarget = m_goLatestCombatTarget->Get_Component<CTransform>();
 }
-
 
 void CErenTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox)
 {
@@ -990,7 +1014,7 @@ _bool CErenTitan::Is_MoveToCompleted() const
 
 _bool CErenTitan::Is_LiftCompleted() const
 {
-    return m_bLiftUp;
+    return m_bLiftCompleted;
 }
 
 _bool CErenTitan::Is_MoveRockCompleted() const
