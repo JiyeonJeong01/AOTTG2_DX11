@@ -1,5 +1,7 @@
 ﻿#include "NormalTitanState_Stunned.h"
 
+#include <RandomUtil.h>
+
 #include "AnimationClip_Titan.h"
 #include "NormalTitanStateMachine.h"
 
@@ -55,7 +57,16 @@ void CNormalTitanState_Stunned::Enter(_uint iDetailFlag)
     }
 
     m_iPrevState = To<_uint>(iDetailFlag);
-    m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::ARM_HURT_L);
+
+    const std::string strHurtAnim[3] = {
+        ANIM_TITAN::HIT_EREN_L,
+        ANIM_TITAN::HIT_EYE,
+        ANIM_TITAN::SIT_DOWN
+    };
+
+    _int iAnim = CRandomUtil::Get_Int(0, 2);
+
+    m_tComponents.animator.Set_NextAnimationClip(strHurtAnim[iAnim]);
 }
 
 void CNormalTitanState_Stunned::Exit()

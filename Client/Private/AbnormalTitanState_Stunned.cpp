@@ -1,5 +1,7 @@
 ﻿#include "AbnormalTitanState_Stunned.h"
 
+#include <RandomUtil.h>
+
 #include "NormalTitanState_Stunned.h"
 
 #include "AnimationClip_Titan.h"
@@ -21,7 +23,7 @@ CAbnormalTitanState_Stunned::~CAbnormalTitanState_Stunned()
 
 HRESULT CAbnormalTitanState_Stunned::Initialize()
 {
-    IF_NULL_RETURN_MSG_BREAK(m_goTitan, E_FAIL, "m_goTitan is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_goTitan, E_FAIL, "m_goTitan is nQQQQddullptr.");
     IF_NULL_RETURN_MSG_BREAK(m_scTitan, E_FAIL, "m_scTitan is nullptr.");
 
     return S_OK;
@@ -51,9 +53,6 @@ void CAbnormalTitanState_Stunned::Enter(_uint iDetailFlag)
 
     (*m_tRef.m_pStunnedAcc)++;
 
-    LOG_INFO("Abnormal titan entered-> [ Stunned ] : %u", *m_tRef.m_pStunnedAcc);
-
-
     if (*m_tRef.m_pStunnedAcc > m_pStats->iMaxStunned)
     {
         m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
@@ -61,7 +60,15 @@ void CAbnormalTitanState_Stunned::Enter(_uint iDetailFlag)
     }
 
     m_iPrevState = To<_uint>(iDetailFlag);
-    m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::ARM_HURT_L);
+    const std::string strHurtAnim[3] = {
+    ANIM_TITAN::HIT_EREN_L,
+    ANIM_TITAN::HIT_EYE,
+    ANIM_TITAN::SIT_DOWN
+    };
+
+    _int iAnim = CRandomUtil::Get_Int(0, 2);
+
+    m_tComponents.animator.Set_NextAnimationClip(strHurtAnim[iAnim]);
 }
 
 void CAbnormalTitanState_Stunned::Exit()

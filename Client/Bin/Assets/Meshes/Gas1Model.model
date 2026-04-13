@@ -1,0 +1,8 @@
+source=../../Converter/Bin/FBXs/Gas1Model.fbx
+meshCount=2
+part0Name=网格
+part0MeshGuid=4CD31346-2F35-4BE8-93AA-9F4694BB6A4F
+part0MaterialGuid=9F3779B4-D13F-44FE-BA1E-E95A47353C48
+part1Name=网格.001
+part1MeshGuid=CD48867E-88BC-45DE-A356-6348123B8A48
+part1MaterialGuid=9F3779B4-D13F-44FE-BA1E-E95A47353C48

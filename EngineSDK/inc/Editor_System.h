@@ -105,7 +105,7 @@ private:
     _int                   m_iPickedPointCount = 0;                     // 현재 몇 개 찍었는지
 
     _float                 m_fNavCellY = 0.f;
-    _float                 m_fPointSnapRange = 0.5f;                    // 이 범위 내면 같은 점으로 판단
+    _float                 m_fPointSnapRange = 1.f;                    // 이 범위 내면 같은 점으로 판단
 
     std::vector<class CNavMesh*>    m_allNavDebug;
 public:

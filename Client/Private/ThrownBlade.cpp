@@ -11,6 +11,9 @@ void CThrownBlade::Start(void* pCtx)
     IF_NULL_RETURN_MSG_BREAK(m_pThrownBlade, , "m_upLeftBlade is nullptr");
 
     m_trBlade = m_pThrownBlade->Get_Component<CTransform>();
+
+    CCollider cldr = m_pThrownBlade->Get_Component<CCollider>();
+    cldr->OnTriggerEnter.Add_Listener(&CThrownBlade::On_TriggerEnter, this);
 }
 
 void CThrownBlade::Priority_Update(void* pCtx, _float fDT)
@@ -51,8 +54,21 @@ void CThrownBlade::Start_Throw(_fvector vStartPoint, _fvector vDir)
     m_bStarted = true;
 }
 
-void CThrownBlade::On_CollisionEnter(const COLLISION_DESC& tDesc)
+void CThrownBlade::On_TriggerEnter(const COLLISION_DESC& tDesc)
 {
+    CGameObject* pOther = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
+    if (!pOther)
+        return;
+
+    if (pOther->Has_Mask(O_PLAYER | O_CROPS | O_EREN))
+        return;
+
+    if (!tDesc.pCounterCollider)
+        return;
+
+    if (!pOther->Has_Mask(O_HURTBOX) && tDesc.pCounterCollider->bTrigger)
+        return;
+
     m_bStarted = false;
 
     m_pThrownBlade->Set_Enable(false);

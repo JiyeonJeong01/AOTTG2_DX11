@@ -51,6 +51,7 @@ typedef struct tagTitanStats
     _float          fRotateSharpness = 3.f;
 
     const _uint     iMaxStunned = 5;
+
 } TITAN_STATS;
 
 typedef struct tagTitanRuntimeRef
@@ -81,6 +82,9 @@ typedef struct tagTitanContext
 
     /* 거인 정보 */
     TITAN_SCRIPTABLE_OBJECT* pSO = nullptr;
+
+    _float                  fStayAttackErenDist = 12.5f; /* AttackEeren : eren을 공격해야 하는 거리 */
+
 } TITAN_CONTEXT;
 
 inline constexpr const char* TITAN_WEAK_POINT = "WeakPoint";

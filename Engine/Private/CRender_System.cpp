@@ -746,10 +746,6 @@ void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial,
                     0,
                     static_cast<UINT>(pSkinningMatrices->size()));
             }
-            else
-            {
-                _DEBUG_WARN("PARTS mode but pSkinningMatrices is empty.");
-            }
         }
         /* 부모 메쉬인 경우 */
         else if (eMode == MESH_MODE::NONE)

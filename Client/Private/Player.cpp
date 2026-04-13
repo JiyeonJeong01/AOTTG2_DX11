@@ -99,11 +99,6 @@ void CPlayer::Start(void* pCtx)
     /* 히트박스 전부 끄기 */
     for (auto& hit : m_AllHitBoxes)
         hit.second->Set_Active(false);
-
-    /* 이벤트 등록 */
-    //m_tComponents.collider->OnCollisionEnter.Add_Listener(&CPlayer::On_CollisionEnter, this);
-    //m_tComponents.collider->OnCollisionStay.Add_Listener(&CPlayer::On_CollisionStay, this);
-    //m_tComponents.collider->OnCollisionExit.Add_Listener(&CPlayer::On_CollisionExit, this);
 }
 
 void CPlayer::Priority_Update(void* pCtx, _float fDT)
@@ -151,27 +146,6 @@ void CPlayer::OnChange_CurState(std::shared_ptr<CPlayerState> spNewState)
 
     m_spCurState = spNewState;
     strncpy_s(m_szState, sizeof(m_szState), spNewState->Get_StateName(), _TRUNCATE);
-}
-
-void CPlayer::On_CollisionEnter(const COLLISION_DESC& tDesc)
-{
-    CGameObject* pObj = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
-    if (pObj)
-        LOG_INFO("================================================== COLLISION_ENTER ====================================== ");
-}
-
-void CPlayer::On_CollisionStay(const COLLISION_DESC& tDesc)
-{
-    CGameObject* pObj = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
-    if (pObj)
-        LOG_INFO("================================================== COLLISION_STAY ====================================== ");
-}
-
-void CPlayer::On_CollisionExit(const COLLISION_DESC& tDesc)
-{
-    CGameObject* pObj = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
-    if (pObj)
-        LOG_INFO("================================================== COLLISION_EXIT ====================================== ");
 }
 
 void CPlayer::On_BladeHit(CGameObject* goCounter)

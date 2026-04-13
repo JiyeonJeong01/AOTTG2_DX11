@@ -50,6 +50,8 @@ private:
     _float          m_fOriginalRotationSharpness = 0.f;
     _float          m_fFastRotationSharpness = 5.f;
 
+    _float          m_fStayAttackErenDist = 0.f;
+
     TITAN_CHASE     m_eChaseState = TITAN_CHASE::END;
     _char           m_szChaseAnimName[32];
 

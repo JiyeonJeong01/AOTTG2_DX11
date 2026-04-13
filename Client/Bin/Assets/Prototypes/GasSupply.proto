@@ -1,0 +1,69 @@
+{
+  "prototype": {
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              14.02202320098877,
+              1.2423522472381592,
+              -88.02400970458984
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.009999999776482582,
+              0.009999999776482582,
+              0.009999999776482582
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "913F301E-EAFB-49E6-91DB-B4420CE25801",
+            "MeshGUID": "CECBBBFE-C3EB-4EBD-8203-CE381C832F70",
+            "Mode": 0,
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "iObjMask": 0,
+    "isUI": false,
+    "name": "GasSupply"
+  },
+  "version": 1
+}

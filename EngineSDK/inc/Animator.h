@@ -70,6 +70,7 @@ public:
 
     _uint               Get_CurAnimaionClipIdx() const;
     _uint               Get_AnimationClipIdx_By_Name(const std::string& strName) const;
+    const std::string&  Get_Name_By_AnimationCliIdx(_uint iIdx) const;
 
     void                Reset_CurrentKeyFrameIndices();
     void                Reset_CurrentKeyFrameIndices(size_t iChannelCount);

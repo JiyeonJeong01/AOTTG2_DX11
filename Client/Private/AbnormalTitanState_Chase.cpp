@@ -167,6 +167,8 @@ void CAbnormalTitanState_Chase::Cache_TitanContext(const TITAN_CONTEXT& tContext
     {
         strncpy_s(m_szChaseAnimName, tContext.pSO->szMoveAnim, _TRUNCATE);
     }
+
+    m_fStayAttackErenDist = tContext.fStayAttackErenDist;
 }
 
 void CAbnormalTitanState_Chase::Setup_CachedTitanContext()
@@ -183,6 +185,18 @@ _uint CAbnormalTitanState_Chase::Get_DetailState() const
 
 void CAbnormalTitanState_Chase::Decide_NextState()
 {
+    if (!m_tRef.pSensor)
+        return;
+
+    CGameObject* goTarget = m_tRef.pSensor->Get_Target();
+    if (!goTarget)
+        return;
+
+    if (goTarget->Is_ExactMask(O_EREN))             /* 타겟이 에렌이고 */
+    {
+        if (m_fStayAttackErenDist > m_fChaseDist)   /* 현재 거리가 에렌을 공격해야 하는 거리 내일 때 전환 */
+            m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::ATTACK_EREN));
+    }
 }
 
 void CAbnormalTitanState_Chase::Decide_NextAnim()

@@ -63,11 +63,6 @@ private :
     void On_Dead() override;
 
     void OnChange_CurState(std::shared_ptr<CPlayerState> spNewState);
-
-    void On_CollisionEnter(const COLLISION_DESC& tDesc);
-    void On_CollisionStay(const COLLISION_DESC& tDesc);
-    void On_CollisionExit(const COLLISION_DESC& tDesc);
-
     void On_BladeHit(CGameObject* goCounter);
 
 public :

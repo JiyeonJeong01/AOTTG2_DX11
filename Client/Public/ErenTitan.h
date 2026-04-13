@@ -41,14 +41,15 @@ private :
 
     /* ----- Eren Stats ----- */
 
-    const _float                        m_fMaxSpeed = 30.f;     /* rigidbody 기반 이동에 대한 제한 */
-    _float                              m_fWalkSpeed = 30.f;     
-    _float                              m_fRunSpeed = 30.f;
-
     /* TODO : 에렌_거인_테스트 */
-    //const _float                        m_fMaxSpeed = 14.f;     /* rigidbody 기반 이동에 대한 제한 */
-    //_float                              m_fWalkSpeed = 11.f;     
-    //_float                              m_fRunSpeed = 14.f;
+    //const _float                        m_fMaxSpeed = 30.f;     /* rigidbody 기반 이동에 대한 제한 */
+    //_float                              m_fWalkSpeed = 30.f;     
+    //_float                              m_fRunSpeed = 30.f;
+
+    const _float                        m_fMaxSpeed = 14.f;     /* rigidbody 기반 이동에 대한 제한 */
+    _float                              m_fWalkSpeed = 11.f;     
+    _float                              m_fRunSpeed = 14.f;
+
     const _float                        m_fTotalLife = 100.f;
     _float                              m_fCurLife = m_fTotalLife;
 

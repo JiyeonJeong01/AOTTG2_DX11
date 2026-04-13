@@ -334,6 +334,9 @@
     <ClInclude Include="..\Public\Titan_Struct.h">
       <Filter>Titan\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\ResupplyStation.h">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -542,6 +545,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Titan_Scriptable_Object.cpp">
       <Filter>Titan\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ResupplyStation.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

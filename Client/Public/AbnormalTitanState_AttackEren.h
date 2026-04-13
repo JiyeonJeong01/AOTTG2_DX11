@@ -25,6 +25,7 @@ public:
     _uint Get_DetailState() const override;
 
 private:
+    void Cache_TitanContext(const TITAN_CONTEXT& tContext) override;
     void Setup_CachedTitanContext() override;
 
 private:
@@ -46,10 +47,15 @@ private:
     CHitBox*            m_pPunchHitBoxR = nullptr;
     std::vector<CGameObject*>   m_goThrowRockPool;
 
-    _float              m_fAttackDist = 0.f;
-    _float              m_fPunchAttackRange = 20.f;
+    _float              m_fDistToEren = 0.f;
+    _float              m_fPunchAttackRange = 15.f;
     _float              m_fOriginRotateSharpness = 0.f;
     _float              m_fAttackRotateSharpness = 7.f;
+
+    _float              m_fAttackCoolTime = 0.5f;
+    _float              m_fElapsedAttackCoolTime = 0.f;
+
+    _float              m_fStayAttackErenDist = 0.f;
 
     _uint               m_iAttackAnimClip = INVALID_ANIM_CLIP_INDEX;
     _bool               m_bAttackAnimPlaying = false;
@@ -61,7 +67,7 @@ private:
 
     _bool               m_bFlushThrow = false;
 
-    static constexpr _uint  s_iTotalRockCnt = 20;
+    static constexpr _uint  s_iTotalRockCnt = 5;
     const string m_strRocks[5] = { TITAN_ROCK_1, TITAN_ROCK_2, TITAN_ROCK_3, TITAN_ROCK_4, TITAN_ROCK_5 };
 
 private :

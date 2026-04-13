@@ -230,6 +230,9 @@ void CErenTitan::Process_Combat(_float fDT)
     if (!Validate_Target())
         return;
 
+    if (m_eCombat == EREN_COMBAT::HURT)
+        return;
+
     /* 타겟이 없으면 전투 상태는 유지하되 WAIT */
     if (m_goLatestCombatTarget == nullptr || !m_trLastestCombatTarget.Is_Valid())
     {
@@ -254,7 +257,9 @@ void CErenTitan::Process_Combat(_float fDT)
 
     /* 공격 애니메이션 재생 중이면 끝날 때까지 아무 것도 하지 않음 */
     if (Is_CombatAttacking())
+    {
         return;
+    }
 
     const EREN_COMBAT_PATTERN& tPattern = m_CombatPattern[m_iCurComboIndex];
     m_fKeepDistance = tPattern.fKeepDistance;
@@ -831,6 +836,7 @@ void CErenTitan::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
         On_AnimLiftFinished(iIndex);
     }
 
+
 }
 
 void CErenTitan::On_AnimBornFinished(const _uint iIndex)
@@ -956,6 +962,9 @@ void CErenTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox
     /* hurt 애니메이션은 특정 상황에서만 재생 */
     if (m_eStepType == EREN_STEP_TYPE::COMBAT || m_eStepType == EREN_STEP_TYPE::MOVE_TO)
     {
+        m_eCombat = EREN_COMBAT::HURT;
+        if (m_animEren->bPlaying == false)
+            m_animEren->bPlaying = true;
         m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::HIT_ANNIE_1);
     }
 

@@ -227,8 +227,6 @@ void CAbnormalTitan::On_Stunned()
     if (eState == TITAN_STATE::STUNNED || eState == TITAN_STATE::DEAD)
         return;
 
-    LOG_INFO("Abnormal titan changed state to -> [ Stunned ]");
-
     if (m_goEren)
         Set_Target(m_goEren);
 

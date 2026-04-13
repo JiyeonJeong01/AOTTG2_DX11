@@ -84,13 +84,18 @@ _float CAnimator::Get_TrackPosition() const
 
 void CAnimator::Set_TrackPosition(_float fTrackPosition)
 {
-    if (!m_pData)
+    if (!_Data())
         return;
 
-    if (fTrackPosition < 0.f)
-        fTrackPosition = 0.f;
+    const _bool bRewind = (fTrackPosition < m_pData->fTrackPosition);
 
     m_pData->fTrackPosition = fTrackPosition;
+
+    if (bRewind)
+    {
+        for (uint32_t& iKeyFrameIndex : m_pData->currentKeyFrameIndices)
+            iKeyFrameIndex = 0;
+    }
 }
 
 void CAnimator::Add_TrackPosition(_float fDeltaTrackPosition)
@@ -224,6 +229,19 @@ _uint CAnimator::Get_AnimationClipIdx_By_Name(const std::string& strName) const
 
     return it->second;
     int a = 10;
+}
+
+const std::string& CAnimator::Get_Name_By_AnimationCliIdx(_uint iIdx) const
+{
+    if (!m_pData)
+        return {};
+
+    for (const auto& pair : m_pData->NameToClipIndex)
+    {
+        if (pair.second == iIdx)
+            return pair.first;
+    }
+    return {};
 }
 
 void CAnimator::Reset_CurrentKeyFrameIndices()

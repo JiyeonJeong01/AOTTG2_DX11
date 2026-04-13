@@ -33,7 +33,7 @@ void CPlayerState_AirborneAttack::Setup_CachedPlayerContext()
 void CPlayerState_AirborneAttack::Priority_Update(_float fDT)
 {
     Control_Camera();
-    if (!m_bSpinH_Force && !m_bSpinV_Force)
+    if (m_bAnimFinished) /* 애니메이션 재생이 아닐 때에만 회전 반영 */
         LookTo_InputDir(fDT);
     Try_Grappling();
     Finish_Grappling();
@@ -120,7 +120,7 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
     {
         cout << "[AIRBORNE_ATTACK] SPIN_H\n";
 
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::ATTACK_1); /* ATTACK1 = SpinH 시작 동작으로 사용 */
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::SPECIAL_LEVI); /* SPECIAL_LEVI = SpinH 시작 동작으로 사용 */
         m_bAnimFinished = false;
         m_bKeepAttack = true;
 
@@ -144,26 +144,7 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
     {
         cout << "[AIRBORNE_ATTACK] SPIN_V\n";
 
-        _vector vRight = m_tComponents.transform.Get_StateXM(STATE::RIGHT);
-        XMStoreFloat3(&m_vSpinV_Axis, vRight);
-
-        const _float fLenSq = m_vSpinV_Axis.x * m_vSpinV_Axis.x
-            + m_vSpinV_Axis.y * m_vSpinV_Axis.y
-            + m_vSpinV_Axis.z * m_vSpinV_Axis.z;
-
-        if (fLenSq > 0.0001f)
-        {
-            const _float fInvLen = 1.f / sqrtf(fLenSq);
-            m_vSpinV_Axis.x *= fInvLen;
-            m_vSpinV_Axis.y *= fInvLen;
-            m_vSpinV_Axis.z *= fInvLen;
-        }
-        else
-        {
-            m_vSpinV_Axis = { 1.f, 0.f, 0.f };
-        }
-
-        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::ATTACK_3_1);
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::SPECIAL_PETRA);
         m_bAnimFinished = false;
         m_bKeepAttack = true;
 
@@ -235,11 +216,11 @@ void CPlayerState_AirborneAttack::On_AnimFinished(const Engine::ANIMATION_EVENT_
         || iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::ATTACK_1_HOOK_R1]
         || iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::ATTACK_2])
         On_NomalFinished(tData);
-    else if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::ATTACK_1]) /* ATTACK1 = SpinH 시작 동작으로 사용 */
+    else if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::SPECIAL_LEVI]) /* ATTACK1 = SpinH 시작 동작으로 사용 */
         On_SpinH_Finished(tData);
-    else if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::SPECIAL_PETRA])
+    else if (m_eAirborneAttackState == AIRBORNE_ATTACK::THROW && iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::SPECIAL_PETRA])
         On_Throw_Finished(tData);
-    else if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::ATTACK_3_1])
+    else if (m_eAirborneAttackState == AIRBORNE_ATTACK::SPIN_V && iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::SPECIAL_PETRA])
         On_SpinV_Finished(tData);
 }
 
@@ -253,11 +234,15 @@ void CPlayerState_AirborneAttack::On_NomalFinished(const Engine::ANIMATION_EVENT
 
 void CPlayerState_AirborneAttack::On_SpinH_Finished(const Engine::ANIMATION_EVENT_DATA& tData)
 {
-    m_SpinH_Elapsed_Degree = 0.f;
     m_bAnimFinished = true;
-    m_bKeepAttack = true;
+    m_bKeepAttack = false;
 
-    static _int iCnt = 0;
+    if (m_iSpinH_LoopCnt >= m_iSpinH_TotalLoopCnt)
+        m_bSpinH_Completed = true;
+
+    m_tComponents.animator.Set_PlaySpeed(m_fOriginAnimPlaySpeed);
+    m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::AIRBORNE_MOVE), To<_uint>(AIRBORNE_MOVE::AIR_FALL));
+
     cout << " => [AIRBORNE_ATTACK] On_SpinH_Finished\n";
 }
 
@@ -271,9 +256,13 @@ void CPlayerState_AirborneAttack::On_Throw_Finished(const Engine::ANIMATION_EVEN
 
 void CPlayerState_AirborneAttack::On_SpinV_Finished(const Engine::ANIMATION_EVENT_DATA& tData)
 {
-    m_SpinV_Elapsed_Degree = 0.f;
     m_bAnimFinished = true;
-    m_bKeepAttack = true;
+    m_bKeepAttack = false;
+
+    if (m_iSpinV_LoopCnt >= m_iSpinV_TotalLoopCnt)
+        m_bSpinV_Completed = true;
+
+    m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::AIRBORNE_MOVE), To<_uint>(AIRBORNE_MOVE::AIR_FALL));
 
     cout << " => [AIRBORNE_ATTACK] On_SpinV_Finished\n";
 }
@@ -303,48 +292,41 @@ void CPlayerState_AirborneAttack::Update_BladeHitBox()
 
 void CPlayerState_AirborneAttack::Spin_Horizontal(_float fDT)
 {
-    m_fSpinH_WaitElapsedTime += fDT;
+    if (m_bSpinH_Completed)
+        return;
 
-    m_bSpinH_Force = m_fSpinH_WaitElapsedTime >= m_fSpinH_WaitTotalTime;
-         
-    if (m_bSpinH_Force)
+    /* 애니메이션 재생 속도 강제 조정 */
+    if (m_tComponents.animator.Get_TrackPosition() > m_fSpinH_LoopStart_TrackPosition)
     {
-        _float fRot = m_SpinH_Degree_PerSec * fDT;
-        m_tComponents.transform.Rotate({ 0.f, 1.f, 0.f, 1.f }, fRot);
-        m_SpinH_Elapsed_Degree += fRot;
+        m_tComponents.animator.Set_PlaySpeed(m_fSpinH_Speed);
+    }
 
-        /* 회전 끝 */
-        if (m_SpinH_Elapsed_Degree > m_SpinH_Total_Degree)
-        {
-            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::AIRBORNE_MOVE), To<_uint>(AIRBORNE_MOVE::AIR_FALL));
-            m_bSpinH_Force = false;
-            m_bKeepAttack = false;
-        }
+    /* 애니메이션 특정 구간 강제 반복 */
+    if (!m_bSpinH_Looping
+        && m_iSpinH_LoopCnt < m_iSpinH_TotalLoopCnt
+        && m_tComponents.animator.Get_TrackPosition() > m_fSpinH_LoopEnd_TrackPosition)
+    {
+        m_tComponents.animator.Set_TrackPosition(m_fSpinH_LoopStart_TrackPosition);
+
+        m_iSpinH_LoopCnt++;
     }
 }
 
 void CPlayerState_AirborneAttack::Spin_Vertical(_float fDT)
 {
-    m_fSpinV_WaitElapsedTime += fDT;
+    UNREFERENCED_PARAMETER(fDT);
 
-    m_bSpinV_Force = m_fSpinV_WaitElapsedTime >= m_fSpinV_WaitTotalTime;
+    if (m_bSpinV_Completed)
+        return;
 
-    if (m_bSpinV_Force)
+    /* 애니메이션 특정 구간 강제 반복 */
+    if (!m_bSpinV_Looping
+        && m_iSpinV_LoopCnt < m_iSpinV_TotalLoopCnt
+        && m_tComponents.animator.Get_TrackPosition() > m_fSpinV_LoopEnd_TrackPosition)
     {
-        _float fRot = m_SpinV_Degree_PerSec * fDT;
+        m_tComponents.animator.Set_TrackPosition(m_fSpinV_LoopStart_TrackPosition);
 
-        m_tComponents.transform.Rotate(
-            { m_vSpinV_Axis.x, m_vSpinV_Axis.y, m_vSpinV_Axis.z, 1.f },
-            fRot, SPACE::WORLD);
-
-        m_SpinV_Elapsed_Degree += fRot;
-
-        if (m_SpinV_Elapsed_Degree > m_SpinV_Total_Degree)
-        {
-            m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::AIRBORNE_MOVE), To<_uint>(AIRBORNE_MOVE::AIR_FALL));
-            m_bSpinV_Force = false;
-            m_bKeepAttack = false;
-        }
+        m_iSpinV_LoopCnt++;
     }
 }
 
@@ -358,10 +340,16 @@ void CPlayerState_AirborneAttack::Throw_Blade(_float fDT)
         if (!m_bThrewAlready)
         {
             m_bThrewAlready = true;
+
             _vector vPos = XMLoadFloat3(&m_tComponents.transform->vPosition);
+
+            _vector vLook = XMVector3Normalize(m_tComponents.transform.Get_StateXM(STATE::LOOK));
+            _vector vUp = XMVector3Normalize(m_tComponents.transform.Get_StateXM(STATE::UP));
+            _vector vStartPos = vPos + vLook * m_vThrowOffset.z + vUp * m_vThrowOffset.y;
+
             _float3 vDir = GAME_INSTANCE.Cam_Look();
-            if (!m_pThrownBlade)
-                m_pThrownBlade->Start_Throw(vPos, XMLoadFloat3(&vDir));
+            if (m_pThrownBlade)
+                m_pThrownBlade->Start_Throw(vStartPos, XMLoadFloat3(&vDir));
         }
     }
 }
@@ -371,14 +359,13 @@ void CPlayerState_AirborneAttack::Set_InitialValue()
     m_bAnimFinished = false;
     m_bKeepAttack = false;
 
-    m_SpinH_Elapsed_Degree = 0.f;
-    m_fSpinH_WaitElapsedTime = 0.f;
-    m_bSpinH_Force = false;
+    m_bSpinH_Completed = false;
+    m_bSpinH_Looping = false;
+    m_iSpinH_LoopCnt = 0;
 
-    m_SpinV_Elapsed_Degree = 0.f;
-    m_fSpinV_WaitElapsedTime = 0.f;
-    m_bSpinV_Force = false;
-    m_vSpinV_Axis = { 1.f, 0.f, 0.f };
+    m_bSpinV_Completed = false;
+    m_bSpinV_Looping = false;
+    m_iSpinV_LoopCnt = 0;
 
     m_bThrowNow = false;
     m_bThrewAlready = false;
@@ -422,10 +409,10 @@ _bool CPlayerState_AirborneAttack::Can_End_BladeHitBox() const
         return m_bAnimFinished;
 
     if (m_eAirborneAttackState == AIRBORNE_ATTACK::SPIN_H)
-        return m_SpinH_Elapsed_Degree > m_SpinH_Total_Degree;
+        return m_bSpinH_Completed;
 
     if (m_eAirborneAttackState == AIRBORNE_ATTACK::SPIN_V)
-        return m_SpinV_Elapsed_Degree > m_SpinV_Total_Degree;
+        return m_bSpinV_Completed;
 
     return true;
 }

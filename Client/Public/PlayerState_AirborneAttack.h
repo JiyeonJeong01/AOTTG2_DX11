@@ -38,13 +38,16 @@ private:
     _bool               m_bAnimFinished = false;
     _bool               m_bKeepAttack = false;
 
+    _float              m_fOriginAnimPlaySpeed = 1.f;
+
     /* SPIN_H */
-    _bool               m_bSpinH_Force = false;
-    _float              m_SpinH_Elapsed_Degree = 0.f;
-    const _float        m_SpinH_Total_Degree = 1840.f;
-    const _float        m_SpinH_Degree_PerSec = 1840.f;
-    _float              m_fSpinH_WaitElapsedTime = 0.f;
-    _float              m_fSpinH_WaitTotalTime = 0.1f;
+    _bool               m_bSpinH_Completed = false;
+    _bool               m_bSpinH_Looping = false;
+    _int                m_iSpinH_LoopCnt = 0;
+    const _float        m_fSpinH_LoopStart_TrackPosition = 29.f;
+    const _float        m_fSpinH_LoopEnd_TrackPosition = 46.f;
+    const _int          m_iSpinH_TotalLoopCnt = 2;
+    const _float        m_fSpinH_Speed = 2.3f;
 
     /* THROW */
     CThrownBlade*       m_pThrownBlade{};
@@ -52,15 +55,17 @@ private:
     _bool               m_bThrewAlready= false;
     _float              m_fThrow_WaitElapsedTime = 0.f;
     _float              m_fThrow_WaitTotalTime = 0.1f;
+    _float3             m_vThrowOffset = { 0.f, 1.f, 1.f };
+
 
     /* SPIN_V */
-    _float              m_SpinV_Elapsed_Degree = 0.f;
-    _float              m_SpinV_Degree_PerSec = 1840.f;
-    _float              m_SpinV_Total_Degree = 1840.f;
-    _float              m_fSpinV_WaitElapsedTime = 0.f;
-    _float              m_fSpinV_WaitTotalTime = 0.15f;
-    _bool               m_bSpinV_Force = false;
-    _float3             m_vSpinV_Axis = { 1.f, 0.f, 0.f };
+    _bool               m_bSpinV_Completed = false;
+    _bool               m_bSpinV_Looping = false;
+    _int                m_iSpinV_LoopCnt = 0;
+    const _int          m_iSpinV_TotalLoopCnt = 2;
+    const _float        m_fSpinV_LoopStart_TrackPosition = 20.f;
+    const _float        m_fSpinV_LoopEnd_TrackPosition = 28.f;
+
 
     CHitBox*            m_pBladeHitBox = nullptr;
 

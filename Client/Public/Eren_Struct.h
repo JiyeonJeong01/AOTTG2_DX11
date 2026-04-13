@@ -32,6 +32,7 @@ enum class EREN_COMBAT {
     COMBO2,         /* Left Uppercut */
     COMBO3,         /* right Elbow Strike */
     FULL_COMBO,
+    HURT,
     END };
 
 

@@ -41,7 +41,7 @@ void CAbnormalTitanState_AttackEren::Priority_Update(_float fDT)
         return;
 
     const DISPLACEMENT& tInfo = m_tRef.pSensor->Get_TargetDisplacement();
-    m_fAttackDist = tInfo.fDist;
+    m_fDistToEren = tInfo.fDist;
 
     if (m_bFlushThrow)
     {
@@ -63,14 +63,37 @@ void CAbnormalTitanState_AttackEren::Update(_float fDT)
     }
 
     const DISPLACEMENT& tInfo = m_tRef.pSensor->Get_TargetDisplacement();
+    m_fDistToEren = tInfo.fDist;
+
     const _vector vDir = XMLoadFloat3(&tInfo.vDirXZ);
 
     if (!XMVector3Equal(vDir, XMVectorZero()))
         Look_To(vDir, fDT);
 
+    /* 공격 애니메이션이 끝난 뒤, 가까우면 idle 유지하며 쿨타임 대기 */
+    if (!m_bAttackAnimPlaying)
+    {
+        if (m_fDistToEren <= m_fStayAttackErenDist)
+        {
+            m_fElapsedAttackCoolTime += fDT;
+
+            if (m_fElapsedAttackCoolTime >= m_fAttackCoolTime)
+            {
+                m_fElapsedAttackCoolTime = 0.f;
+                Select_AttackAnim();
+            }
+        }
+        else
+        {
+            Finish_Attack();
+        }
+
+        return;
+    }
+
     if (m_eAtkEren == TITAN_ATTACK_EREN::THROW)
     {
-        if(m_tComponents.animator->fTrackPosition >= 75.f && !m_bThrown)
+        if (m_tComponents.animator->fTrackPosition >= 75.f && !m_bThrown)
         {
             m_bFlushThrow = true;
             Ready_Throw();
@@ -83,6 +106,7 @@ void CAbnormalTitanState_AttackEren::Update(_float fDT)
             {
                 for (auto* goObj : m_goThrowRockPool)
                     goObj->Set_Enable(false);
+
                 Finish_Attack();
             }
         }
@@ -107,12 +131,12 @@ void CAbnormalTitanState_AttackEren::Enter(_uint iDetailFlag)
     m_bAttackAnimPlaying = false;
     m_bUsePunch = false;
     m_iAttackAnimClip = INVALID_ANIM_CLIP_INDEX;
-    m_fAttackDist = 0.f;
+    m_fDistToEren = 0.f;
     m_bThrown = false;
     m_bFlushThrow = false;
     m_fElapsedThrownTime = 0.f;
-
     m_fRotateSharpness = m_fAttackRotateSharpness;
+    m_fElapsedAttackCoolTime = 0.f;
 
     Try_CacheHitBox();
     Set_PunchHitBoxActive(false);
@@ -125,7 +149,7 @@ void CAbnormalTitanState_AttackEren::Enter(_uint iDetailFlag)
     }
 
     const DISPLACEMENT& tInfo = m_tRef.pSensor->Get_TargetDisplacement();
-    m_fAttackDist = tInfo.fDist;
+    m_fDistToEren = tInfo.fDist;
 
     /* 타겟을 보도록 회전 */
     if (!XMVector3Equal(XMLoadFloat3(&tInfo.vDirXZ), XMVectorZero()))
@@ -159,6 +183,13 @@ void CAbnormalTitanState_AttackEren::Setup_CachedTitanContext()
 _uint CAbnormalTitanState_AttackEren::Get_DetailState() const
 {
     return 0;
+}
+
+void CAbnormalTitanState_AttackEren::Cache_TitanContext(const TITAN_CONTEXT& tContext)
+{
+    CTitanState::Cache_TitanContext(tContext);
+
+    m_fStayAttackErenDist = tContext.fStayAttackErenDist;
 }
 
 void CAbnormalTitanState_AttackEren::Try_CacheHitBox()
@@ -226,7 +257,7 @@ void CAbnormalTitanState_AttackEren::Select_AttackAnim()
 {
     const char* pAnimName = nullptr;
 
-    if (m_fAttackDist <= m_fPunchAttackRange)
+    if (m_fDistToEren <= m_fPunchAttackRange)
     {
         pAnimName = ANIM_TITAN::ATTACK_COMBO_PUNCH;
         m_eAtkEren = TITAN_ATTACK_EREN::PUNCH;
@@ -306,14 +337,25 @@ void CAbnormalTitanState_AttackEren::Finish_Attack()
     m_bAttackAnimPlaying = false;
     m_bUsePunch = false;
     m_iAttackAnimClip = INVALID_ANIM_CLIP_INDEX;
+    m_bThrown = false;
+    m_bFlushThrow = false;
+    m_fElapsedThrownTime = 0.f;
 
     if (m_tRef.pFSM == nullptr)
         return;
 
+    /* 일정 거리 내에 있다면 상태 전환 없이 idle + 쿨타임 대기 */
+    if (m_fDistToEren <= m_fStayAttackErenDist)
+    {
+        m_fElapsedAttackCoolTime = 0.f;
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::IDLE);
+        return;
+    }
+
     if (Has_Target())
         m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::CHASE));
     else
-        m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::IDLE)); /* TODO MOVE 가 맞음 */
+        m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::MOVE)); /* TODO MOVE 가 맞음 */
 }
 
 _bool CAbnormalTitanState_AttackEren::Has_Target() const
@@ -387,20 +429,26 @@ void CAbnormalTitanState_AttackEren::On_AnimFinished(const Engine::ANIMATION_EVE
     if (!m_bAcivated)
         return;
 
-    if (!m_bAttackAnimPlaying)
+    const _uint iAnimIdx1 = m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_TITAN::ATTACK_COMBO_PUNCH);
+    const _uint iAnimIdx2 = m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_TITAN::ATTACK_THROW);
+
+    if (tData.iAnimationClip != iAnimIdx1 && tData.iAnimationClip != iAnimIdx2)
         return;
 
     if (tData.iAnimationClip == INVALID_ANIM_CLIP_INDEX)
         return;
 
-    if (tData.iAnimationClip != m_iAttackAnimClip)
-        return;
-
     if (m_eAtkEren == TITAN_ATTACK_EREN::THROW)
     {
-        /* 돌을 이미 던졌다면, 타이머가 끝날 때까지 Update에서 정리 */
+        /* 돌을 이미 던졌다면, 애니메이션만 끝난 상태로 전환 */
         if (m_bThrown)
+        {
+            m_bAttackAnimPlaying = false;
+            m_bUsePunch = false;
+            m_iAttackAnimClip = INVALID_ANIM_CLIP_INDEX;
+            m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::IDLE);
             return;
+        }
     }
 
     Finish_Attack();
