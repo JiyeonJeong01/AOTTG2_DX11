@@ -106,9 +106,6 @@ void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_
         vecStaticHandles.clear();
         pGrid->Query_StaticOverlap(tAABB_A, &vecStaticHandles);
 
-        CGameObject* pObj = SYS_GAMEOBJECT.Get_Wrapper(pColA->pCol->hObject);
-        string_view strName = pObj->Get_Label();
-
         for (COMPONENT_HANDLE hStatic : vecStaticHandles)
         {
             const COLLIDER_PROXY_DATA* pStatic = m_pPhysics_Processor->Find_ActivatedCollider_ByHandle(hStatic);
@@ -117,7 +114,6 @@ void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_
 
             if (!pStatic->pCol->bStatic)
                 continue;
-
 
             /* 마스크 처리 */
             const uint32_t iMaskA = pColA->pCol->iMask;

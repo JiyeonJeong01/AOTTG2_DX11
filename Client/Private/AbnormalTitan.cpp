@@ -70,10 +70,9 @@ void CAbnormalTitan::Start(void* pCtx)
             //{
             //    if (!goHitBox)
             //        __debugbreak();
-
             //    auto col = goHitBox->Get_Component<CCollider>();
             //    col->iMask = (O_HITBOX | O_ENEMY);
-            //    col->iDiscardMask = (O_HITBOX | O_ENEMY | O_WALKABLE);
+            //    col->iDiscardMask |= (O_HITBOX | O_ENEMY /*| O_WALKABLE*/);
             //}
 
             auto [iter, bInserted] = m_AllHitBoxes.emplace(string(goHitBox->Get_Label()), hit);
@@ -92,10 +91,9 @@ void CAbnormalTitan::Start(void* pCtx)
             //    auto* goHurt = hurt->Get_HurtBoxObject();
             //    if (!goHurt)
             //        __debugbreak();
-
             //    auto col = goHurt->Get_Component<CCollider>();
-            //    col->iMask = (O_HURTBOX | O_ENEMY);
-            //    col->iDiscardMask = (O_HURTBOX | O_ENEMY | O_WALKABLE);
+            //    col->iMask |= (O_HURTBOX | O_ENEMY);
+            //    col->iDiscardMask |= (O_HURTBOX | O_ENEMY | O_WALKABLE);
             //}
 
             //if (goHurt && goHurt->Get_Label() == TITAN_WEAK_POINT)

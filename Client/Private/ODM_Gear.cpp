@@ -11,29 +11,25 @@ void CODM_Gear::Handle_RopeState(CRope::ROPE_STATE eState, SIDE eSide)
 {
     if (eState == CRope::ROPE_STATE::ANCHORED)
     {
-        LOG_INFO("-------------------------------------");
-        LOG_INFO("ROPE Anchored : %.2f, %.2f, %.2f", m_vAnchor.x, m_vAnchor.y, m_vAnchor.z);
-
         _vector vDiff = XMLoadFloat3(&m_vAnchor) - m_tr.Get_StateXM(STATE::POSITION);
-        _float fDist = XMVectorGetX(XMVector3Length(vDiff));
         _float3 vDir;
         XMStoreFloat3(&vDir, XMVector3Normalize(vDiff));
 
-        LOG_INFO("Anchor <- Player Dir : %.2f, %.2f, %.2f", vDir.x, vDir.y, vDir.z);
-        LOG_INFO("-------------------------------------");
-
         /* attach 순간 1회만 outward 성분 절반 제거 */
         {
-            _float3 vLinearVel = m_rb->vLinearVel; // 여기만 본인 rigidbody 접근 변수로 바꾸세요
+            _float3 vLinearVel = m_rb->vLinearVel;
             _vector vLinearVelXM = XMLoadFloat3(&vLinearVel);
 
             const _float fToward = XMVectorGetX(XMVector3Dot(vLinearVelXM, XMVector3Normalize(vDiff)));
 
-            if (fToward < 0.f)
+            if (fToward < 0.f) /* 현재 속도가 앵커가 아닌 반대를 향함 */
             {
-                /* 앵커 반대 방향 성분(outward) 절반만 제거 */
-                vLinearVelXM = vLinearVelXM - XMVector3Normalize(vDiff) * (fToward * 0.5f);
-                XMStoreFloat3(&m_rb->vLinearVel, vLinearVelXM); // 여기만 본인 rigidbody 접근 변수로 바꾸세요
+                _vector vAnchorDir = XMVector3Normalize(vDiff);
+
+                /* 앵커 반대 방향 성분(outward) 일부 제거 */
+                vLinearVelXM = vLinearVelXM - vAnchorDir * (fToward * 0.8f);
+
+                XMStoreFloat3(&m_rb->vLinearVel, vLinearVelXM);
             }
         }
 
@@ -43,13 +39,13 @@ void CODM_Gear::Handle_RopeState(CRope::ROPE_STATE eState, SIDE eSide)
 
         if (m_bReelBoost)
         {
-            m_sj.Set_Spring(m_fForceSpring);
-            m_sj.Set_Damper(m_fForceDamper);
+            m_sj.Set_Spring(m_fForceSpringReel);
+            m_sj.Set_Damper(m_fForceDamperReel);
         }
         else
         {
-            m_sj.Set_Spring(m_fForceSpring);
-            m_sj.Set_Damper(m_fForceDamper);
+            m_sj.Set_Spring(m_fForceSpringNormal);
+            m_sj.Set_Damper(m_fForceDamperNormal);
         }
 
         m_OnSuccessAnchored.Invoke(To<_uint>(PLAYER_STATE::AIRBORNE_MOVE), To<_uint>(AIRBORNE_MOVE::AIR_BEGIN));
@@ -227,13 +223,13 @@ void CODM_Gear::Set_ReelBoost(_bool bEnable)
 
     if (m_bReelBoost)
     {
-        m_sj.Set_Spring(m_fSpringReel);
-        m_sj.Set_Damper(m_fDamperReel);
+        m_sj.Set_Spring(m_fForceSpringReel);
+        m_sj.Set_Damper(m_fForceDamperReel);
     }
     else
     {
-        m_sj.Set_Spring(m_fSpringNormal);
-        m_sj.Set_Damper(m_fDamperNormal);
+        m_sj.Set_Spring(m_fForceSpringNormal);
+        m_sj.Set_Damper(m_fForceDamperNormal);
     }
 }
 
@@ -254,10 +250,6 @@ GAS_STATE CODM_Gear::Get_GasState() const
 
 void CODM_Gear::Bind_PlayerContext(const PLAYER_CONTEXT& tContext)
 {
-    m_fSpringNormal = tContext.pStats->fSpringNormal;
-    m_fDamperNormal = tContext.pStats->fDamperNormal;
-    m_fSpringNormal = tContext.pStats->fSpringNormal;
-    m_fDamperNormal = tContext.pStats->fDamperNormal;
 }
 
 CODM_Gear::CODM_Gear()

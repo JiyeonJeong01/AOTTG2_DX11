@@ -43,7 +43,7 @@ private:
     _float          m_fProximityGrabAnimCooldown = 0.2f;
     _uint           m_iGrabAnimClip = INVALID_ANIM_CLIP_INDEX;
 
-    _float          m_fShouldGrabDist = 8.5f;
+    _float          m_fShouldGrabDist = 10.5f;
     _float          m_fSlowDownStartDist = 5.f;
     _float          m_fStopMoveDist = 2.f;
 

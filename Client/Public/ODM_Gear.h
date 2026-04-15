@@ -56,10 +56,6 @@ private :
     _uint                   m_flagUsingSide = 0;
 
     CEvent<_uint, _uint>    m_OnSuccessAnchored;
-    _float                  m_fSpringNormal = 0.f;
-    _float                  m_fDamperNormal = 0.f;
-    _float                  m_fSpringReel = 0.f;
-    _float                  m_fDamperReel = 0.f;
 
     _bool                   m_bReelBoost = false;
 
@@ -99,12 +95,16 @@ public :
     }
 
 private :
-    _float  m_fForceSpring = 3.f;
-    _float  m_fForceDamper = 3.f;
+    _float  m_fForceSpringNormal = 5.f;
+    _float  m_fForceDamperNormal = 4.f;
+    _float  m_fForceSpringReel = 7.f;
+    _float  m_fForceDamperReel = 4.f;
 
 SCRIPT_FIELDS_BEGIN(CODM_Gear)
-    SCRIPT_FIELD_FLOAT(m_fForceSpring)
-    SCRIPT_FIELD_FLOAT(m_fForceDamper)
+    SCRIPT_FIELD_FLOAT(m_fForceSpringNormal)
+    SCRIPT_FIELD_FLOAT(m_fForceDamperNormal)
+    SCRIPT_FIELD_FLOAT(m_fForceSpringReel)
+    SCRIPT_FIELD_FLOAT(m_fForceDamperReel)
 SCRIPT_FIELDS_END(CODM_Gear)
 
 

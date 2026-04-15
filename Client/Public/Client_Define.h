@@ -41,7 +41,8 @@ namespace Client
 
         O_WALKABLE = 1 << 6,
 
-        O_ETC1 = 1 << 7,
+        O_SENSOR = 1 << 7,
+
         O_ETC2 = 1 << 8,
         O_ETC3 = 1 << 9,
         O_ETC4 = 1 << 10,

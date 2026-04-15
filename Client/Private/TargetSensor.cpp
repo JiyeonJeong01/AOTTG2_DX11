@@ -32,6 +32,11 @@ void CTargetSensor::Awake(void* pCtx)
     IF_TRUE_RETURN_MSG_BREAK(!m_trSensor.Is_Valid(), , "m_trTitan is invalid");
 
     trigger->OnTriggerEnter.Add_Listener(&CTargetSensor::OnTriggerEnter, this);
+
+    /* ERASE_충돌_마스크 */
+    //trigger->iMask |= O_SENSOR;
+    //trigger->iDiscardMask |= O_SENSOR;
+
 }
 
 void CTargetSensor::Start(void* pCtx)

@@ -133,25 +133,6 @@ void CPlayer::Update(void* pCtx, _float fDT)
 void CPlayer::Late_Update(void* pCtx, _float fDT)
 {
     m_upStateMachine->Late_Update(fDT);
-
-    auto vLinearVel = m_tComponents.rigidbody->vLinearVel;
-    auto vAngularVel = m_tComponents.rigidbody->vAngularVel;
-
-    auto vCamLook3 = GAME_INSTANCE.Cam_Look();
-    auto playerLook = m_tComponents.transform.Get_StateXM(STATE::LOOK);
-
-    _float3 vPlayerLook3;
-    XMStoreFloat3(&vPlayerLook3, playerLook);
-
-    LOG_INFO("======================================================");
-
-    LOG_INFO("Linear Velocity : (%.2f, %.2f, %.2f)",
-        vLinearVel.x, vLinearVel.y, vLinearVel.z);
-    LOG_INFO("Camera Look : (%.2f, %.2f, %.2f)",
-        vCamLook3.x, vCamLook3.y, vCamLook3.z);
-
-
-    LOG_INFO("======================================================");
 }
 
 void CPlayer::On_Grabbed(SIDE eSide, CTitan* pTitan)

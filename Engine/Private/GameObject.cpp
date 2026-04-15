@@ -215,6 +215,10 @@ void CGameObject::Set_Enable(_bool bActive)
             SYS_COMPONENT.Set_Enable(eType, hCom, bActive);
         }
     }
+
+    auto children = Get_Children();
+    for (auto* pChild : children)
+        pChild->Set_Enable(bActive);
 }
 
 _bool CGameObject::Get_Enabled() const

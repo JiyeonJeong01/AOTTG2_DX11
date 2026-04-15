@@ -168,6 +168,8 @@ typedef struct tagPlayerContext
 
     class CHitBox* pHitBox = nullptr;
 
+    _float                  fOriginDrag = 0.5f;
+
 } PLAYER_CONTEXT;
 
 inline constexpr const char* PLAYER_BLADE_ATTACK = "Blade_Attack";

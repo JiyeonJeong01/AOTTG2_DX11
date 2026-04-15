@@ -47,7 +47,6 @@ public: /* -------- GameObject --------- */
 public : /* -------- Raycast -------- */
     _bool   Raycast(const POINT& pt, RAY& tRAY, RAYCAST_HIT& tHitInfo);
     _bool   RaycastAll(const POINT& pt, RAY& tRAY, RAYCAST_HITS& tAllHitInfo);
-    void    Test_Raycast();
 
 public : /* ---------- Game ---------- */
     _float      Get_DT() const noexcept;

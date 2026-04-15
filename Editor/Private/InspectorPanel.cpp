@@ -47,7 +47,7 @@ const std::array<CInspectorPanel::MASK_ITEM, 12> CInspectorPanel::s_arrColliderM
     { "O_HITBOX",   Client::O_HITBOX },
     { "O_HURTBOX",  Client::O_HURTBOX },
     { "O_WALKABLE", Client::O_WALKABLE },
-    { "O_ETC1",     Client::O_ETC1 },
+    { "O_SENSOR",     Client::O_SENSOR },
     { "O_ETC2",     Client::O_ETC2 },
     { "O_ETC3",     Client::O_ETC3 },
     { "O_ETC4",     Client::O_ETC4 },

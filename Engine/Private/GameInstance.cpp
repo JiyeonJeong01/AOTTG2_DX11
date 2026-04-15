@@ -125,62 +125,10 @@ _bool CGameInstance::RaycastAll(const POINT& pt, RAY& tRAY, RAYCAST_HITS& tAllHi
     return false;
 }
 
-void CGameInstance::Test_Raycast()
-{
-    RAYCAST_HITS allHitInfo{};
-    RAY tRAY;
-
-    if (SYS_INPUT.Get_KeyDown('I'))
-    {
-        tRAY.fMaxDist = 1000.f;
-        tRAY.fMinDist = 0.f;
-
-        //LOG_INFO("[ RAYCAST TEST ] : max dist - %.1f, min dist - %.1f",
-        //    tRAY.fMaxDist, tRAY.fMinDist);
-
-        CRaycast::Intersect_Ray(allHitInfo, tRAY, SYS_INPUT.Get_GameMousePos(), m_pPhysics);
-    }
-
-    if (SYS_INPUT.Get_KeyDown('O'))
-    {
-        tRAY.fMaxDist = 50.f;
-        tRAY.fMinDist = 0.f;
-
-        //LOG_INFO("[ RAYCAST TEST ] : max dist - %.1f, min dist - %.1f",
-        //    tRAY.fMaxDist, tRAY.fMinDist);
-
-        CRaycast::Intersect_Ray(allHitInfo, tRAY, SYS_INPUT.Get_GameMousePos(), m_pPhysics);
-    }
-
-    if (SYS_INPUT.Get_KeyDown('P'))
-    {
-        tRAY.fMaxDist = 1000.f;
-        tRAY.fMinDist = 50.f;
-
-        //LOG_INFO("[ RAYCAST TEST ] : max dist - %.1f, min dist - %.1f",
-        //    tRAY.fMaxDist, tRAY.fMinDist);
-
-        CRaycast::Intersect_Ray(allHitInfo, tRAY, SYS_INPUT.Get_GameMousePos(), m_pPhysics);
-    }
-
-    if (allHitInfo.iNumHits > 0)
-    {
-        _uint i = 0;
-        for (auto hit : allHitInfo.allHits)
-        {
-            CGameObject* pObject = SYS_GAMEOBJECT.Get_Wrapper(hit.hObject);
-            //LOG_INFO("%d : Object : { %.*s } | Hit Pos : { %.1f, %.1f, %.1f }",
-            //    i,
-            //    (int)pObject->Get_Label().size(),
-            //    pObject->Get_Label().data(),
-            //    hit.vHitPos.x, hit.vHitPos.y, hit.vHitPos.z);
-        }
-    }
-}
-
 _float CGameInstance::Get_DT() const noexcept
 {
-    return 0.f;
+    const _float fDT = SYS_CORE.Get_FrameDT();
+    return fDT;
 }
 
 void CGameInstance::Set_TimeScale()

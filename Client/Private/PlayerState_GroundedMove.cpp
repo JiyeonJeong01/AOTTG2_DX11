@@ -74,7 +74,6 @@ void CPlayerState_GroundedMove::Enter(_uint iDetailFlag)
         /* 유체 저항 일시적 감소 */
         cout << "[GROUNDED_MOVE] ENTER SLIDE\n";
 
-        m_fOriginDrag = m_tComponents.rigidbody.Get_Drag();
         m_tComponents.rigidbody.Set_Drag(m_fSlidingDrag);
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::SLIDE);
 
@@ -94,6 +93,13 @@ void CPlayerState_GroundedMove::Exit()
 
     /* 유체 저항 복구 */
     m_tComponents.rigidbody.Set_Drag(m_fOriginDrag);
+}
+
+void CPlayerState_GroundedMove::Cache_PlayerContext(const PLAYER_CONTEXT& tContext)
+{
+    CPlayerState::Cache_PlayerContext(tContext);
+
+    m_fOriginDrag = tContext.fOriginDrag;
 }
 
 void CPlayerState_GroundedMove::Setup_CachedPlayerContext()

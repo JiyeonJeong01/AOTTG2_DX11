@@ -80,6 +80,7 @@ void CPlayerState_AirborneMove::Enter(_uint iDetailFlag)
 
     m_fGroundStableTime = 0.f;
     m_fAirStableTime = 0.f;
+    m_fAirReleaseElapsedTime = m_fTotalAirReleaseTime; /* 바로 시작할 수 있도록 */
 
     if (iDetailFlag < To<_uint>(AIRBORNE_MOVE::END))
         m_eAirborneState = To<AIRBORNE_MOVE>(iDetailFlag);
@@ -196,6 +197,8 @@ void CPlayerState_AirborneMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DA
 
     if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::DASH])
         On_AirDashFinished(tData);
+    else if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::AIR_RELEASE])
+        m_bAirReleasePlayed = false;
 }
 
 void CPlayerState_AirborneMove::On_AirDashFinished(const Engine::ANIMATION_EVENT_DATA& tData)
@@ -239,6 +242,9 @@ void CPlayerState_AirborneMove::Update_AnchorAirOrSlide()
 
 void CPlayerState_AirborneMove::Decide_AnchorMoveAnim(_bool bOnGround)
 {
+    if (Try_AirReleaseMotion())
+        return;
+
     _bool bLeftHook = m_tInputCmd.bLeftAnchorHeld;
     _bool bRightHook = m_tInputCmd.bRightAnchorHeld;
 
@@ -304,6 +310,30 @@ _bool CPlayerState_AirborneMove::Is_AnchorSliding() const
     return m_eAirborneState == AIRBORNE_MOVE::SLIDE_LEFT
         || m_eAirborneState == AIRBORNE_MOVE::SLIDE_RIGHT
         || m_eAirborneState == AIRBORNE_MOVE::SLIDE_FRONT;
+}
+
+_bool CPlayerState_AirborneMove::Try_AirReleaseMotion()
+{
+    m_fAirReleaseElapsedTime += GAME_INSTANCE.Get_DT();
+
+    if (m_fAirReleaseElapsedTime > m_fTotalAirReleaseTime)
+    {
+        m_fAirReleaseElapsedTime = m_fTotalAirReleaseTime;
+        m_bAirReleasePlayed = false;
+    }
+    else    /* 쿨타임  */
+        return false;
+
+    if (!m_bAirReleasePlayed
+        && m_tComponents.transform->vPosition.y >= 8.f
+        && m_tComponents.rigidbody->vLinearVel.y >= 10.f)
+    {
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_RELEASE);
+        m_fAirReleaseElapsedTime = 0.f;
+        m_bAirReleasePlayed = true;
+    }
+
+    return m_bAirReleasePlayed;
 }
 
 std::shared_ptr<CPlayerState_AirborneMove> CPlayerState_AirborneMove::Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)

@@ -32,13 +32,16 @@ private :
     AIRBORNE_MOVE           m_eAirborneState = AIRBORNE_MOVE::AIR_BEGIN;
     _float                  m_fGroundStableTime = 0.f;
     _float                  m_fAirStableTime = 0.f;
+    _bool                   m_bAirReleasePlayed = false;
+    _float                  m_fAirReleaseElapsedTime = 0.f;
+    const _float            m_fTotalAirReleaseTime = 2.f;
 private:
     void    Decide_HookAnim();
 
     void    Update_AnchorAirOrSlide();
     void    Decide_AnchorMoveAnim(_bool bOnGround);
     _bool   Is_AnchorSliding() const;
-    _bool   Can_EnterAnchorSlide() const;
+    _bool   Try_AirReleaseMotion();
 
 public:
     static std::shared_ptr<CPlayerState_AirborneMove> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);

@@ -250,7 +250,8 @@ void CTitanBound_Controller::Bind_Trigger(
         return;
 
     /* ERASE_마스크_설정 */
-    //colBound->iDiscardMask = (O_EREN | O_ENEMY | O_HITBOX | O_HURTBOX | O_WALKABLE);
+    //colBound->iMask |= O_SENSOR;
+    //colBound->iDiscardMask |= (O_EREN | O_ENEMY | O_HITBOX | O_HURTBOX | O_WALKABLE | O_SENSOR);
 
     colBound->OnTriggerEnter.Add_Listener(pFunc, this);
 }

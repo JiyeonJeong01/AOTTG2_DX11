@@ -20,6 +20,7 @@ public :
     void Enter(_uint iDetailFlag) override;
     void Exit() override;
 
+    void Cache_PlayerContext(const PLAYER_CONTEXT& tContext) override;
     void Setup_CachedPlayerContext() override;
 
 private:

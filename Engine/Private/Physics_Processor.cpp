@@ -237,7 +237,7 @@ void CPhysics_Processor::Process_SpringJoints(_float fDT)
 
             _float3 vForce3{};
             Math::Store(vForce3, vForce);
-            //vForce3.y *= 1.5f;
+            vForce3.y *= 2.f;
 
             {
                 _float3 vN3{};
@@ -247,13 +247,6 @@ void CPhysics_Processor::Process_SpringJoints(_float fDT)
                 Math::Store(vVel3, vLinearVel);
 
                 const _float fDotVelForce = XMVectorGetX(XMVector3Dot(vLinearVel, vForce));
-
-                //LOG_INFO("[SJ] AnchorDir           : %.2f, %.2f, %.2f", vN3.x, vN3.y, vN3.z);
-                //LOG_INFO("[SJ] VelBefore           : %.2f, %.2f, %.2f", vVel3.x, vVel3.y, vVel3.z);
-                //LOG_INFO("[SJ] Dist / Target / X   : %.2f / %.2f / %.2f", fDist, fTargetLength, fX);
-                //LOG_INFO("[SJ] VelAlongSpring(fV)  : %.2f", fV);
-                //LOG_INFO("[SJ] Force               : %.2f, %.2f, %.2f", vForce3.x, vForce3.y, vForce3.z);
-                //LOG_INFO("[SJ] Dot(Vel, Force)     : %.2f", fDotVelForce);
             }
 
             rigidbody.Add_Force(vForce3);
@@ -327,24 +320,6 @@ void CPhysics_Processor::Integrate_Forces(_float fDT)
             if (!Math::Is_Zero(vForceAccum))
             {
                 const _vector vLinearVel = Math::Load(pData->vLinearVel);
-
-                //if (pData->bDebugLog)
-                //{
-                //    const _vector vDeltaVel = vForceAccum * pData->fInvMass * fDT;
-                //    const _vector vLinearVelAfter = vLinearVel + vDeltaVel;
-
-                //    _float3 vForceAccum3{}, vLinearVelBefore3{}, vDeltaVel3{}, vLinearVelAfter3{};
-                //    Math::Store(vForceAccum3, vForceAccum);
-                //    Math::Store(vLinearVelBefore3, vLinearVel);
-                //    Math::Store(vDeltaVel3, vDeltaVel);
-                //    Math::Store(vLinearVelAfter3, vLinearVelAfter);
-
-                //    LOG_INFO("[IF] ForceAccum : %.2f, %.2f, %.2f", vForceAccum3.x, vForceAccum3.y, vForceAccum3.z);
-                //    LOG_INFO("[IF] VelBefore  : %.2f, %.2f, %.2f", vLinearVelBefore3.x, vLinearVelBefore3.y, vLinearVelBefore3.z);
-                //    LOG_INFO("[IF] DeltaVel   : %.2f, %.2f, %.2f", vDeltaVel3.x, vDeltaVel3.y, vDeltaVel3.z);
-                //    LOG_INFO("[IF] VelAfter   : %.2f, %.2f, %.2f", vLinearVelAfter3.x, vLinearVelAfter3.y, vLinearVelAfter3.z);
-                //}
-
                 Math::Store(pData->vLinearVel, vLinearVel + vForceAccum * pData->fInvMass * fDT);
             }
 
