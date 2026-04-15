@@ -75,6 +75,7 @@ private:
     class CMeshRenderer_Processor*  m_pMeshRenderer_Processor{};
 
     _bool   bSubmittedThisFrame{}; /* 프레임당 하나의 카메라의 submit만 받는다. */
+    RENDER_LAYER    m_eCurLayer = RENDER_LAYER::END;
 
 private:
     HRESULT    Create_RenderState();

@@ -66,6 +66,16 @@ void CAbnormalTitan::Start(void* pCtx)
             CGameObject* goHitBox = hit->Get_HitBoxObject();
             IF_NULL_RETURN_MSG_BREAK(goHitBox, , "goHitBox is nullptr");
 
+            ///* ERASE_마스크_설정 */
+            //{
+            //    if (!goHitBox)
+            //        __debugbreak();
+
+            //    auto col = goHitBox->Get_Component<CCollider>();
+            //    col->iMask = (O_HITBOX | O_ENEMY);
+            //    col->iDiscardMask = (O_HITBOX | O_ENEMY | O_WALKABLE);
+            //}
+
             auto [iter, bInserted] = m_AllHitBoxes.emplace(string(goHitBox->Get_Label()), hit);
             IF_TRUE_RETURN_MSG_BREAK(!bInserted, , "duplicated hitbox label");
         }
@@ -77,7 +87,17 @@ void CAbnormalTitan::Start(void* pCtx)
             if (!hurt) continue;
             hurt->Subscribe_OnHurt(&CAbnormalTitan::On_Hurt, this);
 
-            //auto* goHurt = hurt->Get_HurtBoxObject();
+            ///* ERASE_마스크_설정 */
+            //{
+            //    auto* goHurt = hurt->Get_HurtBoxObject();
+            //    if (!goHurt)
+            //        __debugbreak();
+
+            //    auto col = goHurt->Get_Component<CCollider>();
+            //    col->iMask = (O_HURTBOX | O_ENEMY);
+            //    col->iDiscardMask = (O_HURTBOX | O_ENEMY | O_WALKABLE);
+            //}
+
             //if (goHurt && goHurt->Get_Label() == TITAN_WEAK_POINT)
             //{
             //    m_goWeakPoint = goHurt;
@@ -115,7 +135,7 @@ void CAbnormalTitan::Start(void* pCtx)
     m_upStateMachine->Cache_TitanInfos(tContext);
     m_spCurState = m_upStateMachine->Sync_StateMachine();
 
-    m_tRef.pSensor->Set_TargetMask(O_EREN | O_CROPS | O_PLAYER);
+    m_tRef.pSensor->Set_TargetMask(O_EREN | O_SCOUT | O_PLAYER);
     m_tRef.pSensor->Subscribe_OnDetectedTarget(&CAbnormalTitan::On_DetectedHumanSide, this);
     m_upStateMachine->Subscribe_OnChangedCurState(&CAbnormalTitan::OnChange_CurState, this);
 
@@ -239,7 +259,7 @@ void CAbnormalTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHur
     UNREFERENCED_PARAMETER(tHitInfo);
 
     const _int iPlayerAtkMask = O_PLAYER | O_HITBOX;
-    const _int iCropsAtkMask = O_CROPS | O_HITBOX;
+    const _int iCropsAtkMask = O_SCOUT | O_HITBOX;
     const _int iAttackerMask = tHitInfo.goAttacker->Get_Mask();
     if (!((iPlayerAtkMask == iAttackerMask) || (iCropsAtkMask == iAttackerMask)))
         return;
@@ -319,7 +339,7 @@ void CAbnormalTitan::On_DetectedHumanSide(CGameObject* goHuman)
     const uint32_t iNewMask = goHuman->Get_Mask();
     const uint32_t iPrevMask = m_goTarget ? m_goTarget->Get_Mask() : 0;
 
-    if (!(iNewMask == O_PLAYER || iNewMask == O_EREN || iNewMask == O_CROPS)) /* 타겟이 될 수 있는 대상 */
+    if (!(iNewMask == O_PLAYER || iNewMask == O_EREN || iNewMask == O_SCOUT)) /* 타겟이 될 수 있는 대상 */
         return;
 
     if (Has_Target())

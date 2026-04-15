@@ -34,8 +34,8 @@ public:
     void    Clear_SkinningReference(MESH_RENDERER_DATA* pData);
 
 private :
-    void Initialize_Component_Data(COMPONENT_HANDLE hComponent) override;
-    uint64_t Make_SortKey(const MESH_RENDERER_DATA& d) const;
+    void        Initialize_Component_Data(COMPONENT_HANDLE hComponent) override;
+    uint64_t    Make_SortKey(const MESH_RENDERER_DATA& d) const;
 
     void    Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, MESH_RENDERER_DATA* pData);
 
@@ -49,7 +49,7 @@ private :
 public :
     uint32_t            Allocate_ParticleRuntime();
     void                Release_ParticleRuntime(uint32_t iRuntime);
-    PARTICLE_RUNTIME* Get_ParticleRuntime(uint32_t iRuntime);
+    PARTICLE_RUNTIME*   Get_ParticleRuntime(uint32_t iRuntime);
 
 private:
     void                Update_Particle(MESH_RENDERER_DATA* pData, _float fDT);
@@ -61,6 +61,8 @@ private :
     ID3D11DeviceContext*        m_pContext{};
     CTransform_Processor*       m_pTransformProcessor{};
     CAnimator_Processor*        m_pAnimatorProcessor{};
+
+    uint32_t                       m_hSharedOutlineMaterial = INVALID_HANDLE_UINT;
 
     std::vector<PARTICLE_RUNTIME>  m_vecParticleRuntime;
     std::vector<uint32_t>          m_vecFreeParticleRuntime;

@@ -31,5 +31,6 @@ public:
     static std::shared_ptr<CPlayerState_Reload> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
 
 private:
-    RELOAD m_eReloadState = RELOAD::END;
+    _bool   m_bReloadCompleted = false;
+    RELOAD  m_eReloadState = RELOAD::END;
 };

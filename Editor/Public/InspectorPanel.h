@@ -64,6 +64,8 @@ private:
     void Draw_MeshRenderer();
     void Draw_CanvasRenderer();
     void Draw_Collider();
+    void Draw_ColliderMaskEditor(const char* szLabel, uint32_t& iTargetMask, bool& bChanged);
+
     void Draw_Rigidbody();
     void Draw_SpringJoint();
     void Draw_Animator();
@@ -118,6 +120,14 @@ private:
         "UI",
         "SKY"
     };
+
+    struct MASK_ITEM
+    {
+        const char* szName = "";
+        uint32_t    iMask = 0;
+    };
+
+    static const std::array<MASK_ITEM, 12> s_arrColliderMaskItems;
 
 public:
     static std::unique_ptr<CInspectorPanel> Create(const std::string& strPanelName, CHierarchyPanel* pHierarchy, CProjectPanel* pProject);

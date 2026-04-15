@@ -24,6 +24,7 @@ typedef struct tagAABB
 typedef struct ENGINE_DLL tagColliderProxyData final
 {
     COLLIDER_DATA*      pCol = nullptr;
+
     _float3             vCenterWorld{};                 /* 월드 기준 충돌 중심점
                                                         - BOX    : 박스 중심
                                                         - SPHERE : 구 중심

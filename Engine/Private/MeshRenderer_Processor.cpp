@@ -30,6 +30,8 @@ HRESULT CMeshRenderer_Processor::Initialize()
     /* 프로페서에서 new 생성하는 객체는 직접 해제해준다. */
     m_Pool.Subscribe_OnDeallocate(&CMeshRenderer_Processor::Reset_Data_On_Deallocate, this);
 
+    m_hSharedOutlineMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::MATERIAL_OUTLINE);
+
     return S_OK;
 }
 
@@ -111,7 +113,7 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
                 continue;
             }
 
-            if (pData->hMesh == INVALID_HANDLE_UINT || pData->hMaterial == INVALID_HANDLE_UINT)
+            if (pData->hMesh == INVALID_HANDLE_UINT /*|| pData->hMaterial == INVALID_HANDLE_UINT*/)
                 continue;
 
             COMPONENT_HANDLE hReferenceAnimator = INVALID_HANDLE;
@@ -136,6 +138,7 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             tCmd.sortKey = Make_SortKey(*pData);
             tCmd.mesh.eMode = pData->eMode;
             tCmd.eLayer = pData->layer;
+            tCmd.mesh.pMeshRendererData = pData;
 
             if (pData->hSkinningSourceAnimator.Is_Valid())
             {
@@ -151,6 +154,23 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             }
 
             outCmds.push_back(tCmd);
+
+            /* -------------------- Outline Extra Pass -------------------- */
+            if ((pData->extraPassFlags & To<uint32_t>(EXTRA_RENDER_PASS::OUTLINE)) != 0)
+            {
+                if (m_hSharedOutlineMaterial == INVALID_HANDLE_UINT)
+                    continue;
+
+                DRAW_CMD tOutlineCmd = tCmd;
+                tOutlineCmd.mesh.hMaterial = m_hSharedOutlineMaterial;
+
+                /* 기존 per-object params 그대로 사용 */
+                tOutlineCmd.mesh.hPerObjectParams = pData->hPerObjectParams;
+
+                tOutlineCmd.sortKey += 1;
+                outCmds.push_back(tOutlineCmd);
+            }
+
         }
     }
 }
@@ -179,6 +199,15 @@ HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, C
     if (pMeshSpec->particleGUID.Is_Valid())
         pData->hParticle = SYS_RESOURCE.Load_Particle(pMeshSpec->particleGUID);
 
+    pData->vecOverrideMaterials = pMeshSpec->vecOverrideMaterials;
+
+    if (SYS_RESOURCE.Is_ModelHandle(pData->hMesh))
+    {
+        const MODEL_ENTRY* pModel = SYS_RESOURCE.Get_Model(pData->hMesh);
+        if (pModel)
+            pData->vecOverrideMaterials.resize(pModel->parts.size(), INVALID_HANDLE_UINT);
+    }
+
     pData->flags = pMeshSpec->flags;
     pData->layer = pMeshSpec->layer;
     pData->sortZ = pMeshSpec->sortZ;
@@ -189,6 +218,8 @@ HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, C
 
     pData->bParticlePlaying = pMeshSpec->bParticlePlaying;
     pData->vParticlePivot = pMeshSpec->vParticlePivot;
+
+    pData->extraPassFlags = pMeshSpec->extraPassFlags;
 
     HRESULT hr = S_OK;
 
@@ -252,6 +283,9 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CMeshRenderer_Processor::Build_Spec(COMPONE
     spec->eMode = pData->eMode;
     spec->strAttachBoneName = pData->strAttachBoneName;
 
+    spec->vecOverrideMaterials = pData->vecOverrideMaterials;
+    spec->extraPassFlags = pData->extraPassFlags;
+
     return spec;
 }
 
@@ -267,6 +301,8 @@ void CMeshRenderer_Processor::Initialize_Component_Data(COMPONENT_HANDLE hCompon
         pData->hPerObjectParams = SYS_RESOURCE.Alloc_PerObjectParamBlock();
 
     pData->hTransform = pObj->Get_Component<CTransform>().Get_Handle();
+
+    pData->vecOverrideMaterials.clear();
 
     Clear_SkinningReference(pData);
     Clear_AttachReference(pData);

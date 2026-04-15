@@ -214,7 +214,7 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
 {
     COMPONENT_SPEC_TYPE(COMPONENT_TYPE::MESH_RENDERER)
 
-        ASSET_GUID      meshGUID{};
+    ASSET_GUID      meshGUID{};
     ASSET_GUID      materialGUID{};
     ASSET_GUID      particleGUID{};
 
@@ -228,6 +228,10 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
 
     _bool           bParticlePlaying = false;
     _float3         vParticlePivot{};
+
+    uint32_t        extraPassFlags = 0;
+
+    std::vector<uint32_t> vecOverrideMaterials;
 
     std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
     {
@@ -251,6 +255,13 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
 
         j["ParticlePlaying"] = bParticlePlaying;
         j["ParticlePivot"] = { vParticlePivot.x, vParticlePivot.y, vParticlePivot.z };
+
+        if (!vecOverrideMaterials.empty())
+        {
+            j["OverrideMaterials"] = vecOverrideMaterials;
+        }
+
+        j["ExtraPassFlags"] = extraPassFlags;
     }
 
     _bool FromJson(const json& j) override
@@ -298,6 +309,16 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
             vParticlePivot.y = (*itPivot)[1].get<_float>();
             vParticlePivot.z = (*itPivot)[2].get<_float>();
         }
+
+        vecOverrideMaterials.clear();
+
+        auto itOverride = j.find("OverrideMaterials");
+        if (itOverride != j.end() && itOverride->is_array())
+        {
+            vecOverrideMaterials = itOverride->get<std::vector<uint32_t>>();
+        }
+
+        Read_UInt(j, "ExtraPassFlags", extraPassFlags);
 
         return true;
     }
@@ -864,6 +885,9 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
 
     _bool       bDebugDraw = false;
 
+    uint32_t    iMask = 0;
+    uint32_t    iDiscardMask = 0;
+
     _bool       bTrigger = false;
     _bool       bStatic = false;
 
@@ -894,6 +918,8 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
         j["Shape"] = SCAST(_uint, eShape);
         j["Offset"] = { vOffset.x, vOffset.y, vOffset.z };
         j["RotationOffset"] = { vRotationOffset.x, vRotationOffset.y, vRotationOffset.z };
+        j["Mask"] = iMask;
+        j["DiscardMask"] = iDiscardMask;
 
         switch (eShape)
         {
@@ -935,6 +961,12 @@ typedef struct ENGINE_DLL tagColliderSpec final : public COMPONENT_SPEC_BASE
 
         if (!Read_Bool(j, "Trigger", bTrigger))
             bTrigger = false;
+
+        if (!Read_UInt(j, "Mask", iMask))
+            iMask = 0;
+
+        if (!Read_UInt(j, "DiscardMask", iDiscardMask))
+            iDiscardMask = 0;
 
         {
             uint32_t iShape = 0;

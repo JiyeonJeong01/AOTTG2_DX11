@@ -60,7 +60,7 @@ void CThrownBlade::On_TriggerEnter(const COLLISION_DESC& tDesc)
     if (!pOther)
         return;
 
-    if (pOther->Has_Mask(O_PLAYER | O_CROPS | O_EREN))
+    if (pOther->Has_Mask(O_PLAYER | O_SCOUT | O_EREN))
         return;
 
     if (!tDesc.pCounterCollider)

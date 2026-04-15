@@ -37,6 +37,15 @@
     <ClInclude Include="..\Public\Attacher.h" />
     <ClInclude Include="..\Public\CameraController.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
+    <ClInclude Include="..\Public\CrawlerTitan.h" />
+    <ClInclude Include="..\Public\CrawlerTitanStateMachine.h" />
+    <ClInclude Include="..\Public\CrawlerTitanState_AttackEren.h" />
+    <ClInclude Include="..\Public\CrawlerTitanState_Chase.h" />
+    <ClInclude Include="..\Public\CrawlerTitanState_Dead.h" />
+    <ClInclude Include="..\Public\CrawlerTitanState_Hurt.h" />
+    <ClInclude Include="..\Public\CrawlerTitanState_Idle.h" />
+    <ClInclude Include="..\Public\CrawlerTitanState_Move.h" />
+    <ClInclude Include="..\Public\CrawlerTitanState_Stunned.h" />
     <ClInclude Include="..\Public\Environment_Controller.h" />
     <ClInclude Include="..\Public\ErenSequenceDirector.h" />
     <ClInclude Include="..\Public\ErenTitan.h" />
@@ -49,6 +58,7 @@
     <ClInclude Include="..\Public\NormalTitanState_Stunned.h" />
     <ClInclude Include="..\Public\PlayerState_Grabbed.h" />
     <ClInclude Include="..\Public\ResupplyStation.h" />
+    <ClInclude Include="..\Public\ScoutBehavior_RequestResupply.h" />
     <ClInclude Include="..\Public\TargetSensor.h" />
     <ClInclude Include="..\Public\NormalTitanState_Chase.h" />
     <ClInclude Include="..\Public\Scout.h" />
@@ -82,7 +92,7 @@
     <ClInclude Include="..\Public\Player_InputController.h" />
     <ClInclude Include="..\Public\Player_Struct.h" />
     <ClInclude Include="..\Public\ScoutBehavior.h" />
-    <ClInclude Include="..\Public\ScoutBehavior_Runaway.h" />
+    <ClInclude Include="..\Public\Scout_Scriptable_Object.h" />
     <ClInclude Include="..\Public\Scout_Define.h" />
     <ClInclude Include="..\Public\Script_Registry.h" />
     <ClInclude Include="..\Public\State.h" />
@@ -100,6 +110,7 @@
     <ClInclude Include="..\Public\UI_ErenController.h" />
     <ClInclude Include="..\Public\UI_GasController.h" />
     <ClInclude Include="..\Public\UI_SkillController.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\AbnormalTitan.cpp" />
@@ -115,6 +126,15 @@
     <ClCompile Include="..\Private\AbnormalTitanState_Stunned.cpp" />
     <ClCompile Include="..\Private\Attacher.cpp" />
     <ClCompile Include="..\Private\CameraController.cpp" />
+    <ClCompile Include="..\Private\CrawlerTitan.cpp" />
+    <ClCompile Include="..\Private\CrawlerTitanStateMachine.cpp" />
+    <ClCompile Include="..\Private\CrawlerTitanState_AttackEren.cpp" />
+    <ClCompile Include="..\Private\CrawlerTitanState_Chase.cpp" />
+    <ClCompile Include="..\Private\CrawlerTitanState_Dead.cpp" />
+    <ClCompile Include="..\Private\CrawlerTitanState_Hurt.cpp" />
+    <ClCompile Include="..\Private\CrawlerTitanState_Idle.cpp" />
+    <ClCompile Include="..\Private\CrawlerTitanState_Move.cpp" />
+    <ClCompile Include="..\Private\CrawlerTitanState_Stunned.cpp" />
     <ClCompile Include="..\Private\Environment_Controller.cpp" />
     <ClCompile Include="..\Private\ErenSequenceDirector.cpp" />
     <ClCompile Include="..\Private\ErenTitan.cpp" />
@@ -126,6 +146,7 @@
     <ClCompile Include="..\Private\NormalTitanState_Stunned.cpp" />
     <ClCompile Include="..\Private\PlayerState_Grabbed.cpp" />
     <ClCompile Include="..\Private\ResupplyStation.cpp" />
+    <ClCompile Include="..\Private\ScoutBehavior_RequestResupply.cpp" />
     <ClCompile Include="..\Private\TargetSensor.cpp" />
     <ClCompile Include="..\Private\NormalTitanState_Chase.cpp" />
     <ClCompile Include="..\Private\Scout.cpp" />
@@ -156,7 +177,7 @@
     <ClCompile Include="..\Private\PlayerStateMachine.cpp" />
     <ClCompile Include="..\Private\Player_InputController.cpp" />
     <ClCompile Include="..\Private\ScoutBehavior.cpp" />
-    <ClCompile Include="..\Private\ScoutBehavior_Runaway.cpp" />
+    <ClCompile Include="..\Private\Scout_Scriptable_Object.cpp" />
     <ClCompile Include="..\Private\Script_Registry.gen.cpp" />
     <ClCompile Include="..\Private\State.cpp" />
     <ClCompile Include="..\Private\StateMachine.cpp" />
@@ -172,6 +193,9 @@
     <ClCompile Include="..\Private\UI_ErenController.cpp" />
     <ClCompile Include="..\Private\UI_GasController.cpp" />
     <ClCompile Include="..\Private\UI_SkillController.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Client.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

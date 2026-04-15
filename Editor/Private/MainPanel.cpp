@@ -64,6 +64,9 @@ HRESULT CMainPanel::Initialize()
 
     SYS_EDITOR.Load_SavedNav(L"../../Client/Bin/Assets/DataFiles/NavMesh.dat");
 
+    m_eDebugDraw = DEBUG_DRAW::NONE;
+    SYS_CORE.Set_DebugRender(m_eDebugDraw);
+
     return S_OK;
 }
 

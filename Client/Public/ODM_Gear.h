@@ -18,7 +18,7 @@ typedef struct tagTryGrapplingInfo
 
 typedef struct tagGasState
 {
-    const _float    fMax = 1000.f;
+    const _float    fMax = 100.f;
     _float          fCurrent = fMax;
 } GAS_STATE;
 
@@ -44,14 +44,15 @@ public:
 private :
     std::unique_ptr<CRope>  m_upLeftRope;
     std::unique_ptr<CRope>  m_upRightRope;
-    Engine::CGameObject*    m_pOwner{};
-    Engine::CTransform      m_tr;
-    Engine::CSpringJoint    m_sj;
+    CGameObject*    m_pOwner{};
+    CTransform      m_tr;
+    CSpringJoint    m_sj;
+    CRigidbody      m_rb;
 
     GAS_STATE               m_tGas{};
 
     _float3                 m_vAnchor{};
-    _float                  m_fRopeMaxDist = 130.f;
+    _float                  m_fRopeMaxDist = 80.f;
     _uint                   m_flagUsingSide = 0;
 
     CEvent<_uint, _uint>    m_OnSuccessAnchored;
@@ -96,6 +97,17 @@ public :
     {
         return m_OnSuccessAnchored.Add_Listener(func, pInstance);
     }
+
+private :
+    _float  m_fForceSpring = 3.f;
+    _float  m_fForceDamper = 3.f;
+
+SCRIPT_FIELDS_BEGIN(CODM_Gear)
+    SCRIPT_FIELD_FLOAT(m_fForceSpring)
+    SCRIPT_FIELD_FLOAT(m_fForceDamper)
+SCRIPT_FIELDS_END(CODM_Gear)
+
+
 };
 
 NS_END;

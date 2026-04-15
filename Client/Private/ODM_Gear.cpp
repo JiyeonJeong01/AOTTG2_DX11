@@ -11,19 +11,45 @@ void CODM_Gear::Handle_RopeState(CRope::ROPE_STATE eState, SIDE eSide)
 {
     if (eState == CRope::ROPE_STATE::ANCHORED)
     {
+        LOG_INFO("-------------------------------------");
+        LOG_INFO("ROPE Anchored : %.2f, %.2f, %.2f", m_vAnchor.x, m_vAnchor.y, m_vAnchor.z);
+
+        _vector vDiff = XMLoadFloat3(&m_vAnchor) - m_tr.Get_StateXM(STATE::POSITION);
+        _float fDist = XMVectorGetX(XMVector3Length(vDiff));
+        _float3 vDir;
+        XMStoreFloat3(&vDir, XMVector3Normalize(vDiff));
+
+        LOG_INFO("Anchor <- Player Dir : %.2f, %.2f, %.2f", vDir.x, vDir.y, vDir.z);
+        LOG_INFO("-------------------------------------");
+
+        /* attach 순간 1회만 outward 성분 절반 제거 */
+        {
+            _float3 vLinearVel = m_rb->vLinearVel; // 여기만 본인 rigidbody 접근 변수로 바꾸세요
+            _vector vLinearVelXM = XMLoadFloat3(&vLinearVel);
+
+            const _float fToward = XMVectorGetX(XMVector3Dot(vLinearVelXM, XMVector3Normalize(vDiff)));
+
+            if (fToward < 0.f)
+            {
+                /* 앵커 반대 방향 성분(outward) 절반만 제거 */
+                vLinearVelXM = vLinearVelXM - XMVector3Normalize(vDiff) * (fToward * 0.5f);
+                XMStoreFloat3(&m_rb->vLinearVel, vLinearVelXM); // 여기만 본인 rigidbody 접근 변수로 바꾸세요
+            }
+        }
+
         m_sj.Set_Enable(true);
         m_sj.Set_Anchor(m_vAnchor);
         m_sj.Set_UseSpring(true);
 
         if (m_bReelBoost)
         {
-            m_sj.Set_Spring(m_fSpringReel);
-            m_sj.Set_Damper(m_fDamperReel);
+            m_sj.Set_Spring(m_fForceSpring);
+            m_sj.Set_Damper(m_fForceDamper);
         }
         else
         {
-            m_sj.Set_Spring(m_fSpringNormal);
-            m_sj.Set_Damper(m_fDamperNormal);
+            m_sj.Set_Spring(m_fForceSpring);
+            m_sj.Set_Damper(m_fForceDamper);
         }
 
         m_OnSuccessAnchored.Invoke(To<_uint>(PLAYER_STATE::AIRBORNE_MOVE), To<_uint>(AIRBORNE_MOVE::AIR_BEGIN));
@@ -44,6 +70,7 @@ Engine::CGameObject* CODM_Gear::Find_Owner()
     {
         m_tr = m_pOwner->Get_Component<CTransform>();
         m_sj = m_pOwner->Get_Component<CSpringJoint>();
+        m_rb = m_pOwner->Get_Component<CRigidbody>();
     }
 
     return m_pOwner;

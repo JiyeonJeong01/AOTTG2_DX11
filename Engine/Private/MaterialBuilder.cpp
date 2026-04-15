@@ -26,6 +26,7 @@ HRESULT CMaterialBuilder::Save_Material(const MATERIAL_ENTRY& mat, const std::fi
     WriteGuid(j, "GUID", mat.tGUID);
     WriteGuid(j, "ShaderGUID", mat.shaderGUID);
     j["PassIndex"] = mat.passIndex;
+    j["RenderType"] = SCAST(uint32_t, mat.eRenderType);
     j["BaseColor"] = { mat.baseColor.x, mat.baseColor.y, mat.baseColor.z, mat.baseColor.w };
     j["Shininess"] = mat.fShininess;
     WriteGuid(j, "BaseMapGUID", mat.baseMapGUID);
@@ -67,6 +68,17 @@ HRESULT CMaterialBuilder::Load_MaterialDesc(const std::filesystem::path& filePat
     if (!j.contains("PassIndex") || !j.at("PassIndex").is_number_unsigned())
         return E_FAIL;
     outDesc.passIndex = static_cast<uint16_t>(j.at("PassIndex").get<uint32_t>());
+
+    /* 선택값 : RenderType */
+    uint32_t renderTypeValue = To<uint32_t>(MATERIAL_RENDER_TYPE::DEFAULT);
+    if (j.contains("RenderType"))
+    {
+        if (!j.at("RenderType").is_number_unsigned())
+            return E_FAIL;
+
+        renderTypeValue = j.at("RenderType").get<uint32_t>();
+    }
+    outDesc.eRenderType = SCAST(MATERIAL_RENDER_TYPE, renderTypeValue);
 
     /* 선택값 : BaseColor */
     if (j.contains("BaseColor"))

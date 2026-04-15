@@ -306,18 +306,23 @@ void CRender_System::Build_RenderQueue()
 void CRender_System::Execute_RenderQueue()
 {
     Apply_Pass_State_Skybox();
+    m_eCurLayer = RENDER_LAYER::SKY;
     Execute_Pass(RENDER_LAYER::SKY);
 
     Apply_Pass_State_Priority();
+    m_eCurLayer = RENDER_LAYER::PRIORITY;
     Execute_Pass(RENDER_LAYER::PRIORITY);
 
     Apply_Pass_State_NonBlend();
+    m_eCurLayer = RENDER_LAYER::NONBLEND;
     Execute_Pass(RENDER_LAYER::NONBLEND);
 
     Apply_Pass_State_Blend();
+    m_eCurLayer = RENDER_LAYER::BLEND;
     Execute_Pass(RENDER_LAYER::BLEND);
 
     Apply_Pass_State_UI();
+    m_eCurLayer = RENDER_LAYER::UI;
     Execute_Pass(RENDER_LAYER::UI);
 
     m_PendingDrawCmds.clear();
@@ -381,17 +386,63 @@ void CRender_System::Execute_Draw_Mesh(const DRAW_CMD& cmd)
     const MODEL_ENTRY* pModel = SYS_RESOURCE.Get_Model(cmd.mesh.hMesh);
     IF_NULL_RETURN_MSG_BREAK(pModel, , "Model is nullptr.");
 
-    for (const auto& part : pModel->parts)
+    _bool bForceCmdMaterial = false;
+    if (cmd.mesh.hMaterial != INVALID_HANDLE_UINT)
     {
-        /* 파트 머티리얼 없으면 렌더러 머티리얼로 fallback */
-        const uint32_t hMat = (part.hMaterial != INVALID_HANDLE_UINT) ? part.hMaterial : cmd.mesh.hMaterial;
+        MATERIAL_ENTRY* pCmdMat = SYS_RESOURCE.Get_Material(cmd.mesh.hMaterial);
+        if (pCmdMat && pCmdMat->eRenderType == MATERIAL_RENDER_TYPE::OUTLINE)
+            bForceCmdMaterial = true;
+    }
 
-        /* 파트 메쉬가 이상하면 건너뜀  */
+    for (size_t i = 0; i < pModel->parts.size(); ++i)
+    {
+        const auto& part = pModel->parts[i];
+
         if (part.hMesh == INVALID_HANDLE_UINT)
             continue;
 
-        Execute_Draw_Mesh_Inner(part.hMesh, hMat, cmd.mesh.hTransform, cmd.mesh.hAnimator, cmd.mesh.hPerObjectParams,
-            cmd.mesh.firstIndex, cmd.mesh.indexCount, cmd.mesh.pSkinningMatrices, cmd.mesh.matAttach, cmd.mesh.eMode);
+        uint32_t hMat = INVALID_HANDLE_UINT;
+
+        if (bForceCmdMaterial)
+        {
+            hMat = cmd.mesh.hMaterial;
+        }
+        else
+        {
+            /* override */
+            if (cmd.mesh.pMeshRendererData &&
+                i < cmd.mesh.pMeshRendererData->vecOverrideMaterials.size())
+            {
+                uint32_t overrideMat =
+                    cmd.mesh.pMeshRendererData->vecOverrideMaterials[i];
+
+                if (overrideMat != INVALID_HANDLE_UINT)
+                    hMat = overrideMat;
+            }
+
+            /* part material */
+            if (hMat == INVALID_HANDLE_UINT && part.hMaterial != INVALID_HANDLE_UINT)
+                hMat = part.hMaterial;
+
+            /* fallback */
+            if (hMat == INVALID_HANDLE_UINT)
+                hMat = cmd.mesh.hMaterial;
+        }
+
+        if (hMat == INVALID_HANDLE_UINT)
+            continue;
+
+        Execute_Draw_Mesh_Inner(
+            part.hMesh,
+            hMat,
+            cmd.mesh.hTransform,
+            cmd.mesh.hAnimator,
+            cmd.mesh.hPerObjectParams,
+            part.iFirstIndex,
+            part.iIndexCount,
+            cmd.mesh.pSkinningMatrices,
+            cmd.mesh.matAttach,
+            cmd.mesh.eMode);
     }
 }
 
@@ -783,10 +834,33 @@ void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial,
     if (!pPass)
         return;
 
+    const _bool bOutline = (pMat->eRenderType == MATERIAL_RENDER_TYPE::OUTLINE);
+
+    if (bOutline)
+    {
+        Bind_BlendState_None();
+        Bind_DepthState_ReadOnly();
+        Bind_RasterizerState_CullCw();
+    }
+
     pPass->Apply(0, m_pContext);
 
     pMesh->Bind_IA(m_pContext);
     pMesh->Draw(m_pContext, iFirstIdx, iNumIdx);
+
+    if (bOutline)
+    {
+        if (m_eCurLayer == RENDER_LAYER::NONBLEND)
+            Apply_Pass_State_NonBlend();
+        else if (m_eCurLayer == RENDER_LAYER::BLEND)
+            Apply_Pass_State_Blend();
+        else if (m_eCurLayer == RENDER_LAYER::PRIORITY)
+            Apply_Pass_State_Priority();
+        else if (m_eCurLayer == RENDER_LAYER::UI)
+            Apply_Pass_State_UI();
+        else if (m_eCurLayer == RENDER_LAYER::SKY)
+            Apply_Pass_State_Skybox();
+    }
 }
 
 

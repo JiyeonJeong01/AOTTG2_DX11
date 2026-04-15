@@ -10,6 +10,8 @@ typedef struct tagRigidbodyData final
     OBJECT_HANDLE   hObject{};
     _bool           bEnable = true;
 
+    _bool           bDebugLog = false;
+
     _bool           bDirtyMass = true;
     _bool           bDirtyInertia = true;
     _bool           bDirtyWorldInertia = true;

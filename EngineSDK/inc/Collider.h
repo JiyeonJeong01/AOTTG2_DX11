@@ -16,6 +16,9 @@ typedef struct ENGINE_DLL tagColliderData final
     _bool               bStatic = false;
     _bool               bDebugDraw = false;
 
+    uint32_t            iMask = 0;               /* self */
+    uint32_t            iDiscardMask = 0;           
+
     COMPONENT_HANDLE    hSelf{ INVALID_HANDLE }; /* self */
     COMPONENT_HANDLE    hTransform{ INVALID_HANDLE };
     COMPONENT_HANDLE    hRigidbody{ INVALID_HANDLE };
@@ -24,7 +27,7 @@ typedef struct ENGINE_DLL tagColliderData final
 
     SHAPE               eShape{ SHAPE::END };
 
-    _float3             vOffset{ 0.f, 0.f, 0.f };   /* 위치로부터 로컬 거리 */
+    _float3             vOffset{ 0.f, 0.f, 0.f };               /* 위치로부터 로컬 거리 */
     _float3             vRotationOffset{ 0.f, 0.f, 0.f };       /* collider local euler rotation offset in degrees */
 
     _bool               bDirty{ true };

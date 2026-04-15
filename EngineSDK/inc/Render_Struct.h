@@ -5,6 +5,20 @@
 
 NS_BEGIN(Engine)
 
+typedef struct tagMeshRendererData MESH_RENDERER_DATA;
+
+enum class EXTRA_RENDER_PASS : uint32_t
+{
+    NONE = 0,
+    OUTLINE = 1 << 0,
+};
+
+enum class MATERIAL_RENDER_TYPE : uint8_t
+{
+    DEFAULT,
+    OUTLINE
+};
+
 typedef struct tagVertexPositionColor
 {
     XMFLOAT3			vPosition;
@@ -169,6 +183,7 @@ typedef struct ENGINE_DLL tagDrawCmd final
             MESH_MODE                       eMode = MESH_MODE::NONE;
             _float4x4                       matAttach{};
 
+            const MESH_RENDERER_DATA* pMeshRendererData = nullptr;
         } mesh;
 
         struct

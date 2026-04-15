@@ -67,6 +67,8 @@ private :
 
 public :
     PLAYER_CONTEXT Get_PlayerContext();
+    void Resupply();
+    void Deliver_Supplies();
 
 private :
     /* TODO : 이후에 json 등으로 로드 */

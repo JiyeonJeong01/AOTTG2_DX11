@@ -52,12 +52,31 @@ void CPlayerState_Reload::Late_Update(_float fDT)
 {
     CPlayerState::Late_Update(fDT);
 
+    if (m_eReloadState == RELOAD::GROUNDED
+        && !m_bReloadCompleted
+        && m_tComponents.animator->fTrackPosition >= 60.f)
+    {
+        m_bReloadCompleted = true;
+        if (m_pBlade)
+            m_pBlade->Enable_Blades(true);
+    }
+    else if (m_eReloadState == RELOAD::AIR
+        && !m_bReloadCompleted
+        && m_tComponents.animator->fTrackPosition >= 18.f)
+    {
+        m_bReloadCompleted = true;
+        if (m_pBlade)
+            m_pBlade->Enable_Blades(true);
+    }
+
     Decide_NextState();
 }
 
 void CPlayerState_Reload::Enter(_uint iDetailFlag)
 {
     CPlayerState::Enter(iDetailFlag);
+
+    m_bReloadCompleted = false;
 
     if (iDetailFlag >= To<_uint>(RELOAD::END))
     {
@@ -82,6 +101,7 @@ void CPlayerState_Reload::Enter(_uint iDetailFlag)
         if (m_pBlade && m_pBlade->Can_ReloadBlade())
             m_pBlade->Reload_Blade();
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::CHANGE_BLADE_AIR);
+
         cout << "[RELOAD] ENTER AIR\n";
         return;
     }
@@ -92,6 +112,7 @@ void CPlayerState_Reload::Enter(_uint iDetailFlag)
 void CPlayerState_Reload::Exit()
 {
     CPlayerState::Exit();
+
 }
 
 void CPlayerState_Reload::Decide_NextState()

@@ -108,6 +108,17 @@ typedef struct tagBladeDurability
     _int           iCurAtkRemain = iNumAtkPerBlade;    /* 현재 남은 공격 횟수 */
     _int           iCurBladesRemain = iTotalNumBlades; /* 현재 남은 칼날 개수 */
 
+    CGameObject* pLeftBlade = nullptr;
+    CGameObject* pRightBlade = nullptr;
+
+    void    Enable_Blades(_bool bEnable)
+    {
+        if (pLeftBlade)
+            pLeftBlade->Set_Enable(bEnable);
+        if (pRightBlade)
+            pRightBlade->Set_Enable(bEnable);
+    }
+
     _bool   Can_ConsumeBladeAtk()
     {
         return iCurAtkRemain > 0;
@@ -119,6 +130,10 @@ typedef struct tagBladeDurability
             return false;
 
         --iCurAtkRemain;
+
+        if (iCurAtkRemain <= 0)
+            Enable_Blades(false);
+
         return true;
     }
 
@@ -134,6 +149,7 @@ typedef struct tagBladeDurability
 
         --iCurBladesRemain;
         iCurAtkRemain = iNumAtkPerBlade;
+
         return true;
     }
 } BLADE_DURABILITY;

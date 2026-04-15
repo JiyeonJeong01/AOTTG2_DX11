@@ -31,7 +31,7 @@ namespace Client
         O_NONE = 0,
 
         O_PLAYER = 1 << 0,
-        O_CROPS = 1 << 1,
+        O_SCOUT = 1 << 1,
         O_EREN = 1 << 2,
 
         O_ENEMY = 1 << 3,

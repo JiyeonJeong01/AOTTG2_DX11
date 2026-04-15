@@ -53,6 +53,12 @@ typedef struct ENGINE_DLL tagMeshRendererData final
     std::string             strAttachBoneName;
     _float4x4               matFinalAttach = Math::Identity();
 
+    /* -------- EXTRA PASS -------- */
+    uint32_t            extraPassFlags = 0;
+
+    /* -------- 파트별 머터리얼 오버라이드 -------- */
+    std::vector<uint32_t>   vecOverrideMaterials;
+
     /* -------- PARTICLE -------- */
     _bool                   bParticlePlaying = false;
     _float3                 vParticlePivot{};

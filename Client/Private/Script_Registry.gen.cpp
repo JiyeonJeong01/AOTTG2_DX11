@@ -7,6 +7,7 @@
 #include "AbnormalTitan.h"
 #include "Attacher.h"
 #include "CameraController.h"
+#include "CrawlerTitan.h"
 #include "Environment_Controller.h"
 #include "ErenSequenceDirector.h"
 #include "ErenTitan.h"
@@ -23,6 +24,7 @@
 #include "Player.h"
 #include "ResupplyStation.h"
 #include "Scout.h"
+#include "Scout_Scriptable_Object.h"
 #include "TargetSensor.h"
 #include "ThrownBlade.h"
 #include "TitanBound_Controller.h"
@@ -47,6 +49,10 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\CameraController.script");
         handler.Register_VTable(guid, ScriptBinder<CCameraController>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\CrawlerTitan.script");
+        handler.Register_VTable(guid, ScriptBinder<CCrawlerTitan>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Environment_Controller.script");
@@ -111,6 +117,10 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Scout.script");
         handler.Register_VTable(guid, ScriptBinder<CScout>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Scout_Scriptable_Object.script");
+        handler.Register_VTable(guid, ScriptBinder<CScout_Scriptable_Object>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\TargetSensor.script");

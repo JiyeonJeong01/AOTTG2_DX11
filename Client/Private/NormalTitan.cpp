@@ -69,6 +69,16 @@ void CNormalTitan::Start(void* pCtx)
             CGameObject* goHitBox = hit->Get_HitBoxObject();
             IF_NULL_RETURN_MSG_BREAK(goHitBox, , "goHitBox is nullptr");
 
+            ///* ERASE_마스크_설정 */
+            //{
+            //    if (!goHitBox)
+            //        __debugbreak();
+
+            //    auto col = goHitBox->Get_Component<CCollider>();
+            //    col->iMask = (O_HITBOX | O_ENEMY);
+            //    col->iDiscardMask = (O_HITBOX | O_ENEMY | O_WALKABLE);
+            //}
+
             auto [iter, bInserted] = m_AllHitBoxes.emplace(string(goHitBox->Get_Label()), hit);
             IF_TRUE_RETURN_MSG_BREAK(!bInserted, , "duplicated hitbox label");
         }
@@ -77,7 +87,19 @@ void CNormalTitan::Start(void* pCtx)
         auto allHurtBoxes = m_goTitan->Get_AllScripts_InChildren<CHurtBox>();
         for (auto& hurt : allHurtBoxes)
         {
+            if (!hurt) continue;
             hurt->Subscribe_OnHurt(&CNormalTitan::On_Hurt, this);
+
+            ///* ERASE_마스크_설정 */
+            //{
+            //    auto* goHurt = hurt->Get_HurtBoxObject();
+            //    if (!goHurt)
+            //        __debugbreak();
+
+            //    auto col = goHurt->Get_Component<CCollider>();
+            //    col->iMask = (O_HURTBOX | O_ENEMY);
+            //    col->iDiscardMask = (O_HURTBOX | O_ENEMY | O_WALKABLE);
+            //}
         }
 
         m_tRef.pAllHitBoxes = &m_AllHitBoxes;
@@ -108,7 +130,7 @@ void CNormalTitan::Start(void* pCtx)
     m_upStateMachine->Cache_TitanInfos(tContext);
     m_spCurState = m_upStateMachine->Sync_StateMachine();
 
-    m_tRef.pSensor->Set_TargetMask(O_CROPS | O_PLAYER);
+    m_tRef.pSensor->Set_TargetMask(O_SCOUT | O_PLAYER);
     m_tRef.pSensor->Subscribe_OnDetectedTarget(&CNormalTitan::On_DetectedHumanSide, this);
 
     m_upStateMachine->Subscribe_OnChangedCurState(&CNormalTitan::OnChange_CurState, this);
@@ -179,7 +201,7 @@ _bool CNormalTitan::Is_ValidTarget(Engine::CGameObject* pTarget)
     if (!pTarget)
         return false;
 
-    if (!pTarget->Is_ExactMask(O_PLAYER) && !pTarget->Is_ExactMask(O_CROPS))
+    if (!pTarget->Is_ExactMask(O_PLAYER) && !pTarget->Is_ExactMask(O_SCOUT))
         return false;
 
     CTransform trTarget = pTarget->Get_Component<CTransform>();

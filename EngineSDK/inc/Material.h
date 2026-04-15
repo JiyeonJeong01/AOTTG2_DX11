@@ -18,6 +18,8 @@ typedef struct ENGINE_DLL tagMaterialEntry final
     ID3DX11EffectMatrixVariable* pView = nullptr;
     ID3DX11EffectMatrixVariable* pProj = nullptr;
 
+    MATERIAL_RENDER_TYPE eRenderType = MATERIAL_RENDER_TYPE::DEFAULT;
+
     ID3DX11EffectShaderResourceVariable* pBaseMap = nullptr;        // base/diffuse/albedo
     ID3DX11EffectShaderResourceVariable* pNormalMap = nullptr;      // normal
 

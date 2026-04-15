@@ -85,12 +85,18 @@
     <Filter Include="Eren">
       <UniqueIdentifier>{0e0a138a-9bca-40d3-b802-b27527572c67}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Titan\AbnormalTitan\AbnormalTitanState\헤더 파일">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Titan\Common">
       <UniqueIdentifier>{9eae63bd-7b8d-47f3-b4b8-2da4d1412835}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Titan\CrawlerTitan">
+      <UniqueIdentifier>{3eb66673-8e23-4951-b578-6edb2e61ff5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Titan\CrawlerTitan\CrawlerTitanState">
+      <UniqueIdentifier>{a69a201a-eb4e-4a86-9c61-80a8c1e5582a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -131,7 +137,7 @@
       <Filter>Player</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Client_Define.h">
-      <Filter>Titan\AbnormalTitan\AbnormalTitanState\헤더 파일</Filter>
+      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Player_InputController.h">
       <Filter>Player\PlayerController</Filter>
@@ -235,7 +241,7 @@
     <ClInclude Include="..\Public\ScoutBehavior.h">
       <Filter>Scout</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\ScoutBehavior_Runaway.h">
+    <ClInclude Include="..\Public\Scout_Scriptable_Object.h">
       <Filter>Scout</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NormalTitanState_Chase.h">
@@ -251,7 +257,7 @@
       <Filter>Player\PlayerState</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UIManager.h">
-      <Filter>Titan\AbnormalTitan\AbnormalTitanState\헤더 파일</Filter>
+      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\NormalTitanState_Dead.h">
       <Filter>Titan\NormalTitan\NormalTitanState</Filter>
@@ -336,6 +342,39 @@
     </ClInclude>
     <ClInclude Include="..\Public\ResupplyStation.h">
       <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CrawlerTitan.h">
+      <Filter>Titan\CrawlerTitan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CrawlerTitanStateMachine.h">
+      <Filter>Titan\State</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CrawlerTitanState_Idle.h">
+      <Filter>Titan\CrawlerTitan\CrawlerTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CrawlerTitanState_Chase.h">
+      <Filter>Titan\CrawlerTitan\CrawlerTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CrawlerTitanState_Stunned.h">
+      <Filter>Titan\CrawlerTitan\CrawlerTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CrawlerTitanState_Hurt.h">
+      <Filter>Titan\CrawlerTitan\CrawlerTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CrawlerTitanState_Move.h">
+      <Filter>Titan\CrawlerTitan\CrawlerTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CrawlerTitanState_Dead.h">
+      <Filter>Titan\CrawlerTitan\CrawlerTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CrawlerTitanState_AttackEren.h">
+      <Filter>Titan\CrawlerTitan\CrawlerTitanState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ScoutBehavior_RequestResupply.h">
+      <Filter>Scout</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -456,7 +495,7 @@
     <ClCompile Include="..\Private\ScoutBehavior.cpp">
       <Filter>Scout</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\ScoutBehavior_Runaway.cpp">
+    <ClCompile Include="..\Private\Scout_Scriptable_Object.cpp">
       <Filter>Scout</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\NormalTitanState_Chase.cpp">
@@ -549,5 +588,38 @@
     <ClCompile Include="..\Private\ResupplyStation.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\CrawlerTitan.cpp">
+      <Filter>Titan\CrawlerTitan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CrawlerTitanStateMachine.cpp">
+      <Filter>Titan\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CrawlerTitanState_Idle.cpp">
+      <Filter>Titan\CrawlerTitan\CrawlerTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CrawlerTitanState_Chase.cpp">
+      <Filter>Titan\CrawlerTitan\CrawlerTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CrawlerTitanState_Stunned.cpp">
+      <Filter>Titan\CrawlerTitan\CrawlerTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CrawlerTitanState_Hurt.cpp">
+      <Filter>Titan\CrawlerTitan\CrawlerTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CrawlerTitanState_Move.cpp">
+      <Filter>Titan\CrawlerTitan\CrawlerTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CrawlerTitanState_Dead.cpp">
+      <Filter>Titan\CrawlerTitan\CrawlerTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CrawlerTitanState_AttackEren.cpp">
+      <Filter>Titan\CrawlerTitan\CrawlerTitanState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ScoutBehavior_RequestResupply.cpp">
+      <Filter>Scout</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Client.rc" />
   </ItemGroup>
 </Project>

@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "PlayerStateMachine.h"
 #include "AnimationClip_Player.h"
+#include "ODM_Gear.h"
 
 CPlayerState_Resupply::CPlayerState_Resupply(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
     : CPlayerState(goPlayer, scPlayer, eState)
@@ -62,6 +63,16 @@ void CPlayerState_Resupply::Enter(_uint iDetailFlag)
 
 void CPlayerState_Resupply::Exit()
 {
+    if (m_pBlade)
+    {
+        m_pBlade->iCurAtkRemain = m_pBlade->iNumAtkPerBlade;
+        m_pBlade->iCurBladesRemain = m_pBlade->iTotalNumBlades;
+        m_pBlade->Enable_Blades(true);
+    }
+
+    if (m_tRef.pGear)
+        m_tRef.pGear->Fill_Max();
+
     CPlayerState::Exit();
 }
 

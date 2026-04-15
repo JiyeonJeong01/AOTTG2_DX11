@@ -249,6 +249,9 @@ void CTitanBound_Controller::Bind_Trigger(
     if (colBound.Is_Valid() == false)
         return;
 
+    /* ERASE_마스크_설정 */
+    //colBound->iDiscardMask = (O_EREN | O_ENEMY | O_HITBOX | O_HURTBOX | O_WALKABLE);
+
     colBound->OnTriggerEnter.Add_Listener(pFunc, this);
 }
 
@@ -265,7 +268,7 @@ void CTitanBound_Controller::Try_QueueGrabAnim(const char* pAnimName, const COLL
         return;
 
     /* 플레이어 + HUMAN만 받기 */
-    if (!pCounter->Is_ExactMask(O_CROPS) && !pCounter->Is_ExactMask(O_PLAYER))
+    if (!pCounter->Is_ExactMask(O_SCOUT) && !pCounter->Is_ExactMask(O_PLAYER))
         return;
 
     m_strPendingGrabAnim = pAnimName;
@@ -315,7 +318,7 @@ _float3* CTitanBound_Controller::Get_GrabbedPoint()
 
 void CTitanBound_Controller::Handle_GrabState(SIDE eSide, CGameObject* pTarget, CGameObject* pHand)
 {
-    if (!pTarget->Is_ExactMask(O_CROPS) && !pTarget->Is_ExactMask(O_PLAYER))
+    if (!pTarget->Is_ExactMask(O_SCOUT) && !pTarget->Is_ExactMask(O_PLAYER))
         return;
 
     CTransform tr = pHand->Get_Component<CTransform>();

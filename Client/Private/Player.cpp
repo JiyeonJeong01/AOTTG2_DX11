@@ -1,5 +1,4 @@
 ﻿#include "Player.h"
-#include "Input_System.h"
 
 #include "Player_InputController.h"
 #include "Player_SkillController.h"
@@ -11,6 +10,8 @@
 #include "ODM_Gear.h"
 #include "GroundChecker.h"
 #include "HitBox.h"
+
+#include "AnimationClip_Player.h"
 
 NS_BEGIN(Client)
 
@@ -49,6 +50,8 @@ void CPlayer::Start(void* pCtx)
         m_tComponents.rigidbody = m_goPlayer->Get_Component<CRigidbody>();
         IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.rigidbody.Is_Valid(), , "rigidbody is invalid");
 
+        m_tComponents.rigidbody->bDebugLog = true;
+
         m_tComponents.springJoint = m_goPlayer->Get_Component<CSpringJoint>();
         IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.springJoint.Is_Valid(), , "springJoint is invalid");
 
@@ -58,7 +61,7 @@ void CPlayer::Start(void* pCtx)
 
     /* 런타임 정보 참조 */
     {
-        m_tRef.pGear = m_goPlayer->Get_Script_InChildren<CODM_Gear>();
+        m_pGear = m_tRef.pGear = m_goPlayer->Get_Script_InChildren<CODM_Gear>();
         m_tRef.pGroundChecker = m_goPlayer->Get_Script_InChildren<CGroundChecker>();
         m_tRef.pFSM = m_upStateMachine.get();
         m_tRef.pCameraController = m_goPlayer->Get_Script<CCameraController>();
@@ -69,6 +72,18 @@ void CPlayer::Start(void* pCtx)
     {
         m_upSkillController->SetUp_SkillSet();
     }
+
+    const auto& children = m_goPlayer->Get_Children();
+    for (const auto& child : children)
+    {
+        if (!child) continue;
+        if (child->Get_Label() == "Blade_Left")
+            m_tBlade.pLeftBlade = child;
+        else if (child->Get_Label() == "Blade_Right")
+            m_tBlade.pRightBlade = child;
+    }
+    IF_NULL_RETURN_MSG_BREAK(m_tBlade.pLeftBlade, , "pLeftBlade is nullptr");
+    IF_NULL_RETURN_MSG_BREAK(m_tBlade.pRightBlade, , "pRightBlade is nullptr");
 
     /* 플레이어 상태에게 전달 */
     m_tContext.tComponents = m_tComponents;
@@ -118,6 +133,25 @@ void CPlayer::Update(void* pCtx, _float fDT)
 void CPlayer::Late_Update(void* pCtx, _float fDT)
 {
     m_upStateMachine->Late_Update(fDT);
+
+    auto vLinearVel = m_tComponents.rigidbody->vLinearVel;
+    auto vAngularVel = m_tComponents.rigidbody->vAngularVel;
+
+    auto vCamLook3 = GAME_INSTANCE.Cam_Look();
+    auto playerLook = m_tComponents.transform.Get_StateXM(STATE::LOOK);
+
+    _float3 vPlayerLook3;
+    XMStoreFloat3(&vPlayerLook3, playerLook);
+
+    LOG_INFO("======================================================");
+
+    LOG_INFO("Linear Velocity : (%.2f, %.2f, %.2f)",
+        vLinearVel.x, vLinearVel.y, vLinearVel.z);
+    LOG_INFO("Camera Look : (%.2f, %.2f, %.2f)",
+        vCamLook3.x, vCamLook3.y, vCamLook3.z);
+
+
+    LOG_INFO("======================================================");
 }
 
 void CPlayer::On_Grabbed(SIDE eSide, CTitan* pTitan)
@@ -166,6 +200,19 @@ PLAYER_CONTEXT CPlayer::Get_PlayerContext()
 {
     /* 플레이어 상태에게 전달 */
     return m_tContext;
+}
+
+void CPlayer::Resupply()
+{
+    if (!m_upStateMachine)
+        return;
+
+    m_upStateMachine->Change_State(To<_uint>(PLAYER_STATE::RESUPPLY));
+}
+
+void CPlayer::Deliver_Supplies()
+{
+    m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RESUPPLY);
 }
 
 NS_END;

@@ -56,8 +56,12 @@ public : /* ---------- Game ---------- */
     void        Play();
 
 public : /* ---------- Camera ---------- */
-    _float3     Cam_Position();
-    _float3     Cam_Look();
+    _float3                 Cam_Position() const;
+    _float3                 Cam_Look() const;
+    const _float4x4&        Get_View()  const;
+    const _float4x4&        Get_Proj()  const;
+    const UI_GLOBAL&        Get_UI_Global() const;
+    const D3D11_VIEWPORT&   Get_Viewport() const;
 
 public : /* ---------- Animation ---------- */
     _bool Find_AttachBoneInfo(OBJECT_HANDLE hTargetObj, const string& strTargetBoneName, ANIMATOR_DATA*& pOutAnimator, _uint& iOutBoneIndex);
@@ -67,7 +71,9 @@ public :/* ---------- Built-in ---------- */
     unique_ptr<CLine>   Load_LineMesh(_uint iNumPoint, _float fThickness);
     void                Test_LineRibbonMesh();
 
-    uint32_t            Get_ResourceHandle(ASSET_TYPE eType, const ASSET_GUID& tGUID);
+    uint32_t                    Get_ResourceHandle(ASSET_TYPE eType, const ASSET_GUID& tGUID);
+    uint32_t                    Alloc_PerObjectParamBlock();
+    PER_OBJECT_PARAM_BLOCK*     Get_PerObjectParamBlock(uint32_t handle);
 
     std::unique_ptr<CNavMesh> Create_NavMesh(const wchar_t* pFilePath, _bool bDebugRender = false);
 

@@ -195,15 +195,38 @@ void CGameInstance::Play()
 {
 }
 
-_float3 CGameInstance::Cam_Position()
+_float3 CGameInstance::Cam_Position() const
 {
     return SYS_RENDER.Contexts()->Get_CamPosition();
 }
 
-_float3 CGameInstance::Cam_Look()
+_float3 CGameInstance::Cam_Look() const 
 {
     _float4x4 matInvView = SYS_RENDER.Contexts()->Get_ViewInv();
     return _float3(matInvView._31, matInvView._32, matInvView._33);
+}
+
+const _float4x4& CGameInstance::Get_View() const
+{
+    return SYS_RENDER.Contexts()->Get_View();
+}
+
+const _float4x4& CGameInstance::Get_Proj() const
+{
+    return SYS_RENDER.Contexts()->Get_Proj();
+}
+
+const UI_GLOBAL& CGameInstance::Get_UI_Global() const
+{
+    return SYS_RENDER.Contexts()->Get_UI_Global();
+}
+
+const D3D11_VIEWPORT& CGameInstance::Get_Viewport() const
+{
+    D3D11_VIEWPORT vp{};
+    UINT n = 1;
+    m_pContext->RSGetViewports(&n, &vp);
+    return vp;
 }
 
 _bool CGameInstance::Find_AttachBoneInfo(OBJECT_HANDLE hTargetObj, const string& strTargetBoneName, ANIMATOR_DATA*& pOutAnimator, _uint& iOutBoneIndex)
@@ -302,6 +325,16 @@ uint32_t CGameInstance::Get_ResourceHandle(ASSET_TYPE eType, const ASSET_GUID& t
     default:
         return INVALID_HANDLE_UINT;
     }
+}
+
+uint32_t CGameInstance::Alloc_PerObjectParamBlock()
+{
+    return SYS_RESOURCE.Alloc_PerObjectParamBlock();
+}
+
+PER_OBJECT_PARAM_BLOCK* CGameInstance::Get_PerObjectParamBlock(uint32_t handle)
+{
+    return SYS_RESOURCE.Get_PerObjectParamBlock(handle);;
 }
 
 std::unique_ptr<CNavMesh> CGameInstance::Create_NavMesh(const wchar_t* pFilePath, _bool bDebugRender)

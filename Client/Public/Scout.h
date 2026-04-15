@@ -5,6 +5,9 @@
 
 NS_BEGIN(Client)
 
+class CScoutBehavior;
+class CScout_Scriptable_Object;
+
 class CScout : public IScript, public CHuman
 {
 public:
@@ -15,18 +18,28 @@ public:
     void Update(void* pCtx, _float fDT) override;
     void Late_Update(void* pCtx, _float fDT) override;
 
-private :
+private:
     void            Move(_fvector vDir, _float fDT);
+    void            SetUp_Context();
+    void            SetUp_Behavior();
+    void            Clear_Behavior();
 
-private :
+public:
+    void            Set_ActCase();
+    void            On_Grabbed(SIDE eSide, CTitan* pTitan) override;
+
+private:
     CTransform      m_trOwner{};
     CCollider       m_cldrOwner{};
     CMeshRenderer   m_mrOwner{};
     CAnimator       m_animOwner{};
 
-public :
-    void            Set_ActCase();
-    void On_Grabbed(SIDE eSide, CTitan* pTitan) override;
+    CGameObject*    m_goOwner = nullptr;
+
+    SCOUT_STATS     m_tStats{};
+    SCOUT_CONTEXT   m_tContext{};
+
+    CScoutBehavior* m_pBehavior = nullptr;
 };
 
-NS_END;
+NS_END

@@ -5,7 +5,12 @@
 
 NS_BEGIN(Client)
 
-enum class SCOUT_BEHAVIOR { IDLE, WAIT, MOVE, RUNAWAY, GRABBED, END };
+enum class SCOUT_BEHAVIOR : uint32_t
+{
+    NONE,
+    REQUEST_RESUPPLY,
+    END
+};
 
 typedef struct tagScoutComponents
 {
@@ -26,6 +31,7 @@ typedef struct tagScoutStats
 
 typedef struct tagScoutContext
 {
+    SCOUT_BEHAVIOR      eBehaviour = SCOUT_BEHAVIOR::NONE;
     SCOUT_COMPONENTS    tComponents{};
     SCOUT_STATS*        pStat{};
 } SCOUT_CONTEXT;

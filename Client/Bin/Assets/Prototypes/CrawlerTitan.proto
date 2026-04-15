@@ -1,0 +1,305 @@
+{
+  "prototype": {
+    "children": [
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "Scale": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [
+            {
+              "data": {
+                "DebugDraw": false,
+                "DiscardMask": 0,
+                "Enabled": true,
+                "HalfExtentsLocal": [
+                  0.5,
+                  0.5,
+                  0.5
+                ],
+                "Mask": 0,
+                "Offset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "OnCol": false,
+                "RotationOffset": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "Shape": 0,
+                "Static": false,
+                "Trigger": false,
+                "Type": 1
+              }
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "Enabled": true,
+                "ExposedFields": {
+                  "ClassName": "CTargetSensor",
+                  "Fields": [
+                    {
+                      "Name": "m_refTitan",
+                      "Type": 5,
+                      "Value": {
+                        "UUID": "EBF08176-1223-4774-B810-DE74C41A8325"
+                      }
+                    }
+                  ]
+                },
+                "ScriptGuid": "A087260F-7DDD-4E48-A09E-4F0AC3B2637D",
+                "Type": 4
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "Sensor"
+      }
+    ],
+    "components": [
+      [
+        {
+          "data": {
+            "Position": [
+              -25.527833938598633,
+              1.0,
+              0.0
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              0.3499999940395355,
+              0.3499999940395355,
+              0.3499999940395355
+            ],
+            "Type": 0
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "DebugDraw": true,
+            "DiscardMask": 0,
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              5.0,
+              5.0,
+              5.0
+            ],
+            "Mask": 0,
+            "Offset": [
+              0.0,
+              5.0,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Static": false,
+            "Trigger": false,
+            "Type": 1
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "AngularDrag": 0.0,
+            "BodyType": 0,
+            "Drag": 1.5,
+            "Enabled": true,
+            "Friction": 1.0,
+            "Gravity": true,
+            "Mass": 10.0,
+            "PositionLock": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Restitution": 0.0,
+            "RotationLock": [
+              1.0,
+              0.0,
+              1.0
+            ],
+            "Shape": 0,
+            "Type": 2
+          }
+        }
+      ],
+      [],
+      [
+        {
+          "data": {
+            "Enabled": true,
+            "ScriptGuid": "797DC1D5-CD9A-47E5-AE9E-60F414391A03",
+            "Type": 4
+          }
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CTitan_Scriptable_Object",
+              "Fields": [
+                {
+                  "Name": "m_refTitan",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "EBF08176-1223-4774-B810-DE74C41A8325"
+                  }
+                },
+                {
+                  "Name": "m_refEren",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "FCE85F1F-1306-4BAB-AC65-AAB508AD5CB6"
+                  }
+                },
+                {
+                  "Name": "m_fCurSpeed",
+                  "Type": 1,
+                  "Value": 12.0
+                },
+                {
+                  "Name": "m_fMaxSpeed",
+                  "Type": 1,
+                  "Value": 12.0
+                },
+                {
+                  "Name": "m_szMoveAnim",
+                  "Type": 7,
+                  "Value": {
+                    "Value": ""
+                  }
+                },
+                {
+                  "Name": "m_szIdleAnim",
+                  "Type": 7,
+                  "Value": {
+                    "Value": ""
+                  }
+                },
+                {
+                  "Name": "m_fMaxIdleTime",
+                  "Type": 1,
+                  "Value": 5.0
+                },
+                {
+                  "Name": "m_fMaxMoveTime",
+                  "Type": 1,
+                  "Value": 5.0
+                }
+              ]
+            },
+            "ScriptGuid": "85F8A9E9-74BC-4D5D-9BF8-DAA7BD8DFF7D",
+            "Type": 4
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "DFF014BB-3BF9-4CAB-BD36-0FCFCF929C73",
+            "MeshGUID": "9467EA3F-1BA0-4831-95B2-FB5BCFEC0731",
+            "Mode": 0,
+            "OverrideMaterials": [
+              0,
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          }
+        }
+      ],
+      [
+        {
+          "data": {
+            "AnimationClip": 0,
+            "BlendDuration": 0.20000000298023224,
+            "BlendMap": [],
+            "Enabled": true,
+            "LoopMap": [],
+            "PlaySpeed": 1.0,
+            "Playing": false,
+            "Type": 6
+          }
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "iObjMask": 0,
+    "isUI": false,
+    "name": "CrawlerTitan"
+  },
+  "version": 1
+}

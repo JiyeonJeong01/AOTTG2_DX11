@@ -118,6 +118,16 @@ void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_
             if (!pStatic->pCol->bStatic)
                 continue;
 
+
+            /* 마스크 처리 */
+            const uint32_t iMaskA = pColA->pCol->iMask;
+            const uint32_t iDiscardMaskA = pColA->pCol->iDiscardMask;
+            const uint32_t iMaskB = pStatic->pCol->iMask;
+            const uint32_t iDiscardMaskB = pStatic->pCol->iDiscardMask;
+
+            if ((iMaskA & iDiscardMaskB) != 0 || (iDiscardMaskA & iMaskB) != 0)
+                continue;
+
             const AABB& tAABB_B = pStatic->aabbWorld;
             if (!Check_AABB_Overlap(tAABB_A, tAABB_B))
                 continue;
@@ -137,6 +147,15 @@ void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_
                 continue;
 
             if (pColB->pCol->bStatic)
+                continue;
+
+            /* 마스크 처리 */
+            const uint32_t iMaskA = pColA->pCol->iMask;
+            const uint32_t iDiscardMaskA = pColA->pCol->iDiscardMask;
+            const uint32_t iMaskB = pColB->pCol->iMask;
+            const uint32_t iDiscardMaskB = pColB->pCol->iDiscardMask;
+
+            if ((iMaskA & iDiscardMaskB) != 0 || (iDiscardMaskA & iMaskB) != 0)
                 continue;
 
             const AABB& tAABB_B = pColB->aabbWorld;

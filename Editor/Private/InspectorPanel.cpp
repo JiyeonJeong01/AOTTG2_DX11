@@ -37,8 +37,26 @@
 #pragma endregion
 
 NS_BEGIN(Editor)
-    CInspectorPanel::CInspectorPanel(const std::string& strPanelName)
-    : CEditorPanel(strPanelName)
+
+const std::array<CInspectorPanel::MASK_ITEM, 12> CInspectorPanel::s_arrColliderMaskItems =
+{ {
+    { "O_PLAYER",   Client::O_PLAYER },
+    { "O_SCOUT",    Client::O_SCOUT },
+    { "O_EREN",     Client::O_EREN },
+    { "O_ENEMY",    Client::O_ENEMY },
+    { "O_HITBOX",   Client::O_HITBOX },
+    { "O_HURTBOX",  Client::O_HURTBOX },
+    { "O_WALKABLE", Client::O_WALKABLE },
+    { "O_ETC1",     Client::O_ETC1 },
+    { "O_ETC2",     Client::O_ETC2 },
+    { "O_ETC3",     Client::O_ETC3 },
+    { "O_ETC4",     Client::O_ETC4 },
+    { "O_ETC5",     Client::O_ETC5 }
+} };
+
+
+CInspectorPanel::CInspectorPanel(const std::string& strPanelName)
+: CEditorPanel(strPanelName)
 {
 }
 
@@ -217,38 +235,7 @@ void CInspectorPanel::Draw_Basic_Info()
 
     if (ImGui::TreeNodeEx("Object Mask"))
     {
-        struct MASK_ITEM
-        {
-            const char* szName;
-            uint32_t    iMask;
-        };
-
-        std::string_view svSeverity = magic_enum::enum_name(Client::O_PLAYER);
-
-        const MASK_ITEM arrMaskItems[] =
-        {
-            { "O_PLAYER",   Client::O_PLAYER },
-            { "O_CROPS",    Client::O_CROPS },
-            { "O_EREN", Client::O_EREN },
-
-            { "O_ENEMY",     Client::O_ENEMY },
-
-            { "O_HITBOX", Client::O_HITBOX },
-            { "O_HURTBOX",     Client::O_HURTBOX },
-
-            { "O_WALKABLE",     Client::O_WALKABLE },
-
-
-
-
-            { "O_ETC1",     Client::O_ETC1 },
-            { "O_ETC2",     Client::O_ETC2 },
-            { "O_ETC3",     Client::O_ETC3 },
-            { "O_ETC4",     Client::O_ETC4 },
-            { "O_ETC5",     Client::O_ETC5 }
-        };
-
-        for (const auto& tItem : arrMaskItems)
+        for (const auto& tItem : s_arrColliderMaskItems)
         {
             bool bChecked = m_pTarget->Has_Mask(tItem.iMask);
 
@@ -861,6 +848,17 @@ void CInspectorPanel::Draw_MeshRenderer()
 
     const bool bIsModel = SYS_RESOURCE.Is_ModelHandle(pData->hMesh);
 
+    if (bIsModel)
+    {
+        MODEL_ENTRY* pModel = SYS_RESOURCE.Get_Model(pData->hMesh);
+        if (pModel && pData->vecOverrideMaterials.size() != pModel->parts.size())
+            pData->vecOverrideMaterials.resize(pModel->parts.size(), INVALID_HANDLE_UINT);
+    }
+    else
+    {
+        pData->vecOverrideMaterials.clear();
+    }
+
     // --- Mesh ---
     ImGui::TextUnformatted(bIsModel ? "Model handle" : "Mesh handle");
     ImGui::SameLine();
@@ -960,19 +958,50 @@ void CInspectorPanel::Draw_MeshRenderer()
                     strLabel.c_str(),
                     ImGuiTreeNodeFlags_DefaultOpen |
                     ImGuiTreeNodeFlags_SpanAvailWidth);
-
                 if (bPartOpen)
                 {
                     ImGui::Text("Mesh Handle: %u", part.hMesh);
-                    ImGui::Text("Material Handle: %u", part.hMaterial);
+                    ImGui::Text("Part Material Handle: %u", part.hMaterial);
+
+                    uint32_t& hOverrideMaterial = pData->vecOverrideMaterials[i];
+
+                    ImGui::Text("Override Material Handle: %u", hOverrideMaterial);
+
+                    uint32_t hEditOverride = hOverrideMaterial;
+                    if (ImGui::InputScalar("Override Material", ImGuiDataType_U32, &hEditOverride))
+                    {
+                        hOverrideMaterial = hEditOverride;
+                        bChanged = true;
+                    }
+
+                    Editor_Util::Draw_DropTarget_GUID_Typed(
+                        "Override Material",
+                        "ASSET_GUID",
+                        ASSET_TYPE::MATERIAL,
+                        [&](const ASSET_GUID& dropped)
+                        {
+                            const uint32_t newHandle = SYS_RESOURCE.Load_Material(dropped);
+                            if (newHandle != INVALID_HANDLE_UINT && newHandle != hOverrideMaterial)
+                            {
+                                hOverrideMaterial = newHandle;
+                                bChanged = true;
+                            }
+                        },
+                        "Drop Override Material here"
+                    );
+
+                    if (ImGui::Button("Clear Override"))
+                    {
+                        hOverrideMaterial = INVALID_HANDLE_UINT;
+                        bChanged = true;
+                    }
 
                     const uint32_t hResolvedMaterial =
-                        (part.hMaterial != INVALID_HANDLE_UINT) ? part.hMaterial : pData->hMaterial;
+                        (hOverrideMaterial != INVALID_HANDLE_UINT) ? hOverrideMaterial :
+                        (part.hMaterial != INVALID_HANDLE_UINT) ? part.hMaterial :
+                        pData->hMaterial;
 
                     ImGui::Text("Resolved Material: %u", hResolvedMaterial);
-
-                    if (part.hMaterial == INVALID_HANDLE_UINT)
-                        ImGui::TextUnformatted("Using MeshRenderer fallback material.");
 
                     ImGui::TreePop();
                 }
@@ -1440,6 +1469,9 @@ void CInspectorPanel::Draw_Collider()
     if (pData->bEnable == 0)
         ImGui::EndDisabled();
 
+    Draw_ColliderMaskEditor("Mask", pData->iMask, bChanged);
+    Draw_ColliderMaskEditor("Discard Mask", pData->iDiscardMask, bChanged);
+
     switch (pData->eShape)
     {
     case SHAPE::BOX:
@@ -1514,6 +1546,32 @@ void CInspectorPanel::Draw_Collider()
         pData->bDirty = true;
 
     ImGui::TreePop();
+}
+
+void CInspectorPanel::Draw_ColliderMaskEditor(const char* szLabel, uint32_t& iTargetMask, bool& bChanged)
+{
+    if (!szLabel)
+        return;
+
+    if (ImGui::TreeNode(szLabel))
+    {
+        for (const auto& tItem : s_arrColliderMaskItems)
+        {
+            bool bChecked = (iTargetMask & tItem.iMask) != 0;
+
+            if (ImGui::Checkbox(tItem.szName, &bChecked))
+            {
+                if (bChecked)
+                    iTargetMask |= tItem.iMask;
+                else
+                    iTargetMask &= ~tItem.iMask;
+
+                bChanged = true;
+            }
+        }
+
+        ImGui::TreePop();
+    }
 }
 
 void CInspectorPanel::Draw_Rigidbody()

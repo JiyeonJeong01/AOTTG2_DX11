@@ -14,7 +14,7 @@ enum class TITAN_CHASE { END };
 enum class TITAN_ATTACK { END };
 enum class TITAN_GRAB { LEFT, RIGHT, END };
 enum class TITAN_HURT { STAND_EYE = 0, STAND_ARM_L, STAND_ARM_R, STAND_LEG_L, STAND_LEG_R, SIT_EYE, CRAWL_EYE, END };
-enum class TITAN_ATTACK_EREN { WAIT, THROW, PUNCH };
+enum class TITAN_ATTACK_EREN { WAIT, THROW, PUNCH, JUMP };
 enum class TITAN_DEAD { STAND_DEAD , SIT_DEAD, CRAWL_DEAD };
 
 typedef struct tagTitanScriptablebject
@@ -60,6 +60,8 @@ typedef struct tagTitanRuntimeRef
     class CTargetSensor*            pSensor = nullptr;
     class CTitanBound_Controller*   pBoundCtlr = nullptr;
     class Engine::CNavMesh*         pNav = nullptr;
+    class CGroundChecker*           pGroundChecker = nullptr;
+
     unordered_map<std::string, class CHitBox*>*  pAllHitBoxes;
 
     TITAN_POSE*                     pPose = nullptr;
@@ -95,5 +97,6 @@ inline constexpr const char* TITAN_ROCK_2 = "TitanThrowRock2";
 inline constexpr const char* TITAN_ROCK_3 = "TitanThrowRock3";
 inline constexpr const char* TITAN_ROCK_4 = "TitanThrowRock4";
 inline constexpr const char* TITAN_ROCK_5 = "TitanThrowRock5";
+inline constexpr const char* TITAN_CRAWLER_BODY = "TitanCrawlerBody";
 
 NS_END
