@@ -23,19 +23,33 @@ void CScoutBehavior_RequestResupply::Initialize()
     m_bPlayerDetected = false;
     m_goDetectedPlayer = nullptr;
 
-    CMeshRenderer mr = m_goScout->Get_Component<CMeshRenderer>();
-    IF_TRUE_RETURN_MSG_BREAK(!mr.Is_Valid(), , "mr is invalid");
+    m_mr = m_goScout->Get_Component<CMeshRenderer>();
+    IF_TRUE_RETURN_MSG_BREAK(!m_mr.Is_Valid(), , "mr is invalid");
 
-    if (mr->hPerObjectParams == INVALID_HANDLE_UINT)
-        mr->hPerObjectParams = GAME_INSTANCE.Alloc_PerObjectParamBlock();
+    if (m_mr->hPerObjectParams == INVALID_HANDLE_UINT)
+        m_mr->hPerObjectParams = GAME_INSTANCE.Alloc_PerObjectParamBlock();
 
-    PER_OBJECT_PARAM_BLOCK* pBlock = GAME_INSTANCE.Get_PerObjectParamBlock(mr->hPerObjectParams);
+    PER_OBJECT_PARAM_BLOCK* pBlock = GAME_INSTANCE.Get_PerObjectParamBlock(m_mr->hPerObjectParams);
     IF_NULL_RETURN_MSG_BREAK(pBlock, , "pBlock is nullptr");
 
     pBlock->block.Set_Float("g_OutlineWidth", m_fOutlineWidth);
     pBlock->block.Set_Float4("g_OutlineColor", { 1.f, 1.f, 1.f, 1.f });
 
-    mr->extraPassFlags &= ~To<uint32_t>(EXTRA_RENDER_PASS::OUTLINE);
+    m_mr->extraPassFlags &= ~To<uint32_t>(EXTRA_RENDER_PASS::OUTLINE);
+
+    m_tComponents.animator->OnAnimationFinished.Add_Listener(
+        &CScoutBehavior_RequestResupply::On_AnimFinished, this);
+
+    /* ERASE_강제_시작 */
+    Process_Start();
+}
+
+void CScoutBehavior_RequestResupply::Process_Start()
+{
+    m_eState = RESUPPLY_STATE::DETECT;
+
+    // TODO: 컷씬 / UI / 파티클
+    LOG_INFO("Start CScoutBehavior_RequestResupply");
 }
 
 void CScoutBehavior_RequestResupply::Priority_Update(_float fDT)
@@ -45,12 +59,28 @@ void CScoutBehavior_RequestResupply::Priority_Update(_float fDT)
 
 void CScoutBehavior_RequestResupply::Update(_float fDT)
 {
-    UNREFERENCED_PARAMETER(fDT);
-
-    if (!m_bPlayerDetected)
+    /* fsm(sequence) */
+    switch (m_eState)
+    {
+    case RESUPPLY_STATE::NONE:
         return;
 
-    Try_Interact();
+    case RESUPPLY_STATE::DETECT:
+        Process_DetectPlayer(fDT);
+        break;
+
+    case RESUPPLY_STATE::MOVE:
+        Process_MoveBehindPlayer(fDT);
+        break;
+
+    case RESUPPLY_STATE::RESUPPLY:
+        Process_Resupply();
+        break;
+
+    case RESUPPLY_STATE::FINISH:
+        Process_Finish(fDT);
+        break;
+    }
 }
 
 void CScoutBehavior_RequestResupply::Late_Update(_float fDT)
@@ -71,6 +101,9 @@ HRESULT CScoutBehavior_RequestResupply::SetUp_References()
 
 void CScoutBehavior_RequestResupply::OnTriggerEnter(const COLLISION_DESC& tCollisionDesc)
 {
+    if (m_eState != RESUPPLY_STATE::DETECT)
+        return;
+
     CGameObject* pOther = GAME_INSTANCE.Find_GameObject(tCollisionDesc.hObject);
     if (!pOther)
         return;
@@ -79,6 +112,7 @@ void CScoutBehavior_RequestResupply::OnTriggerEnter(const COLLISION_DESC& tColli
         return;
 
     On_DetectedPlayer(true, pOther);
+    m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::EMOTE_WAVE);
 }
 
 void CScoutBehavior_RequestResupply::OnTriggerExit(const COLLISION_DESC& tCollisionDesc)
@@ -95,10 +129,10 @@ void CScoutBehavior_RequestResupply::OnTriggerExit(const COLLISION_DESC& tCollis
 
 _bool CScoutBehavior_RequestResupply::Is_Player(const CGameObject* pOther) const
 {
-    if (pOther == nullptr)
+    if (!pOther)
         return false;
 
-    return pOther->Has_Mask(O_PLAYER);
+    return pOther->Is_ExactMask(O_PLAYER);
 }
 
 void CScoutBehavior_RequestResupply::On_DetectedPlayer(_bool bDetected, CGameObject* pPlayer)
@@ -106,15 +140,15 @@ void CScoutBehavior_RequestResupply::On_DetectedPlayer(_bool bDetected, CGameObj
     m_bPlayerDetected = bDetected;
     m_goDetectedPlayer = pPlayer;
 
-    CMeshRenderer mr = m_goScout->Get_Component<CMeshRenderer>();
-    if (!mr.Is_Valid())
+    if (!m_mr.Is_Valid())
         return;
 
+    /* 플레이어 접근 시 외곽선 효과 */
     if (bDetected)
     {
-        mr->extraPassFlags |= To<uint32_t>(EXTRA_RENDER_PASS::OUTLINE);
+        m_mr->extraPassFlags |= To<uint32_t>(EXTRA_RENDER_PASS::OUTLINE);
 
-        auto* pBlock = GAME_INSTANCE.Get_PerObjectParamBlock(mr->hPerObjectParams);
+        auto* pBlock = GAME_INSTANCE.Get_PerObjectParamBlock(m_mr->hPerObjectParams);
         if (!pBlock)
             return;
 
@@ -123,28 +157,108 @@ void CScoutBehavior_RequestResupply::On_DetectedPlayer(_bool bDetected, CGameObj
     }
     else
     {
-        mr->extraPassFlags &= ~To<uint32_t>(EXTRA_RENDER_PASS::OUTLINE);
+        m_mr->extraPassFlags &= ~To<uint32_t>(EXTRA_RENDER_PASS::OUTLINE);
     }
 }
 
-void CScoutBehavior_RequestResupply::Try_Interact()
+void CScoutBehavior_RequestResupply::Process_DetectPlayer(_float fDT)
 {
-    if (!m_bPlayerDetected)
+    UNREFERENCED_PARAMETER(fDT);
+
+    if (!m_goDetectedPlayer)
         return;
 
-    if (m_goDetectedPlayer == nullptr)
+    CTransform trPlayer = m_goDetectedPlayer->Get_Component<CTransform>();
+
+    _vector vPlayerPos = XMLoadFloat3(&trPlayer->vPosition);
+    _vector vCurPos = XMLoadFloat3(&m_tComponents.transform->vPosition);
+
+    _float fDist = XMVectorGetX(vPlayerPos - vCurPos);
+
+    if (fDist < m_fBehindDistance)
+    {
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);
+        m_eState = RESUPPLY_STATE::MOVE;
+    }
+    else if (fDist < m_fStopAnimationDist)
+    {
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::IDLE_CASUAL_M);
+    }
+}
+
+void CScoutBehavior_RequestResupply::Process_MoveBehindPlayer(_float fDT)
+{
+    if (!m_goDetectedPlayer)
         return;
 
-    if (!SYS_INPUT.Get_KeyDown('F'))
+    CTransform trPlayer = m_goDetectedPlayer->Get_Component<CTransform>();
+
+    _vector vPlayerPos = XMLoadFloat3(&trPlayer->vPosition);
+    _vector vLook = XMVector3Normalize(trPlayer.Get_StateXM(STATE::LOOK));
+    _vector vTargetPos = vPlayerPos + vLook * m_fResupplyDistance;
+
+    _vector vDiff = vTargetPos - XMLoadFloat3(&m_tComponents.transform->vPosition);
+    _vector vDir = XMVector3Normalize(XMVectorSetY(vDiff, 0.f));
+
+    m_tComponents.transform.Translate(vDir * m_pStats->fCurSpeed * fDT, SPACE::WORLD);
+    m_tComponents.transform.Look_At(-vDir);
+
+    _float fDist = XMVectorGetX(XMVector3Length(vDiff));
+
+    if (fDist < m_fResupplyDistance)
+    {
+        m_eState = RESUPPLY_STATE::RESUPPLY;
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RESUPPLY);
+    }
+}
+
+void CScoutBehavior_RequestResupply::Process_Resupply()
+{
+    if (!m_goDetectedPlayer)
         return;
 
     CPlayer* pPlayer = m_goDetectedPlayer->Get_Script<CPlayer>();
-    if (pPlayer == nullptr)
+    if (!pPlayer)
         return;
 
     pPlayer->Deliver_Supplies();
+}
 
-    m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RESUPPLY);
+void CScoutBehavior_RequestResupply::Process_Finish(_float fDT)
+{
+    _vector vExit = XMLoadFloat3(&m_vExitPos);
+
+    m_tComponents.transform.Look_At(-vExit);
+
+    _vector vDir = XMVector3Normalize(vExit - XMLoadFloat3(&m_tComponents.transform->vPosition));
+    vDir = XMVectorSetY(vDir, 0.f);
+
+    m_tComponents.transform.Translate(vDir * m_pStats->fMaxSpeed * fDT, SPACE::WORLD);
+
+    _float fDist = XMVectorGetX(XMVector3Length(vExit - XMLoadFloat3(&m_tComponents.transform->vPosition)));
+
+    if (fDist < 0.2f)
+    {
+        m_goScout->Set_Enable(false);
+    }
+}
+
+void CScoutBehavior_RequestResupply::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
+{
+    if (m_eState != RESUPPLY_STATE::RESUPPLY)
+        return;
+
+    _uint iIndex = tData.iAnimationClip;
+
+    if (iIndex == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::RESUPPLY))
+    {
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::SPECIAL_ARMIN);
+    }
+    else if (iIndex == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::SPECIAL_ARMIN))
+    {
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);
+        m_eState = RESUPPLY_STATE::FINISH;
+    }
 }
 
 NS_END

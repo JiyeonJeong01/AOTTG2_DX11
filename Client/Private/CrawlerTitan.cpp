@@ -250,10 +250,7 @@ void CCrawlerTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurt
 
     TITAN_HURT eHurt = TITAN_HURT::END;
 
-    if (strHurtBox == "HurtBox_Eye")
-    {
-        eHurt = TITAN_HURT::CRAWL_EYE;
-    }
+    eHurt = TITAN_HURT::CRAWL_EYE;
 
     //else if (strHurtBox == TITAN_WEAK_POINT)
     //{

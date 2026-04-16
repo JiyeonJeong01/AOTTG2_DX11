@@ -193,7 +193,7 @@ void CPlayer::Resupply()
 
 void CPlayer::Deliver_Supplies()
 {
-    m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RESUPPLY);
+    
 }
 
 NS_END;

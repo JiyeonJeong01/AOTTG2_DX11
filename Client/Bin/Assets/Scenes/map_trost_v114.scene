@@ -4698,10 +4698,10 @@
               -236.4753875732422
             ],
             "Rotation": [
-              0.4999999403953552,
-              0.5000000596046448,
-              -0.5,
-              0.4999999403953552
+              0.5,
+              0.5000001192092896,
+              -0.5000000596046448,
+              0.5
             ],
             "Scale": [
               1.2000001668930054,
@@ -5178,15 +5178,15 @@
               159.9943389892578
             ],
             "Rotation": [
-              1.4813867466045849e-08,
-              0.639439046382904,
-              -5.491833654502898e-09,
-              0.7688418030738831
+              2.993373726667414e-08,
+              0.6427875757217407,
+              1.2491471856890257e-08,
+              0.7660444974899292
             ],
             "Scale": [
-              0.4999951124191284,
-              0.5,
-              0.35000771284103394
+              0.49999552965164185,
+              0.4999999403953552,
+              0.35000789165496826
             ],
             "Type": 0
           },
@@ -6804,7 +6804,7 @@
           "data": {
             "Position": [
               -70.38318634033203,
-              -7278432.0,
+              -7582579.5,
               -63.84186553955078
             ],
             "Rotation": [
@@ -10661,15 +10661,15 @@
         {
           "data": {
             "Position": [
-              -76.17926788330078,
-              0.9854046106338501,
-              -78.41699981689453
+              75.04779052734375,
+              0.9853978753089905,
+              36.735408782958984
             ],
             "Rotation": [
-              -1.0331260455131996e-05,
-              0.981376051902771,
-              -2.1862995708943345e-05,
-              0.19209642708301544
+              -8.574916864745319e-05,
+              -0.8090525269508362,
+              -0.00010187190491706133,
+              0.5877363681793213
             ],
             "Scale": [
               0.010000002570450306,
@@ -10713,7 +10713,7 @@
           "data": {
             "AngularDrag": 0.0,
             "BodyType": 0,
-            "Drag": 0.0,
+            "Drag": 0.5,
             "Enabled": true,
             "Friction": 5.0,
             "Gravity": true,
@@ -10737,16 +10737,16 @@
         {
           "data": {
             "Anchor": [
-              21.067672729492188,
-              4.05415678024292,
-              -49.311737060546875
+              -36.44849395751953,
+              1.0000009536743164,
+              -10.87297534942627
             ],
-            "Damper": 3.0,
+            "Damper": 4.0,
             "Enabled": true,
             "MaxLength": 0.0,
             "MinLength": 0.0,
             "RestLength": 0.0,
-            "Spring": 4.0,
+            "Spring": 5.0,
             "Type": 3,
             "UseMaxLength": false,
             "UseMinLength": false,
@@ -10764,7 +10764,7 @@
                   "Name": "m_szState",
                   "Type": 7,
                   "Value": {
-                    "Value": "GROUNDED_ATTACK"
+                    "Value": "IDLE"
                   }
                 },
                 {
@@ -10844,8 +10844,8 @@
                   "Name": "m_tAttachObject.vOffset",
                   "Type": 3,
                   "Value": [
-                    0.5,
-                    0.5,
+                    0,
+                    0,
                     1.0
                   ]
                 }
@@ -10884,13 +10884,13 @@
         },
         {
           "data": {
-            "AnimationClip": 44,
+            "AnimationClip": 70,
             "BlendDuration": 0.0,
             "BlendMap": [],
             "Enabled": true,
             "LoopMap": [
               {
-                "Clip": 78,
+                "Clip": 22,
                 "Loop": true
               },
               {
@@ -10898,7 +10898,7 @@
                 "Loop": true
               },
               {
-                "Clip": 22,
+                "Clip": 78,
                 "Loop": true
               },
               {
@@ -11386,7 +11386,7 @@
         {
           "data": {
             "AttachBoneName": "hand_L",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -11444,7 +11444,7 @@
         {
           "data": {
             "AttachBoneName": "hand_R",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -11796,14 +11796,24 @@
               "ClassName": "CODM_Gear",
               "Fields": [
                 {
-                  "Name": "m_fForceSpring",
+                  "Name": "m_fForceSpringNormal",
                   "Type": 1,
-                  "Value": 3.0
+                  "Value": 5.0
                 },
                 {
-                  "Name": "m_fForceDamper",
+                  "Name": "m_fForceDamperNormal",
                   "Type": 1,
-                  "Value": 3.0
+                  "Value": 4.0
+                },
+                {
+                  "Name": "m_fForceSpringReel",
+                  "Type": 1,
+                  "Value": 7.0
+                },
+                {
+                  "Name": "m_fForceDamperReel",
+                  "Type": 1,
+                  "Value": 4.0
                 }
               ]
             },
@@ -11826,15 +11836,15 @@
         {
           "data": {
             "Position": [
-              -76.17926788330078,
-              0.9854046702384949,
-              -78.41699981689453
+              75.04779052734375,
+              0.9853977560997009,
+              36.735408782958984
             ],
             "Rotation": [
-              -1.0331260455131996e-05,
-              0.981376051902771,
-              -2.1862995708943345e-05,
-              0.19209642708301544
+              -8.429671288467944e-05,
+              -0.8090574741363525,
+              -0.00010014359577326104,
+              0.5877295732498169
             ],
             "Scale": [
               0.010000002570450306,
@@ -12017,7 +12027,7 @@
       "uuid": "F1C8061C-458A-4359-80A6-42F1577B41B9"
     },
     {
-      "iObjMask": 16,
+      "iObjMask": 17,
       "isUI": false,
       "layer": 0,
       "name": "Blade_Attack",
@@ -12025,9 +12035,9 @@
         {
           "data": {
             "Position": [
-              -74.0934066772461,
-              1.0586565732955933,
-              -76.31727600097656
+              77.7437515258789,
+              2.8857340812683105,
+              36.02006530761719
             ],
             "Rotation": [
               0.0,
@@ -12048,7 +12058,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 0,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 0,
             "Offset": [
               0.0,
@@ -12108,15 +12118,15 @@
         {
           "data": {
             "Position": [
-              3.0911842888683213e-20,
-              1.0599998235702515,
-              0.39953258633613586
+              -6.090323448181152,
+              1.059999704360962,
+              -0.28619492053985596
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105149030685425,
               0.0,
-              0.7092766165733337
+              0.7036821246147156
             ],
             "Scale": [
               0.3499999940395355,
@@ -12131,7 +12141,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 0,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               3.0,
               18.0,
@@ -12161,7 +12171,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 10.0,
@@ -12183,7 +12193,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CNormalTitan",
               "Fields": [
@@ -12191,7 +12201,7 @@
                   "Name": "m_szState",
                   "Type": 7,
                   "Value": {
-                    "Value": "IDLE"
+                    "Value": "CHASE"
                   }
                 },
                 {
@@ -12221,7 +12231,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTitanBound_Controller",
               "Fields": [
@@ -12669,7 +12679,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTitan_Scriptable_Object",
               "Fields": [
@@ -12731,7 +12741,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -12756,21 +12766,21 @@
         },
         {
           "data": {
-            "AnimationClip": 90,
+            "AnimationClip": 99,
             "BlendDuration": 0.0,
             "BlendMap": [],
-            "Enabled": true,
+            "Enabled": false,
             "LoopMap": [
               {
                 "Clip": 98,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
@@ -12786,12 +12796,12 @@
                 "Loop": true
               },
               {
-                "Clip": 108,
-                "Loop": true
-              },
-              {
                 "Clip": 100,
                 "Loop": false
+              },
+              {
+                "Clip": 108,
+                "Loop": true
               },
               {
                 "Clip": 91,
@@ -12852,7 +12862,7 @@
         {
           "data": {
             "AttachBoneName": "eyes_0",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -12910,7 +12920,7 @@
         {
           "data": {
             "AttachBoneName": "head",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -12946,9 +12956,9 @@
         {
           "data": {
             "Position": [
-              3.0911842888683213e-20,
-              1.059999942779541,
-              0.39953258633613586
+              -6.08776330947876,
+              1.0599998235702515,
+              -0.2862231135368347
             ],
             "Rotation": [
               0.0,
@@ -12969,7 +12979,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 128,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               10.0,
               10.0,
@@ -12996,7 +13006,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTargetSensor",
               "Fields": [
@@ -13028,15 +13038,15 @@
         {
           "data": {
             "Position": [
-              10.02132511138916,
-              9.560001373291016,
-              3.8380017280578613
+              -16.121152877807617,
+              9.559999465942383,
+              -3.689324378967285
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13051,7 +13061,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13086,15 +13096,15 @@
         {
           "data": {
             "Position": [
-              9.978300094604492,
-              9.560001373291016,
-              -3.1618666648864746
+              -16.053438186645508,
+              9.559999465942383,
+              3.3103482723236084
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13109,7 +13119,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13144,15 +13154,15 @@
         {
           "data": {
             "Position": [
-              6.021399974822998,
-              9.560001373291016,
-              3.8625881671905518
+              -12.121339797973633,
+              9.559999465942383,
+              -3.728018045425415
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13167,7 +13177,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13202,15 +13212,15 @@
         {
           "data": {
             "Position": [
-              5.978374481201172,
-              9.560001373291016,
-              -3.1372804641723633
+              -12.053625106811523,
+              9.559999465942383,
+              3.2716541290283203
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13225,7 +13235,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13260,15 +13270,15 @@
         {
           "data": {
             "Position": [
-              -4.481475830078125,
-              6.060000896453857,
-              3.427135467529297
+              -1.6169943809509277,
+              6.059999942779541,
+              -3.3296139240264893
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13283,7 +13293,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13318,15 +13328,15 @@
         {
           "data": {
             "Position": [
-              -4.518354892730713,
-              6.060000896453857,
-              -2.572751760482788
+              -1.5589532852172852,
+              6.059999942779541,
+              2.6701056957244873
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13341,7 +13351,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13376,15 +13386,15 @@
         {
           "data": {
             "Position": [
-              -3.9937784671783447,
-              1.059999942779541,
-              1.4240998029708862
+              -2.097623825073242,
+              1.0599998235702515,
+              -1.3248703479766846
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13399,7 +13409,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13434,15 +13444,15 @@
         {
           "data": {
             "Position": [
-              -4.0060715675354,
-              1.059999942779541,
-              -0.5758626461029053
+              -2.078277111053467,
+              1.0599998235702515,
+              0.6750358939170837
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13457,7 +13467,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13492,15 +13502,15 @@
         {
           "data": {
             "Position": [
-              3.018383026123047,
-              1.059999942779541,
-              3.3810367584228516
+              -9.116643905639648,
+              1.0599998235702515,
+              -3.2570621967315674
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13515,7 +13525,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13550,15 +13560,15 @@
         {
           "data": {
             "Position": [
-              2.981504201889038,
-              1.059999942779541,
-              -2.6188504695892334
+              -9.058602333068848,
+              1.0599998235702515,
+              2.742656946182251
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13573,7 +13583,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13608,15 +13618,15 @@
         {
           "data": {
             "Position": [
-              -1.5907503366470337,
-              10.060001373291016,
-              1.9093389511108398
+              -4.50234842300415,
+              10.059999465942383,
+              -1.8016307353973389
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13631,7 +13641,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13666,15 +13676,15 @@
         {
           "data": {
             "Position": [
-              -1.5091915130615234,
-              10.060001373291016,
-              -1.0912195444107056
+              -4.5733232498168945,
+              10.059999465942383,
+              1.1991963386535645
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13689,7 +13699,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13724,15 +13734,15 @@
         {
           "data": {
             "Position": [
-              2.5091729164123535,
-              10.060001373291016,
-              1.8841381072998047
+              -8.602156639099121,
+              10.059999465942383,
+              -1.7619693279266357
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13747,7 +13757,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13782,15 +13792,15 @@
         {
           "data": {
             "Position": [
-              2.4907333850860596,
-              10.060001373291016,
-              -1.1158055067062378
+              -8.573136329650879,
+              10.059999465942383,
+              1.2378904819488525
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13805,7 +13815,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13840,15 +13850,15 @@
         {
           "data": {
             "Position": [
-              5.018345832824707,
-              15.060001373291016,
-              3.368743658065796
+              -11.11655044555664,
+              15.059999465942383,
+              -3.237715482711792
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13863,7 +13873,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13898,15 +13908,15 @@
         {
           "data": {
             "Position": [
-              4.981466770172119,
-              15.060001373291016,
-              -2.631143569946289
+              -11.05850887298584,
+              15.059999465942383,
+              2.7620041370391846
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13921,7 +13931,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -13956,15 +13966,15 @@
         {
           "data": {
             "Position": [
-              2.5122461318969727,
-              6.060000896453857,
-              2.3841288089752197
+              -8.606992721557617,
+              6.059999942779541,
+              -2.261945962905884
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -13979,7 +13989,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -14014,15 +14024,15 @@
         {
           "data": {
             "Position": [
-              2.4876601696014404,
-              6.060000896453857,
-              -1.6157963275909424
+              -8.568299293518066,
+              6.059999942779541,
+              1.7378671169281006
             ],
             "Rotation": [
               0.0,
-              -0.7049303650856018,
+              0.7105186581611633,
               0.0,
-              0.7092766165733337
+              0.7036783695220947
             ],
             "Scale": [
               1.0,
@@ -14037,7 +14047,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -14095,7 +14105,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 0,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 0,
             "Offset": [
               0.0,
@@ -14130,9 +14140,9 @@
         {
           "data": {
             "Position": [
-              -0.3936050534248352,
-              4.776586055755615,
-              3.80544114112854
+              -5.000520706176758,
+              4.271390438079834,
+              -4.48165225982666
             ],
             "Rotation": [
               0.0,
@@ -14153,7 +14163,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -14188,9 +14198,9 @@
         {
           "data": {
             "Position": [
-              -0.4079335331916809,
-              4.769233226776123,
-              -2.9667062759399414
+              -6.120364189147949,
+              4.208439350128174,
+              2.4767253398895264
             ],
             "Rotation": [
               0.0,
@@ -14211,7 +14221,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -14246,9 +14256,9 @@
         {
           "data": {
             "Position": [
-              -0.6109041571617126,
-              7.943569183349609,
-              3.1307499408721924
+              -5.854681968688965,
+              7.294727802276611,
+              -3.6696009635925293
             ],
             "Rotation": [
               0.0,
@@ -14269,7 +14279,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 104,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.0,
               1.5,
@@ -14296,7 +14306,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -14328,9 +14338,9 @@
         {
           "data": {
             "Position": [
-              -0.753964364528656,
-              7.926410675048828,
-              -2.2961320877075195
+              -5.448768138885498,
+              7.369700908660889,
+              1.904006004333496
             ],
             "Rotation": [
               0.0,
@@ -14351,7 +14361,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 104,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.0,
               1.5,
@@ -14378,7 +14388,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -14410,9 +14420,9 @@
         {
           "data": {
             "Position": [
-              0.41925567388534546,
-              2.9081149101257324,
-              1.8330357074737549
+              -7.523744583129883,
+              2.8515381813049316,
+              -1.851135492324829
             ],
             "Rotation": [
               0.0,
@@ -14433,7 +14443,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 104,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.2999999523162842,
               0.699999988079071,
@@ -14460,7 +14470,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -14492,9 +14502,9 @@
         {
           "data": {
             "Position": [
-              0.4031454920768738,
-              2.908474922180176,
-              -1.0393539667129517
+              -6.559872627258301,
+              2.165764331817627,
+              1.2360749244689941
             ],
             "Rotation": [
               0.0,
@@ -14515,7 +14525,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 104,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.2999999523162842,
               0.699999988079071,
@@ -14542,7 +14552,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -14574,9 +14584,9 @@
         {
           "data": {
             "Position": [
-              -0.3936050534248352,
-              4.776586055755615,
-              3.80544114112854
+              -5.000520706176758,
+              4.271390438079834,
+              -4.48165225982666
             ],
             "Rotation": [
               0.0,
@@ -14620,7 +14630,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -14657,9 +14667,9 @@
         {
           "data": {
             "Position": [
-              -0.4079335331916809,
-              4.769233226776123,
-              -2.9667062759399414
+              -6.120364189147949,
+              4.208439350128174,
+              2.4767253398895264
             ],
             "Rotation": [
               0.0,
@@ -14703,7 +14713,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -14740,9 +14750,9 @@
         {
           "data": {
             "Position": [
-              -0.0397949256002903,
-              1.5710395574569702,
-              1.58346426486969
+              -6.992537021636963,
+              1.5757052898406982,
+              -1.4627667665481567
             ],
             "Rotation": [
               0.0,
@@ -14786,7 +14796,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -14823,9 +14833,9 @@
         {
           "data": {
             "Position": [
-              -0.05387389659881592,
-              1.5718344449996948,
-              -0.783799409866333
+              -5.1733551025390625,
+              2.065664291381836,
+              0.8778665065765381
             ],
             "Rotation": [
               0.0,
@@ -14869,7 +14879,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -15005,15 +15015,15 @@
         {
           "data": {
             "Position": [
-              -76.12120819091797,
-              8.541025161743164,
-              -85.58316040039063
+              68.84266662597656,
+              5.717966079711914,
+              41.73112487792969
             ],
             "Rotation": [
-              0.2282504290342331,
-              -0.003943928051739931,
-              0.0009246187401004136,
-              0.973594069480896
+              0.019790925085544586,
+              0.9010260701179504,
+              -0.041341591626405716,
+              0.43133655190467834
             ],
             "Scale": [
               1.0,
@@ -15075,7 +15085,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 0,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               5.0,
               18.0,
@@ -15105,7 +15115,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 1.5,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 10.0,
@@ -15127,7 +15137,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAbnormalTitan",
               "Fields": [
@@ -15165,7 +15175,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTitanBound_Controller",
               "Fields": [
@@ -15613,7 +15623,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -15649,7 +15659,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -15685,7 +15695,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -15721,7 +15731,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTitan_Scriptable_Object",
               "Fields": [
@@ -15783,7 +15793,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -15811,18 +15821,18 @@
             "AnimationClip": 90,
             "BlendDuration": 0.0,
             "BlendMap": [],
-            "Enabled": true,
+            "Enabled": false,
             "LoopMap": [
               {
                 "Clip": 98,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
@@ -15838,12 +15848,12 @@
                 "Loop": true
               },
               {
-                "Clip": 108,
-                "Loop": true
-              },
-              {
                 "Clip": 100,
                 "Loop": false
+              },
+              {
+                "Clip": 108,
+                "Loop": true
               },
               {
                 "Clip": 91,
@@ -15904,7 +15914,7 @@
         {
           "data": {
             "AttachBoneName": "eyes_0",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -15962,7 +15972,7 @@
         {
           "data": {
             "AttachBoneName": "head",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -16021,7 +16031,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 128,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               10.0,
               10.0,
@@ -16048,7 +16058,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTargetSensor",
               "Fields": [
@@ -16103,7 +16113,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16161,7 +16171,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16219,7 +16229,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16277,7 +16287,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16335,7 +16345,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16393,7 +16403,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16451,7 +16461,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16509,7 +16519,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16567,7 +16577,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16625,7 +16635,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16683,7 +16693,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16741,7 +16751,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16799,7 +16809,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16857,7 +16867,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16915,7 +16925,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -16973,7 +16983,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -17031,7 +17041,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -17089,7 +17099,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -17147,7 +17157,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 104,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 40,
             "Offset": [
               0.0,
@@ -17170,7 +17180,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -17225,7 +17235,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -17283,7 +17293,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 0,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 0,
             "Offset": [
               0.0,
@@ -17341,7 +17351,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.0,
               1.5,
@@ -17368,7 +17378,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -17423,7 +17433,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.0,
               1.5,
@@ -17450,7 +17460,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -17505,7 +17515,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.2999999523162842,
               0.699999988079071,
@@ -17532,7 +17542,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -17587,7 +17597,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.2999999523162842,
               0.699999988079071,
@@ -17614,7 +17624,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -17692,7 +17702,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -17775,7 +17785,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -17858,7 +17868,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -17941,7 +17951,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -18413,7 +18423,7 @@
           "data": {
             "Enabled": true,
             "MaterialGUID": "55555555-5555-5555-5555-555555555555",
-            "TextureGUID": "C212BB34-F7FE-440A-9A89-348437E93C4A",
+            "TextureGUID": "29085E95-8FA2-4160-A444-EDE76E0F9B34",
             "Type": 12,
             "flags": 0,
             "layer": 1,
@@ -18448,7 +18458,7 @@
               1.0
             ],
             "Enabled": true,
-            "TextureGuid": "C212BB34-F7FE-440A-9A89-348437E93C4A",
+            "TextureGuid": "29085E95-8FA2-4160-A444-EDE76E0F9B34",
             "Type": 13,
             "UV": [
               0.0,
@@ -18474,12 +18484,12 @@
         {
           "data": {
             "PosPx": [
-              1566.0,
-              966.0
+              1556.0,
+              972.0
             ],
             "SizePx": [
-              91.0,
-              71.0
+              79.0,
+              65.0
             ],
             "Type": 11
           },
@@ -18495,7 +18505,7 @@
             "layer": 1,
             "rcClip": [
               0.0,
-              71.0,
+              65.0,
               0.0,
               0.0
             ],
@@ -18550,7 +18560,7 @@
         {
           "data": {
             "PosPx": [
-              1671.0,
+              1657.0,
               972.0
             ],
             "SizePx": [
@@ -18626,12 +18636,12 @@
         {
           "data": {
             "PosPx": [
-              1766.0,
-              972.0
+              1760.0,
+              966.0
             ],
             "SizePx": [
-              79.0,
-              65.0
+              91.0,
+              71.0
             ],
             "Type": 11
           },
@@ -18647,7 +18657,7 @@
             "layer": 1,
             "rcClip": [
               0.0,
-              65.0,
+              71.0,
               0.0,
               0.0
             ],
@@ -18788,7 +18798,7 @@
             ],
             "Scale": 1.0,
             "SortZ": 0.0,
-            "Text": " 16",
+            "Text": " 51",
             "Type": 15,
             "VisualPriority": 0
           },
@@ -18980,7 +18990,7 @@
             "flags": 1,
             "layer": 1,
             "rcClip": [
-              0.0,
+              173.0,
               0.0,
               0.0,
               0.0
@@ -19058,7 +19068,7 @@
             "rcClip": [
               0.0,
               0.0,
-              -0.0,
+              -173.0,
               0.0
             ],
             "rcUV": [
@@ -19750,10 +19760,10 @@
               -16.494319915771484
             ],
             "Rotation": [
-              -0.3469356298446655,
+              -0.3469356596469879,
               0.0,
               -0.0,
-              0.9378889203071594
+              0.937889039516449
             ],
             "Scale": [
               0.9999999403953552,
@@ -19884,10 +19894,10 @@
               -42.7973518371582
             ],
             "Rotation": [
-              -0.3469356298446655,
+              -0.3469356596469879,
               0.0,
               -0.0,
-              0.9378889203071594
+              0.937889039516449
             ],
             "Scale": [
               0.9999999403953552,
@@ -22332,7 +22342,7 @@
         },
         {
           "data": {
-            "AnimationClip": 12,
+            "AnimationClip": 6,
             "BlendDuration": 0.0,
             "BlendMap": [],
             "Enabled": true,
@@ -22342,20 +22352,20 @@
                 "Loop": true
               },
               {
+                "Clip": 19,
+                "Loop": true
+              },
+              {
                 "Clip": 11,
                 "Loop": true
               },
               {
-                "Clip": 19,
+                "Clip": 20,
                 "Loop": true
               },
               {
                 "Clip": 12,
                 "Loop": false
-              },
-              {
-                "Clip": 20,
-                "Loop": true
               },
               {
                 "Clip": 18,
@@ -22367,7 +22377,7 @@
               }
             ],
             "PlaySpeed": 1.0,
-            "Playing": true,
+            "Playing": false,
             "Type": 6
           },
           "type": 6
@@ -22386,9 +22396,9 @@
         {
           "data": {
             "Position": [
-              -92.85194396972656,
-              19.404529571533203,
-              -68.03041076660156
+              -96.26531219482422,
+              13.178930282592773,
+              -72.56841278076172
             ],
             "Rotation": [
               0.0,
@@ -22473,9 +22483,9 @@
         {
           "data": {
             "Position": [
-              -101.0604248046875,
-              20.37271499633789,
-              -68.73209381103516
+              -101.59440612792969,
+              12.998425483703613,
+              -70.84532928466797
             ],
             "Rotation": [
               0.0,
@@ -22560,9 +22570,9 @@
         {
           "data": {
             "Position": [
-              -99.32858276367188,
-              4.704104423522949,
-              -67.56285095214844
+              -99.54159545898438,
+              1.6120890378952026,
+              -66.20305633544922
             ],
             "Rotation": [
               0.0,
@@ -22861,7 +22871,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -22948,7 +22958,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -23034,7 +23044,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -23056,7 +23066,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -23082,7 +23092,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -23200,7 +23210,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -23222,7 +23232,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -23248,7 +23258,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -23333,7 +23343,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -23355,7 +23365,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -23381,7 +23391,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -23466,7 +23476,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -23488,7 +23498,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -23514,7 +23524,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -23599,7 +23609,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -23621,7 +23631,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -23647,7 +23657,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -23683,9 +23693,9 @@
         {
           "data": {
             "Position": [
-              -98.0855941772461,
-              9.4350004196167,
-              -68.54373168945313
+              -97.94544982910156,
+              7.750986099243164,
+              -67.3376693725586
             ],
             "Rotation": [
               0.0,
@@ -24095,7 +24105,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 0,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               5.0,
               18.0,
@@ -24125,7 +24135,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 1.5,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 10.0,
@@ -24147,7 +24157,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAbnormalTitan",
               "Fields": [
@@ -24185,7 +24195,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTitanBound_Controller",
               "Fields": [
@@ -24633,7 +24643,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -24669,7 +24679,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -24705,7 +24715,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -24741,7 +24751,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTitan_Scriptable_Object",
               "Fields": [
@@ -24803,7 +24813,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -24831,18 +24841,18 @@
             "AnimationClip": 90,
             "BlendDuration": 0.0,
             "BlendMap": [],
-            "Enabled": true,
+            "Enabled": false,
             "LoopMap": [
               {
                 "Clip": 98,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
@@ -24858,12 +24868,12 @@
                 "Loop": true
               },
               {
-                "Clip": 100,
-                "Loop": false
-              },
-              {
                 "Clip": 108,
                 "Loop": true
+              },
+              {
+                "Clip": 100,
+                "Loop": false
               },
               {
                 "Clip": 91,
@@ -24924,7 +24934,7 @@
         {
           "data": {
             "AttachBoneName": "eyes_0",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -24982,7 +24992,7 @@
         {
           "data": {
             "AttachBoneName": "head",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -25041,7 +25051,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 128,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               10.0,
               10.0,
@@ -25068,7 +25078,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTargetSensor",
               "Fields": [
@@ -25123,7 +25133,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -25181,7 +25191,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -25239,7 +25249,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -25297,7 +25307,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -25355,7 +25365,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -25413,7 +25423,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -25471,7 +25481,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -25529,7 +25539,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -25587,7 +25597,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 0,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 0,
             "Offset": [
               0.0,
@@ -25645,7 +25655,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 0,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 0,
             "Offset": [
               0.0,
@@ -25703,7 +25713,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -25761,7 +25771,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -25819,7 +25829,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -25877,7 +25887,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -25935,7 +25945,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -25993,7 +26003,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -26051,7 +26061,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -26109,7 +26119,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -26167,7 +26177,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 104,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 40,
             "Offset": [
               0.0,
@@ -26190,7 +26200,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -26245,7 +26255,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -26303,7 +26313,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -26361,7 +26371,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.0,
               1.5,
@@ -26388,7 +26398,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -26443,7 +26453,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.0,
               1.5,
@@ -26470,7 +26480,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -26525,7 +26535,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.2999999523162842,
               0.699999988079071,
@@ -26552,7 +26562,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -26607,7 +26617,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.2999999523162842,
               0.699999988079071,
@@ -26634,7 +26644,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -26712,7 +26722,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -26795,7 +26805,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -26878,7 +26888,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -26961,7 +26971,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -27048,7 +27058,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -27135,7 +27145,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -27254,7 +27264,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -27276,7 +27286,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -27302,7 +27312,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -27387,7 +27397,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -27409,7 +27419,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -27435,7 +27445,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -27520,7 +27530,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -27542,7 +27552,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -27568,7 +27578,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -27653,7 +27663,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -27675,7 +27685,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -27701,7 +27711,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -27786,7 +27796,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -27808,7 +27818,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -27834,7 +27844,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -27893,7 +27903,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 0,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               5.0,
               18.0,
@@ -27923,7 +27933,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 10.0,
@@ -27945,7 +27955,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAbnormalTitan",
               "Fields": [
@@ -27983,7 +27993,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTitanBound_Controller",
               "Fields": [
@@ -28431,7 +28441,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -28467,7 +28477,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -28503,7 +28513,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -28539,7 +28549,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTitan_Scriptable_Object",
               "Fields": [
@@ -28601,7 +28611,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -28629,18 +28639,18 @@
             "AnimationClip": 90,
             "BlendDuration": 0.0,
             "BlendMap": [],
-            "Enabled": true,
+            "Enabled": false,
             "LoopMap": [
               {
                 "Clip": 98,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
@@ -28656,12 +28666,12 @@
                 "Loop": true
               },
               {
-                "Clip": 100,
-                "Loop": false
-              },
-              {
                 "Clip": 108,
                 "Loop": true
+              },
+              {
+                "Clip": 100,
+                "Loop": false
               },
               {
                 "Clip": 91,
@@ -28722,7 +28732,7 @@
         {
           "data": {
             "AttachBoneName": "eyes_0",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -28780,7 +28790,7 @@
         {
           "data": {
             "AttachBoneName": "head",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -28839,7 +28849,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 128,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               10.0,
               10.0,
@@ -28866,7 +28876,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTargetSensor",
               "Fields": [
@@ -28921,7 +28931,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -28979,7 +28989,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29037,7 +29047,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29095,7 +29105,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29153,7 +29163,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29211,7 +29221,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29269,7 +29279,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29327,7 +29337,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29385,7 +29395,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29443,7 +29453,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29501,7 +29511,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29559,7 +29569,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29617,7 +29627,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29675,7 +29685,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29733,7 +29743,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29791,7 +29801,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29849,7 +29859,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29907,7 +29917,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -29965,7 +29975,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 104,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 40,
             "Offset": [
               0.0,
@@ -29988,7 +29998,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -30043,7 +30053,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -30101,7 +30111,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -30159,7 +30169,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.0,
               1.5,
@@ -30186,7 +30196,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -30241,7 +30251,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.0,
               1.5,
@@ -30268,7 +30278,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -30323,7 +30333,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.2999999523162842,
               0.699999988079071,
@@ -30350,7 +30360,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -30405,7 +30415,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.2999999523162842,
               0.699999988079071,
@@ -30432,7 +30442,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -30510,7 +30520,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -30593,7 +30603,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -30676,7 +30686,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -30759,7 +30769,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -30846,7 +30856,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -30933,7 +30943,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -31052,7 +31062,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -31074,7 +31084,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -31100,7 +31110,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -31185,7 +31195,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -31207,7 +31217,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -31233,7 +31243,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -31318,7 +31328,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -31340,7 +31350,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -31366,7 +31376,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -31451,7 +31461,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -31473,7 +31483,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -31499,7 +31509,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -31584,7 +31594,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -31606,7 +31616,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -31632,7 +31642,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -31691,7 +31701,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 0,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               5.0,
               18.0,
@@ -31721,7 +31731,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 1.5,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 10.0,
@@ -31743,7 +31753,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAbnormalTitan",
               "Fields": [
@@ -31781,7 +31791,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTitanBound_Controller",
               "Fields": [
@@ -32229,7 +32239,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -32265,7 +32275,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -32301,7 +32311,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -32337,7 +32347,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTitan_Scriptable_Object",
               "Fields": [
@@ -32399,7 +32409,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -32427,18 +32437,18 @@
             "AnimationClip": 90,
             "BlendDuration": 0.0,
             "BlendMap": [],
-            "Enabled": true,
+            "Enabled": false,
             "LoopMap": [
               {
                 "Clip": 98,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
@@ -32454,12 +32464,12 @@
                 "Loop": true
               },
               {
-                "Clip": 100,
-                "Loop": false
-              },
-              {
                 "Clip": 108,
                 "Loop": true
+              },
+              {
+                "Clip": 100,
+                "Loop": false
               },
               {
                 "Clip": 91,
@@ -32520,7 +32530,7 @@
         {
           "data": {
             "AttachBoneName": "eyes_0",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -32578,7 +32588,7 @@
         {
           "data": {
             "AttachBoneName": "head",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -32637,7 +32647,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 128,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               10.0,
               10.0,
@@ -32664,7 +32674,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTargetSensor",
               "Fields": [
@@ -32719,7 +32729,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -32777,7 +32787,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -32835,7 +32845,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -32893,7 +32903,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -32951,7 +32961,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33009,7 +33019,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33067,7 +33077,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33125,7 +33135,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33183,7 +33193,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33241,7 +33251,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33299,7 +33309,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33357,7 +33367,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33415,7 +33425,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33473,7 +33483,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33531,7 +33541,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33589,7 +33599,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33647,7 +33657,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33705,7 +33715,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33763,7 +33773,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 104,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 40,
             "Offset": [
               0.0,
@@ -33786,7 +33796,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -33841,7 +33851,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33899,7 +33909,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -33957,7 +33967,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.0,
               1.5,
@@ -33984,7 +33994,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -34039,7 +34049,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.0,
               1.5,
@@ -34066,7 +34076,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -34121,7 +34131,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.2999999523162842,
               0.699999988079071,
@@ -34148,7 +34158,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -34203,7 +34213,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.2999999523162842,
               0.699999988079071,
@@ -34230,7 +34240,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -34308,7 +34318,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -34391,7 +34401,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -34474,7 +34484,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -34557,7 +34567,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -34644,7 +34654,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -34731,7 +34741,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -34850,7 +34860,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -34872,7 +34882,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -34898,7 +34908,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -34983,7 +34993,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -35005,7 +35015,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -35031,7 +35041,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -35116,7 +35126,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -35138,7 +35148,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -35164,7 +35174,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -35249,7 +35259,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -35271,7 +35281,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -35297,7 +35307,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -35382,7 +35392,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -35404,7 +35414,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -35430,7 +35440,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -35489,7 +35499,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 160,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               5.0,
               18.0,
@@ -35519,7 +35529,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 1.5,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 10.0,
@@ -35541,7 +35551,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAbnormalTitan",
               "Fields": [
@@ -35579,7 +35589,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTitanBound_Controller",
               "Fields": [
@@ -36027,7 +36037,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -36063,7 +36073,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -36099,7 +36109,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CAttacher",
               "Fields": [
@@ -36135,7 +36145,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTitan_Scriptable_Object",
               "Fields": [
@@ -36197,7 +36207,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -36225,18 +36235,18 @@
             "AnimationClip": 90,
             "BlendDuration": 0.0,
             "BlendMap": [],
-            "Enabled": true,
+            "Enabled": false,
             "LoopMap": [
               {
                 "Clip": 98,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
@@ -36252,12 +36262,12 @@
                 "Loop": true
               },
               {
-                "Clip": 108,
-                "Loop": true
-              },
-              {
                 "Clip": 100,
                 "Loop": false
+              },
+              {
+                "Clip": 108,
+                "Loop": true
               },
               {
                 "Clip": 91,
@@ -36318,7 +36328,7 @@
         {
           "data": {
             "AttachBoneName": "eyes_0",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -36376,7 +36386,7 @@
         {
           "data": {
             "AttachBoneName": "head",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -36435,7 +36445,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 128,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               10.0,
               10.0,
@@ -36462,7 +36472,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CTargetSensor",
               "Fields": [
@@ -36517,7 +36527,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -36575,7 +36585,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -36633,7 +36643,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -36691,7 +36701,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -36749,7 +36759,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -36807,7 +36817,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -36865,7 +36875,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -36923,7 +36933,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -36981,7 +36991,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -37039,7 +37049,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -37097,7 +37107,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -37155,7 +37165,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -37213,7 +37223,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -37271,7 +37281,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -37329,7 +37339,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -37387,7 +37397,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -37445,7 +37455,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -37503,7 +37513,7 @@
           "data": {
             "DebugDraw": false,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -37561,7 +37571,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 104,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 40,
             "Offset": [
               0.0,
@@ -37584,7 +37594,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -37639,7 +37649,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -37697,7 +37707,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 252,
-            "Enabled": true,
+            "Enabled": false,
             "Mask": 128,
             "Offset": [
               0.0,
@@ -37755,7 +37765,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.0,
               1.5,
@@ -37782,7 +37792,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -37837,7 +37847,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.0,
               1.5,
@@ -37864,7 +37874,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -37919,7 +37929,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.2999999523162842,
               0.699999988079071,
@@ -37946,7 +37956,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -38001,7 +38011,7 @@
           "data": {
             "DebugDraw": true,
             "DiscardMask": 232,
-            "Enabled": true,
+            "Enabled": false,
             "HalfExtentsLocal": [
               1.2999999523162842,
               0.699999988079071,
@@ -38028,7 +38038,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHurtBox",
               "Fields": [
@@ -38106,7 +38116,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -38189,7 +38199,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -38272,7 +38282,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -38355,7 +38365,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -38442,7 +38452,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -38529,7 +38539,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -38648,7 +38658,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -38670,7 +38680,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -38696,7 +38706,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -38781,7 +38791,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -38803,7 +38813,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -38829,7 +38839,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -38914,7 +38924,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -38936,7 +38946,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -38962,7 +38972,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -39047,7 +39057,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -39069,7 +39079,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -39095,7 +39105,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -39180,7 +39190,7 @@
             "AngularDrag": 0.0,
             "BodyType": 0,
             "Drag": 0.0,
-            "Enabled": true,
+            "Enabled": false,
             "Friction": 1.0,
             "Gravity": true,
             "Mass": 2.0,
@@ -39202,7 +39212,7 @@
         },
         {
           "data": {
-            "Enabled": true,
+            "Enabled": false,
             "ExposedFields": {
               "ClassName": "CHitBox",
               "Fields": [
@@ -39228,7 +39238,7 @@
         {
           "data": {
             "AttachBoneName": "",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,
@@ -40152,8 +40162,8 @@
               385.83660888671875
             ],
             "SizePx": [
-              402.27142333984375,
-              201.13571166992188
+              611.8045043945313,
+              305.9022521972656
             ],
             "Type": 11
           },
@@ -40963,20 +40973,20 @@
       "iObjMask": 0,
       "isUI": false,
       "layer": 0,
-      "name": "CrawlerTitan_Proto",
+      "name": "CrawlerTitan_1",
       "overrides": [
         {
           "data": {
             "Position": [
-              -25.527833938598633,
-              -2.25,
-              7.276905193975836e-07
+              61.17120361328125,
+              1.169999361038208,
+              12.836444854736328
             ],
             "Rotation": [
-              -0.0,
               0.0,
-              -0.0,
-              1.0
+              -0.9657613039016724,
+              0.0,
+              0.25943228602409363
             ],
             "Scale": [
               0.3499999940395355,
@@ -40993,14 +41003,14 @@
             "DiscardMask": 160,
             "Enabled": true,
             "HalfExtentsLocal": [
-              5.0,
+              5.630000114440918,
               5.0,
               5.0
             ],
             "Mask": 8,
             "Offset": [
               0.0,
-              5.0,
+              1.5800000429153442,
               0.0
             ],
             "OnCol": false,
@@ -41051,25 +41061,25 @@
                   "Name": "m_szState",
                   "Type": 7,
                   "Value": {
-                    "Value": ""
+                    "Value": "CHASE"
                   }
                 },
                 {
                   "Name": "m_tPatrol.vPos[0]",
                   "Type": 3,
                   "Value": [
+                    65.0,
                     0.0,
-                    0.0,
-                    0.0
+                    -21.0
                   ]
                 },
                 {
                   "Name": "m_tPatrol.vPos[1]",
                   "Type": 3,
                   "Value": [
+                    -10.0,
                     0.0,
-                    0.0,
-                    0.0
+                    34.0
                   ]
                 }
               ]
@@ -41142,6 +41152,186 @@
         },
         {
           "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CAttacher",
+              "Fields": [
+                {
+                  "Name": "m_tAttachObject.refObject",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "7A37A5A4-39DB-48DC-8F52-895570C8AA9E"
+                  }
+                },
+                {
+                  "Name": "m_tAttachObject.szBoneName",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "hand.L.001"
+                  }
+                },
+                {
+                  "Name": "m_tAttachObject.vOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "ScriptGuid": "B886028A-40EA-4299-9CFF-D9B4B0914444",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CAttacher",
+              "Fields": [
+                {
+                  "Name": "m_tAttachObject.refObject",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "B34F3F8E-CEC0-4597-9CC5-2F263E0D7D74"
+                  }
+                },
+                {
+                  "Name": "m_tAttachObject.szBoneName",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "hand.R.001"
+                  }
+                },
+                {
+                  "Name": "m_tAttachObject.vOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "ScriptGuid": "B886028A-40EA-4299-9CFF-D9B4B0914444",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CAttacher",
+              "Fields": [
+                {
+                  "Name": "m_tAttachObject.refObject",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "6F01917B-A914-4260-9A91-2B40F26A2FBA"
+                  }
+                },
+                {
+                  "Name": "m_tAttachObject.szBoneName",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "neck"
+                  }
+                },
+                {
+                  "Name": "m_tAttachObject.vOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "ScriptGuid": "B886028A-40EA-4299-9CFF-D9B4B0914444",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CAttacher",
+              "Fields": [
+                {
+                  "Name": "m_tAttachObject.refObject",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "D23DA789-2970-4E8A-B3E1-D1BA637B5F45"
+                  }
+                },
+                {
+                  "Name": "m_tAttachObject.szBoneName",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "neck"
+                  }
+                },
+                {
+                  "Name": "m_tAttachObject.vOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "ScriptGuid": "B886028A-40EA-4299-9CFF-D9B4B0914444",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CAttacher",
+              "Fields": [
+                {
+                  "Name": "m_tAttachObject.refObject",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "139BBC43-DF3A-4E1E-B6C3-047C4E9F60C7"
+                  }
+                },
+                {
+                  "Name": "m_tAttachObject.szBoneName",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "hip"
+                  }
+                },
+                {
+                  "Name": "m_tAttachObject.vOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "ScriptGuid": "B886028A-40EA-4299-9CFF-D9B4B0914444",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
             "AttachBoneName": "",
             "Enabled": true,
             "ExtraPassFlags": 0,
@@ -41168,11 +41358,36 @@
         },
         {
           "data": {
-            "AnimationClip": 43,
+            "AnimationClip": 46,
             "BlendDuration": 0.0,
             "BlendMap": [],
             "Enabled": true,
-            "LoopMap": [],
+            "LoopMap": [
+              {
+                "Clip": 39,
+                "Loop": true
+              },
+              {
+                "Clip": 47,
+                "Loop": true
+              },
+              {
+                "Clip": 44,
+                "Loop": true
+              },
+              {
+                "Clip": 43,
+                "Loop": true
+              },
+              {
+                "Clip": 46,
+                "Loop": true
+              },
+              {
+                "Clip": 45,
+                "Loop": true
+              }
+            ],
             "PlaySpeed": 1.0,
             "Playing": true,
             "Type": 6
@@ -41193,9 +41408,9 @@
         {
           "data": {
             "Position": [
-              -25.527833938598633,
-              -2.25,
-              7.234409054035496e-07
+              61.13955307006836,
+              1.169999361038208,
+              12.781835556030273
             ],
             "Rotation": [
               0.0,
@@ -41214,18 +41429,18 @@
         },
         {
           "data": {
-            "DebugDraw": false,
+            "DebugDraw": true,
             "DiscardMask": 248,
             "Enabled": true,
             "HalfExtentsLocal": [
-              0.5,
-              0.5,
-              0.5
+              9.010000228881836,
+              5.0,
+              9.289999961853027
             ],
             "Mask": 128,
             "Offset": [
               0.0,
-              0.0,
+              5.0,
               0.0
             ],
             "OnCol": false,
@@ -41276,7 +41491,7 @@
           "data": {
             "Position": [
               -52.944358825683594,
-              1.889767050743103,
+              1.589767050743103,
               18.580839157104492
             ],
             "Rotation": [
@@ -41300,14 +41515,14 @@
             "DiscardMask": 0,
             "Enabled": true,
             "HalfExtentsLocal": [
-              300.0,
-              300.0,
-              300.0
+              1000.0,
+              1000.0,
+              1000.0
             ],
             "Mask": 0,
             "Offset": [
               0.0,
-              2.0,
+              9.15,
               0.0
             ],
             "OnCol": false,
@@ -42206,6 +42421,510 @@
       "parent": "D210B910-585A-475A-8BB7-2B7488F82385",
       "protoGuid": "DAE36D0D-959B-4F74-932A-13AFC22324D6",
       "uuid": "249F636E-95D3-4818-945F-53E37EC3C49A"
+    },
+    {
+      "iObjMask": 24,
+      "isUI": false,
+      "layer": 0,
+      "name": "Hand_Attack_L",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              62.137821197509766,
+              5.289145469665527,
+              20.200237274169922
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "DebugDraw": true,
+            "DiscardMask": 220,
+            "Enabled": true,
+            "Mask": 24,
+            "Offset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnCol": false,
+            "RadiusLocal": 2.0,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 1,
+            "Static": false,
+            "Trigger": true,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CHitBox",
+              "Fields": [
+                {
+                  "Name": "m_refOwner",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "E5324FEB-7FE5-484A-87A8-FD4255353AC2"
+                  }
+                },
+                {
+                  "Name": "m_tHitInfo.fDamage",
+                  "Type": 1,
+                  "Value": 0.0
+                }
+              ]
+            },
+            "ScriptGuid": "E1B5B9DB-631C-4F89-BE60-34053FA300C4",
+            "Type": 4
+          },
+          "type": 4
+        }
+      ],
+      "parent": "E5324FEB-7FE5-484A-87A8-FD4255353AC2",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "7A37A5A4-39DB-48DC-8F52-895570C8AA9E"
+    },
+    {
+      "iObjMask": 24,
+      "isUI": false,
+      "layer": 0,
+      "name": "Hand_Attack_R",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              65.01658630371094,
+              1.7683994770050049,
+              15.35606575012207
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "DebugDraw": true,
+            "DiscardMask": 220,
+            "Enabled": true,
+            "Mask": 24,
+            "Offset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnCol": false,
+            "RadiusLocal": 2.0,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 1,
+            "Static": false,
+            "Trigger": true,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CHitBox",
+              "Fields": [
+                {
+                  "Name": "m_refOwner",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "E5324FEB-7FE5-484A-87A8-FD4255353AC2"
+                  }
+                },
+                {
+                  "Name": "m_tHitInfo.fDamage",
+                  "Type": 1,
+                  "Value": 0.0
+                }
+              ]
+            },
+            "ScriptGuid": "E1B5B9DB-631C-4F89-BE60-34053FA300C4",
+            "Type": 4
+          },
+          "type": 4
+        }
+      ],
+      "parent": "E5324FEB-7FE5-484A-87A8-FD4255353AC2",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "B34F3F8E-CEC0-4597-9CC5-2F263E0D7D74"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "eye",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "eyes_0",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "8E926803-2E72-474A-9DD8-BA3AB70A9354",
+            "MeshGUID": "F454ACF3-1946-4D2F-9C7A-128B82CF8F35",
+            "Mode": 2,
+            "OverrideMaterials": [
+              48
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E5324FEB-7FE5-484A-87A8-FD4255353AC2",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "754A763B-082E-40BD-9845-AE1AF8AAB09E"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "hair",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              -1.5,
+              -0.30000001192092896
+            ],
+            "Rotation": [
+              0.7626683115959167,
+              0.0,
+              0.0,
+              0.6467897891998291
+            ],
+            "Scale": [
+              3.5,
+              3.5,
+              3.5
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "FF82D405-3D15-44BD-86DA-D575767B228C",
+            "MeshGUID": "E7CFCBFC-CB0D-47B0-8003-730D01DC9A5E",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E5324FEB-7FE5-484A-87A8-FD4255353AC2",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "26D61B32-3C5C-40B2-99D5-CED4F1138B31"
+    },
+    {
+      "iObjMask": 40,
+      "isUI": false,
+      "layer": 0,
+      "name": "front_hurtbox",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              62.179115295410156,
+              3.6876564025878906,
+              14.728440284729004
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "DebugDraw": true,
+            "DiscardMask": 236,
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              3.0,
+              3.0,
+              3.0
+            ],
+            "Mask": 40,
+            "Offset": [
+              0.0,
+              1.5,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Static": false,
+            "Trigger": true,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CHurtBox",
+              "Fields": [
+                {
+                  "Name": "m_refOwner",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "E5324FEB-7FE5-484A-87A8-FD4255353AC2"
+                  }
+                }
+              ]
+            },
+            "ScriptGuid": "ADF0B44D-E3EA-4595-9FEC-EE5701E3B228",
+            "Type": 4
+          },
+          "type": 4
+        }
+      ],
+      "parent": "E5324FEB-7FE5-484A-87A8-FD4255353AC2",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "D23DA789-2970-4E8A-B3E1-D1BA637B5F45"
+    },
+    {
+      "iObjMask": 40,
+      "isUI": false,
+      "layer": 0,
+      "name": "back_hurtbox",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              59.30192565917969,
+              3.621166229248047,
+              9.128331184387207
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "DebugDraw": true,
+            "DiscardMask": 236,
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              3.0,
+              3.0,
+              3.0
+            ],
+            "Mask": 40,
+            "Offset": [
+              0.0,
+              1.5,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Static": false,
+            "Trigger": true,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CHurtBox",
+              "Fields": [
+                {
+                  "Name": "m_refOwner",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "E5324FEB-7FE5-484A-87A8-FD4255353AC2"
+                  }
+                }
+              ]
+            },
+            "ScriptGuid": "ADF0B44D-E3EA-4595-9FEC-EE5701E3B228",
+            "Type": 4
+          },
+          "type": 4
+        }
+      ],
+      "parent": "E5324FEB-7FE5-484A-87A8-FD4255353AC2",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "139BBC43-DF3A-4E1E-B6C3-047C4E9F60C7"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "weakpoint",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              62.179115295410156,
+              3.6876564025878906,
+              14.728440284729004
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "DebugDraw": true,
+            "DiscardMask": 238,
+            "Enabled": true,
+            "Mask": 0,
+            "Offset": [
+              0.0,
+              1.190000057220459,
+              0.0
+            ],
+            "OnCol": false,
+            "RadiusLocal": 3.0,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 1,
+            "Static": false,
+            "Trigger": true,
+            "Type": 1
+          },
+          "type": 1
+        }
+      ],
+      "parent": "E5324FEB-7FE5-484A-87A8-FD4255353AC2",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "6F01917B-A914-4260-9A91-2B40F26A2FBA"
     }
   ],
   "version": 1

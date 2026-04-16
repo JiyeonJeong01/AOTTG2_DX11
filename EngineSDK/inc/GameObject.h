@@ -70,7 +70,7 @@ public:
     template <typename T>
     void                        Set_Mask(T eMask);
     template <typename T>
-    bool                        Is_ExactMask(T eMask);
+    bool                        Is_ExactMask(T eMask) const;
     uint32_t                    Get_Mask() const;
 
     void                        Set_ComponentMask(Component::COMPONENT_MASK mask);

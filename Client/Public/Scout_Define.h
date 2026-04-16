@@ -22,8 +22,8 @@ typedef struct tagScoutComponents
 
 typedef struct tagScoutStats
 {
-    _float                      fCurSpeed = 10.f;
-    _float                      fMaxSpeed = 13.f;
+    _float                      fCurSpeed = 2;
+    _float                      fMaxSpeed = 2;
 
     _float                      fJump = 2.f;
     _float                      fJumpDash = 0.02f;

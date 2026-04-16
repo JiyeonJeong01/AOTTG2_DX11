@@ -4,6 +4,7 @@
 #include "AnimationClip_Titan.h"
 #include "CrawlerTitanStateMachine.h"
 #include "TargetSensor.h"
+#include "HitBox.h"
 
 NS_BEGIN(Client)
 using namespace ANIM_TITAN;
@@ -103,6 +104,9 @@ void CCrawlerTitanState_Chase::Enter(_uint iDetailFlag)
 
     cout << "[CRAWLER_CHASE] ENTER\n";
 
+    Try_CacheHitBox();
+    Set_ChaseHitBoxActive(true);
+
     if (m_tRef.pSensor)
     {
         const auto& tInfo = m_tRef.pSensor->Get_TargetDisplacement();
@@ -115,6 +119,7 @@ void CCrawlerTitanState_Chase::Enter(_uint iDetailFlag)
 
 void CCrawlerTitanState_Chase::Exit()
 {
+    Set_ChaseHitBoxActive(false);
     m_fRotateSharpness = m_fOriginalRotationSharpness;
 
     CTitanState::Exit();
@@ -163,6 +168,47 @@ void CCrawlerTitanState_Chase::Decide_NextAnim()
 {
     m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::CRAWLER_RUN_NEW);
 }
+
+void CCrawlerTitanState_Chase::Try_CacheHitBox()
+{
+    if (m_pHitBoxL != nullptr && m_pHitBoxR != nullptr)
+        return;
+
+    if (m_tRef.pAllHitBoxes == nullptr)
+        return;
+
+    auto itL = m_tRef.pAllHitBoxes->find(TITAN_PUNCH_ATTACK_L);
+    if (itL != m_tRef.pAllHitBoxes->end())
+    {
+        m_pHitBoxL = itL->second;
+        m_pHitBoxL->Set_Active(false);
+    }
+    else
+    {
+        m_pHitBoxL = nullptr;
+    }
+
+    auto itR = m_tRef.pAllHitBoxes->find(TITAN_PUNCH_ATTACK_R);
+    if (itR != m_tRef.pAllHitBoxes->end())
+    {
+        m_pHitBoxR = itR->second;
+        m_pHitBoxR->Set_Active(false);
+    }
+    else
+    {
+        m_pHitBoxR = nullptr;
+    }
+}
+
+void CCrawlerTitanState_Chase::Set_ChaseHitBoxActive(_bool bActive)
+{
+    if (m_pHitBoxL)
+        m_pHitBoxL->Set_Active(bActive);
+
+    if (m_pHitBoxR)
+        m_pHitBoxR->Set_Active(bActive);
+}
+
 
 std::shared_ptr<CCrawlerTitanState_Chase> CCrawlerTitanState_Chase::Create(
     Engine::CGameObject* goTitan,

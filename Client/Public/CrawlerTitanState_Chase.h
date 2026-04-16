@@ -29,7 +29,7 @@ private:
     void    Decide_NextAnim() override;
 
 private:
-    CGameObject* m_goTarget = nullptr;
+    CGameObject*    m_goTarget = nullptr;
     _float3         m_vChaseDir{};
     _float3         m_vDetectDir{};
     _float          m_fChaseDist = FLT_MAX;
@@ -45,6 +45,12 @@ private:
 
     TITAN_CHASE     m_eChaseState = TITAN_CHASE::END;
 
+    CHitBox*        m_pHitBoxL = nullptr;
+    CHitBox*        m_pHitBoxR = nullptr;
+private:
+
+    void    Try_CacheHitBox();
+    void    Set_ChaseHitBoxActive(_bool bActive);
 public:
     static std::shared_ptr<CCrawlerTitanState_Chase> Create(
         Engine::CGameObject* goTitan,

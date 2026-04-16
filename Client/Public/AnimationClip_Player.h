@@ -106,6 +106,7 @@ namespace ANIM_PLAYER
     inline constexpr const char* SPECIAL_SASHA = "Armature|special_sasha";
     inline constexpr const char* SPECIAL_SHIFT_0 = "Armature|special_shift_0";
     inline constexpr const char* SPECIAL_SHIFT_1 = "Armature|special_shift_1";
+    inline constexpr const char* SPECIAL_ARMIN = "Armature|special_armin";
 
     /* DebugOrEditorState */
     inline constexpr const char* T_POSE = "T-pose";
