@@ -277,6 +277,7 @@ void CResupplyStation::Try_Interact()
         break;
 
     case SIDE::RIGHT:
+        pPlayer->Ready_Deliver_Supplies();
         break;
     }
 }

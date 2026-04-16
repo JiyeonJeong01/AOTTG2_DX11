@@ -73,6 +73,7 @@ public :
     _bool               Is_ValidTarget(Engine::CGameObject* pTarget);
 
     CGameObject*        Get_CurTarget() const;
+    _bool               Is_Moving() override;
 
 private:
     void On_Grab(SIDE eSide, CHuman* pHuman) override;

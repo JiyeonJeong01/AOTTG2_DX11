@@ -4,8 +4,9 @@
 #include "Client_Define.h"
 #include "Script.h"
 
-NS_BEGIN(Engine)
-class CGameObject;
+NS_BEGIN(Client)
+class CTargetSensor;
+class CTitan;
 NS_END
 
 NS_BEGIN(Client)
@@ -55,15 +56,35 @@ private:
     _float      m_fPitchInputAccum = 0.f;       /* 아직 처리되지 않은 상하 입력 누적값 */
     _float      m_fInputResponseSharpness = 25.f;   /* 마우스 입력이 얼마나 빨리 반영될지. 높을수록 손에 더 붙음 */
 
+
+
 private:
     void Follow_Target(_float fDT);
     _float WrapAngleDeg(_float fAngle);
 
 public :
+    void Bind_PlayerSensor(CTargetSensor* pSensor);
     void Pitch(_float fDegree);
     void Yaw(_float fDegree);
     void Add_Yaw_Input(_float fDegree);
     void Add_Pitch_Input(_float fDegree);
+    void On_Change_DetectedTitan(CGameObject* goTitan, CTitan* scTitan);
+
+    /* 거인 접근 시 흔들림 효과 */
+private:
+    CTargetSensor*  m_pSensor = nullptr;
+    CGameObject*    m_goDetectedTitan = nullptr;
+    CTitan*         m_scTitan = nullptr;
+
+    _bool            m_bUseTitanShake = true;
+    _float           m_fTitanShakeRadius = 25.f;          /* 이 거리 밖이면 흔들림 없음 */
+    _float           m_fTitanShakeMaxStrength = 0.2f;    /* 최대 흔들림 세기 */
+    _float           m_fTitanShakeFrequency = 2.f;       /* 흔들림 속도 */ 
+    _float           m_fTitanShakeTime = 0.f;             /* 내부 누적 시간 */ 
+
+private:
+    _float  Get_TitanShakeStrength();
+    void    Apply_TitanShake(_float3& vCamPos, _float3& vLookTargetPos, _float fDT);
 
 public:
     void Awake(void* pCtx) override;

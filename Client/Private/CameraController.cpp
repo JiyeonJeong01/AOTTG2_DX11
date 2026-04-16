@@ -2,9 +2,9 @@
 
 #include "Easing_Function.h"
 #include "GameObject.h"
+#include "TargetSensor.h"
 
 NS_BEGIN(Client)
-
 
 void CCameraController::Awake(void* pCtx)
 {
@@ -132,7 +132,12 @@ void CCameraController::Follow_Target(_float fDT)
 
     if (!m_bCameraInitialized)
     {
+        _float3 vShakenLookTargetPos = vLookTargetPos;
+        Apply_TitanShake(vDesiredCamPos, vLookTargetPos, fDT);
+
         m_trNormalCam.Set_Position(Math::Load(vDesiredCamPos));
+        m_trNormalCam.Look_At(Math::Load(vShakenLookTargetPos));
+
         m_vCurrentLookTargetPos = vLookTargetPos;
         m_bCameraInitialized = true;
     }
@@ -155,10 +160,12 @@ void CCameraController::Follow_Target(_float fDT)
         m_vCurrentLookTargetPos.z = CEasingFunction::DampedLerp(
             m_vCurrentLookTargetPos.z, vLookTargetPos.z, m_fLookSharpness, fDT);
 
-        m_trNormalCam.Set_Position(Math::Load(vCurrentCamPos));
-    }
+        _float3 vShakenLookTargetPos = m_vCurrentLookTargetPos;
+        Apply_TitanShake(vCurrentCamPos, m_vCurrentLookTargetPos, fDT);
 
-    m_trNormalCam.Look_At(Math::Load(m_vCurrentLookTargetPos));
+        m_trNormalCam.Set_Position(Math::Load(vCurrentCamPos));
+        m_trNormalCam.Look_At(Math::Load(vShakenLookTargetPos));
+    }
 }
 
 _float CCameraController::WrapAngleDeg(_float fAngle)
@@ -166,6 +173,11 @@ _float CCameraController::WrapAngleDeg(_float fAngle)
     while (fAngle > 180.f)  fAngle -= 360.f;
     while (fAngle < -180.f) fAngle += 360.f;
     return fAngle;
+}
+
+void CCameraController::Bind_PlayerSensor(CTargetSensor* pSensor)
+{
+    m_pSensor = pSensor;
 }
 
 void CCameraController::Pitch(_float fDegree)
@@ -194,6 +206,76 @@ void CCameraController::Add_Yaw_Input(_float fDegree)
 void CCameraController::Add_Pitch_Input(_float fDegree)
 {
     m_fPitchInputAccum += fDegree;
+}
+
+_float CCameraController::Get_TitanShakeStrength()
+{
+    if (!m_bUseTitanShake)
+        return 0.f;
+
+    if (m_pSensor == nullptr)
+        return 0.f;
+
+    if (m_goDetectedTitan == nullptr)
+    {
+        m_goDetectedTitan = m_pSensor->Get_Target();
+        if (m_goDetectedTitan == nullptr)
+            return 0.f;
+    }
+
+    if (m_scTitan == nullptr)
+    {
+        m_scTitan = m_goDetectedTitan->Get_Script<CTitan>();
+        if (m_scTitan == nullptr)
+            return 0.f;
+    }
+
+    if (!m_scTitan->Is_Moving())
+        return 0.f;
+
+    const DISPLACEMENT& tInfo = m_pSensor->Get_TargetDisplacement();
+    const _float fDist = tInfo.fDist;
+
+    if (fDist >= m_fTitanShakeRadius)
+        return 0.f;
+
+    _float fRatio = 1.f - (fDist / m_fTitanShakeRadius);
+    if (fRatio < 0.f)
+        fRatio = 0.f;
+    else if (fRatio > 1.f)
+        fRatio = 1.f;
+
+    /* 가까울수록 훨씬 세게 */ 
+    fRatio = fRatio * fRatio;
+
+    return fRatio * m_fTitanShakeMaxStrength;
+}
+
+void CCameraController::Apply_TitanShake(_float3& vCamPos, _float3& vLookTargetPos, _float fDT)
+{
+    const _float fStrength = Get_TitanShakeStrength();
+    if (fStrength <= 0.f)
+        return;
+
+    m_fTitanShakeTime += fDT * m_fTitanShakeFrequency;
+
+    const _float fShakeX = sinf(m_fTitanShakeTime * 1.5f) * (fStrength * 0.09f);
+    const _float fShakeY = fabsf(sinf(m_fTitanShakeTime * 4.f)) * fStrength;
+    const _float fShakeZ = cosf(m_fTitanShakeTime * 1.5f) * (fStrength * 0.05f);
+
+    vCamPos.x += fShakeX;
+    vCamPos.y += fShakeY;
+    vCamPos.z += fShakeZ;
+
+    vLookTargetPos.x += fShakeX * 1.5f;
+    vLookTargetPos.y += fShakeY * 1.5f;
+    vLookTargetPos.z += fShakeZ * 1.5f;
+}
+
+void CCameraController::On_Change_DetectedTitan(CGameObject* goTitan, CTitan* scTitan)
+{
+    m_goDetectedTitan = goTitan;
+    m_scTitan = scTitan;
 }
 
 NS_END;

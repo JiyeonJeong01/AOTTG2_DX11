@@ -216,6 +216,17 @@ CGameObject* CNormalTitan::Get_CurTarget() const
     return m_goTarget;
 }
 
+_bool CNormalTitan::Is_Moving()
+{
+    if (!m_spCurState)
+        return false;
+    const auto eState = m_spCurState->Get_State();
+
+    _float fLenSq = XMVectorGetX(XMVector3LengthSq(XMLoadFloat3(&m_tComponents.rigidbody->vLinearVel)));
+
+    return eState == TITAN_STATE::MOVE || (eState == TITAN_STATE::CHASE && fLenSq != 0.f);
+}
+
 void CNormalTitan::On_Grab(SIDE eSide, CHuman* pHuman)
 {
     TITAN_STATE eState = m_spCurState->Get_State();

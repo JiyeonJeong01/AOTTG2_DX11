@@ -70,9 +70,11 @@ public:
     _bool               Has_Target() const;
     _bool               Is_ValidTarget(Engine::CGameObject* pTarget);
 
-    CGameObject* Get_CurTarget() const;
+    CGameObject*        Get_CurTarget() const;
+    _bool               Is_Moving() override;
 
 private:
+
     void On_Grab(SIDE eSide, CHuman* pHuman) override;
     void On_Dead(const _float fAccuracy) override;
     void On_Stunned() override;

@@ -216,12 +216,6 @@ void CScoutBehavior_RequestResupply::Process_Resupply()
 {
     if (!m_goDetectedPlayer)
         return;
-
-    CPlayer* pPlayer = m_goDetectedPlayer->Get_Script<CPlayer>();
-    if (!pPlayer)
-        return;
-
-    pPlayer->Deliver_Supplies();
 }
 
 void CScoutBehavior_RequestResupply::Process_Finish(_float fDT)
@@ -252,6 +246,12 @@ void CScoutBehavior_RequestResupply::On_AnimFinished(const Engine::ANIMATION_EVE
 
     if (iIndex == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::RESUPPLY))
     {
+        CPlayer* pPlayer = m_goDetectedPlayer->Get_Script<CPlayer>();
+        if (!pPlayer)
+            return;
+
+        pPlayer->Complete_Deliver_Supplies();
+
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::SPECIAL_ARMIN);
     }
     else if (iIndex == m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::SPECIAL_ARMIN))

@@ -79,6 +79,7 @@ typedef struct tagPlayerRuntimeRef
     class CODM_Gear*            pGear = nullptr;
     class CCameraController*    pCameraController = nullptr;
     class CPlayerStateMachine*  pFSM = nullptr;
+    class CTargetSensor*        pSensor = nullptr;
     std::unordered_map<std::string, class CHitBox*>* pAllHitBoxes = nullptr;
 } PLAYER_RUNTIME_REF;
 

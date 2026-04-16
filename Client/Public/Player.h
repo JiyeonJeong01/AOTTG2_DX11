@@ -55,6 +55,7 @@ private:
 
     CCameraController*                          m_pCameraController{};
     CODM_Gear*                                  m_pGear{};
+    CGameObject*                                m_goGasResupply{};
 
     std::unordered_map<std::string, class CHitBox*> m_AllHitBoxes;
 
@@ -64,15 +65,18 @@ private :
 
     void OnChange_CurState(std::shared_ptr<CPlayerState> spNewState);
     void On_BladeHit(CGameObject* goCounter);
+    void On_DetectedTitan(CGameObject* goTitan);
 
 public :
     PLAYER_CONTEXT Get_PlayerContext();
     void Resupply();
-    void Deliver_Supplies();
+    void Ready_Deliver_Supplies();
+    void Complete_Deliver_Supplies();
 
 private :
-    /* TODO : 이후에 json 등으로 로드 */
+    void Display_GasResupply(_bool bDisplay);
     
 };
+
 
 NS_END;

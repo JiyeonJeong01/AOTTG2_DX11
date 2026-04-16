@@ -11,6 +11,7 @@
 #include "GroundChecker.h"
 #include "HitBox.h"
 
+#include "TargetSensor.h"
 #include "AnimationClip_Player.h"
 
 NS_BEGIN(Client)
@@ -64,9 +65,15 @@ void CPlayer::Start(void* pCtx)
         m_pGear = m_tRef.pGear = m_goPlayer->Get_Script_InChildren<CODM_Gear>();
         m_tRef.pGroundChecker = m_goPlayer->Get_Script_InChildren<CGroundChecker>();
         m_tRef.pFSM = m_upStateMachine.get();
-        m_tRef.pCameraController = m_goPlayer->Get_Script<CCameraController>();
+        m_pCameraController = m_tRef.pCameraController = m_goPlayer->Get_Script<CCameraController>();
+        m_tRef.pSensor = m_goPlayer->Get_Script_InChildren<CTargetSensor>();
         m_tRef.pAllHitBoxes = &m_AllHitBoxes;
     }
+
+    m_tRef.pSensor->Set_TargetMask(O_ENEMY);
+    m_tRef.pSensor->Subscribe_OnDetectedTarget(&CPlayer::On_DetectedTitan, this);
+
+    m_tRef.pCameraController->Bind_PlayerSensor(m_tRef.pSensor);
 
     /* 플레이어 스킬 정보 */
     {
@@ -77,13 +84,18 @@ void CPlayer::Start(void* pCtx)
     for (const auto& child : children)
     {
         if (!child) continue;
-        if (child->Get_Label() == "Blade_Left")
+        const auto& label = child->Get_Label();
+        if (label == "Blade_Left")
             m_tBlade.pLeftBlade = child;
-        else if (child->Get_Label() == "Blade_Right")
+        else if (label == "Blade_Right")
             m_tBlade.pRightBlade = child;
+        else if (label == "Gas_Resupply")
+            m_goGasResupply = child;
+
     }
     IF_NULL_RETURN_MSG_BREAK(m_tBlade.pLeftBlade, , "pLeftBlade is nullptr");
     IF_NULL_RETURN_MSG_BREAK(m_tBlade.pRightBlade, , "pRightBlade is nullptr");
+    IF_NULL_RETURN_MSG_BREAK(m_goGasResupply, , "Gas_Resupply is nullptr");
 
     /* 플레이어 상태에게 전달 */
     m_tContext.tComponents = m_tComponents;
@@ -177,6 +189,57 @@ void CPlayer::On_BladeHit(CGameObject* goCounter)
     m_tBlade.Consume_Blade();
 }
 
+void CPlayer::On_DetectedTitan(CGameObject* goTitan)
+{
+    if (!m_tRef.pSensor)
+        return;
+
+    if (!goTitan)
+        return;
+
+    if (goTitan->Get_Mask() != O_ENEMY)
+        return;
+
+    auto Set_DetectedTitan = [this](CGameObject* pTitan) -> void
+        {
+            if (!pTitan)
+                return;
+
+            m_tRef.pSensor->Set_Target(pTitan);
+
+            CTitan* scTitan = pTitan->Get_Script_InChildren<CTitan>();
+            m_pCameraController->On_Change_DetectedTitan(pTitan, scTitan);
+        };
+
+    CGameObject* goPrevTarget = m_tRef.pSensor->Get_Target();
+    if (!goPrevTarget)
+    {
+        /* 새 타겟 설정 */
+        Set_DetectedTitan(goTitan);
+        return;
+    }
+
+    if (goPrevTarget == goTitan)
+        return;
+
+    /* 더 가까운 녀석을 타겟으로 설정 */
+    auto trPrev = goPrevTarget->Get_Component<CTransform>();
+    auto trNew = goTitan->Get_Component<CTransform>();
+
+    _vector vPrevPos = trPrev.Get_StateXM(STATE::POSITION);
+    _vector vNewPos = trNew.Get_StateXM(STATE::POSITION);
+    _vector vPlayerPos = m_tComponents.transform.Get_StateXM(STATE::POSITION);
+
+    const _float fPrevDistSq = XMVectorGetX(XMVector3LengthSq(vPrevPos - vPlayerPos));
+    const _float fNewDistSq = XMVectorGetX(XMVector3LengthSq(vNewPos - vPlayerPos));
+
+    const _bool bNewIsCloser = (fNewDistSq < fPrevDistSq);
+    if (!bNewIsCloser)
+        return;
+
+    Set_DetectedTitan(goTitan);
+}
+
 PLAYER_CONTEXT CPlayer::Get_PlayerContext()
 {
     /* 플레이어 상태에게 전달 */
@@ -191,9 +254,26 @@ void CPlayer::Resupply()
     m_upStateMachine->Change_State(To<_uint>(PLAYER_STATE::RESUPPLY));
 }
 
-void CPlayer::Deliver_Supplies()
+void CPlayer::Ready_Deliver_Supplies()
 {
-    
+    Display_GasResupply(true);
+}
+
+void CPlayer::Complete_Deliver_Supplies()
+{
+    Display_GasResupply(false);
+}
+
+void CPlayer::Display_GasResupply(_bool bDisplay)
+{
+    if (!m_goGasResupply)
+        return;
+
+    auto mr = m_goGasResupply->Get_Component<CMeshRenderer>();
+    if (!mr.Is_Valid())
+        return;
+
+    mr.Set_Enable(bDisplay);
 }
 
 NS_END;

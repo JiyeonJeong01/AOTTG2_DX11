@@ -208,6 +208,14 @@ CGameObject* CCrawlerTitan::Get_CurTarget() const
     return m_goTarget;
 }
 
+_bool CCrawlerTitan::Is_Moving()
+{
+    if (!m_spCurState)
+        return false;
+    const auto eState = m_spCurState->Get_State();
+    return eState == TITAN_STATE::MOVE || eState == TITAN_STATE::CHASE;
+}
+
 void CCrawlerTitan::On_Grab(SIDE eSide, CHuman* pHuman)
 {
     UNREFERENCED_PARAMETER(eSide);

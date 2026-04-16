@@ -24,12 +24,14 @@ public :
     virtual void On_Dead(const _float fAccuracy) {};
     virtual void On_Stunned() {};
 
-    _bool       Is_Alive() const {
+    _bool           Is_Alive() const {
         return m_bAlive;
     }
-    void        Set_Dead() {
+    void            Set_Dead() {
         m_bAlive = false;
     }
+
+    virtual _bool   Is_Moving() = 0;
 private :
     _bool   m_bAlive = true;
 };
