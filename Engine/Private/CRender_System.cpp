@@ -341,7 +341,7 @@ void CRender_System::Render_LightPass()
 
     ID3D11ShaderResourceView* pNormalSRV = nullptr;
     SYS_CORE.Share_NormalSRV(&pNormalSRV);
-    IF_NULL_RETURN_MSG_BREAK(pNormalSRV, , "Normal SRV is nullptr.");
+    if (!pNormalSRV) return;
 
     auto* pVarWorld = pShader->Get_VarCached("g_WorldMatrix");
     auto* pVarView = pShader->Get_VarCached("g_ViewMatrix");
@@ -395,7 +395,7 @@ void CRender_System::Render_CombinedPass()
     Bind_DepthState_Disabled();
     Bind_RasterizerState_Default();
 
-    SYS_CORE.Bind_SceneRTV();
+    SYS_CORE.Bind_SceneRTV_WithoutDSV();
 
     SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(m_hDeferredShader);
     IF_NULL_RETURN_MSG_BREAK(pShader, , "Deferred shader is nullptr.");
@@ -410,8 +410,8 @@ void CRender_System::Render_CombinedPass()
     SYS_CORE.Share_DiffuseSRV(&pDiffuseSRV);
     SYS_CORE.Share_LightSRV(&pLightSRV);
 
-    IF_NULL_RETURN_MSG_BREAK(pDiffuseSRV, , "Diffuse SRV is nullptr.");
-    IF_NULL_RETURN_MSG_BREAK(pLightSRV, , "Light SRV is nullptr.");
+    if (!pDiffuseSRV) return;
+    if (!pLightSRV) return;
 
     auto* pVarWorld = pShader->Get_VarCached("g_WorldMatrix");
     auto* pVarView = pShader->Get_VarCached("g_ViewMatrix");
@@ -444,6 +444,39 @@ void CRender_System::Render_CombinedPass()
     ID3DX11EffectPass* pPass = pShader->pPasses[passIndex].pPass;
     IF_NULL_RETURN_MSG_BREAK(pPass, , "Deferred combined pass is nullptr.");
 
+    /* ------------------------ Fog ------------------------ */
+    POST_PROCESS_PARAM tParam{};
+    tParam.vFogColor = {
+    m_tPostProcessDesc.tFog.vColor.x,
+    m_tPostProcessDesc.tFog.vColor.y,
+    m_tPostProcessDesc.tFog.vColor.z,
+    1.f
+    };
+
+    tParam.vFogParams = {
+        m_tPostProcessDesc.tFog.fStart,
+        m_tPostProcessDesc.tFog.fEnd,
+        m_tPostProcessDesc.tFog.fDensity,
+        /*m_tPostProcessDesc.tFog.bEnable ? 1.f : 0.f*/
+        1.f
+    };
+
+    auto* pVarDepthTex = pShader->Get_VarCached("g_SceneDepthTexture");
+    IF_NULL_RETURN_MSG_BREAK(pVarDepthTex, , "g_SceneDepthTexture not found.");
+
+    ID3D11ShaderResourceView* pSceneDepthSRV = nullptr;
+    SYS_CORE.Share_SceneDepthSRV(&pSceneDepthSRV);
+    IF_NULL_RETURN_MSG_BREAK(pSceneDepthSRV, , "SceneDepth SRV is nullptr.");
+
+    auto* pFogColor = pShader->Get_VarCached("g_vFogColor");
+    auto* pFogParams = pShader->Get_VarCached("g_vFogParams");
+    IF_NULL_RETURN_MSG_BREAK(pFogColor, , "g_vFogColor not found.");
+    IF_NULL_RETURN_MSG_BREAK(pFogParams, , "g_vFogParams not found.");
+
+    pVarDepthTex->AsShaderResource()->SetResource(pSceneDepthSRV);
+    pFogColor->SetRawValue(reinterpret_cast<const _float*>(&tParam.vFogColor), 0, sizeof(_float4));
+    pFogParams->SetRawValue(reinterpret_cast<const _float*>(&tParam.vFogParams), 0, sizeof(_float4));
+
     pPass->Apply(0, m_pContext);
 
     const MESH_ENTRY* pRectMesh = SYS_RESOURCE.Get_Mesh(m_hUIRectMesh);
@@ -451,6 +484,108 @@ void CRender_System::Render_CombinedPass()
 
     pRectMesh->Bind_IA(m_pContext);
     pRectMesh->Draw(m_pContext);
+
+    Unbind_PS_SRVs();
+}
+
+void CRender_System::Render_PostProcess()
+{
+    //Bind_BlendState_None();
+    //Bind_DepthState_Disabled();
+    //Bind_RasterizerState_Default();
+
+    //SYS_CORE.Bind_DefaultRTV();
+
+    //SYS_CORE.Bind_SceneSRV(0);
+    //SYS_CORE.Bind_SceneDepthSRV(1);
+
+    //POST_PROCESS_PARAM tParam{};
+
+    //tParam.vFogColor = {
+    //    m_tPostProcessDesc.tFog.vColor.x,
+    //    m_tPostProcessDesc.tFog.vColor.y,
+    //    m_tPostProcessDesc.tFog.vColor.z,
+    //    1.f
+    //};
+
+    //tParam.vFogParams = {
+    //    m_tPostProcessDesc.tFog.fStart,
+    //    m_tPostProcessDesc.tFog.fEnd,
+    //    m_tPostProcessDesc.tFog.fDensity,
+    //    m_tPostProcessDesc.tFog.bEnable ? 1.f : 0.f
+    //};
+
+
+    //{
+    //        //tParam.vVignetteParams = {
+    ////    m_tPostProcessDesc.tVignette.fIntensity,
+    ////    m_tPostProcessDesc.tVignette.fPower,
+    ////    m_tPostProcessDesc.tVignette.fRoundness,
+    ////    m_tPostProcessDesc.tVignette.bEnable ? 1.f : 0.f
+    ////};
+
+    ////tParam.vBlurParams = {
+    ////    m_tPostProcessDesc.tBlur.fStrength,
+    ////    m_tPostProcessDesc.tBlur.bEnable ? 1.f : 0.f,
+    ////    0.f,
+    ////    0.f
+    ////};
+    //}
+
+
+    //SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(m_hDeferredShader);
+    //IF_NULL_RETURN_MSG_BREAK(pShader, , "Deferred shader is nullptr.");
+
+    //const uint16_t passIndex = 2; /* Combined */
+    //if (passIndex >= pShader->pPasses.size())
+    //    return;
+
+    //auto* pVarWorld = pShader->Get_VarCached("g_WorldMatrix");
+    //auto* pVarView = pShader->Get_VarCached("g_ViewMatrix");
+    //auto* pVarProj = pShader->Get_VarCached("g_ProjMatrix");
+
+    //ID3D11ShaderResourceView* pSceneSRV = nullptr;
+    //ID3D11ShaderResourceView* pSceneDSV = nullptr;
+    //m_pContext->PSGetShaderResources(0, 1, &pSceneSRV);
+    //m_pContext->PSGetShaderResources(1, 1, &pSceneDSV);
+
+    //auto* pVarDiffuseTex = pShader->Get_VarCached("g_DiffuseTexture");
+    //auto* pVarShadeTex = pShader->Get_VarCached("g_ShadeTexture");
+
+    //IF_NULL_RETURN_MSG_BREAK(pVarWorld, , "g_WorldMatrix not found.");
+    //IF_NULL_RETURN_MSG_BREAK(pVarView, , "g_ViewMatrix not found.");
+    //IF_NULL_RETURN_MSG_BREAK(pVarProj, , "g_ProjMatrix not found.");
+    //IF_NULL_RETURN_MSG_BREAK(pVarDiffuseTex, , "g_DiffuseTexture not found.");
+    //IF_NULL_RETURN_MSG_BREAK(pVarShadeTex, , "g_ShadeTexture not found.");
+
+    //const UI_VIEWPORT_RECT& vp = m_upRenderContext->Get_UI_Global().tSceneView;
+
+    //_float4x4 matWorld, matView, matProj;
+    //XMStoreFloat4x4(&matWorld, XMMatrixScaling((_float)vp.vSize.x, (_float)vp.vSize.y, 1.f));
+    //XMStoreFloat4x4(&matView, XMMatrixIdentity());
+    //XMStoreFloat4x4(&matProj, XMMatrixOrthographicLH((_float)vp.vSize.x, (_float)vp.vSize.y, 0.f, 1.f));
+
+    //pVarWorld->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&matWorld));
+    //pVarView->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&matView));
+    //pVarProj->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&matProj));
+    //pVarDiffuseTex->AsShaderResource()->SetResource(pDiffuseSRV);
+    //pVarShadeTex->AsShaderResource()->SetResource(pLightSRV);
+
+    //ID3D11InputLayout* pIL = pShader->pPasses[passIndex].pInputLayout.Get();
+    //m_pContext->IASetInputLayout(pIL);
+
+    //ID3DX11EffectPass* pPass = pShader->pPasses[passIndex].pPass;
+    //IF_NULL_RETURN_MSG_BREAK(pPass, , "Deferred combined pass is nullptr.");
+
+    //pPass->Apply(0, m_pContext);
+
+    //const MESH_ENTRY* pRectMesh = SYS_RESOURCE.Get_Mesh(m_hUIRectMesh);
+    //IF_NULL_RETURN_MSG_BREAK(pRectMesh, , "Screen rect mesh is nullptr.");
+
+    //pRectMesh->Bind_IA(m_pContext);
+    //pRectMesh->Draw(m_pContext);
+
+    //Unbind_PS_SRVs();
 }
 
 void CRender_System::Execute_RenderQueue()
@@ -1169,3 +1304,12 @@ void CRender_System::Unbind_PS_SRVs()
     m_pContext->PSSetShaderResources(0, 8, pNullSRVs);
 }
 
+void CRender_System::Set_PostProcessDesc(const POST_PROCESS_DESC& tPostProcessDesc)
+{
+    m_tPostProcessDesc = tPostProcessDesc;
+}
+
+const POST_PROCESS_DESC& CRender_System::Get_PostProcessDesc() const
+{
+    return m_tPostProcessDesc;
+}

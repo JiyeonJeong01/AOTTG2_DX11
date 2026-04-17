@@ -86,6 +86,9 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
 
 texture2D g_DiffuseTexture;
 texture2D g_ShadeTexture;
+Texture2D g_SceneDepthTexture;
+float4 g_vFogColor;
+float4 g_vFogParams; // x=start, y=end, z=density, w=enable
 
 PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
 {
@@ -96,13 +99,19 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
         discard;
     
     vector vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexcoord);    
+    vector vColor = vDiffuse * vShade;
     
-    Out.vColor = vDiffuse * vShade;
-    
+    // // fog
+    // if (g_vFogParams.w > 0.5f)
+    // {
+    //     float fDepth = g_SceneDepthTexture.Sample(DefaultSampler, In.vTexcoord).r; // start
+    //     float fFogFactor = saturate((dis))
+    //     vColor.rgb = lerp(vColor.rgb, g_vFogColor.rgb, fFogFactor);
+    // }
+
+    Out.vColor = vColor;
     return Out;
 }
-
-
 
 technique11 DefaultTechnique
 {

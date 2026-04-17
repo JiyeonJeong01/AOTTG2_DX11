@@ -18,6 +18,7 @@ CGraphic_Device::~CGraphic_Device()
     Safe_Release(m_pSceneRTV);
     Safe_Release(m_pSceneSRV);
     Safe_Release(m_pSceneDSV);
+    Safe_Release(m_pSceneDepthSRV);
 
     Safe_Release(m_pDiffuseTexture);
     Safe_Release(m_pDiffuseRTV);
@@ -144,6 +145,7 @@ HRESULT CGraphic_Device::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
 
     ID3D11Texture2D* pDepthStencilTexture = nullptr;
     ID3D11DepthStencilView* pSceneDSV = nullptr;
+    ID3D11ShaderResourceView* pSceneDepthSRV = nullptr;
 
     /* --- Create Scene Texture --- */
     D3D11_TEXTURE2D_DESC textureDesc{};
@@ -189,11 +191,11 @@ HRESULT CGraphic_Device::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
     dsDesc.Height = iHeight;
     dsDesc.MipLevels = 1;
     dsDesc.ArraySize = 1;
-    dsDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    dsDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
     dsDesc.SampleDesc.Count = 1;
     dsDesc.SampleDesc.Quality = 0;
     dsDesc.Usage = D3D11_USAGE_DEFAULT;
-    dsDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    dsDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
     dsDesc.CPUAccessFlags = 0;
     dsDesc.MiscFlags = 0;
 
@@ -209,9 +211,34 @@ HRESULT CGraphic_Device::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
         return E_FAIL;
     }
 
-    hr = m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr, &pSceneDSV);
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+    dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    dsvDesc.Texture2D.MipSlice = 0;
+
+    hr = m_pDevice->CreateDepthStencilView(pDepthStencilTexture, &dsvDesc, &pSceneDSV);
     if (FAILED(hr))
     {
+        Safe_Release(pSceneDSV);
+        Safe_Release(pDepthStencilTexture);
+
+        Safe_Release(pSceneSRV);
+        Safe_Release(pSceneRTV);
+        Safe_Release(pSceneTexture);
+
+        return E_FAIL;
+    }
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+    srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+    srvDesc.Texture2D.MipLevels = 1;
+
+    hr = m_pDevice->CreateShaderResourceView(pDepthStencilTexture, &srvDesc, &pSceneDepthSRV);
+    if (FAILED(hr))
+    {
+        Safe_Release(pSceneDepthSRV);
         Safe_Release(pSceneDSV);
         Safe_Release(pDepthStencilTexture);
 
@@ -227,11 +254,13 @@ HRESULT CGraphic_Device::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
     Safe_Release(m_pSceneSRV);
     Safe_Release(m_pSceneRTV);
     Safe_Release(m_pSceneTexture);
+    Safe_Release(m_pSceneDepthSRV);
 
-    m_pSceneTexture = pSceneTexture; pSceneTexture = nullptr;
-    m_pSceneRTV = pSceneRTV; pSceneRTV = nullptr;
-    m_pSceneSRV = pSceneSRV; pSceneSRV = nullptr;
-    m_pSceneDSV = pSceneDSV; pSceneDSV = nullptr;
+    m_pSceneTexture = pSceneTexture;         pSceneTexture = nullptr;
+    m_pSceneRTV = pSceneRTV;                 pSceneRTV = nullptr;
+    m_pSceneSRV = pSceneSRV;                 pSceneSRV = nullptr;
+    m_pSceneDSV = pSceneDSV;                 pSceneDSV = nullptr;
+    m_pSceneDepthSRV = pSceneDepthSRV;       pSceneDepthSRV = nullptr;
 
     Safe_Release(pDepthStencilTexture);
 
@@ -290,6 +319,12 @@ void CGraphic_Device::Bind_SceneRTV()
 {
     m_pDeviceContext->OMSetRenderTargets(1, &m_pSceneRTV, m_pSceneDSV);
     Set_Viewport(m_iSceneW, m_iSceneH);
+}
+
+void CGraphic_Device::Bind_SceneRTV_WithoutDSV()
+{
+    m_pDeviceContext->OMSetRenderTargets(1, &m_pSceneRTV, nullptr);
+    Set_Viewport(m_iDeferredW, m_iDeferredH);
 }
 
 HRESULT CGraphic_Device::Ensure_SceneRenderTarget(_uint w, _uint h)
@@ -537,6 +572,22 @@ void CGraphic_Device::Bind_LightRTV()
 {
     m_pDeviceContext->OMSetRenderTargets(1, &m_pLightRTV, m_pSceneDSV);
     Set_Viewport(m_iDeferredW, m_iDeferredH);
+}
+
+void CGraphic_Device::Bind_SceneSRV(_uint iSlot)
+{
+    m_pDeviceContext->PSSetShaderResources(iSlot, 1, &m_pSceneSRV);
+}
+
+void CGraphic_Device::Bind_SceneDepthSRV(_uint iSlot)
+{
+    m_pDeviceContext->PSSetShaderResources(iSlot, 1, &m_pSceneDepthSRV);
+}
+
+void CGraphic_Device::Unbind_PS_SRV(_uint iSlot)
+{
+    ID3D11ShaderResourceView* pNullSRV = nullptr;
+    m_pDeviceContext->PSSetShaderResources(iSlot, 1, &pNullSRV);
 }
 
 HRESULT CGraphic_Device::Create_RT_Texture(

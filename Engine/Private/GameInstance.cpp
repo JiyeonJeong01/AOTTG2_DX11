@@ -374,3 +374,8 @@ _bool CGameInstance::Resolve_SceneGUID(const std::string& strScene, ASSET_GUID& 
     outGUID = tGUID;
     return true;
 }
+
+void CGameInstance::Set_PostProcessDesc(const POST_PROCESS_DESC& tPostProcessDesc)
+{
+    SYS_RENDER.Set_PostProcessDesc(tPostProcessDesc);
+}

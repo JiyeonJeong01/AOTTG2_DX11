@@ -535,6 +535,9 @@
     <ClInclude Include="..\Public\NavMesh.h">
       <Filter>08. NavMesh</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\PostProcess.h">
+      <Filter>99. Defines\Engine_Struct</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">

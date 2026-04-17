@@ -26,6 +26,7 @@ public:
 
     void    Bind_DefaultRTV();
     void    Bind_SceneRTV();
+    void    Bind_SceneRTV_WithoutDSV();
 public:
     ID3D11ShaderResourceView* Get_SceneSRV() const { return m_pSceneSRV; }
     _uint Get_SceneW() const { return m_iSceneW; }
@@ -46,6 +47,7 @@ private:
     ID3D11RenderTargetView*     m_pSceneRTV{ nullptr };
     ID3D11ShaderResourceView*   m_pSceneSRV{ nullptr };
     ID3D11DepthStencilView*     m_pSceneDSV{ nullptr };
+    ID3D11ShaderResourceView*   m_pSceneDepthSRV{ nullptr };
 
     _uint m_iSceneW = 0;
     _uint m_iSceneH = 0;
@@ -64,11 +66,15 @@ public:
 
     void    Bind_GBufferRTV();
     void    Bind_LightRTV();
+    void    Bind_SceneSRV(_uint iSlot);
+    void    Bind_SceneDepthSRV(_uint iSlot);
+    void    Unbind_PS_SRV(_uint iSlot);
 
 public:
     ID3D11ShaderResourceView* Get_DiffuseSRV() const { return m_pDiffuseSRV; }
     ID3D11ShaderResourceView* Get_NormalSRV() const { return m_pNormalSRV; }
     ID3D11ShaderResourceView* Get_LightSRV() const { return m_pLightSRV; }
+    ID3D11ShaderResourceView* Get_SceneDepthSRV() const { return m_pSceneDepthSRV; }
 
 private:
     /* Deferred */

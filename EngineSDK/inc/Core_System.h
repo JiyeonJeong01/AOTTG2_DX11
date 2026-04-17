@@ -33,14 +33,21 @@ public :
     void        Share_DiffuseSRV(ID3D11ShaderResourceView** ppSRV);
     void        Share_NormalSRV(ID3D11ShaderResourceView** ppSRV);
     void        Share_LightSRV(ID3D11ShaderResourceView** ppSRV);
+    void        Share_SceneDepthSRV(ID3D11ShaderResourceView** ppSRV);
 
     HRESULT     Ready_SceneRenderTarget(_uint iWidth, _uint iHeight);
     HRESULT     Ready_DeferredRenderTargets(_uint iWidth, _uint iHeight);
 
     void        Bind_DefaultRTV();
     void        Bind_SceneRTV();
+    void        Bind_SceneRTV_WithoutDSV();
     void        Bind_GBufferRTV();
     void        Bind_LightRTV();
+
+    void        Bind_SceneSRV(_uint iSlot);
+    void        Bind_SceneDepthSRV(_uint iSlot);
+
+    void        Unbind_PS_SRV(_uint iSlot);
 
 public :
 	HRESULT		Clear_Default_Buffers(const _float4* pClearColor) const;

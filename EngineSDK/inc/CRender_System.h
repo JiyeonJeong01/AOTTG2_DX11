@@ -2,6 +2,7 @@
 
 #pragma once
 #include "Engine_Define.h"
+#include "PostProcess.h"
 #include "Render_Struct.h"
 #include "Shader.h"
 
@@ -17,9 +18,9 @@ public:
     void    Priority_Update();
     void    Render();
 
-    CRender_Context* Contexts();
-    _bool       Submit_Camera(_fmatrix matView, _fmatrix matProj);
-    void        Submit_LineMesh(const DRAW_CMD& cmd);
+    CRender_Context*    Contexts();
+    _bool               Submit_Camera(_fmatrix matView, _fmatrix matProj);
+    void                Submit_LineMesh(const DRAW_CMD& cmd);
 
     const UI_GLOBAL&    Get_UI_Global();
     void                Set_UI_Global(const UI_GLOBAL& tUI);
@@ -66,37 +67,38 @@ private:
     uint32_t                                        m_hDeferredShader{};
 
     /* Draw Calls */
-    vector<DRAW_CMD>        m_AllDrawCmds;
-    vector<DRAW_CMD>        m_PendingDrawCmds;
+    vector<DRAW_CMD>                                m_AllDrawCmds;
+    vector<DRAW_CMD>                                m_PendingDrawCmds;
     std::array<std::vector<DRAW_CMD*>, SCAST(size_t, RENDER_LAYER::END)> m_LayerCmds;
 
-    class CTransform_Processor*     m_pTransform_Processor{};
-    class CRectTransform_Processor* m_pRectTransform_Processor{};
-    class CAnimator_Processor*      m_pAnimator_Processor{};
-    class CMeshRenderer_Processor*  m_pMeshRenderer_Processor{};
+    class CTransform_Processor*                     m_pTransform_Processor{};
+    class CRectTransform_Processor*                 m_pRectTransform_Processor{};
+    class CAnimator_Processor*                      m_pAnimator_Processor{};
+    class CMeshRenderer_Processor*                  m_pMeshRenderer_Processor{};
 
-    _bool   bSubmittedThisFrame{}; /* 프레임당 하나의 카메라의 submit만 받는다. */
-    RENDER_LAYER    m_eCurLayer = RENDER_LAYER::END;
+    _bool                                           bSubmittedThisFrame{}; /* 프레임당 하나의 카메라의 submit만 받는다. */
+    RENDER_LAYER                                    m_eCurLayer = RENDER_LAYER::END;
 
 private:
-    HRESULT    Create_RenderState();
+    HRESULT Create_RenderState();
 
-    void     Build_RenderQueue();
+    void    Build_RenderQueue();
 
     void    Render_GBuffer();
     void    Render_LightPass();
     void    Render_CombinedPass();
+    void    Render_PostProcess();
 
-    void     Execute_RenderQueue();
-    void     Execute_Pass(RENDER_LAYER layer);
-    void     Execute_Draw(const DRAW_CMD& cmd);
-    void     Execute_Draw_Mesh(const DRAW_CMD& cmd);
-    void     Execute_Draw_Canvas(const DRAW_CMD& tCmd);
-    void     Execute_Draw_Line(const DRAW_CMD& tCmd);
-    void     Execute_Draw_Text(const DRAW_CMD& tCmd);
-    void     Execute_Draw_Particle(const DRAW_CMD& tCmd);
+    void    Execute_RenderQueue();
+    void    Execute_Pass(RENDER_LAYER layer);
+    void    Execute_Draw(const DRAW_CMD& cmd);
+    void    Execute_Draw_Mesh(const DRAW_CMD& cmd);
+    void    Execute_Draw_Canvas(const DRAW_CMD& tCmd);
+    void    Execute_Draw_Line(const DRAW_CMD& tCmd);
+    void    Execute_Draw_Text(const DRAW_CMD& tCmd);
+    void    Execute_Draw_Particle(const DRAW_CMD& tCmd);
 
-    void     Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, COMPONENT_HANDLE hAnimator, uint32_t hPerObjectParams,
+    void    Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, COMPONENT_HANDLE hAnimator, uint32_t hPerObjectParams,
         uint32_t iFirstIdx, uint32_t iNumIdx, const std::vector<_float4x4>* pSkinningMatrices, const _float4x4& matAttach, MESH_MODE eMode);
 
 
@@ -117,6 +119,15 @@ private:
     void    Bind_RasterizerState_CullCw();
 
     void    Unbind_PS_SRVs();
+
+
+    /* 후처리 */
+private:
+    POST_PROCESS_DESC                               m_tPostProcessDesc{};
+
+public:
+    void Set_PostProcessDesc(const POST_PROCESS_DESC& tPostProcessDesc);
+    const POST_PROCESS_DESC& Get_PostProcessDesc() const;
 };
 
 

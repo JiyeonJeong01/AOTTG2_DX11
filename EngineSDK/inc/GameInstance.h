@@ -15,6 +15,7 @@ typedef struct tagRay RAY;
 typedef struct tagRaycastHit RAYCAST_HIT;
 typedef struct tagRaycastHits RAYCAST_HITS;
 typedef struct tagAnimatorData ANIMATOR_DATA;
+typedef struct tagPostProcessDesc POST_PROCESS_DESC;
 NS_END
 #pragma endregion
 
@@ -84,10 +85,12 @@ private :
 
     CPhysics_Processor*         m_pPhysics{};
 
-
 private : /* ----------- Scene ----------- */
     _bool Read_GameConfig();
     _bool Resolve_SceneGUID(const std::string& strScene, ASSET_GUID& outGUID);
+
+public : /* ---------- Post Process ----------- */
+    void Set_PostProcessDesc(const POST_PROCESS_DESC& tPostProcessDesc);
 };
 
 

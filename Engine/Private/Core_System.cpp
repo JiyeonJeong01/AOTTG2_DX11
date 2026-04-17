@@ -224,6 +224,12 @@ void CCore_System::Share_LightSRV(ID3D11ShaderResourceView** ppSRV)
     *ppSRV = m_pGraphic_Device ? m_pGraphic_Device->Get_LightSRV() : nullptr;
 }
 
+void CCore_System::Share_SceneDepthSRV(ID3D11ShaderResourceView** ppSRV)
+{
+    if (!ppSRV) return;
+    *ppSRV = m_pGraphic_Device ? m_pGraphic_Device->Get_SceneDepthSRV() : nullptr;
+}
+
 HRESULT CCore_System::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
 {
     return m_pGraphic_Device->Ensure_SceneRenderTarget(iWidth, iHeight);
@@ -244,6 +250,11 @@ void CCore_System::Bind_SceneRTV()
     m_pGraphic_Device->Bind_SceneRTV();
 }
 
+void CCore_System::Bind_SceneRTV_WithoutDSV()
+{
+    m_pGraphic_Device->Bind_SceneRTV_WithoutDSV();
+}
+
 void CCore_System::Bind_GBufferRTV()
 {
     m_pGraphic_Device->Bind_GBufferRTV();
@@ -253,6 +264,22 @@ void CCore_System::Bind_LightRTV()
 {
     m_pGraphic_Device->Bind_LightRTV();
 }
+
+void CCore_System::Bind_SceneDepthSRV(_uint iSlot)
+{
+    m_pGraphic_Device->Bind_SceneDepthSRV(iSlot);
+}
+
+void CCore_System::Unbind_PS_SRV(_uint iSlot)
+{
+    m_pGraphic_Device->Unbind_PS_SRV(iSlot);
+}
+
+void CCore_System::Bind_SceneSRV(_uint iSlot)
+{
+    m_pGraphic_Device->Bind_SceneSRV(iSlot);
+}
+
 
 HRESULT CCore_System::Clear_Default_Buffers(const _float4* pClearColor) const
 {

@@ -38,16 +38,16 @@ public:
             return it->second;
 
         ID3DX11EffectVariable* v = pEffect->GetVariableByName(name);
-        cout << "Get_VarCached try = [" << name << "]" << endl;
+        //cout << "Get_VarCached try = [" << name << "]" << endl;
 
-        if (!v)
-        {
-            cout << "GetVariableByName returned null = [" << name << "]" << endl;
-        }
-        else if (!v->IsValid())
-        {
-            cout << "GetVariableByName invalid = [" << name << "]" << endl;
-        }
+        //if (!v)
+        //{
+        //    cout << "GetVariableByName returned null = [" << name << "]" << endl;
+        //}
+        //else if (!v->IsValid())
+        //{
+        //    cout << "GetVariableByName invalid = [" << name << "]" << endl;
+        //}
 
         if (!v || !v->IsValid())
             v = nullptr;
