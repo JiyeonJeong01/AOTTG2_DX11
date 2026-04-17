@@ -69,6 +69,7 @@ struct PS_IN
 struct PS_OUT
 {
     vector vColor : SV_TARGET0;
+    vector vNormal : SV_TARGET1;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -81,7 +82,8 @@ PS_OUT PS_MAIN(PS_IN In)
         discard;
 
     Out.vColor = vMtrlDiffuse * g_BaseColor;
-    
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+
     return Out;
 
 }

@@ -1,14 +1,6 @@
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
-vector g_vLightDir = vector (1.f, -1.f, 1.f, 0.f);
-vector g_vLightDiffuse = vector(1.f, 1.f, 1.f, 1.f) ;
-vector g_vLightAmbient = vector(1.f, 1.f, 1.f, 1.f);
-vector g_vLightSpecular = vector(1.f, 1.f, 1.f, 1.f);
-
 texture2D g_BaseMap;
-vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1.f);
-vector g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f);
-vector g_vCamPosition = vector(1.f, 1.f, 1.f, 1.f);
 
 sampler DefaultSampler = sampler_state
 {
@@ -62,22 +54,17 @@ struct PS_IN
 struct PS_OUT
 {
     vector vColor : SV_TARGET0;
+    vector vNormal : SV_TARGET1;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out;
 
-    float4 vLightDir = normalize(g_vLightDir);
-    vector vDiffuseColor = g_BaseMap.Sample(DefaultSampler, In.vTexcoord);
-    vector vShade = saturate(saturate(dot(-vLightDir, In.vNormal)) + (g_vLightAmbient * g_vMtrlAmbient));
+    Out.vColor = g_BaseMap.Sample(DefaultSampler, In.vTexcoord);
 
-    vector vLook = normalize(In.vWorldPos - g_vCamPosition);
-    vector vReflect = normalize(reflect(vLightDir, In.vNormal));
-    float fSpecular = pow(saturate(dot(vLook * -1.f, vReflect)), 50.f);
-
-    vector vSpecularColor = g_vLightSpecular * g_vMtrlSpecular * fSpecular;
-    Out.vColor = g_vLightDiffuse * vDiffuseColor * vShade + vSpecularColor;
+    Out.vNormal = vector(normalize(In.vNormal.xyz) * 0.5f + 0.5f, 1.f);
+    
     return Out;
 }
 

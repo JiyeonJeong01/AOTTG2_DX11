@@ -206,9 +206,32 @@ void CCore_System::Share_SceneSRV(ID3D11ShaderResourceView** ppSRV)
     *ppSRV = m_pGraphic_Device ? m_pGraphic_Device->Get_SceneSRV() : nullptr;
 }
 
+void CCore_System::Share_DiffuseSRV(ID3D11ShaderResourceView** ppSRV)
+{
+    if (!ppSRV) return;
+    *ppSRV = m_pGraphic_Device ? m_pGraphic_Device->Get_DiffuseSRV() : nullptr;
+}
+
+void CCore_System::Share_NormalSRV(ID3D11ShaderResourceView** ppSRV)
+{
+    if (!ppSRV) return;
+    *ppSRV = m_pGraphic_Device ? m_pGraphic_Device->Get_NormalSRV() : nullptr;
+}
+
+void CCore_System::Share_LightSRV(ID3D11ShaderResourceView** ppSRV)
+{
+    if (!ppSRV) return;
+    *ppSRV = m_pGraphic_Device ? m_pGraphic_Device->Get_LightSRV() : nullptr;
+}
+
 HRESULT CCore_System::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
 {
     return m_pGraphic_Device->Ensure_SceneRenderTarget(iWidth, iHeight);
+}
+
+HRESULT CCore_System::Ready_DeferredRenderTargets(_uint iWidth, _uint iHeight)
+{
+    return m_pGraphic_Device->Ensure_DeferredRenderTargets(iWidth, iHeight);
 }
 
 void CCore_System::Bind_DefaultRTV()
@@ -219,6 +242,16 @@ void CCore_System::Bind_DefaultRTV()
 void CCore_System::Bind_SceneRTV()
 {
     m_pGraphic_Device->Bind_SceneRTV();
+}
+
+void CCore_System::Bind_GBufferRTV()
+{
+    m_pGraphic_Device->Bind_GBufferRTV();
+}
+
+void CCore_System::Bind_LightRTV()
+{
+    m_pGraphic_Device->Bind_LightRTV();
 }
 
 HRESULT CCore_System::Clear_Default_Buffers(const _float4* pClearColor) const
@@ -242,6 +275,29 @@ HRESULT CCore_System::Clear_Scene_Buffers(const _float4* pClearColor) const
 
     return S_OK;
 }
+
+HRESULT CCore_System::Clear_GBuffer_Buffers(const _float4* pDiffuseClearColor, const _float4* pNormalClearColor) const
+{
+    if (FAILED(m_pGraphic_Device->Clear_Diffuse_RTV(pDiffuseClearColor)))
+        return E_FAIL;
+
+    if (FAILED(m_pGraphic_Device->Clear_Normal_RTV(pNormalClearColor)))
+        return E_FAIL;
+
+    if (FAILED(m_pGraphic_Device->Clear_Scene_DSV()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CCore_System::Clear_Light_Buffer(const _float4* pClearColor) const
+{
+    if (FAILED(m_pGraphic_Device->Clear_Light_RTV(pClearColor)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
 
 HRESULT CCore_System::Present() const
 {

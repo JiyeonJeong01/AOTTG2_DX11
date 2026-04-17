@@ -25,7 +25,9 @@ struct VS_IN
 struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
+    float4 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
+    float4 vWorldPos : TEXCOORD1;
 };
 
 VS_OUT VS_Default(VS_IN In)
@@ -37,18 +39,38 @@ VS_OUT VS_Default(VS_IN In)
 
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
     Out.vTexcoord = In.vTexcoord;
+    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix));
+    Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
 
     return Out;
 }
 
-float4 PS_Default(VS_OUT In) : SV_TARGET
+struct PS_IN
 {
+    float4 vPosition : SV_POSITION;
+    float4 vNormal : NORMAL;
+    float2 vTexcoord : TEXCOORD0;    
+    float4 vWorldPos : TEXCOORD1;
+};
+
+struct PS_OUT
+{
+    vector vColor : SV_TARGET0;
+    vector vNormal : SV_TARGET1;
+};
+
+PS_OUT PS_Default(PS_IN In)
+{
+    PS_OUT Out;
     float4 vTextureColor = g_BaseMap.Sample(DefaultSampler, In.vTexcoord);
 
     if (vTextureColor.a < 0.3f)
         discard;
 
-    return vTextureColor * g_BaseColor;
+    Out.vColor = vTextureColor * g_BaseColor;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+
+    return Out;
 }
 
 VS_OUT VS_Outline(VS_IN In)
@@ -63,7 +85,7 @@ VS_OUT VS_Outline(VS_IN In)
     matWVP = mul(matWV, g_ProjMatrix);
 
     Out.vPosition = mul(float4(vOutlinePos, 1.f), matWVP);
-    Out.vTexcoord = In.vTexcoord;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 
     return Out;
 }

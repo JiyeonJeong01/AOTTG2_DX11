@@ -2,6 +2,7 @@
 // Render_System.cpp
 #include "CRender_System.h"
 
+#include "Core_System.h"
 #include "Component_System.h"
 #include "Engine_Math.h"
 #include "Resource_System.h"
@@ -60,6 +61,8 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
     IF_TRUE_RETURN_MSG_BREAK(m_hDefaultBaseMap == INVALID_HANDLE_UINT, E_FAIL, "DefaultBaseMap load failed");
     m_hDefaultNormalMap = SYS_RESOURCE.Load_Texture(DEFAULT_ASSET_GUID::TEXTURE_NORMALMAP_DEFAULT);
     IF_TRUE_RETURN_MSG_BREAK(m_hDefaultNormalMap == INVALID_HANDLE_UINT, E_FAIL, "DefaultNormalMap load failed");
+    m_hDeferredShader = SYS_RESOURCE.Load_Shader(DEFAULT_ASSET_GUID::SHADER_DEFERRED);
+    IF_TRUE_RETURN_MSG_BREAK(m_hDeferredShader == INVALID_HANDLE_UINT, E_FAIL, "DeferredShader load failed");
 
     /* 랜더 관련 장치 세팅  */
     {
@@ -303,6 +306,153 @@ void CRender_System::Build_RenderQueue()
     }
 }
 
+void CRender_System::Render_GBuffer()
+{
+    const _float4 vDiffuseClear = { 0.f, 0.f, 0.f, 0.f };
+    const _float4 vNormalClear = { 0.5f, 0.5f, 1.f, 1.f };
+
+    SYS_CORE.Bind_GBufferRTV();
+    SYS_CORE.Clear_GBuffer_Buffers(&vDiffuseClear, &vNormalClear);
+
+    Apply_Pass_State_NonBlend();
+    m_eCurLayer = RENDER_LAYER::NONBLEND;
+    Execute_Pass(RENDER_LAYER::NONBLEND);
+
+    Unbind_PS_SRVs();
+}
+
+void CRender_System::Render_LightPass()
+{
+    Bind_BlendState_None();
+    Bind_DepthState_Disabled();
+    Bind_RasterizerState_Default();
+
+    _float4 vLightClear = { 0.f, 0.f, 0.f, 1.f };
+
+    SYS_CORE.Bind_LightRTV();
+    SYS_CORE.Clear_Light_Buffer(&vLightClear);
+
+    SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(m_hDeferredShader);
+    IF_NULL_RETURN_MSG_BREAK(pShader, , "Deferred shader is nullptr.");
+
+    const uint16_t passIndex = 0; /* Directional */ 
+    if (passIndex >= pShader->pPasses.size())
+        return;
+
+    ID3D11ShaderResourceView* pNormalSRV = nullptr;
+    SYS_CORE.Share_NormalSRV(&pNormalSRV);
+    IF_NULL_RETURN_MSG_BREAK(pNormalSRV, , "Normal SRV is nullptr.");
+
+    auto* pVarWorld = pShader->Get_VarCached("g_WorldMatrix");
+    auto* pVarView = pShader->Get_VarCached("g_ViewMatrix");
+    auto* pVarProj = pShader->Get_VarCached("g_ProjMatrix");
+    auto* pVarNormalTex = pShader->Get_VarCached("g_NormalTexture");
+    auto* pVarLightDir = pShader->Get_VarCached("g_vLightDir");
+    //auto* pVarAmbientColor = pShader->Get_VarCached("g_AmbientColor");
+
+    IF_NULL_RETURN_MSG_BREAK(pVarWorld, , "g_WorldMatrix not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarView, , "g_ViewMatrix not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarProj, , "g_ProjMatrix not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarNormalTex, , "g_NormalTexture not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarLightDir, , "g_vLightDir not found.");
+    //IF_NULL_RETURN_MSG_BREAK(pVarAmbientColor, , "g_AmbientColor not found.");
+
+    const UI_VIEWPORT_RECT& vp = m_upRenderContext->Get_UI_Global().tSceneView;
+
+    _float4x4 matWorld, matView, matProj;
+    XMStoreFloat4x4(&matWorld, XMMatrixScaling((_float)vp.vSize.x, (_float)vp.vSize.y, 1.f));
+    XMStoreFloat4x4(&matView, XMMatrixIdentity());
+    XMStoreFloat4x4(&matProj, XMMatrixOrthographicLH((_float)vp.vSize.x, (_float)vp.vSize.y, 0.f, 1.f));
+
+    pVarWorld->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&matWorld));
+    pVarView->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&matView));
+    pVarProj->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&matProj));
+    pVarNormalTex->AsShaderResource()->SetResource(pNormalSRV);
+
+    _float4 vLightDir = { 1.f, -1.f, 1.f, 0.f };
+    pVarLightDir->AsVector()->SetFloatVector(reinterpret_cast<const float*>(&vLightDir));
+
+    ID3D11InputLayout* pIL = pShader->pPasses[passIndex].pInputLayout.Get();
+    m_pContext->IASetInputLayout(pIL);
+
+    ID3DX11EffectPass* pPass = pShader->pPasses[passIndex].pPass;
+    IF_NULL_RETURN_MSG_BREAK(pPass, , "Deferred directional pass is nullptr.");
+
+    pPass->Apply(0, m_pContext);
+
+    const MESH_ENTRY* pRectMesh = SYS_RESOURCE.Get_Mesh(m_hUIRectMesh);
+    IF_NULL_RETURN_MSG_BREAK(pRectMesh, , "Screen rect mesh is nullptr.");
+
+    pRectMesh->Bind_IA(m_pContext);
+    pRectMesh->Draw(m_pContext);
+
+    Unbind_PS_SRVs();
+}
+
+void CRender_System::Render_CombinedPass()
+{
+    Bind_BlendState_None();
+    Bind_DepthState_Disabled();
+    Bind_RasterizerState_Default();
+
+    SYS_CORE.Bind_SceneRTV();
+
+    SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(m_hDeferredShader);
+    IF_NULL_RETURN_MSG_BREAK(pShader, , "Deferred shader is nullptr.");
+
+    const uint16_t passIndex = 2; /* Combined */ 
+    if (passIndex >= pShader->pPasses.size())
+        return;
+
+    ID3D11ShaderResourceView* pDiffuseSRV = nullptr;
+    ID3D11ShaderResourceView* pLightSRV = nullptr;
+
+    SYS_CORE.Share_DiffuseSRV(&pDiffuseSRV);
+    SYS_CORE.Share_LightSRV(&pLightSRV);
+
+    IF_NULL_RETURN_MSG_BREAK(pDiffuseSRV, , "Diffuse SRV is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(pLightSRV, , "Light SRV is nullptr.");
+
+    auto* pVarWorld = pShader->Get_VarCached("g_WorldMatrix");
+    auto* pVarView = pShader->Get_VarCached("g_ViewMatrix");
+    auto* pVarProj = pShader->Get_VarCached("g_ProjMatrix");
+    auto* pVarDiffuseTex = pShader->Get_VarCached("g_DiffuseTexture");
+    auto* pVarShadeTex = pShader->Get_VarCached("g_ShadeTexture");
+
+    IF_NULL_RETURN_MSG_BREAK(pVarWorld, , "g_WorldMatrix not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarView, , "g_ViewMatrix not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarProj, , "g_ProjMatrix not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarDiffuseTex, , "g_DiffuseTexture not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarShadeTex, , "g_ShadeTexture not found.");
+
+    const UI_VIEWPORT_RECT& vp = m_upRenderContext->Get_UI_Global().tSceneView;
+
+    _float4x4 matWorld, matView, matProj;
+    XMStoreFloat4x4(&matWorld, XMMatrixScaling((_float)vp.vSize.x, (_float)vp.vSize.y, 1.f));
+    XMStoreFloat4x4(&matView, XMMatrixIdentity());
+    XMStoreFloat4x4(&matProj, XMMatrixOrthographicLH((_float)vp.vSize.x, (_float)vp.vSize.y, 0.f, 1.f));
+
+    pVarWorld->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&matWorld));
+    pVarView->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&matView));
+    pVarProj->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&matProj));
+    pVarDiffuseTex->AsShaderResource()->SetResource(pDiffuseSRV);
+    pVarShadeTex->AsShaderResource()->SetResource(pLightSRV);
+
+    ID3D11InputLayout* pIL = pShader->pPasses[passIndex].pInputLayout.Get();
+    m_pContext->IASetInputLayout(pIL);
+
+    ID3DX11EffectPass* pPass = pShader->pPasses[passIndex].pPass;
+    IF_NULL_RETURN_MSG_BREAK(pPass, , "Deferred combined pass is nullptr.");
+
+    pPass->Apply(0, m_pContext);
+
+    const MESH_ENTRY* pRectMesh = SYS_RESOURCE.Get_Mesh(m_hUIRectMesh);
+    IF_NULL_RETURN_MSG_BREAK(pRectMesh, , "Screen rect mesh is nullptr.");
+
+    pRectMesh->Bind_IA(m_pContext);
+    pRectMesh->Draw(m_pContext);
+}
+
 void CRender_System::Execute_RenderQueue()
 {
     Apply_Pass_State_Skybox();
@@ -313,9 +463,9 @@ void CRender_System::Execute_RenderQueue()
     m_eCurLayer = RENDER_LAYER::PRIORITY;
     Execute_Pass(RENDER_LAYER::PRIORITY);
 
-    Apply_Pass_State_NonBlend();
-    m_eCurLayer = RENDER_LAYER::NONBLEND;
-    Execute_Pass(RENDER_LAYER::NONBLEND);
+    Render_GBuffer();
+    Render_LightPass();
+    Render_CombinedPass();
 
     Apply_Pass_State_Blend();
     m_eCurLayer = RENDER_LAYER::BLEND;
@@ -1011,5 +1161,11 @@ void CRender_System::Bind_RasterizerState_Default()
 void CRender_System::Bind_RasterizerState_CullCw()
 {
     m_pContext->RSSetState(m_pRasterizerState_CullCw);
+}
+
+void CRender_System::Unbind_PS_SRVs()
+{
+    ID3D11ShaderResourceView* pNullSRVs[8] = {};
+    m_pContext->PSSetShaderResources(0, 8, pNullSRVs);
 }
 

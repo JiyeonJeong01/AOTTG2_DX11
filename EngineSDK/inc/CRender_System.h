@@ -48,21 +48,22 @@ private:
     ID3D11DepthStencilState*                        m_pDepthState_ReadOnly = nullptr;
     ID3D11DepthStencilState*                        m_pDepthState_Disabled = nullptr;
 
-    ID3D11RasterizerState* m_pRasterizerState_Default = nullptr;
-    ID3D11RasterizerState* m_pRasterizerState_CullCw = nullptr;
+    ID3D11RasterizerState*                          m_pRasterizerState_Default = nullptr;
+    ID3D11RasterizerState*                          m_pRasterizerState_CullCw = nullptr;
 
     /* Render Context */
-    std::unique_ptr<CRender_Context>        m_upRenderContext{};
+    std::unique_ptr<CRender_Context>                m_upRenderContext{};
     /* Render Context 캐싱 */
-    _float4x4               m_matView{};
-    _float4x4               m_matProj{};
-    UI_GLOBAL               m_gUI{};
+    _float4x4                                       m_matView{};
+    _float4x4                                       m_matProj{};
+    UI_GLOBAL                                       m_gUI{};
 
-    uint32_t                m_hUIRectMesh{};
-    uint32_t                m_hDefaultBaseMap{};
-    uint32_t                m_hDefaultNormalMap{};
-    uint32_t                m_hVtxColShader{};
-    uint32_t                m_hVtxParticlePoint{};
+    uint32_t                                        m_hUIRectMesh{};
+    uint32_t                                        m_hDefaultBaseMap{};
+    uint32_t                                        m_hDefaultNormalMap{};
+    uint32_t                                        m_hVtxColShader{};
+    uint32_t                                        m_hVtxParticlePoint{};
+    uint32_t                                        m_hDeferredShader{};
 
     /* Draw Calls */
     vector<DRAW_CMD>        m_AllDrawCmds;
@@ -81,6 +82,10 @@ private:
     HRESULT    Create_RenderState();
 
     void     Build_RenderQueue();
+
+    void    Render_GBuffer();
+    void    Render_LightPass();
+    void    Render_CombinedPass();
 
     void     Execute_RenderQueue();
     void     Execute_Pass(RENDER_LAYER layer);
@@ -111,6 +116,7 @@ private:
     void    Bind_RasterizerState_Default();
     void    Bind_RasterizerState_CullCw();
 
+    void    Unbind_PS_SRVs();
 };
 
 

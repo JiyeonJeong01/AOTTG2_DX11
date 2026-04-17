@@ -275,6 +275,7 @@ void CScenePanel::Ensure_RenderTarget()
 
     SYS_RENDER.Set_UI_Global(tSceneRTV);
     SYS_CORE.Ready_SceneRenderTarget(m_FIXEDW, m_FIXEDH);
+    SYS_CORE.Ready_DeferredRenderTargets(m_FIXEDW, m_FIXEDH);
     SYS_CORE.Share_SceneSRV(&m_pSceneSRV);
 }
 

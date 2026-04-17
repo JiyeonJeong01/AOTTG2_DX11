@@ -54,10 +54,51 @@ private:
     _uint m_iWinW = 0;
     _uint m_iWinH = 0;
 
+public:
+    HRESULT Ready_DeferredRenderTargets(_uint iWidth, _uint iHeight);
+    HRESULT Ensure_DeferredRenderTargets(_uint iWidth, _uint iHeight);
+
+    HRESULT Clear_Diffuse_RTV(const _float4* pClearColor);
+    HRESULT Clear_Normal_RTV(const _float4* pClearColor);
+    HRESULT Clear_Light_RTV(const _float4* pClearColor);
+
+    void    Bind_GBufferRTV();
+    void    Bind_LightRTV();
+
+public:
+    ID3D11ShaderResourceView* Get_DiffuseSRV() const { return m_pDiffuseSRV; }
+    ID3D11ShaderResourceView* Get_NormalSRV() const { return m_pNormalSRV; }
+    ID3D11ShaderResourceView* Get_LightSRV() const { return m_pLightSRV; }
+
+private:
+    /* Deferred */
+    ID3D11Texture2D*            m_pDiffuseTexture{ nullptr };
+    ID3D11RenderTargetView*     m_pDiffuseRTV{ nullptr };
+    ID3D11ShaderResourceView*   m_pDiffuseSRV{ nullptr };
+
+    ID3D11Texture2D*            m_pNormalTexture{ nullptr };
+    ID3D11RenderTargetView*     m_pNormalRTV{ nullptr };
+    ID3D11ShaderResourceView*   m_pNormalSRV{ nullptr };
+
+    ID3D11Texture2D*            m_pLightTexture{ nullptr };
+    ID3D11RenderTargetView*     m_pLightRTV{ nullptr };
+    ID3D11ShaderResourceView*   m_pLightSRV{ nullptr };
+
+    _uint m_iDeferredW = 0;
+    _uint m_iDeferredH = 0;
+
 private:
 	HRESULT Ready_SwapChain(HWND hWnd, WINMODE isWindowed, _uint iWinCX, _uint iWinCY);
 	HRESULT Ready_Default_RTV();
 	HRESULT Ready_Default_DSV(_uint iWinCX, _uint iWinCY);
+    HRESULT Create_RT_Texture(
+        ID3D11Device* pDevice,
+        _uint iWidth,
+        _uint iHeight,
+        DXGI_FORMAT eFormat,
+        ID3D11Texture2D** ppTexture,
+        ID3D11RenderTargetView** ppRTV,
+        ID3D11ShaderResourceView** ppSRV);
 
 public:
 	static std::unique_ptr<CGraphic_Device> Create(_In_ HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY, _Out_ ID3D11Device** ppDevice, _Out_ ID3D11DeviceContext** ppDeviceContextOut);

@@ -30,13 +30,23 @@ public :
 
     void        Share_GraphicDevice(_Out_ ID3D11Device** ppDevice = nullptr, _Out_ ID3D11DeviceContext** ppContext = nullptr);
     void        Share_SceneSRV(_Out_ ID3D11ShaderResourceView** ppSRV);
+    void        Share_DiffuseSRV(ID3D11ShaderResourceView** ppSRV);
+    void        Share_NormalSRV(ID3D11ShaderResourceView** ppSRV);
+    void        Share_LightSRV(ID3D11ShaderResourceView** ppSRV);
+
     HRESULT     Ready_SceneRenderTarget(_uint iWidth, _uint iHeight);
+    HRESULT     Ready_DeferredRenderTargets(_uint iWidth, _uint iHeight);
+
     void        Bind_DefaultRTV();
     void        Bind_SceneRTV();
+    void        Bind_GBufferRTV();
+    void        Bind_LightRTV();
 
 public :
 	HRESULT		Clear_Default_Buffers(const _float4* pClearColor) const;
     HRESULT     Clear_Scene_Buffers(const _float4* pClearColor) const;
+    HRESULT     Clear_GBuffer_Buffers(const _float4* pDiffuseClearColor, const _float4* pNormalClearColor) const;
+    HRESULT     Clear_Light_Buffer(const _float4* pClearColor) const;
 	HRESULT		Present() const;
 
 public: /* For.Timer_Manager */

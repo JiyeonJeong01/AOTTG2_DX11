@@ -19,6 +19,16 @@ CGraphic_Device::~CGraphic_Device()
     Safe_Release(m_pSceneSRV);
     Safe_Release(m_pSceneDSV);
 
+    Safe_Release(m_pDiffuseTexture);
+    Safe_Release(m_pDiffuseRTV);
+    Safe_Release(m_pDiffuseSRV);
+    Safe_Release(m_pNormalTexture);
+    Safe_Release(m_pNormalRTV);
+    Safe_Release(m_pNormalSRV);
+    Safe_Release(m_pLightTexture);
+    Safe_Release(m_pLightRTV);
+    Safe_Release(m_pLightSRV);
+
 #if defined(DEBUG) || defined(_DEBUG)
     ID3D11Debug* d3dDebug;
     HRESULT hr = m_pDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3dDebug));
@@ -429,6 +439,175 @@ HRESULT CGraphic_Device::Ready_Default_DSV(_uint iWinCX, _uint iWinCY)
 	Safe_Release(pDepthStencilTexture);
 
 	return S_OK;
+}
+
+HRESULT CGraphic_Device::Ready_DeferredRenderTargets(_uint iWidth, _uint iHeight)
+{
+    if (nullptr == m_pDevice)
+        return E_FAIL;
+
+    ID3D11Texture2D* pDiffuseTexture = nullptr;
+    ID3D11RenderTargetView* pDiffuseRTV = nullptr;
+    ID3D11ShaderResourceView* pDiffuseSRV = nullptr;
+
+    ID3D11Texture2D* pNormalTexture = nullptr;
+    ID3D11RenderTargetView* pNormalRTV = nullptr;
+    ID3D11ShaderResourceView* pNormalSRV = nullptr;
+
+    ID3D11Texture2D* pLightTexture = nullptr;
+    ID3D11RenderTargetView* pLightRTV = nullptr;
+    ID3D11ShaderResourceView* pLightSRV = nullptr;
+
+    if (FAILED(Create_RT_Texture(m_pDevice, iWidth, iHeight, DXGI_FORMAT_R8G8B8A8_UNORM,
+        &pDiffuseTexture, &pDiffuseRTV, &pDiffuseSRV)))
+        return E_FAIL;
+
+    if (FAILED(Create_RT_Texture(m_pDevice, iWidth, iHeight, DXGI_FORMAT_R16G16B16A16_UNORM,
+        &pNormalTexture, &pNormalRTV, &pNormalSRV)))
+    {
+        Safe_Release(pDiffuseSRV);
+        Safe_Release(pDiffuseRTV);
+        Safe_Release(pDiffuseTexture);
+        return E_FAIL;
+    }
+
+    if (FAILED(Create_RT_Texture(m_pDevice, iWidth, iHeight, DXGI_FORMAT_R16G16B16A16_UNORM,
+        &pLightTexture, &pLightRTV, &pLightSRV)))
+    {
+        Safe_Release(pNormalSRV);
+        Safe_Release(pNormalRTV);
+        Safe_Release(pNormalTexture);
+
+        Safe_Release(pDiffuseSRV);
+        Safe_Release(pDiffuseRTV);
+        Safe_Release(pDiffuseTexture);
+        return E_FAIL;
+    }
+
+    Safe_Release(m_pDiffuseSRV);
+    Safe_Release(m_pDiffuseRTV);
+    Safe_Release(m_pDiffuseTexture);
+
+    Safe_Release(m_pNormalSRV);
+    Safe_Release(m_pNormalRTV);
+    Safe_Release(m_pNormalTexture);
+
+    Safe_Release(m_pLightSRV);
+    Safe_Release(m_pLightRTV);
+    Safe_Release(m_pLightTexture);
+
+    m_pDiffuseTexture = pDiffuseTexture;
+    m_pDiffuseRTV = pDiffuseRTV;
+    m_pDiffuseSRV = pDiffuseSRV;
+
+    m_pNormalTexture = pNormalTexture;
+    m_pNormalRTV = pNormalRTV;
+    m_pNormalSRV = pNormalSRV;
+
+    m_pLightTexture = pLightTexture;
+    m_pLightRTV = pLightRTV;
+    m_pLightSRV = pLightSRV;
+
+    m_iDeferredW = iWidth;
+    m_iDeferredH = iHeight;
+
+    return S_OK;
+}
+
+HRESULT CGraphic_Device::Ensure_DeferredRenderTargets(_uint iWidth, _uint iHeight)
+{
+    if (iWidth == 0 || iHeight == 0)
+        return E_FAIL;
+
+    if (m_iDeferredW == iWidth && m_iDeferredH == iHeight &&
+        m_pDiffuseSRV && m_pNormalSRV && m_pLightSRV)
+        return S_OK;
+
+    return Ready_DeferredRenderTargets(iWidth, iHeight);
+}
+
+void CGraphic_Device::Bind_GBufferRTV()
+{
+    ID3D11RenderTargetView* pRTVs[2] = { m_pDiffuseRTV, m_pNormalRTV };
+    m_pDeviceContext->OMSetRenderTargets(2, pRTVs, m_pSceneDSV);
+    Set_Viewport(m_iDeferredW, m_iDeferredH);
+}
+
+void CGraphic_Device::Bind_LightRTV()
+{
+    m_pDeviceContext->OMSetRenderTargets(1, &m_pLightRTV, m_pSceneDSV);
+    Set_Viewport(m_iDeferredW, m_iDeferredH);
+}
+
+HRESULT CGraphic_Device::Create_RT_Texture(
+        ID3D11Device* pDevice,
+        _uint iWidth,
+        _uint iHeight,
+        DXGI_FORMAT eFormat,
+        ID3D11Texture2D** ppTexture,
+        ID3D11RenderTargetView** ppRTV,
+        ID3D11ShaderResourceView** ppSRV)
+{
+    if (nullptr == pDevice || nullptr == ppTexture || nullptr == ppRTV || nullptr == ppSRV)
+        return E_FAIL;
+
+    D3D11_TEXTURE2D_DESC textureDesc{};
+    textureDesc.Width = iWidth;
+    textureDesc.Height = iHeight;
+    textureDesc.MipLevels = 1;
+    textureDesc.ArraySize = 1;
+    textureDesc.Format = eFormat;
+    textureDesc.SampleDesc.Count = 1;
+    textureDesc.SampleDesc.Quality = 0;
+    textureDesc.Usage = D3D11_USAGE_DEFAULT;
+    textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    textureDesc.CPUAccessFlags = 0;
+    textureDesc.MiscFlags = 0;
+
+    if (FAILED(pDevice->CreateTexture2D(&textureDesc, nullptr, ppTexture)))
+        return E_FAIL;
+
+    if (FAILED(pDevice->CreateRenderTargetView(*ppTexture, nullptr, ppRTV)))
+    {
+        Safe_Release(*ppTexture);
+        return E_FAIL;
+    }
+
+    if (FAILED(pDevice->CreateShaderResourceView(*ppTexture, nullptr, ppSRV)))
+    {
+        Safe_Release(*ppRTV);
+        Safe_Release(*ppTexture);
+        return E_FAIL;
+    }
+
+    return S_OK;
+}
+
+HRESULT CGraphic_Device::Clear_Diffuse_RTV(const _float4* pClearColor)
+{
+    if (nullptr == m_pDeviceContext || nullptr == m_pDiffuseRTV)
+        return E_FAIL;
+
+    m_pDeviceContext->ClearRenderTargetView(m_pDiffuseRTV, reinterpret_cast<const _float*>(pClearColor));
+    return S_OK;
+}
+
+HRESULT CGraphic_Device::Clear_Normal_RTV(const _float4* pClearColor)
+{
+    if (nullptr == m_pDeviceContext || nullptr == m_pNormalRTV)
+        return E_FAIL;
+
+    m_pDeviceContext->ClearRenderTargetView(m_pNormalRTV, reinterpret_cast<const _float*>(pClearColor));
+    return S_OK;
+}
+
+HRESULT CGraphic_Device::Clear_Light_RTV(const _float4* pClearColor)
+{
+    if (nullptr == m_pDeviceContext || nullptr == m_pLightRTV)
+        return E_FAIL;
+
+    m_pDeviceContext->ClearRenderTargetView(m_pLightRTV, reinterpret_cast<const _float*>(pClearColor));
+    return S_OK;
 }
 
 std::unique_ptr<CGraphic_Device> CGraphic_Device::Create(HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY, ID3D11Device** ppDevice, ID3D11DeviceContext** ppDeviceContextOut)

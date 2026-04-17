@@ -44,6 +44,7 @@ struct PS_IN
 struct PS_OUT
 {
     vector vColor : SV_TARGET0;
+    vector vNormal : SV_TARGET1;
 };
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -84,7 +85,8 @@ PS_OUT PS_MAIN(PS_IN In)
         discard;
 
     Out.vColor = vMtrlDiffuse * g_BaseColor;
-    
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+
     return Out;
 }
 
@@ -109,7 +111,11 @@ VS_OUT VS_OUTLINE(VS_IN In)
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
     
-    Out.vPosition = mul(float4(vOulinePos, 1.f), matWVP);    
+    Out.vPosition = mul(vPosition, matWVP);
+    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix));
+    
+    Out.vTexcoord = In.vTexcoord;
+    Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
     return Out;
 }
 
@@ -118,6 +124,8 @@ PS_OUT PS_OUTLINE(PS_IN In)
 {
     PS_OUT Out;
     Out.vColor = g_OutlineColor;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+
     return Out;
 }
 

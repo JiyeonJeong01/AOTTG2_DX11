@@ -86,11 +86,11 @@ void CNavMesh::Debug_Render(CDebug_Renderer* pDebugRenderer) const
     if (!pDebugRenderer)
         return;
 
-    _int iSize = m_vecWayPoints.size() - 1;
+    _int iSize = (_int)m_vecWayPoints.size() - 1;
     if (iSize < 0)
         iSize = 0;
 
-    for (_uint i = 0; i < iSize; ++i)
+    for (_int i = 0; i < iSize; ++i)
     {
         _float3 vPoint = m_vecWayPoints[i];
         _float3 vNextPoint = m_vecWayPoints[i + 1];
@@ -410,7 +410,7 @@ _float3 CNavMesh::Get_Dir(const _float3& vCurPos)
 
 _bool CNavMesh::Can_Advance_WayPoint(const _float3& vCurPos) const
 {
-    if (m_iWayPointIndex >= To<_int>(m_vecWayPoints.size()))
+    if (m_iWayPointIndex >= To<_uint>(m_vecWayPoints.size()))
         return false;
 
     const _float3& vWayPoint = m_vecWayPoints[m_iWayPointIndex];
