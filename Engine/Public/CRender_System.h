@@ -21,6 +21,7 @@ public:
     CRender_Context*    Contexts();
     _bool               Submit_Camera(_fmatrix matView, _fmatrix matProj);
     void                Submit_LineMesh(const DRAW_CMD& cmd);
+    void                Submit_SpeedLine(const SPEED_LINE_DESC& tDesc);
 
     const UI_GLOBAL&    Get_UI_Global();
     void                Set_UI_Global(const UI_GLOBAL& tUI);
@@ -65,6 +66,7 @@ private:
     uint32_t                                        m_hDefaultNormalMap{};
     uint32_t                                        m_hVtxParticlePoint{};
     uint32_t                                        m_hDeferredShader{};
+    uint32_t                                        m_hSpeedLineShader{};
 
     /* Draw Calls */
     vector<DRAW_CMD>                                m_AllDrawCmds;
@@ -87,6 +89,7 @@ private:
     void    Render_GBuffer();
     void    Render_LightPass();
     void    Render_CombinedPass();
+    void    Render_SpeedLinePass();
     void    Render_PostProcess();
 
     void    Execute_RenderQueue();
@@ -126,7 +129,7 @@ private:
     /* 후처리 */
 private:
     POST_PROCESS_DESC                               m_tPostProcessDesc{};
-
+    SPEED_LINE_DESC                                 m_tPendingSpeedLine{};
 public:
     void Set_PostProcessDesc(const POST_PROCESS_DESC& tPostProcessDesc);
     const POST_PROCESS_DESC& Get_PostProcessDesc() const;

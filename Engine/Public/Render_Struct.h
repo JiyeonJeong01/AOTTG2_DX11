@@ -465,4 +465,11 @@ typedef struct tagParticleInstanceVertex
     _float2 vLifeTime;
 } VTXPARTICLE_INSTANCE;
 
+typedef struct tagSpeedLineDesc
+{
+    _bool   bEnable = false;
+    _float2 vVelocityDir = { 1.f, 0.f };
+    _float  fIntensity = 1.f;
+} SPEED_LINE_DESC;
+
 NS_END

@@ -38,7 +38,10 @@ void CPlayerState_Reload::Priority_Update(_float fDT)
     LookTo_InputDir(fDT);
     Finish_Grappling();
     if (m_eReloadState == RELOAD::AIR)
+    {
+        Handle_SpeedLines(fDT);
         Handle_Trail(fDT, WIDTH_TYPE::NORMAL);
+    }
     else
         Handle_Trail(fDT, WIDTH_TYPE::NONE);
 

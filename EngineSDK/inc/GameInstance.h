@@ -57,6 +57,8 @@ public : /* ---------- Game ---------- */
 
 public : /* ---------- Camera ---------- */
     _float3                 Cam_Position() const;
+    _float3                 Cam_Right() const;
+    _float3                 Cam_Up() const;
     _float3                 Cam_Look() const;
     const _float4x4&        Get_View()  const;
     const _float4x4&        Get_Proj()  const;
@@ -90,6 +92,7 @@ private : /* ----------- Scene ----------- */
 
 public : /* ---------- Post Process ----------- */
     void Set_PostProcessDesc(const POST_PROCESS_DESC& tPostProcessDesc);
+    void Submit_SpeedLine(const SPEED_LINE_DESC& tDesc);
 };
 
 

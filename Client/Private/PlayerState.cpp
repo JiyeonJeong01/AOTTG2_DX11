@@ -4,6 +4,7 @@
 #include "ODM_Gear.h"
 #include "HitBox.h"
 #include "Trail.h"
+#include "Render_Struct.h"
 
 HRESULT CPlayerState::Initialize()
 {
@@ -233,6 +234,50 @@ void CPlayerState::Handle_Trail(_float fDT, WIDTH_TYPE eWidth)
     XMStoreFloat3(&vRight, m_tComponents.transform.Get_StateXM(STATE::RIGHT));
 
     m_pTrail->Set_StartPoint(vPos, vRight, eWidth);
+}
+
+void CPlayerState::Handle_SpeedLines(_float fDT)
+{
+    SPEED_LINE_DESC tDesc{};
+
+    tDesc.bEnable = true;
+
+    const _float fSpeed = sqrtf(
+        m_tComponents.rigidbody->vLinearVel.x * m_tComponents.rigidbody->vLinearVel.x +
+        m_tComponents.rigidbody->vLinearVel.y * m_tComponents.rigidbody->vLinearVel.y +
+        m_tComponents.rigidbody->vLinearVel.z * m_tComponents.rigidbody->vLinearVel.z);
+
+    _float fMinValue = 1.f;
+    if (!m_tInputCmd.bRopeReelHeld)
+        fMinValue = 0.6f;
+    tDesc.fIntensity = min(fMinValue, fSpeed / 25.f);
+
+    _vector vVel = XMLoadFloat3(&m_tComponents.rigidbody->vLinearVel);
+    const _float fVelLenSq = XMVectorGetX(XMVector3LengthSq(vVel));
+
+    if (fVelLenSq < 0.0001f)
+        tDesc.vVelocityDir = { 1.f, 0.f };
+
+    _float3 vCamRight3 = GAME_INSTANCE.Cam_Right();
+    _float3 vCamUp3 = GAME_INSTANCE.Cam_Up();
+    _vector vCamRight = XMVector3Normalize(XMLoadFloat3(&vCamRight3));
+    _vector vCamUp = XMVector3Normalize(XMLoadFloat3(&vCamUp3));
+
+    _float2 vDir{};
+    vDir.x = XMVectorGetX(XMVector3Dot(vVel, vCamRight));
+    vDir.y = XMVectorGetX(XMVector3Dot(vVel, vCamUp));
+
+    const _float fDirLenSq = vDir.x * vDir.x + vDir.y * vDir.y;
+    if (fDirLenSq <= 0.001f)
+        tDesc.vVelocityDir ={ 1.f, 0.f };
+
+    const _float fInvLen = 1.f / sqrtf(fDirLenSq);
+    vDir.x *= fInvLen;
+    vDir.y *= fInvLen;
+
+    tDesc.vVelocityDir = { vDir.x, vDir.y };
+
+    GAME_INSTANCE.Submit_SpeedLine(tDesc);
 }
 
 _bool CPlayerState::Set_HitBoxActive(const std::string& strHitBox, _bool bActive)

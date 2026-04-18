@@ -38,6 +38,8 @@ void CPlayerState_AirborneAttack::Priority_Update(_float fDT)
     Try_Grappling();
     Finish_Grappling();
     Handle_Trail(fDT, WIDTH_TYPE::NORMAL);
+
+    Handle_SpeedLines(fDT);
 }
 
 void CPlayerState_AirborneAttack::Update(_float fDT)

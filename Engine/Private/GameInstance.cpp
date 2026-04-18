@@ -141,6 +141,18 @@ _float3 CGameInstance::Cam_Position() const
     return SYS_RENDER.Contexts()->Get_CamPosition();
 }
 
+_float3 CGameInstance::Cam_Right() const
+{
+    _float4x4 matInvView = SYS_RENDER.Contexts()->Get_ViewInv();
+    return _float3(matInvView._11, matInvView._12, matInvView._13);
+}
+
+_float3 CGameInstance::Cam_Up() const
+{
+    _float4x4 matInvView = SYS_RENDER.Contexts()->Get_ViewInv();
+    return _float3(matInvView._21, matInvView._22, matInvView._23);
+}
+
 _float3 CGameInstance::Cam_Look() const 
 {
     _float4x4 matInvView = SYS_RENDER.Contexts()->Get_ViewInv();
@@ -349,4 +361,9 @@ _bool CGameInstance::Resolve_SceneGUID(const std::string& strScene, ASSET_GUID& 
 void CGameInstance::Set_PostProcessDesc(const POST_PROCESS_DESC& tPostProcessDesc)
 {
     SYS_RENDER.Set_PostProcessDesc(tPostProcessDesc);
+}
+
+void CGameInstance::Submit_SpeedLine(const SPEED_LINE_DESC& tDesc)
+{
+    SYS_RENDER.Submit_SpeedLine(tDesc);
 }

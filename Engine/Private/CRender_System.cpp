@@ -63,6 +63,8 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
     IF_TRUE_RETURN_MSG_BREAK(m_hDefaultNormalMap == INVALID_HANDLE_UINT, E_FAIL, "DefaultNormalMap load failed");
     m_hDeferredShader = SYS_RESOURCE.Load_Shader(DEFAULT_ASSET_GUID::SHADER_DEFERRED);
     IF_TRUE_RETURN_MSG_BREAK(m_hDeferredShader == INVALID_HANDLE_UINT, E_FAIL, "DeferredShader load failed");
+    m_hSpeedLineShader = SYS_RESOURCE.Load_Shader(DEFAULT_ASSET_GUID::SHADER_SPEEDLINE);
+    IF_TRUE_RETURN_MSG_BREAK(m_hSpeedLineShader == INVALID_HANDLE_UINT, E_FAIL, "SpeedLine load failed");
 
     /* 랜더 관련 장치 세팅  */
     {
@@ -272,6 +274,11 @@ HRESULT CRender_System::Create_RenderState()
 void CRender_System::Submit_LineMesh(const DRAW_CMD& cmd)
 {
     m_PendingDrawCmds.push_back(cmd);
+}
+
+void CRender_System::Submit_SpeedLine(const SPEED_LINE_DESC& tDesc)
+{
+    m_tPendingSpeedLine = tDesc;
 }
 
 void CRender_System::Build_RenderQueue()
@@ -505,6 +512,80 @@ void CRender_System::Render_CombinedPass()
     Unbind_PS_SRVs();
 }
 
+void CRender_System::Render_SpeedLinePass()
+{
+    if (false == m_tPendingSpeedLine.bEnable)
+        return;
+
+    Bind_BlendState_Alpha();
+    Bind_DepthState_Disabled();
+    Bind_RasterizerState_Default();
+
+    SYS_CORE.Bind_SceneRTV_WithoutDSV();
+
+    SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(m_hSpeedLineShader);
+    IF_NULL_RETURN_MSG_BREAK(pShader, , "SpeedLine shader is nullptr.");
+
+    const uint16_t passIndex = 0; /* Combined */
+    if (passIndex >= pShader->pPasses.size())
+        return;
+
+    auto* pVarWorld = pShader->Get_VarCached("g_WorldMatrix");
+    auto* pVarView = pShader->Get_VarCached("g_ViewMatrix");
+    auto* pVarProj = pShader->Get_VarCached("g_ProjMatrix");
+
+    auto* pVelocityDir = pShader->Get_VarCached("g_vVelocityDir");
+    auto* pIntensity = pShader->Get_VarCached("g_fIntensity");
+
+    auto* pTime = pShader->Get_VarCached("g_fTime");
+
+    {
+        IF_NULL_RETURN_MSG_BREAK(pVarWorld, , "g_WorldMatrix not found.");
+        IF_NULL_RETURN_MSG_BREAK(pVarView, , "g_ViewMatrix not found.");
+        IF_NULL_RETURN_MSG_BREAK(pVarProj, , "g_ProjMatrix not found.");
+
+        IF_NULL_RETURN_MSG_BREAK(pVelocityDir, , "g_vVelocityDir not found.");
+        IF_NULL_RETURN_MSG_BREAK(pIntensity, , "g_fIntensity not found.");
+
+        IF_NULL_RETURN_MSG_BREAK(pTime, , "g_fTime not found.");
+    }
+
+    const UI_VIEWPORT_RECT& vp = m_upRenderContext->Get_UI_Global().tSceneView;
+
+    _float4x4 matWorld, matView, matProj;
+    XMStoreFloat4x4(&matWorld, XMMatrixScaling((_float)vp.vSize.x, (_float)vp.vSize.y, 1.f));
+    XMStoreFloat4x4(&matView, XMMatrixIdentity());
+    XMStoreFloat4x4(&matProj, XMMatrixOrthographicLH((_float)vp.vSize.x, (_float)vp.vSize.y, 0.f, 1.f));
+
+    pVarWorld->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&matWorld));
+    pVarView->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&matView));
+    pVarProj->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&matProj));
+
+    pTime->AsScalar()->SetFloat(SYS_CORE.Get_FrameDT());
+    pIntensity->AsScalar()->SetFloat(m_tPendingSpeedLine.fIntensity);
+
+    _float4 vVelocityDir = { m_tPendingSpeedLine.vVelocityDir.x, m_tPendingSpeedLine.vVelocityDir.y, 0.f, 0.f };
+    pVelocityDir->AsVector()->SetFloatVector(reinterpret_cast<const _float*>(&vVelocityDir));
+
+    ID3D11InputLayout* pIL = pShader->pPasses[passIndex].pInputLayout.Get();
+    m_pContext->IASetInputLayout(pIL);
+
+    ID3DX11EffectPass* pPass = pShader->pPasses[passIndex].pPass;
+    IF_NULL_RETURN_MSG_BREAK(pPass, , "Deferred combined pass is nullptr.");
+
+    pPass->Apply(0, m_pContext);
+
+    const MESH_ENTRY* pRectMesh = SYS_RESOURCE.Get_Mesh(m_hUIRectMesh);
+    IF_NULL_RETURN_MSG_BREAK(pRectMesh, , "Screen rect mesh is nullptr.");
+
+    pRectMesh->Bind_IA(m_pContext);
+    pRectMesh->Draw(m_pContext);
+
+    Unbind_PS_SRVs();
+    m_tPendingSpeedLine = {};
+}
+
+
 void CRender_System::Render_PostProcess()
 {
     //Bind_BlendState_None();
@@ -622,6 +703,8 @@ void CRender_System::Execute_RenderQueue()
     Apply_Pass_State_Blend();
     m_eCurLayer = RENDER_LAYER::BLEND;
     Execute_Pass(RENDER_LAYER::BLEND);
+
+    Render_SpeedLinePass();
 
     Apply_Pass_State_UI();
     m_eCurLayer = RENDER_LAYER::UI;

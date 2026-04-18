@@ -41,6 +41,7 @@ public :
     void            Finish_Grappling();
     void            GroundedMove(_float fDT);
     void            Handle_Trail(_float fDT, WIDTH_TYPE eWidth);
+    void            Handle_SpeedLines(_float fDT);
     _bool           Set_HitBoxActive(const std::string& strHitBox, _bool bActive);
     void            Sync_HiBox(const std::string& strHitBox);
 
