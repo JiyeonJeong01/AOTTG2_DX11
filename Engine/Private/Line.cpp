@@ -29,6 +29,10 @@ HRESULT CLine::Initialize(_uint iMaxPoints, _float fThickness)
     if (m_hMesh == INVALID_HANDLE_UINT)
         return E_FAIL;
 
+    m_hShader = SYS_RESOURCE.Load_Shader(DEFAULT_ASSET_GUID::SHADER_VTXCOL);
+    if (m_hMesh == INVALID_HANDLE_UINT)
+        return E_FAIL;
+
     /* 실패 검사 */
     IF_NULL_RETURN_MSG_BREAK(m_pDevice, E_FAIL, "device is nullptr");
     IF_NULL_RETURN_MSG_BREAK(m_pContext, E_FAIL, "context is nullptr");
@@ -152,14 +156,133 @@ void CLine::Submit()
 
     pEntry->iVertexCount = m_iCurPoints * 2;
 
-    DRAW_CMD cmd = DRAW_CMD::Create_Line(m_hMesh, DRAW_TYPE::LINE, RENDER_LAYER::NONBLEND);
+    DRAW_CMD cmd = DRAW_CMD::Create_Line(m_hMesh, DRAW_TYPE::LINE, RENDER_LAYER::NONBLEND, m_hShader);
     SYS_RENDER.Submit_LineMesh(cmd);
 }
 
-std::unique_ptr<CLine> CLine::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iNumPoints, _float fThickness)
+HRESULT CLine::Initialize_Trail(_uint iMaxPoints, _float fThickness)
+{
+    m_iMaxPoints = iMaxPoints;
+    m_fThickness = fThickness;
+
+    MESH_ENTRY entry{};
+    if (FAILED(CMeshBuilder::Create_RibbonLine_VtxTrail(m_pDevice, entry, m_iMaxPoints)))
+        return E_FAIL;
+
+    m_hMesh = SYS_RESOURCE.Register_MeshEntry(std::move(entry));
+    if (m_hMesh == INVALID_HANDLE_UINT)
+        return E_FAIL;
+
+    m_hShader = SYS_RESOURCE.Load_Shader(DEFAULT_ASSET_GUID::SHADER_VTXTRAIL);
+    if (m_hMesh == INVALID_HANDLE_UINT)
+        return E_FAIL;
+
+    /* 실패 검사 */
+    IF_NULL_RETURN_MSG_BREAK(m_pDevice, E_FAIL, "device is nullptr");
+    IF_NULL_RETURN_MSG_BREAK(m_pContext, E_FAIL, "context is nullptr");
+    IF_TRUE_RETURN_MSG_BREAK(m_iMaxPoints < 2, E_FAIL, "iMaxPoints must be over two");
+    IF_TRUE_RETURN_MSG_BREAK(m_fThickness < 0.f, E_FAIL, "iThickness must be over zero");
+
+    return S_OK;
+}
+
+HRESULT CLine::Update_Trail(const LINE_POINT* pPoints, _uint iNumPoints)
+{
+    if (!pPoints || m_hMesh == INVALID_HANDLE_UINT)
+        return E_FAIL;
+    if (iNumPoints < 2 || iNumPoints > m_iMaxPoints)
+        return E_FAIL;
+
+    MESH_ENTRY* pEntry = SYS_RESOURCE.Get_Mesh(m_hMesh);
+    if (!pEntry)
+        return E_FAIL;
+
+    ID3D11Buffer* pVB = *pEntry->pVB.GetAddressOf();
+    if (!pVB)
+        return E_FAIL;
+
+    D3D11_MAPPED_SUBRESOURCE mapped{};
+    if (FAILED(m_pContext->Map(pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped)))
+        return E_FAIL;
+
+    VTXTRAIL* pVertices = To<VTXTRAIL*>(mapped.pData);
+
+    const _float fEps = 1e-6f;
+    _vector vPrevRight = Math::Set_Vec(0.f, 0.f, 0.f, 0.f);
+    _bool bHasPrevRight = false;
+
+    for (_uint i = 0; i < iNumPoints; ++i)
+    {
+        _vector vPoint = Math::Load(pPoints[i].vPosition);
+        _vector vRightDir = Math::Load(pPoints[i].vRight);
+
+        if (Math::Get_X(XMVector3LengthSq(vRightDir)) < fEps)
+            vRightDir = Math::Set_Vec(1.f, 0.f, 0.f, 0.f);
+
+        vRightDir = Math::Normalize(vRightDir);
+
+        if (bHasPrevRight)
+        {
+            if (Math::Get_X(XMVector3Dot(vRightDir, vPrevRight)) < 0.f)
+                vRightDir = -vRightDir;
+        }
+
+        vPrevRight = vRightDir;
+        bHasPrevRight = true;
+
+        const _float fHalfWidth = pPoints[i].fWidth * 0.5f;
+        const _vector vSide = vRightDir * fHalfWidth;
+
+        _float3 vLeft{}, vRight{};
+        Math::Store(vLeft, vPoint - vSide);
+        Math::Store(vRight, vPoint + vSide);
+
+        const _float fV = (iNumPoints > 1) ? (To<_float>(i) / To<_float>(iNumPoints - 1)) : 0.f;
+
+        pVertices[i * 2 + 0].vPosition = vLeft;
+        pVertices[i * 2 + 0].vTexcoord = { 0.f, fV };
+        pVertices[i * 2 + 0].vColor = pPoints[i].vColor;
+
+        pVertices[i * 2 + 1].vPosition = vRight;
+        pVertices[i * 2 + 1].vTexcoord = { 1.f, fV };
+        pVertices[i * 2 + 1].vColor = pPoints[i].vColor;
+    }
+
+    m_pContext->Unmap(pVB, 0);
+
+    m_iCurPoints = iNumPoints;
+
+    pEntry->iVertexCount = iNumPoints * 2;
+    pEntry->iIndexCount = (iNumPoints - 1) * 6;
+
+    return S_OK;
+}
+
+void CLine::Submit_Trail()
+{
+    if (m_hMesh == INVALID_HANDLE_UINT)
+        return;
+    if (m_iCurPoints < 2)
+        return;
+
+    MESH_ENTRY* pEntry = SYS_RESOURCE.Get_Mesh(m_hMesh);
+    if (!pEntry)
+        return;
+
+    pEntry->iVertexCount = m_iCurPoints * 2;
+
+    DRAW_CMD cmd = DRAW_CMD::Create_Line(m_hMesh, DRAW_TYPE::LINE, RENDER_LAYER::BLEND, m_hShader);
+    SYS_RENDER.Submit_LineMesh(cmd);
+}
+
+
+std::unique_ptr<CLine> CLine::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iNumPoints, _float fThickness, LINE_TYPE eType)
 {
     auto pInstance = std::make_unique<CLine>(pDevice, pContext);
+    if (eType == LINE_TYPE::NORMAL)
+        IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(iNumPoints, fThickness), nullptr, "instnace create failed");
+    else if (eType == LINE_TYPE::TRAIL)
+        IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize_Trail(iNumPoints, fThickness), nullptr, "instnace create failed");
 
-    IF_FAIL_RETURN_MSG_BREAK(pInstance->Initialize(iNumPoints, fThickness), nullptr, "instnace create failed");
     return pInstance;
 }

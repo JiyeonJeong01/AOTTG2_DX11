@@ -4,6 +4,7 @@
 #include "Raycast.h"
 #include "Rope.h"
 #include "Player_Struct.h"
+#include "Trail.h"
 
 NS_BEGIN(Client)
 
@@ -316,11 +317,11 @@ void CODM_Gear::Update(void* pCtx, _float fDT)
         m_tGas.fCurrent -= fDT;
         m_tGas.fCurrent = fmaxf(m_tGas.fCurrent, 0.f);
     }
-
 }
 
 void CODM_Gear::Late_Update(void* pCtx, _float fDT)
 {
+
 }
 
 

@@ -196,6 +196,9 @@
     <Filter Include="08. NavMesh">
       <UniqueIdentifier>{024d29e4-52a8-4280-b67e-e52609ba5cbb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Utility\04. Component\10. SpriteEffect">
+      <UniqueIdentifier>{ba6dc3cf-7e4a-4e1a-a9b7-d7db266d6333}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -538,6 +541,12 @@
     <ClInclude Include="..\Public\PostProcess.h">
       <Filter>99. Defines\Engine_Struct</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SpriteEffect.h">
+      <Filter>01. Utility\04. Component\10. SpriteEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SpriteEffect_Processor.h">
+      <Filter>01. Utility\04. Component\10. SpriteEffect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -738,6 +747,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\NavMesh.cpp">
       <Filter>08. NavMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SpriteEffect.cpp">
+      <Filter>01. Utility\04. Component\10. SpriteEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SpriteEffect_Processor.cpp">
+      <Filter>01. Utility\04. Component\10. SpriteEffect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

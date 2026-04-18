@@ -51,6 +51,7 @@ private:
 
     ID3D11RasterizerState*                          m_pRasterizerState_Default = nullptr;
     ID3D11RasterizerState*                          m_pRasterizerState_CullCw = nullptr;
+    ID3D11RasterizerState*                          m_pRasterizerState_CullNone = nullptr;
 
     /* Render Context */
     std::unique_ptr<CRender_Context>                m_upRenderContext{};
@@ -62,7 +63,6 @@ private:
     uint32_t                                        m_hUIRectMesh{};
     uint32_t                                        m_hDefaultBaseMap{};
     uint32_t                                        m_hDefaultNormalMap{};
-    uint32_t                                        m_hVtxColShader{};
     uint32_t                                        m_hVtxParticlePoint{};
     uint32_t                                        m_hDeferredShader{};
 
@@ -97,6 +97,7 @@ private:
     void    Execute_Draw_Line(const DRAW_CMD& tCmd);
     void    Execute_Draw_Text(const DRAW_CMD& tCmd);
     void    Execute_Draw_Particle(const DRAW_CMD& tCmd);
+    void    Execute_Draw_SpriteEffect(const DRAW_CMD& tCmd);
 
     void    Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, COMPONENT_HANDLE hAnimator, uint32_t hPerObjectParams,
         uint32_t iFirstIdx, uint32_t iNumIdx, const std::vector<_float4x4>* pSkinningMatrices, const _float4x4& matAttach, MESH_MODE eMode);
@@ -117,6 +118,7 @@ private:
 
     void    Bind_RasterizerState_Default();
     void    Bind_RasterizerState_CullCw();
+    void    Bind_RasterizerState_CullNone();
 
     void    Unbind_PS_SRVs();
 

@@ -376,6 +376,9 @@
     <ClInclude Include="..\Public\ScoutBehavior_RequestResupply.h">
       <Filter>Scout</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Trail.h">
+      <Filter>Equipment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -617,6 +620,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\ScoutBehavior_RequestResupply.cpp">
       <Filter>Scout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Trail.cpp">
+      <Filter>Equipment</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

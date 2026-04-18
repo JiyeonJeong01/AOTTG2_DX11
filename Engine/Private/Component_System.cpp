@@ -11,6 +11,7 @@
 #include "CanvasRenderer_Processor.h"
 #include "Script_Processor.h"
 #include "UI_Processor.h"
+#include "SpriteEffect_Processor.h"
 
 #include "Render_Struct.h"
 
@@ -51,6 +52,8 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
         = CScript_Processor::Create();
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::UI)]
         = CUI_Processor::Create(m_pDevice, m_pContext);
+    m_pComProcessors[PID_TO_INT(PROCESSOR_ID::SPRITE_EFFECT)]
+        = CSpriteEffect_Processor::Create(m_pDevice, m_pContext);
 
     for (auto& proc : m_pComProcessors)
     {
@@ -72,6 +75,7 @@ void CComponent_System::Update(_float fDT)
     static_cast<CAnimator_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::ANIMATION)].get())->Update(fDT);
     static_cast<CMeshRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::MESH_RENDERER)].get())->Update(fDT);
     static_cast<CCanvasRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::CANVAS_RENDERER)].get())->Update(fDT);
+    static_cast<CSpriteEffect_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::SPRITE_EFFECT)].get())->Update(fDT);
 }
 
 void CComponent_System::LateUpdate(_float fDT)
@@ -85,6 +89,7 @@ void CComponent_System::LateUpdate(_float fDT)
     static_cast<CAnimator_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::ANIMATION)].get())->LateUpdate(fDT);
     static_cast<CMeshRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::MESH_RENDERER)].get())->LateUpdate(fDT);
     static_cast<CCanvasRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::CANVAS_RENDERER)].get())->LateUpdate(fDT);
+    static_cast<CSpriteEffect_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::SPRITE_EFFECT)].get())->Update(fDT);
 }
 
 void CComponent_System::FixedUpdate(_float fDT)
@@ -103,6 +108,8 @@ void CComponent_System::Build_RenderQueue(vector<DRAW_CMD>& cmds)
     To<CMeshRenderer_Processor*>(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::MESH_RENDERER)].get())->Build_RenderQueue(cmds);
     To<CCanvasRenderer_Processor*>(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::CANVAS_RENDERER)].get())->Build_RenderQueue(cmds);
     To<CUI_Processor*>(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::UI)].get())->Build_RenderQueue(cmds);
+    To<CSpriteEffect_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::SPRITE_EFFECT)].get())->Build_RenderQueue(cmds);
+
 }
 
 void CComponent_System::Render()

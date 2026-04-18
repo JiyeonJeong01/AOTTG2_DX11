@@ -6,6 +6,7 @@
 NS_BEGIN(Engine)
 
 typedef struct tagMeshRendererData MESH_RENDERER_DATA;
+typedef struct tagSpriteEffectData SPRITE_EFFECT_DATA;
 
 enum class EXTRA_RENDER_PASS : uint32_t
 {
@@ -119,6 +120,21 @@ typedef struct tagVertexPosition
     };
 } VTXPOS;
 
+typedef struct tagVertexTrail
+{
+    XMFLOAT3 vPosition;
+    XMFLOAT2 vTexcoord;
+    XMFLOAT4 vColor;
+
+    static const unsigned int iNumElements = 3;
+    static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,    0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    };
+} VTXTRAIL;
+
 typedef struct tagVertexParticlePointInstanceDesc
 {
     static const unsigned int iNumElements = 6;
@@ -152,7 +168,9 @@ static constexpr IL_DESC g_IL_TABLE[] = {
     { VTXCUBE::Elements, VTXCUBE::iNumElements },                                           // 5 
     { VTXPOS::Elements, VTXPOS::iNumElements },                                             // 6
     { VTXPARTICLE_POINTINSTANCE_DESC::Elements, VTXPARTICLE_POINTINSTANCE_DESC::iNumElements },     // 7
+    { VTXTRAIL::Elements, VTXTRAIL::iNumElements },     // 7
 };
+
 
 typedef struct ENGINE_DLL tagDrawCmd final
 {
@@ -189,6 +207,7 @@ typedef struct ENGINE_DLL tagDrawCmd final
         struct
         {
             uint32_t        hMesh = INVALID_HANDLE_UINT;
+            uint32_t        hShader = INVALID_HANDLE_UINT;
         } line;
 
         struct
@@ -221,6 +240,25 @@ typedef struct ENGINE_DLL tagDrawCmd final
             _float2         vOffset = {};
             _bool           bCenter = true;
         } text;
+        struct
+        {
+            uint32_t hMaterial;
+            uint32_t hTexture;
+            COMPONENT_HANDLE hTransform;
+
+            uint32_t hPerObjectParams;
+
+            _uint iFrame;
+            _uint iRow;
+            _uint iCol;
+
+            _float2 vSize;
+            _float4 vColor;
+
+            _bool bBillboard;
+
+            const SPRITE_EFFECT_DATA* pData;
+        } sprite;
     };
 
 public:
@@ -238,12 +276,13 @@ public:
         return c;
     }
 
-    static tagDrawCmd Create_Line(uint32_t hMesh, DRAW_TYPE eType, RENDER_LAYER eLayer)
+    static tagDrawCmd Create_Line(uint32_t hMesh, DRAW_TYPE eType, RENDER_LAYER eLayer, uint32_t hShader)
     {
         tagDrawCmd c{};
         c.kind = DRAW_TYPE::LINE;
         c.line.hMesh = hMesh;
-       
+        c.line.hShader = hShader;
+        c.eLayer = eLayer;
         return c;
     }
 

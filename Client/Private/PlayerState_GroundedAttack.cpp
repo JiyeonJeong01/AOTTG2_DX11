@@ -29,6 +29,7 @@ void CPlayerState_GroundedAttack::Priority_Update(_float fDT)
     Control_Camera();
     LookTo_InputDir(fDT);
     Finish_Grappling();
+    Handle_Trail(fDT, WIDTH_TYPE::NONE);
 }
 
 void CPlayerState_GroundedAttack::Update(_float fDT)

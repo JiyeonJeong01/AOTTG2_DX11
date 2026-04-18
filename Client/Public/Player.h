@@ -10,6 +10,7 @@ class CPlayerStateMachine;
 class CPlayerState;
 class CCameraController;
 class CODM_Gear;
+class CTrail;
 NS_END
 
 NS_BEGIN(Client)
@@ -52,6 +53,7 @@ private:
     std::unique_ptr<CPlayer_SkillController>    m_upSkillController{};
     std::unique_ptr<CPlayerStateMachine>        m_upStateMachine{};
     std::shared_ptr<CPlayerState>               m_spCurState{};
+    std::unique_ptr<CTrail>                     m_upTrail{};
 
     CCameraController*                          m_pCameraController{};
     CODM_Gear*                                  m_pGear{};

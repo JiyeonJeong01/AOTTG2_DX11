@@ -388,6 +388,89 @@ HRESULT CMeshBuilder::Create_RibbonLine_VtxCol(ID3D11Device* pDevice, MESH_ENTRY
     return S_OK;
 }
 
+HRESULT CMeshBuilder::Create_RibbonLine_VtxTrail(ID3D11Device* pDevice, MESH_ENTRY& outEntry, _uint iNumPoints)
+{
+    if (pDevice == nullptr) return E_FAIL;
+    if (iNumPoints < 2) return E_FAIL;
+
+    const _uint iVertexCount = iNumPoints * 2;
+    const _uint iIndexCount = (iNumPoints - 1) * 6;
+
+    outEntry.iVertexStride = sizeof(VTXTRAIL);
+    outEntry.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+    outEntry.iVertexCount = iVertexCount;
+    outEntry.iIndexCount = iIndexCount;
+    outEntry.eIndexFormat = DXGI_FORMAT_R16_UINT;
+    outEntry.iVBOffset = 0;
+
+    D3D11_BUFFER_DESC VertexBufferDesc{};
+    VertexBufferDesc.ByteWidth = sizeof(VTXTRAIL) * iVertexCount;
+    VertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+    VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    VertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    VertexBufferDesc.MiscFlags = 0;
+    VertexBufferDesc.StructureByteStride = 0;
+
+    D3D11_BUFFER_DESC IndexBufferDesc{};
+    IndexBufferDesc.ByteWidth = sizeof(uint16_t) * iIndexCount;
+    IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    IndexBufferDesc.CPUAccessFlags = 0;
+    IndexBufferDesc.MiscFlags = 0;
+    IndexBufferDesc.StructureByteStride = 0;
+
+    std::unique_ptr<VTXTRAIL[]> pVertices = std::make_unique<VTXTRAIL[]>(iVertexCount);
+    std::unique_ptr<uint16_t[]> pIndices = std::make_unique<uint16_t[]>(iIndexCount);
+
+    for (_uint i = 0; i < iNumPoints; ++i)
+    {
+        const _float fV = (iNumPoints > 1) ? (To<_float>(i) / To<_float>(iNumPoints - 1)) : 0.f;
+        pVertices[i * 2 + 0].vPosition = { 0.f, 0.f, 0.f };
+        pVertices[i * 2 + 0].vTexcoord = { 0.f, fV };
+        pVertices[i * 2 + 0].vColor = { 1.f, 1.f, 1.f, 0.f };
+
+        pVertices[i * 2 + 1].vPosition = { 0.f, 0.f, 0.f };
+        pVertices[i * 2 + 1].vTexcoord = { 1.f, fV };
+        pVertices[i * 2 + 1].vColor = { 1.f, 1.f, 1.f, 0.f };
+    }
+
+    _uint iIndex = 0;
+    for (_uint i = 0; i < iNumPoints - 1; ++i)
+    {
+        const uint16_t i0 = To<uint16_t>(i * 2 + 0);    // LB
+        const uint16_t i1 = To<uint16_t>(i * 2 + 1);    // RB
+        const uint16_t i2 = To<uint16_t>((i + 1) * 2 + 0);    // LT
+        const uint16_t i3 = To<uint16_t>((i + 1) * 2 + 1);    // RT
+
+        pIndices[iIndex++] = i0;
+        pIndices[iIndex++] = i2;
+        pIndices[iIndex++] = i1;
+
+        pIndices[iIndex++] = i2;
+        pIndices[iIndex++] = i3;
+        pIndices[iIndex++] = i1;
+    }
+
+    Microsoft::WRL::ComPtr<ID3D11Buffer> pVB;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> pIB;
+    HRESULT hr{};
+
+    D3D11_SUBRESOURCE_DATA VertexInitialData{};
+    VertexInitialData.pSysMem = pVertices.get();
+    hr = pDevice->CreateBuffer(&VertexBufferDesc, &VertexInitialData, pVB.GetAddressOf());
+    IF_FAIL_RETURN_MSG_BREAK(hr, E_FAIL, "Ribbon Trail Mesh create failed.");
+
+    D3D11_SUBRESOURCE_DATA IndexInitialData{};
+    IndexInitialData.pSysMem = pIndices.get();
+    hr = pDevice->CreateBuffer(&IndexBufferDesc, &IndexInitialData, pIB.GetAddressOf());
+    IF_FAIL_RETURN_MSG_BREAK(hr, E_FAIL, "Ribbon Trail Mesh create failed.");
+
+    outEntry.pVB = pVB;
+    outEntry.pIB = pIB;
+
+    return S_OK;
+}
+
 HRESULT CMeshBuilder::Create_Builtin(ID3D11Device* pDevice, MESH_ENTRY& outEntry, const ASSET_GUID& tGUID)
 {
     HRESULT hr = E_FAIL;

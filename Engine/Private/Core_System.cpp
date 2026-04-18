@@ -122,8 +122,6 @@ void CCore_System::Update_Editor_Engine(_float fDT)
         {
             Update_RuntimeEngine(fDT, pScene);
             Fixed_Update(m_FIXED_DT);
-            GAME_INSTANCE.Test_LineRibbonMesh();
-
             //m_fTimeAcc += fDT;
             //if (m_fTimeAcc >= m_FIXED_DT)
             //{

@@ -1349,4 +1349,126 @@ typedef struct ENGINE_DLL tagAnimatorSpec final : public COMPONENT_SPEC_BASE
     }
 } ANIMATOR_SPEC;
 
+typedef struct ENGINE_DLL tagSpriteEffectSpec final : public COMPONENT_SPEC_BASE
+{
+    COMPONENT_SPEC_TYPE(COMPONENT_TYPE::SPRITE_EFFECT)
+
+        COMPONENT_HANDLE    hTransform = INVALID_HANDLE;
+
+    ASSET_GUID          materialGUID{};
+    ASSET_GUID          textureGUID{};
+
+    uint32_t            hPerObjectParams = INVALID_HANDLE_UINT;
+
+    RENDER_LAYER        layer = RENDER_LAYER::BLEND;
+    uint32_t            flags = RF_NONE;
+
+    _uint               iRow = 1;
+    _uint               iCol = 1;
+    _uint               iTotalFrame = 1;
+
+    _float              fFrameDuration = 0.05f;
+
+    _bool               bLoop = false;
+    _bool               bPlay = true;
+    _bool               bBillboard = true;
+
+    _float2             vSize = { 1.f, 1.f };
+    _float4             vColor = { 1.f, 1.f, 1.f, 1.f };
+
+    std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
+    {
+        return std::make_unique<tagSpriteEffectSpec>(*this);
+    }
+
+    void ToJson(json& j) const override
+    {
+        j["Type"] = SCAST(_uint, Get_Type());
+        j["MaterialGUID"] = materialGUID.To_String_Utf8();
+        j["TextureGUID"] = textureGUID.To_String_Utf8();
+        j["PerObjectParams"] = hPerObjectParams;
+
+        j["Layer"] = SCAST(_uint, layer);
+        j["Flags"] = flags;
+
+        j["Row"] = iRow;
+        j["Col"] = iCol;
+        j["TotalFrame"] = iTotalFrame;
+        j["FrameDuration"] = fFrameDuration;
+
+        j["Loop"] = bLoop;
+        j["Play"] = bPlay;
+        j["Billboard"] = bBillboard;
+
+        j["Size"] = { vSize.x, vSize.y };
+        j["Color"] = { vColor.x, vColor.y, vColor.z, vColor.w };
+    }
+
+    _bool FromJson(const json& j) override
+    {
+        if (!Read_SpecType(j, Get_Type()))
+            return false;
+        {
+            if (!Read_GUID(j, "MaterialGUID", materialGUID))
+                return false;
+        }
+        {
+            if (!Read_GUID(j, "TextureGUID", textureGUID))
+                return false;
+        }
+
+        if (!Read_UInt(j, "PerObjectParams", hPerObjectParams))
+            return false;
+
+        _uint iLayer = SCAST(_uint, RENDER_LAYER::BLEND);
+        if (!Read_UInt(j, "Layer", iLayer))
+            return false;
+        layer = SCAST(RENDER_LAYER, iLayer);
+
+        if (!Read_UInt(j, "Flags", flags))
+            return false;
+
+        if (!Read_UInt(j, "Row", iRow))
+            return false;
+        if (!Read_UInt(j, "Col", iCol))
+            return false;
+        if (!Read_UInt(j, "TotalFrame", iTotalFrame))
+            return false;
+        if (!Read_Float(j, "FrameDuration", fFrameDuration))
+            return false;
+
+        if (!Read_Bool(j, "Loop", bLoop))
+            return false;
+        if (!Read_Bool(j, "Play", bPlay))
+            return false;
+        if (!Read_Bool(j, "Billboard", bBillboard))
+            return false;
+
+        auto itSize = j.find("Size");
+        if (itSize == j.end() || !itSize->is_array() || itSize->size() != 2)
+            return false;
+        vSize.x = (*itSize)[0].get<_float>();
+        vSize.y = (*itSize)[1].get<_float>();
+
+        auto itColor = j.find("Color");
+        if (itColor == j.end() || !itColor->is_array() || itColor->size() != 4)
+            return false;
+        vColor.x = (*itColor)[0].get<_float>();
+        vColor.y = (*itColor)[1].get<_float>();
+        vColor.z = (*itColor)[2].get<_float>();
+        vColor.w = (*itColor)[3].get<_float>();
+
+        if (iRow == 0)
+            iRow = 1;
+        if (iCol == 0)
+            iCol = 1;
+        if (iTotalFrame == 0)
+            iTotalFrame = 1;
+        if (fFrameDuration < 0.f)
+            fFrameDuration = 0.05f;
+
+        return true;
+    }
+} SPRITE_EFFECT_SPEC;
+
 NS_END

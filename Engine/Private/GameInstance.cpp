@@ -48,13 +48,6 @@ HRESULT CGameInstance::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pC
 
     m_pPhysics = SYS_COMPONENT.Bind_Processor<CPhysics_Processor>();
     IF_NULL_RETURN_MSG_BREAK(m_pPhysics, E_FAIL, "CPhysics Processor is nullptr.");
-
-    /* ============================================== TEST ============================================== */
-    {
-        s_Line = Load_LineMesh(10, 3.f);
-    }
-    /* =================================================================================================== */
-
     return S_OK;
 }
 
@@ -216,7 +209,7 @@ void CGameInstance::Calculate_AttachBoneMatrixPtr(const CTransform& hTargetTrans
     );
 }
 
-unique_ptr<CLine> CGameInstance::Load_LineMesh(_uint iNumPoint, _float fThickness)
+unique_ptr<CLine> CGameInstance::Load_LineMesh(_uint iNumPoint, _float fThickness, LINE_TYPE eType)
 {
     /* 라인 메쉬부터 생성 */
     MESH_ENTRY entry;
@@ -224,31 +217,9 @@ unique_ptr<CLine> CGameInstance::Load_LineMesh(_uint iNumPoint, _float fThicknes
     uint32_t handle = SYS_RESOURCE.Register_MeshEntry(std::move(entry));
 
     /* 라인 클래스 생성하여 반환 */
-    auto pLine = CLine::Create(m_pDevice, m_pContext, iNumPoint, fThickness);
+    auto pLine = CLine::Create(m_pDevice, m_pContext, iNumPoint, fThickness, eType);
 
     return pLine;
-}
-
-void CGameInstance::Test_LineRibbonMesh()
-{
-    if (SYS_INPUT.Get_Key('T'))
-    {
-        _float3 vCamPos = { 0.f, 0.f, 0.f };
-        _float fTotalDist = 10.f;
-
-        _float3 Positions[10]{};
-        for (_uint i = 0; i < 10; i++)
-        {
-            Positions[i].x = vCamPos.x - fTotalDist * 0.5f + (_float)i;
-            Positions[i].y = vCamPos.y -2.f;
-            Positions[i].z = vCamPos.z + 2.f;
-        }
-
-        //LOG_INFO("==== TEST LINE RENDER ====");
-
-        s_Line->Update(Positions, 10);
-        s_Line->Submit();
-    }
 }
 
 uint32_t CGameInstance::Get_ResourceHandle(ASSET_TYPE eType, const ASSET_GUID& tGUID)

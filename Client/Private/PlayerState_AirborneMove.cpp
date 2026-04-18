@@ -37,6 +37,11 @@ void CPlayerState_AirborneMove::Priority_Update(_float fDT)
 
     Try_Grappling();
     Finish_Grappling();
+
+    if (m_tInputCmd.bRopeReelHeld)
+        Handle_Trail(fDT, WIDTH_TYPE::BOLD);
+    else
+        Handle_Trail(fDT, WIDTH_TYPE::NORMAL);
 }
 
 void CPlayerState_AirborneMove::Update(_float fDT)

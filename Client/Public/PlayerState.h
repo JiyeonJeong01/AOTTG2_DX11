@@ -6,6 +6,7 @@ NS_BEGIN(Client)
 
 class CPlayer;
 class CPlayerStateMachine;
+class CTrail;
 
 class CPlayerState : public CState
 {
@@ -39,6 +40,7 @@ public :
     void            Try_Grappling();
     void            Finish_Grappling();
     void            GroundedMove(_float fDT);
+    void            Handle_Trail(_float fDT, WIDTH_TYPE eWidth);
     _bool           Set_HitBoxActive(const std::string& strHitBox, _bool bActive);
     void            Sync_HiBox(const std::string& strHitBox);
 
@@ -53,6 +55,7 @@ private :
 protected:
     Engine::CGameObject*    m_goPlayer{};
     CPlayer*                m_scPlayer{};
+    CTrail*                 m_pTrail{};
 
     PLAYER_INPUT_COMMAND    m_tInputCmd{};
     PLAYER_COMPONENTS       m_tComponents{};
@@ -75,6 +78,7 @@ protected :
     _char                   m_szStateName[32];
 
     _float3                 m_vHitBoxOffset = { 0.2f, 0.8f, 0.8f };
+
 };
 
 NS_END

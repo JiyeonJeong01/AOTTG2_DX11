@@ -99,7 +99,6 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
 
     m_upRenderContext = CRender_Context::Create(iWidth, iHeight);
 
-    m_hVtxColShader = SYS_RESOURCE.Load_Shader(DEFAULT_ASSET_GUID::SHADER_VTXCOL);
     m_hVtxParticlePoint = SYS_RESOURCE.Load_Shader(DEFAULT_ASSET_GUID::SHADER_VTXPARTICLEPOINT);
     return S_OK;
 }
@@ -245,6 +244,24 @@ HRESULT CRender_System::Create_RenderState()
         desc.AntialiasedLineEnable = FALSE;
 
         hr = m_pDevice->CreateRasterizerState(&desc, &m_pRasterizerState_CullCw);
+        if (FAILED(hr))
+            return hr;
+    }
+
+    /* -------------------------------------------------
+       RasterizerState : CullNone
+    ------------------------------------------------- */
+    {
+        D3D11_RASTERIZER_DESC desc{};
+        desc.FillMode = D3D11_FILL_SOLID;
+        desc.CullMode = D3D11_CULL_NONE;
+        desc.FrontCounterClockwise = FALSE;
+        desc.DepthClipEnable = TRUE;
+        desc.ScissorEnable = FALSE;
+        desc.MultisampleEnable = FALSE;
+        desc.AntialiasedLineEnable = FALSE;
+
+        hr = m_pDevice->CreateRasterizerState(&desc, &m_pRasterizerState_CullNone);
         if (FAILED(hr))
             return hr;
     }
@@ -648,6 +665,10 @@ void CRender_System::Execute_Draw(const DRAW_CMD& cmd)
         Execute_Draw_Text(cmd);
         break;
 
+    case DRAW_TYPE::SPRITE_EFFECT:
+        Execute_Draw_SpriteEffect(cmd);
+        break;
+
     default:
         break;
     }
@@ -834,10 +855,15 @@ void CRender_System::Execute_Draw_Canvas(const DRAW_CMD& tCmd)
 
 void CRender_System::Execute_Draw_Line(const DRAW_CMD& tCmd)
 {
+    Microsoft::WRL::ComPtr<ID3D11RasterizerState> pPrevRS;
+    m_pContext->RSGetState(pPrevRS.GetAddressOf());
+
+    Bind_RasterizerState_CullNone();
+
     const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(tCmd.line.hMesh);
     IF_NULL_RETURN_MSG_BREAK(pMesh, , "pMesh is nullptr.");
 
-    SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(m_hVtxColShader);
+    SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(tCmd.line.hShader);
     IF_NULL_RETURN_MSG_BREAK(pShader, , "pShader is nullptr");
 
     ID3D11InputLayout* pIL = pShader->pPasses[0].pInputLayout.Get();
@@ -870,6 +896,8 @@ void CRender_System::Execute_Draw_Line(const DRAW_CMD& tCmd)
 
     pMesh->Bind_IA(m_pContext);
     pMesh->Draw(m_pContext);
+
+    m_pContext->RSSetState(pPrevRS.Get());
 }
 
 void CRender_System::Execute_Draw_Text(const DRAW_CMD& tCmd)
@@ -1002,9 +1030,113 @@ void CRender_System::Execute_Draw_Particle(const DRAW_CMD& cmd)
     m_pContext->GSSetShader(nullptr, nullptr, 0);
 }
 
+void CRender_System::Execute_Draw_SpriteEffect(const DRAW_CMD& tCmd)
+{
+    /* sprite draw cmd 확인 */
+    if (tCmd.kind != DRAW_TYPE::SPRITE_EFFECT)
+        return;
+
+    /* 공용 quad mesh + material + shader 가져오기 */
+    const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(m_hUIRectMesh);
+    IF_NULL_RETURN_MSG_BREAK(pMesh, , "SpriteEffect RectMesh is nullptr.");
+
+    MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(tCmd.sprite.hMaterial);
+    IF_NULL_RETURN_MSG_BREAK(pMat, , "SpriteEffect Material is nullptr.");
+
+    SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(pMat->hShader);
+    IF_NULL_RETURN_MSG_BREAK(pShader, , "SpriteEffect Shader is nullptr.");
+
+    const uint16_t passIndex = 1;//pMat->passIndex;
+    if (passIndex >= pShader->pPasses.size())
+        return;
+
+    /* transform */
+    const auto tr = m_pTransform_Processor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, tCmd.sprite.hTransform);
+    IF_TRUE_RETURN_MSG_BREAK(!tr.Is_Valid(), , "SpriteEffect Transform invalid.");
+
+    _matrix matWorld = Math::Load(tr->matWorld);
+
+    /* billboard면 여기서 월드 보정 */
+    if (tCmd.sprite.bBillboard)
+    {
+        _float3 vPos = tr->vPosition;
+
+        _matrix matScale = XMMatrixScaling(tCmd.sprite.vSize.x, tCmd.sprite.vSize.y, 1.f);
+        _matrix matInvView = XMMatrixInverse(nullptr, Math::Load(m_matView));
+        matInvView.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+
+        _matrix matTrans = XMMatrixTranslation(vPos.x, vPos.y, vPos.z);
+
+        matWorld = matScale * matInvView * matTrans;
+    }
+
+    IF_NULL_RETURN_MSG_BREAK(pMat->pWorld, , "pWorld is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(pMat->pView, , "pView is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(pMat->pProj, , "pProj is nullptr.");
+
+    pMat->pWorld->SetMatrix(reinterpret_cast<const float*>(&matWorld));
+    pMat->pView->SetMatrix(reinterpret_cast<const float*>(&m_matView));
+    pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&m_matProj));
+
+    /* sprite texture */
+    if (pMat->pBaseMap)
+    {
+        const TEXTURE_ENTRY* pTex = SYS_RESOURCE.Get_Texture(tCmd.sprite.hTexture);
+        ID3D11ShaderResourceView* pSRV = nullptr;
+
+        if (!pTex || !pTex->Is_Valid())
+            pSRV = SYS_RESOURCE.Get_Texture(m_hDefaultBaseMap)->pSRV.Get();
+        else
+            pSRV = pTex->SRV();
+
+        pMat->pBaseMap->SetResource(pSRV);
+    }
+
+    /* tint color */
+    if (pMat->pBaseColor)
+        pMat->pBaseColor->SetFloatVector(reinterpret_cast<const float*>(&tCmd.sprite.vColor));
+
+    /* sprite sheet 전용 변수
+       이름은 사용자님 shader 변수명에 맞게 바꾸면 됩니다 */
+    if (auto* pFrame = pShader->Get_VarCached("g_iFrame"))
+        pFrame->AsScalar()->SetInt((_int)tCmd.sprite.iFrame);
+
+    if (auto* pRow = pShader->Get_VarCached("g_iRow"))
+        pRow->AsScalar()->SetInt((_int)tCmd.sprite.iRow);
+
+    if (auto* pCol = pShader->Get_VarCached("g_iCol"))
+        pCol->AsScalar()->SetInt((_int)tCmd.sprite.iCol);
+
+    if (auto* pSize = pShader->Get_VarCached("g_vSpriteSize"))
+        pSize->AsVector()->SetFloatVector(reinterpret_cast<const float*>(&tCmd.sprite.vSize));
+
+    /* material block */
+    Apply_Block_To_Shader(pShader, pMat->materialParams);
+
+    /* per object block */
+    if (tCmd.sprite.hPerObjectParams != INVALID_HANDLE_UINT)
+    {
+        PER_OBJECT_PARAM_BLOCK* pBlk = SYS_RESOURCE.Get_PerObjectParamBlock(tCmd.sprite.hPerObjectParams);
+        if (pBlk)
+            Apply_Block_To_Shader(pShader, pBlk->block);
+    }
+
+    ID3D11InputLayout* pIL = pShader->pPasses[passIndex].pInputLayout.Get();
+    m_pContext->IASetInputLayout(pIL);
+
+    ID3DX11EffectPass* pPass = pShader->pPasses[passIndex].pPass;
+    if (!pPass)
+        return;
+
+    pPass->Apply(0, m_pContext);
+
+    pMesh->Bind_IA(m_pContext);
+    pMesh->Draw(m_pContext, 0, 6);
+}
+
 
 void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, COMPONENT_HANDLE hAnimator,
-    uint32_t hPerObjectParams, uint32_t iFirstIdx, uint32_t iNumIdx, const std::vector<_float4x4>* pSkinningMatrices, const _float4x4& matAttach, MESH_MODE eMode)
+                                             uint32_t hPerObjectParams, uint32_t iFirstIdx, uint32_t iNumIdx, const std::vector<_float4x4>* pSkinningMatrices, const _float4x4& matAttach, MESH_MODE eMode)
 {
     /* 메쉬 + 머테리얼 + 셰이더 리소스 가져오기 */
     const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(hMesh);
@@ -1296,6 +1428,11 @@ void CRender_System::Bind_RasterizerState_Default()
 void CRender_System::Bind_RasterizerState_CullCw()
 {
     m_pContext->RSSetState(m_pRasterizerState_CullCw);
+}
+
+void CRender_System::Bind_RasterizerState_CullNone()
+{
+    m_pContext->RSSetState(m_pRasterizerState_CullNone);
 }
 
 void CRender_System::Unbind_PS_SRVs()

@@ -76,6 +76,7 @@ private:
     void Draw_UIImage();
     void Draw_UIButton();
     void Draw_UIText();
+    void Draw_SpriteEffect();
 
     void Draw_AnimatorBlendingView();
     void Draw_AnimatorLoopView();

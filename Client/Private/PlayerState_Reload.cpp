@@ -37,6 +37,11 @@ void CPlayerState_Reload::Priority_Update(_float fDT)
     Control_Camera();
     LookTo_InputDir(fDT);
     Finish_Grappling();
+    if (m_eReloadState == RELOAD::AIR)
+        Handle_Trail(fDT, WIDTH_TYPE::NORMAL);
+    else
+        Handle_Trail(fDT, WIDTH_TYPE::NONE);
+
 }
 
 void CPlayerState_Reload::Update(_float fDT)

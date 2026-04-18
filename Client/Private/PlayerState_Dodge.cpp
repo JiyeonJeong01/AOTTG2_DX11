@@ -40,6 +40,8 @@ void CPlayerState_Dodge::Priority_Update(_float fDT)
 
     Try_Grappling();
     Finish_Grappling();
+
+    Handle_Trail(fDT, WIDTH_TYPE::NORMAL);
 }
 
 void CPlayerState_Dodge::Update(_float fDT)

@@ -416,8 +416,6 @@ uint32_t CResource_System::Load_Material(const ASSET_GUID& tGUID)
     desc.hBaseMap = Load_Texture(desc.baseMapGUID);
     IF_TRUE_RETURN_MSG_BREAK(desc.hBaseMap == INVALID_HANDLE_UINT, INVALID_HANDLE_UINT, "Load_Material failed: invalid base map handle.");
 
-  
-
     /* Effect 변수 포인터 캐싱 포함한 런타임 머테리얼 엔트리를 생성한다. */
     const uint32_t hMaterial = Load_Material(desc); // 기존 Load_Material(const MATERIAL_ENTRY&) 사용
     IF_TRUE_RETURN_MSG_BREAK(hMaterial == INVALID_HANDLE_UINT, INVALID_HANDLE_UINT, "Load_Material failed: Load_Material(desc) failed.");

@@ -103,6 +103,7 @@ namespace Client
         }
     } PATROL_INFO;
 
+    enum class WIDTH_TYPE { NONE, THIN, NORMAL, BOLD, END };
 
 }
 

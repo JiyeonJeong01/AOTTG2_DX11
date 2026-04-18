@@ -3,6 +3,7 @@
 #include "Easing_Function.h"
 #include "ODM_Gear.h"
 #include "HitBox.h"
+#include "Trail.h"
 
 HRESULT CPlayerState::Initialize()
 {
@@ -215,6 +216,25 @@ void CPlayerState::GroundedMove(_float fDT)
     }
 }
 
+void CPlayerState::Handle_Trail(_float fDT, WIDTH_TYPE eWidth)
+{
+    if (m_pTrail == __nullptr)
+        return;
+
+    m_pTrail->Update(fDT);
+
+    if (eWidth == WIDTH_TYPE::NONE)
+        return;
+
+    _float3 vPos = m_tComponents.transform->vPosition;
+    vPos.y += 0.5f;
+
+    _float3 vRight;
+    XMStoreFloat3(&vRight, m_tComponents.transform.Get_StateXM(STATE::RIGHT));
+
+    m_pTrail->Set_StartPoint(vPos, vRight, eWidth);
+}
+
 _bool CPlayerState::Set_HitBoxActive(const std::string& strHitBox, _bool bActive)
 {
     auto it = m_tRef.pAllHitBoxes->find(strHitBox);
@@ -277,6 +297,7 @@ void CPlayerState::Cache_PlayerContext(const PLAYER_CONTEXT& tContext)
     m_pStats = tContext.pStats;
     m_pSkillController = tContext.pSkillController;
     m_pBlade = tContext.pBlade;
+    m_pTrail = tContext.tRef.pTrail;
 }
 
 PLAYER_STATE CPlayerState::Get_State() const

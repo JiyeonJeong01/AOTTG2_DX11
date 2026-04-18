@@ -207,6 +207,8 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Solver.h" />
     <ClInclude Include="..\Public\Spec_Util.h" />
     <ClInclude Include="..\Public\SpringJoint.h" />
+    <ClInclude Include="..\Public\SpriteEffect.h" />
+    <ClInclude Include="..\Public\SpriteEffect_Processor.h" />
     <ClInclude Include="..\Public\UIButton.h" />
     <ClInclude Include="..\Public\UIImage.h" />
     <ClInclude Include="..\Public\UIText.h" />
@@ -295,6 +297,8 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClCompile Include="..\Private\Script.cpp" />
     <ClCompile Include="..\Private\Solver.cpp" />
     <ClCompile Include="..\Private\SpringJoint.cpp" />
+    <ClCompile Include="..\Private\SpriteEffect.cpp" />
+    <ClCompile Include="..\Private\SpriteEffect_Processor.cpp" />
     <ClCompile Include="..\Private\UIText.cpp" />
     <ClCompile Include="..\Private\Uniform_Grid.cpp" />
     <ClCompile Include="..\Public\Identity.cpp" />

@@ -356,6 +356,7 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CPrototype_Handler::Create_Spec_By_Type(COM
     case COMPONENT_TYPE::UI_IMAGE: return std::make_unique<UI_IMAGE_SPEC>();
     case COMPONENT_TYPE::UI_BUTTON: return std::make_unique<UI_BUTTON_SPEC>();
     case COMPONENT_TYPE::UI_TEXT: return std::make_unique<UI_TEXT_SPEC>();
+    case COMPONENT_TYPE::SPRITE_EFFECT: return std::make_unique<SPRITE_EFFECT_SPEC>();
 
     default:
         return nullptr;

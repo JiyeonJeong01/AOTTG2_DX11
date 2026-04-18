@@ -29,6 +29,8 @@ void CPlayerState_Grabbed::Setup_CachedPlayerContext()
 void CPlayerState_Grabbed::Priority_Update(_float fDT)
 {
     CPlayerState::Priority_Update(fDT);
+
+    Handle_Trail(fDT, WIDTH_TYPE::NONE);
 }
 
 void CPlayerState_Grabbed::Update(_float fDT)

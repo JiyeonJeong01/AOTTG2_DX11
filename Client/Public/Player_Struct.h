@@ -30,8 +30,8 @@ typedef struct tagPlayerInputCommand
     _bool bRightAnchorPressed = false;  /* E */
     _bool bRightAnchorHeld = false;     /* E */
 
-    _bool bBoostPressed = false;        /* SHIFT */
-    _bool bBoostHeld = false;           /* SHIFT */
+    _bool bBoostPressed = false;        /* SHIFT(jump) */ 
+    _bool bBoostHeld = false;           /* SHIFT(jump) */
 
     _bool bNormalAttackPressed = false; /* LBUTTON */
     _bool bStrongAttackPressed = false; /* RBUTTON */
@@ -80,6 +80,7 @@ typedef struct tagPlayerRuntimeRef
     class CCameraController*    pCameraController = nullptr;
     class CPlayerStateMachine*  pFSM = nullptr;
     class CTargetSensor*        pSensor = nullptr;
+    class CTrail*               pTrail = nullptr;
     std::unordered_map<std::string, class CHitBox*>* pAllHitBoxes = nullptr;
 } PLAYER_RUNTIME_REF;
 

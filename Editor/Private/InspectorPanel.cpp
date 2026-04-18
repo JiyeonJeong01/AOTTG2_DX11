@@ -23,6 +23,8 @@
 #include "UIButton.h"
 #include "CanvasRenderer.h"
 
+#include "SpriteEffect.h"
+
 #include "Editor_Util.h"
 #include "Script_Processor.h"
 #include "Animator_Processor.h"
@@ -591,6 +593,11 @@ void CInspectorPanel::Draw_AddComponentPopup()
             ImGui::CloseCurrentPopup();
         }
 
+        if (ImGui::MenuItem("SpriteEffect"))
+        {
+            m_pTarget->Add_Component<CSpriteEffect>();
+            ImGui::CloseCurrentPopup();
+        }
         if (ImGui::MenuItem("Camera"))
         {
             m_pTarget->Add_Component<CCamera>();
@@ -697,6 +704,9 @@ void CInspectorPanel::Draw_ComponentByType(COMPONENT_TYPE eComType)
         break;
     case COMPONENT_TYPE::UI_TEXT:
         Draw_UIText();
+        break;
+    case COMPONENT_TYPE::SPRITE_EFFECT:
+        Draw_SpriteEffect();
         break;
     }
 }
@@ -3434,6 +3444,206 @@ void CInspectorPanel::Draw_UIText()
         {
             pData->dirty = dirty ? 1 : 0;
         }
+    }
+
+    if (pData->bEnable == 0)
+        ImGui::EndDisabled();
+
+    ImGui::TreePop();
+}
+
+void CInspectorPanel::Draw_SpriteEffect()
+{
+    CSpriteEffect spriteEffect = m_pTarget->Get_Component<CSpriteEffect>();
+    if (!spriteEffect.Is_Valid())
+        return;
+
+    SPRITE_EFFECT_DATA* pData = spriteEffect._Data();
+    if (!pData)
+        return;
+
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return;
+
+    ImGuiWindow* w = ImGui::GetCurrentWindow();
+    const ImGuiID idHeader = w->GetID("SpriteEffect_Header");
+    ImGui::PushID(idHeader);
+
+    ImGui::AlignTextToFramePadding();
+
+    bool enabled = (pData->bEnable != 0);
+    if (ImGui::Checkbox("##Enable", &enabled))
+    {
+        pData->bEnable = enabled ? 1 : 0;
+    }
+
+    ImGui::SameLine();
+
+    const ImGuiTreeNodeFlags flags =
+        ImGuiTreeNodeFlags_DefaultOpen |
+        ImGuiTreeNodeFlags_Framed |
+        ImGuiTreeNodeFlags_SpanAvailWidth |
+        ImGuiTreeNodeFlags_AllowOverlap;
+
+    const bool open = ImGui::TreeNodeEx("SpriteEffect", flags);
+
+    ImGui::PopID();
+
+    if (!open)
+        return;
+
+    if (pData->bEnable == 0)
+        ImGui::BeginDisabled();
+
+    ImGui::TextUnformatted("Owner Object");
+    ImGui::SameLine();
+    ImGui::Text("%u", pData->hObject.raw);
+
+    ImGui::TextUnformatted("Transform");
+    ImGui::SameLine();
+    ImGui::Text("%u", pData->hTransform.iHandle);
+
+    ImGui::Separator();
+
+    {
+        uint32_t hMat = pData->hMaterial;
+        if (ImGui::InputScalar("Material", ImGuiDataType_U32, &hMat))
+        {
+            pData->hMaterial = hMat;
+        }
+
+        Editor_Util::Draw_DropTarget_GUID_Typed(
+            "Material",
+            "ASSET_GUID",
+            ASSET_TYPE::MATERIAL,
+            [&](const ASSET_GUID& dropped)
+            {
+                const uint32_t newHandle = SYS_RESOURCE.Load_Material(dropped);
+                if (newHandle != INVALID_HANDLE_UINT && newHandle != pData->hMaterial)
+                    pData->hMaterial = newHandle;
+            },
+            "Drop Material here"
+        );
+    }
+
+    {
+        uint32_t hTex = pData->hTexture;
+        if (ImGui::InputScalar("Texture", ImGuiDataType_U32, &hTex))
+        {
+            pData->hTexture = hTex;
+        }
+
+        Editor_Util::Draw_DropTarget_GUID_Typed(
+            "Texture",
+            "ASSET_GUID",
+            ASSET_TYPE::TEXTURE,
+            [&](const ASSET_GUID& dropped)
+            {
+                const uint32_t newHandle = SYS_RESOURCE.Load_Texture(dropped);
+                if (newHandle != INVALID_HANDLE_UINT && newHandle != pData->hTexture)
+                    pData->hTexture = newHandle;
+            },
+            "Drop Texture here"
+        );
+    }
+
+    ImGui::Separator();
+
+    int row = static_cast<int>(pData->iRow);
+    if (ImGui::DragInt("Row", &row, 1.f, 1, 64))
+    {
+        if (row < 1) row = 1;
+        pData->iRow = static_cast<_uint>(row);
+    }
+
+    int col = static_cast<int>(pData->iCol);
+    if (ImGui::DragInt("Col", &col, 1.f, 1, 64))
+    {
+        if (col < 1) col = 1;
+        pData->iCol = static_cast<_uint>(col);
+    }
+
+    int totalFrame = static_cast<int>(pData->iTotalFrame);
+    if (ImGui::DragInt("TotalFrame", &totalFrame, 1.f, 1, 4096))
+    {
+        if (totalFrame < 1) totalFrame = 1;
+        pData->iTotalFrame = static_cast<_uint>(totalFrame);
+
+        if (pData->iCurFrame >= pData->iTotalFrame)
+            pData->iCurFrame = pData->iTotalFrame - 1;
+    }
+
+    float frameDuration = pData->fFrameDuration;
+    if (ImGui::DragFloat("FrameDuration", &frameDuration, 0.001f, 0.001f, 10.f, "%.3f"))
+    {
+        if (frameDuration < 0.001f)
+            frameDuration = 0.001f;
+
+        pData->fFrameDuration = frameDuration;
+    }
+
+    ImGui::Separator();
+
+    bool loop = (pData->bLoop != 0);
+    if (ImGui::Checkbox("Loop", &loop))
+        pData->bLoop = loop ? 1 : 0;
+
+    bool play = (pData->bPlay != 0);
+    if (ImGui::Checkbox("Play", &play))
+        pData->bPlay = play ? 1 : 0;
+
+    bool billboard = (pData->bBillboard != 0);
+    if (ImGui::Checkbox("Billboard", &billboard))
+        pData->bBillboard = billboard ? 1 : 0;
+
+    ImGui::Separator();
+
+    int curFrame = static_cast<int>(pData->iCurFrame);
+    const int maxFrame = (pData->iTotalFrame > 0) ? static_cast<int>(pData->iTotalFrame - 1) : 0;
+    if (ImGui::DragInt("CurrentFrame", &curFrame, 1.f, 0, maxFrame))
+    {
+        if (curFrame < 0) curFrame = 0;
+        if (curFrame > maxFrame) curFrame = maxFrame;
+        pData->iCurFrame = static_cast<_uint>(curFrame);
+        pData->fAccTime = 0.f;
+    }
+
+    bool finished = (pData->bFinished != 0);
+    if (ImGui::Checkbox("Finished", &finished))
+        pData->bFinished = finished ? 1 : 0;
+
+    if (ImGui::Button("Reset"))
+    {
+        pData->iCurFrame = 0;
+        pData->fAccTime = 0.f;
+        pData->bFinished = false;
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Play From Start"))
+    {
+        pData->iCurFrame = 0;
+        pData->fAccTime = 0.f;
+        pData->bFinished = false;
+        pData->bPlay = true;
+    }
+
+    ImGui::Separator();
+
+    float size[2] = { pData->vSize.x, pData->vSize.y };
+    if (ImGui::DragFloat2("Size", size, 0.01f, 0.01f, 100.f, "%.2f"))
+    {
+        if (size[0] < 0.01f) size[0] = 0.01f;
+        if (size[1] < 0.01f) size[1] = 0.01f;
+        pData->vSize = { size[0], size[1] };
+    }
+
+    float color[4] = { pData->vColor.x, pData->vColor.y, pData->vColor.z, pData->vColor.w };
+    if (ImGui::ColorEdit4("Color", color))
+    {
+        pData->vColor = { color[0], color[1], color[2], color[3] };
     }
 
     if (pData->bEnable == 0)

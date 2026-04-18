@@ -25,6 +25,8 @@ void CPlayerState_Jump::Priority_Update(_float fDT)
     LookTo_InputDir(fDT);
     Try_Grappling();
     Finish_Grappling();
+
+    Handle_Trail(fDT, WIDTH_TYPE::THIN);
 }
 
 void CPlayerState_Jump::Update(_float fDT)

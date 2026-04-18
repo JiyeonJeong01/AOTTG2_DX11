@@ -55,7 +55,9 @@ g_TypeToProcessorIndex =
 
     PROCESSOR_ID::UI,               // UI_IMAGE
     PROCESSOR_ID::UI,               // UI_BUTTON
-    PROCESSOR_ID::UI                // UI_TEXT
+    PROCESSOR_ID::UI,               // UI_TEXT
+
+    PROCESSOR_ID::SPRITE_EFFECT    // SPRITE_EFFECT
 };
 
 constexpr uint32_t COM_TO_INT(COMPONENT_TYPE eComType)

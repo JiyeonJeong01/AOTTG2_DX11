@@ -10,6 +10,7 @@
 #include "ODM_Gear.h"
 #include "GroundChecker.h"
 #include "HitBox.h"
+#include "Trail.h"
 
 #include "TargetSensor.h"
 #include "AnimationClip_Player.h"
@@ -27,6 +28,7 @@ void CPlayer::Awake(void* pCtx)
     m_upStateMachine = CPlayerStateMachine::Create(m_goPlayer, this);
     m_upInputController = CPlayer_InputController::Create();
     m_upSkillController = CPlayer_SkillController::Create(&m_tSkillSet);
+    m_upTrail = CTrail::Create();
 
     IF_NULL_RETURN_MSG_BREAK(m_upStateMachine, , "m_upStateMachine is nullptr");
     IF_NULL_RETURN_MSG_BREAK(m_upInputController, , "m_upInputController is nullptr");
@@ -67,6 +69,7 @@ void CPlayer::Start(void* pCtx)
         m_tRef.pFSM = m_upStateMachine.get();
         m_pCameraController = m_tRef.pCameraController = m_goPlayer->Get_Script<CCameraController>();
         m_tRef.pSensor = m_goPlayer->Get_Script_InChildren<CTargetSensor>();
+        m_tRef.pTrail = m_upTrail.get();
         m_tRef.pAllHitBoxes = &m_AllHitBoxes;
     }
 
@@ -74,6 +77,7 @@ void CPlayer::Start(void* pCtx)
     m_tRef.pSensor->Subscribe_OnDetectedTarget(&CPlayer::On_DetectedTitan, this);
 
     m_tRef.pCameraController->Bind_PlayerSensor(m_tRef.pSensor);
+
 
     /* 플레이어 스킬 정보 */
     {
@@ -140,6 +144,8 @@ void CPlayer::Priority_Update(void* pCtx, _float fDT)
 void CPlayer::Update(void* pCtx, _float fDT)
 {
     m_upStateMachine->Update(fDT);
+
+
 }
 
 void CPlayer::Late_Update(void* pCtx, _float fDT)

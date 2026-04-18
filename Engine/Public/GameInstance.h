@@ -68,8 +68,7 @@ public : /* ---------- Animation ---------- */
     void  Calculate_AttachBoneMatrixPtr(const CTransform& hTargetTrans, CTransform& hAttachTrans, const _float4x4* matCombinedPtr);
 
 public :/* ---------- Built-in ---------- */
-    unique_ptr<CLine>   Load_LineMesh(_uint iNumPoint, _float fThickness);
-    void                Test_LineRibbonMesh();
+    unique_ptr<CLine>   Load_LineMesh(_uint iNumPoint, _float fThickness, LINE_TYPE eType);
 
     uint32_t                    Get_ResourceHandle(ASSET_TYPE eType, const ASSET_GUID& tGUID);
     uint32_t                    Alloc_PerObjectParamBlock();

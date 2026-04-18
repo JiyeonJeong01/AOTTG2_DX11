@@ -30,6 +30,11 @@ void CPlayerState_GroundedMove::Priority_Update(_float fDT)
     LookTo_InputDir(fDT);
     Try_Grappling();
     Finish_Grappling();
+
+    if (m_eGroundedMoveState == GROUNDED_MOVE::SLIDE)
+        Handle_Trail(fDT, WIDTH_TYPE::THIN);
+    else
+        Handle_Trail(fDT, WIDTH_TYPE::NONE);
 }
 
 void CPlayerState_GroundedMove::Update(_float fDT)

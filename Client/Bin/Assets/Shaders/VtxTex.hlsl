@@ -44,6 +44,25 @@ float4 PS_MAIN(VS_OUT In) : SV_TARGET
     return vTextureColor * g_BaseColor;
 }
 
+int g_iFrame;
+int g_iRow;
+int g_iCol;
+
+float4 PS_MAIN_SPRITE_EFFECT(VS_OUT In) : SV_TARGET
+{
+    float2 uvCellSize = float2(1.f / g_iCol, 1.f / g_iRow);
+
+    int iColIndex = g_iFrame % g_iCol;
+    int iRowIndex = g_iFrame / g_iCol;
+
+    float2 vUV;
+    vUV.x = In.vTexcoord.x * uvCellSize.x + uvCellSize.x * iColIndex;
+    vUV.y = In.vTexcoord.y * uvCellSize.y + uvCellSize.y * iRowIndex;
+
+    float4 vTextureColor = g_BaseMap.Sample(DefaultSampler, vUV);
+    return vTextureColor * g_BaseColor;
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass
@@ -51,4 +70,10 @@ technique11 DefaultTechnique
         SetVertexShader( CompileShader(vs_5_0, VS_MAIN()) );
         SetPixelShader(  CompileShader(ps_5_0, PS_MAIN()) );
     }
+
+    pass SpriteEffect
+{
+    SetVertexShader( CompileShader( vs_5_0, VS_MAIN() ) );
+    SetPixelShader( CompileShader( ps_5_0, PS_MAIN_SPRITE_EFFECT() ) );
+}
 }
