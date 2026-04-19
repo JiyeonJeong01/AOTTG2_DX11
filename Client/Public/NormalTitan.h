@@ -7,7 +7,9 @@
 NS_BEGIN(Engine)
 class CNavMesh;
 NS_END
+
 NS_BEGIN(Client)
+class CVFX_Manager;
 class CNormalTitanStateMachine;
 class CTargetSensor;
 class CTitanState;
@@ -19,10 +21,13 @@ class CNormalTitan : public IScript, public CTitan
 {
 public:
     char        m_szState[32] = {};
+    SCRIPT_OBJECT_REF   m_refVFXManager{};
+
 SCRIPT_FIELDS_BEGIN(CNormalTitan)
     SCRIPT_FIELD_CHAR(m_szState)
     SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[0]);
     SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[1]);
+    SCRIPT_FIELD_OBJECT_REF(m_refVFXManager);
 SCRIPT_FIELDS_END(CNormalTitan)
 
 public:
@@ -38,6 +43,8 @@ public:
     void Late_Update(void* pCtx, _float fDT) override;
 
 private :
+    CVFX_Manager* m_pVFX_Manager = nullptr;
+
     CGameObject*            m_goTitan = nullptr;
     CGameObject*            m_goTarget = nullptr;
 
@@ -46,7 +53,9 @@ private :
     TITAN_STATS             m_tStats{};
     TITAN_POSE              m_ePose = TITAN_POSE::END;
     PATROL_INFO             m_tPatrol{};
+
     _uint                   m_iStunnedAcc = 0;
+    _int                    m_iHitEffect = 0;
 
     std::unique_ptr<CNormalTitanStateMachine>   m_upStateMachine{};
     std::shared_ptr<CTitanState>                m_spCurState{};

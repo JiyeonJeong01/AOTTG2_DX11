@@ -55,6 +55,7 @@ private:
     void                Update_Particle(MESH_RENDERER_DATA* pData, _float fDT);
     _bool               Create_ParticleBuffers(PARTICLE_RUNTIME* pRuntime);
     _bool               Ensure_ParticleRuntime(MESH_RENDERER_DATA* pData);
+    void                Reset_ParticleRuntime(MESH_RENDERER_DATA* pData);
 
 private :
     ID3D11Device*               m_pDevice{};

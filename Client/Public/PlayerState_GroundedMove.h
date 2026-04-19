@@ -37,6 +37,10 @@ private:
     const _float    m_fRunCorrectionDT = 8.f;
     const _float    m_fSlideThreshold = 4.f;
 
+    class CVFX_Manager* m_pVFX_Manager = nullptr;
+    VFX_OBJECT*         m_pSparkle = nullptr;
+    _float              m_fSlideSparkAcc = 0.f;
+
 public :
     static std::shared_ptr<CPlayerState_GroundedMove> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
 };

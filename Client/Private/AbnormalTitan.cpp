@@ -8,6 +8,7 @@
 #include "HurtBox.h"
 #include "NavMesh.h"
 #include "Titan_Scriptable_Object.h"
+#include "VFX_Manager.h"
 
 NS_BEGIN(Client)
 
@@ -30,6 +31,13 @@ void CAbnormalTitan::Awake(void* pCtx)
 
 void CAbnormalTitan::Start(void* pCtx)
 {
+    {
+        CGameObject* goVFX = SYS_GAMEOBJECT.Get_Wrapper(m_refVFXManager.hObject);
+        IF_NULL_RETURN_MSG_BREAK(goVFX, , "goVFX is nullptr");
+        m_pVFX_Manager = goVFX->Get_Script<CVFX_Manager>();
+        IF_NULL_RETURN_MSG_BREAK(m_pVFX_Manager, , "m_pVFX_Manager is nullptr");
+    }
+
     /* 컴포넌트 참조 */
     {
         m_tComponents.transform = m_goTitan->Get_Component<CTransform>();
@@ -118,6 +126,7 @@ void CAbnormalTitan::Start(void* pCtx)
     tSO = scTitanSO->Get_Data();
     m_tStats.fCurSpeed = tSO.fCurSpeed;
     m_tStats.fMaxSpeed = tSO.fMaxSpeed;
+    m_iHitEffect = tSO.iHitEffect;
 
     /* 플레이어 상태에게 전달 */
     TITAN_CONTEXT tContext;
@@ -326,6 +335,7 @@ void CAbnormalTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHur
     if (eHurt == TITAN_HURT::END)
         return;
 
+    m_pVFX_Manager->Play_CombatEffect(To<COMBAT_VFX>(m_iHitEffect), tHitInfo.vHitPoint);
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::HURT), To<_uint>(eHurt));
 }
 

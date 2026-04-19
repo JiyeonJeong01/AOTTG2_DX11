@@ -165,8 +165,10 @@ typedef struct tagPlayerContext
     /* 플레이어가 소유한 변수의 포인터를 가진 구조체들 */
     PLAYER_STATS*           pStats = nullptr;
     BLADE_DURABILITY*       pBlade = nullptr;
+
     /* 헬퍼 */
     class CPlayer_SkillController*  pSkillController = nullptr;
+    class CVFX_Manager*             pVFX_Manager = nullptr;
 
     class CHitBox* pHitBox = nullptr;
 

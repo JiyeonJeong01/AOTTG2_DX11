@@ -63,6 +63,8 @@ void CTitan_Scriptable_Object::Sync_To_SO()
 
     m_tSO.fMaxIdleTime = m_fMaxIdleTime;
     m_tSO.fMaxMoveTime = m_fMaxMoveTime;
+
+    m_tSO.iHitEffect = m_iHitEffect;
 }
 
 NS_END

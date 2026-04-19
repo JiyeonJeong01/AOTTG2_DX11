@@ -13,6 +13,7 @@
 #include "Animator.h"
 #include "Camera.h"
 #include "Light.h"
+#include "SpriteEffect.h"
 
 // UI System
 #include "RectTransform.h"

@@ -17,7 +17,8 @@ typedef struct ENGINE_DLL tagParticleDesc
     _float2         vLifeTime{ 1.f, 1.f };
     /* --- min, max --- */
     _float2         vSpeed{ 1.f, 1.f };
-    _float2         vScale{ 1.f, 1.f };
+    _float2         vScaleX{ 1.f, 1.f };
+    _float2         vScaleY{ 1.f, 1.f };
 
     _float3         vCenter{};
     _float3         vRange{};
@@ -38,7 +39,8 @@ typedef struct ENGINE_DLL tagParticleEntry
 
     _float2         vLifeTime{ 1.f, 1.f };
     _float2         vSpeed{ 1.f, 1.f };
-    _float2         vScale{ 1.f, 1.f };
+    _float2         vScaleX{ 1.f, 1.f };
+    _float2         vScaleY{ 1.f, 1.f };
 
     _float3         vCenter{};
     _float3         vRange{};

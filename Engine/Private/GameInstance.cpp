@@ -174,7 +174,7 @@ const UI_GLOBAL& CGameInstance::Get_UI_Global() const
     return SYS_RENDER.Contexts()->Get_UI_Global();
 }
 
-const D3D11_VIEWPORT& CGameInstance::Get_Viewport() const
+D3D11_VIEWPORT CGameInstance::Get_Viewport() const
 {
     D3D11_VIEWPORT vp{};
     UINT n = 1;

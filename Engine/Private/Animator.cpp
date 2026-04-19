@@ -234,14 +234,14 @@ _uint CAnimator::Get_AnimationClipIdx_By_Name(const std::string& strName) const
 const std::string& CAnimator::Get_Name_By_AnimationCliIdx(_uint iIdx) const
 {
     if (!m_pData)
-        return {};
+        return "";
 
     for (const auto& pair : m_pData->NameToClipIndex)
     {
         if (pair.second == iIdx)
             return pair.first;
     }
-    return {};
+    return "";
 }
 
 void CAnimator::Reset_CurrentKeyFrameIndices()

@@ -63,7 +63,7 @@ public : /* ---------- Camera ---------- */
     const _float4x4&        Get_View()  const;
     const _float4x4&        Get_Proj()  const;
     const UI_GLOBAL&        Get_UI_Global() const;
-    const D3D11_VIEWPORT&   Get_Viewport() const;
+    D3D11_VIEWPORT          Get_Viewport() const;
 
 public : /* ---------- Animation ---------- */
     _bool Find_AttachBoneInfo(OBJECT_HANDLE hTargetObj, const string& strTargetBoneName, ANIMATOR_DATA*& pOutAnimator, _uint& iOutBoneIndex);

@@ -35,6 +35,8 @@ private:
     _float          m_fMaxIdleTime{};
     _float          m_fMaxMoveTime{};
 
+    _int            m_iHitEffect{};
+
     CGameObject*    m_goEren{};
 
 SCRIPT_FIELDS_BEGIN(CTitan_Scriptable_Object)
@@ -49,6 +51,8 @@ SCRIPT_FIELDS_BEGIN(CTitan_Scriptable_Object)
 
     SCRIPT_FIELD_FLOAT(m_fMaxIdleTime);
     SCRIPT_FIELD_FLOAT(m_fMaxMoveTime);
+
+    SCRIPT_FIELD_INT(m_iHitEffect);
 SCRIPT_FIELDS_END(CTitan_Scriptable_Object)
 };
 

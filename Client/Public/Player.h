@@ -18,13 +18,15 @@ class CPlayer : public IScript, public CHuman
 {
 
 public:
-    _float      m_fSpeed = 0;
-    char        m_szState[32] = {};
+    _float              m_fSpeed = 0;
+    char                m_szState[32] = {};
+    SCRIPT_OBJECT_REF   m_refVFXManager{};
 
 public:
     SCRIPT_FIELDS_BEGIN(CPlayer)
         SCRIPT_FIELD_CHAR(m_szState)
         SCRIPT_FIELD_FLOAT(m_fSpeed)
+        SCRIPT_FIELD_OBJECT_REF(m_refVFXManager);
     SCRIPT_FIELDS_END(CPlayer)
 
 public :
@@ -48,6 +50,7 @@ private:
     BLADE_DURABILITY    m_tBlade{};
 
     PLAYER_CONTEXT      m_tContext{};
+    CVFX_Manager*       m_pVFX_Manager = nullptr;
 
     std::unique_ptr<CPlayer_InputController>    m_upInputController{};
     std::unique_ptr<CPlayer_SkillController>    m_upSkillController{};

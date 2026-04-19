@@ -33,6 +33,7 @@
 #include "UI_ErenController.h"
 #include "UI_GasController.h"
 #include "UI_SkillController.h"
+#include "VFX_Manager.h"
 
 NS_BEGIN(Client)
 void Register_AllScripts()
@@ -153,6 +154,10 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\UI_SkillController.script");
         handler.Register_VTable(guid, ScriptBinder<CUI_SkillController>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\VFX_Manager.script");
+        handler.Register_VTable(guid, ScriptBinder<CVFX_Manager>::Build());
     }
 }
 NS_END

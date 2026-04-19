@@ -5,6 +5,7 @@
 #include "PlayerStateMachine.h"
 #include "AnimationClip_Player.h"
 #include "ODM_Gear.h"
+#include "VFX_Manager.h"
 
 CPlayerState_GroundedMove::CPlayerState_GroundedMove(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
     : CPlayerState(goPlayer, scPlayer, eState)
@@ -44,7 +45,34 @@ void CPlayerState_GroundedMove::Update(_float fDT)
     if (m_eGroundedMoveState == GROUNDED_MOVE::DASH_LAND)
         return;
     if (m_eGroundedMoveState == GROUNDED_MOVE::SLIDE)
+    {
+        if (m_pVFX_Manager)
+        {
+            m_fSlideSparkAcc += fDT;
+
+            if (m_fSlideSparkAcc >= 0.03f)
+            {
+                m_fSlideSparkAcc = 0.f;
+
+                _vector vLook = XMVector3Normalize(m_tComponents.transform.Get_StateXM(STATE::LOOK)) * -1.f;
+                _vector vStartPos = XMLoadFloat3(&m_tComponents.transform->vPosition) + vLook * 0.05f;
+
+                _float3 vStartPos3{};
+                _float3 vForward3{};
+                XMStoreFloat3(&vStartPos3, vStartPos);
+                XMStoreFloat3(&vForward3, vLook);
+
+                auto* pSpark = m_pVFX_Manager->Start_Particle(PARTICLE_VFX::SLIDE_SPARK, vStartPos3);
+                if (pSpark != nullptr)
+                {
+                    pSpark->meshRenderer.Set_ParticleForward(vForward3);
+                    pSpark->meshRenderer.Reset_Particle();
+                    pSpark->meshRenderer.Set_ParticlePlaying(true);
+                }
+            }
+        }
         return;
+    }
 
     CPlayerState::GroundedMove(fDT);
 }
@@ -84,11 +112,23 @@ void CPlayerState_GroundedMove::Enter(_uint iDetailFlag)
 
         /* 슬라이딩 방향으로 힘 줘서 슬라이딩 효과 유지하기 */
         _float3 vVel = m_tComponents.rigidbody.Get_LinearVel();
-        const _float fVelScale = 0.45f;
+        const _float fVelScale = 0.8f;
         vVel.x *= fVelScale;
         vVel.y = 0.f; 
         vVel.z *= fVelScale;
+
+        _float3 vForward3;
+        XMStoreFloat3(&vForward3, XMVector3Normalize(XMLoadFloat3(&vVel)));
+
+        m_fSlideSparkAcc = 0.f;
         m_tComponents.rigidbody.Add_LinearImpulse(vVel);
+
+        m_pSparkle = m_pVFX_Manager->Start_Particle(PARTICLE_VFX::SLIDE_SPARK, m_tComponents.transform->vPosition);
+        if (m_pSparkle)
+        {
+            m_pSparkle->meshRenderer.Set_ParticleForward(vForward3);
+            m_pSparkle->meshRenderer.Reset_Particle();
+        }
     }
 }
 
@@ -98,6 +138,9 @@ void CPlayerState_GroundedMove::Exit()
 
     /* 유체 저항 복구 */
     m_tComponents.rigidbody.Set_Drag(m_fOriginDrag);
+    m_pSparkle = nullptr;
+    //m_pVFX_Manager->Finish_Particle(m_pSparkle);
+
 }
 
 void CPlayerState_GroundedMove::Cache_PlayerContext(const PLAYER_CONTEXT& tContext)
@@ -105,6 +148,7 @@ void CPlayerState_GroundedMove::Cache_PlayerContext(const PLAYER_CONTEXT& tConte
     CPlayerState::Cache_PlayerContext(tContext);
 
     m_fOriginDrag = tContext.fOriginDrag;
+    m_pVFX_Manager = tContext.pVFX_Manager;
 }
 
 void CPlayerState_GroundedMove::Setup_CachedPlayerContext()

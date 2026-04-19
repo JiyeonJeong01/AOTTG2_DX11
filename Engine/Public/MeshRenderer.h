@@ -19,7 +19,7 @@ typedef struct tagParticleRuntime
     std::vector<_float> vecSpeeds;
 
     _bool           bInitialized = false;
-
+    std::vector<_float4> vecDirections;
 } PARTICLE_RUNTIME;
 
 typedef struct ENGINE_DLL tagMeshRendererData final
@@ -61,7 +61,11 @@ typedef struct ENGINE_DLL tagMeshRendererData final
 
     /* -------- PARTICLE -------- */
     _bool                   bParticlePlaying = false;
+    _bool                   bParticleResetRequested = false;
+    _bool                   bParticleFinished = false;
     _float3                 vParticlePivot{};
+    _float3                 vParticleForward = { 0.f, 0.f, 1.f };
+
 } MESH_RENDERER_DATA;
 
 class ENGINE_DLL CMeshRenderer : public CComponent_Proxy_Base<MESH_RENDERER_DATA, CMeshRenderer, COMPONENT_TYPE::MESH_RENDERER>
@@ -97,11 +101,16 @@ public:
     void Set_Particle(uint32_t hParticle);
     void Set_ParticlePlaying(_bool bPlaying);
     void Set_ParticlePivot(const _float3& vPivot);
+    void Reset_Particle();
+    void Stop_Particle();
+    _bool Is_ParticleFinished() const;
 
     MESH_MODE Get_Mode() const;
     uint32_t Get_Particle() const;
     _bool Get_ParticlePlaying() const;
     const _float3& Get_ParticlePivot() const;
+    void Set_ParticleForward(const _float3& vForward);
+    const _float3& Get_ParticleForward() const;
 };
 
 NS_END

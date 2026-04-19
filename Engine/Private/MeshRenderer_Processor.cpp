@@ -647,10 +647,16 @@ void CMeshRenderer_Processor::Update_Particle(MESH_RENDERER_DATA* pData, _float 
     if (pData->eMode != MESH_MODE::PARTICLE)
         return;
 
-    if (pData->bParticlePlaying == false)
+    if (!Ensure_ParticleRuntime(pData))
         return;
 
-    if (!Ensure_ParticleRuntime(pData))
+    if (pData->bParticleResetRequested)
+    {
+        Reset_ParticleRuntime(pData);
+        pData->bParticleResetRequested = false;
+    }
+
+    if (pData->bParticlePlaying == false)
         return;
 
     PARTICLE_RUNTIME* pRuntime = Get_ParticleRuntime(pData->iParticleRuntime);
@@ -665,10 +671,14 @@ void CMeshRenderer_Processor::Update_Particle(MESH_RENDERER_DATA* pData, _float 
 
     auto* pInstance = To<VTXPARTICLE_INSTANCE*>(mapped.pData);
 
+    _bool bAnyAlive = false;
+
     for (_uint i = 0; i < pRuntime->iNumInstances; ++i)
     {
-        /* x : total, y : elapsed */
         pRuntime->vecInstances[i].vLifeTime.y += fDT;
+
+        if (pRuntime->vecInstances[i].vLifeTime.y < pRuntime->vecInstances[i].vLifeTime.x)
+            bAnyAlive = true;
 
         if (pParticle->eSimulation == PARTICLE_SIMULATION::DROP)
         {
@@ -686,18 +696,27 @@ void CMeshRenderer_Processor::Update_Particle(MESH_RENDERER_DATA* pData, _float 
                 XMStoreFloat4(&pRuntime->vecInstances[i].vTranslation, vPos);
             }
         }
+        else if (pParticle->eSimulation == PARTICLE_SIMULATION::SLIDE)
+        {
+            _vector vPos = XMLoadFloat4(&pRuntime->vecInstances[i].vTranslation);
+            _vector vDir = XMLoadFloat4(&pRuntime->vecDirections[i]);
 
-        /* 라이프 타임 도달 */
+            vPos += vDir * pRuntime->vecSpeeds[i] * fDT;
+            XMStoreFloat4(&pRuntime->vecInstances[i].vTranslation, vPos);
+        }
+
         if (pRuntime->vecInstances[i].vLifeTime.y >= pRuntime->vecInstances[i].vLifeTime.x)
         {
             if (pParticle->isLoop)
             {
-                const _float fScale = CRandomUtil::Get_Float(pParticle->vScale.x, pParticle->vScale.y);
+                const _float fScaleX = CRandomUtil::Get_Float(pParticle->vScaleX.x, pParticle->vScaleX.y);
+                const _float fScaleY = CRandomUtil::Get_Float(pParticle->vScaleY.x, pParticle->vScaleY.y);
+
                 pRuntime->vecSpeeds[i] = CRandomUtil::Get_Float(pParticle->vSpeed.x, pParticle->vSpeed.y);
 
-                pRuntime->vecInstances[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
-                pRuntime->vecInstances[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
-                pRuntime->vecInstances[i].vLook = _float4(0.f, 0.f, fScale, 0.f);
+                pRuntime->vecInstances[i].vRight = _float4(fScaleX, 0.f, 0.f, 0.f);
+                pRuntime->vecInstances[i].vUp = _float4(0.f, fScaleY, 0.f, 0.f);
+                pRuntime->vecInstances[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
 
                 pRuntime->vecInstances[i].vTranslation = _float4(
                     CRandomUtil::Get_Float(pParticle->vCenter.x - pParticle->vRange.x * 0.5f, pParticle->vCenter.x + pParticle->vRange.x * 0.5f),
@@ -708,6 +727,47 @@ void CMeshRenderer_Processor::Update_Particle(MESH_RENDERER_DATA* pData, _float 
                 pRuntime->vecInstances[i].vLifeTime = _float2(
                     CRandomUtil::Get_Float(pParticle->vLifeTime.x, pParticle->vLifeTime.y),
                     0.f);
+
+                if (pParticle->eSimulation == PARTICLE_SIMULATION::SLIDE)
+                {
+                    _vector vForward = XMLoadFloat3(&pData->vParticleForward);
+                    if (XMVector3NearEqual(vForward, XMVectorZero(), XMVectorReplicate(0.0001f)))
+                        vForward = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+
+                    vForward = XMVector3Normalize(vForward);
+
+                    _vector vBack = -vForward;
+                    _vector vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+                    _vector vRightBase = XMVector3Cross(vWorldUp, vBack);
+
+                    if (XMVector3NearEqual(vRightBase, XMVectorZero(), XMVectorReplicate(0.0001f)))
+                        vRightBase = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+
+                    vRightBase = XMVector3Normalize(vRightBase);
+
+                    const _float fSide = CRandomUtil::Get_Float(-0.12f, 0.12f);
+                    const _float fUp = CRandomUtil::Get_Float(0.03f, 0.10f);
+
+                    _vector vDir = XMVector3Normalize(
+                        vBack +
+                        vRightBase * fSide +
+                        XMVectorSet(0.f, fUp, 0.f, 0.f));
+
+                    XMStoreFloat4(&pRuntime->vecDirections[i], XMVectorSetW(vDir, 0.f));
+                }
+                else
+                {
+                    pRuntime->vecDirections[i] = _float4(0.f, 0.f, 1.f, 0.f);
+                }
+
+                bAnyAlive = true;
+            }
+            else
+            {
+                /* 죽은 파티클은 화면 밖 혹은 0 스케일 처리 */
+                pRuntime->vecInstances[i].vRight = _float4(0.f, 0.f, 0.f, 0.f);
+                pRuntime->vecInstances[i].vUp = _float4(0.f, 0.f, 0.f, 0.f);
+                pRuntime->vecInstances[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
             }
         }
 
@@ -715,6 +775,16 @@ void CMeshRenderer_Processor::Update_Particle(MESH_RENDERER_DATA* pData, _float 
     }
 
     m_pContext->Unmap(pRuntime->pInstanceVB.Get(), 0);
+
+    if (!pParticle->isLoop && bAnyAlive == false)
+    {
+        pData->bParticlePlaying = false;
+        pData->bParticleFinished = true;
+    }
+    else
+    {
+        pData->bParticleFinished = false;
+    }
 }
 
 _bool CMeshRenderer_Processor::Create_ParticleBuffers(PARTICLE_RUNTIME* pRuntime)
@@ -795,16 +865,20 @@ _bool CMeshRenderer_Processor::Ensure_ParticleRuntime(MESH_RENDERER_DATA* pData)
     pRuntime->iNumInstances = pParticle->iMaxParticles;
     pRuntime->vecInstances.resize(pRuntime->iNumInstances);
     pRuntime->vecSpeeds.resize(pRuntime->iNumInstances);
+    pRuntime->vecDirections.resize(pRuntime->iNumInstances);
     pRuntime->hTexture = pParticle->hTexture;
 
     for (_uint i = 0; i < pRuntime->iNumInstances; ++i)
     {
-        const _float fScale = CRandomUtil::Get_Float(pParticle->vScale.x, pParticle->vScale.y);
+        const _float fScaleX = CRandomUtil::Get_Float(pParticle->vScaleX.x, pParticle->vScaleX.y);
+        const _float fScaleY = CRandomUtil::Get_Float(pParticle->vScaleY.x, pParticle->vScaleY.y);
+
         pRuntime->vecSpeeds[i] = CRandomUtil::Get_Float(pParticle->vSpeed.x, pParticle->vSpeed.y);
 
-        pRuntime->vecInstances[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
-        pRuntime->vecInstances[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
-        pRuntime->vecInstances[i].vLook = _float4(0.f, 0.f, fScale, 0.f);
+        pRuntime->vecInstances[i].vRight = _float4(fScaleX, 0.f, 0.f, 0.f);
+        pRuntime->vecInstances[i].vUp = _float4(0.f, fScaleY, 0.f, 0.f);
+        pRuntime->vecInstances[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
+
         pRuntime->vecInstances[i].vTranslation = _float4(
             CRandomUtil::Get_Float(pParticle->vCenter.x - pParticle->vRange.x * 0.5f, pParticle->vCenter.x + pParticle->vRange.x * 0.5f),
             CRandomUtil::Get_Float(pParticle->vCenter.y - pParticle->vRange.y * 0.5f, pParticle->vCenter.y + pParticle->vRange.y * 0.5f),
@@ -814,6 +888,8 @@ _bool CMeshRenderer_Processor::Ensure_ParticleRuntime(MESH_RENDERER_DATA* pData)
         pRuntime->vecInstances[i].vLifeTime = _float2(
             CRandomUtil::Get_Float(pParticle->vLifeTime.x, pParticle->vLifeTime.y),
             0.f);
+
+        pRuntime->vecDirections[i] = _float4(0.f, 0.f, 1.f, 0.f);
     }
 
     if (!Create_ParticleBuffers(pRuntime))
@@ -825,6 +901,100 @@ _bool CMeshRenderer_Processor::Ensure_ParticleRuntime(MESH_RENDERER_DATA* pData)
 
     pRuntime->bInitialized = true;
     return true;
+}
+
+void CMeshRenderer_Processor::Reset_ParticleRuntime(MESH_RENDERER_DATA* pData)
+{
+    if (!pData)
+        return;
+
+    if (pData->eMode != MESH_MODE::PARTICLE)
+        return;
+
+    if (!Ensure_ParticleRuntime(pData))
+        return;
+
+    PARTICLE_RUNTIME* pRuntime = Get_ParticleRuntime(pData->iParticleRuntime);
+    PARTICLE_ENTRY* pParticle = SYS_RESOURCE.Get_Particle(pData->hParticle);
+
+    if (!pRuntime || !pParticle)
+        return;
+
+    _vector vForward = XMLoadFloat3(&pData->vParticleForward);
+    if (XMVector3NearEqual(vForward, XMVectorZero(), XMVectorReplicate(0.0001f)))
+        vForward = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+
+    vForward = XMVector3Normalize(vForward);
+
+    _vector vBack = -vForward;
+    _vector vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+    _vector vRightBase = XMVector3Cross(vWorldUp, vBack);
+
+    if (XMVector3NearEqual(vRightBase, XMVectorZero(), XMVectorReplicate(0.0001f)))
+        vRightBase = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+
+    vRightBase = XMVector3Normalize(vRightBase);
+
+    for (_uint i = 0; i < pRuntime->iNumInstances; ++i)
+    {
+        const _float fScaleX = CRandomUtil::Get_Float(pParticle->vScaleX.x, pParticle->vScaleX.y);
+        const _float fScaleY = CRandomUtil::Get_Float(pParticle->vScaleY.x, pParticle->vScaleY.y);
+
+        pRuntime->vecSpeeds[i] = CRandomUtil::Get_Float(pParticle->vSpeed.x, pParticle->vSpeed.y);
+
+        pRuntime->vecInstances[i].vRight = _float4(fScaleX, 0.f, 0.f, 0.f);
+        pRuntime->vecInstances[i].vUp = _float4(0.f, fScaleY, 0.f, 0.f);
+        pRuntime->vecInstances[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
+
+        if (pParticle->eSimulation == PARTICLE_SIMULATION::SLIDE)
+        {
+            /* 시작 위치도 슬라이딩 방향 기준으로 뿌린다 */
+            const _float fSpawnSide = CRandomUtil::Get_Float(-0.04f, 0.04f);   // 좌우 아주 좁게
+            const _float fSpawnBack = CRandomUtil::Get_Float(-0.4f, 0.4f);   // 약간 뒤쪽으로 길게
+            const _float fSpawnUp = CRandomUtil::Get_Float(0.00f, 0.2f);      // 바닥에서 살짝만 띄우기
+
+            _vector vSpawn =
+                vBack * fSpawnBack +
+                vRightBase * fSpawnSide +
+                XMVectorSet(0.f, fSpawnUp, 0.f, 0.f);
+
+            _float3 vSpawn3{};
+            XMStoreFloat3(&vSpawn3, vSpawn);
+
+            pRuntime->vecInstances[i].vTranslation = _float4(
+                pParticle->vCenter.x + vSpawn3.x,
+                pParticle->vCenter.y + vSpawn3.y,
+                pParticle->vCenter.z + vSpawn3.z,
+                1.f);
+
+            /* 이동 방향은 거의 뒤쪽 직선, 좌우 흔들림은 아주 조금만 */
+            const _float fSide = CRandomUtil::Get_Float(-0.06f, 0.06f);
+            const _float fUp = CRandomUtil::Get_Float(0.01f, 0.06f);
+
+            _vector vDir = XMVector3Normalize(
+                vBack +
+                vRightBase * fSide +
+                XMVectorSet(0.f, fUp, 0.f, 0.f));
+
+            XMStoreFloat4(&pRuntime->vecDirections[i], XMVectorSetW(vDir, 0.f));
+        }
+        else
+        {
+            pRuntime->vecInstances[i].vTranslation = _float4(
+                CRandomUtil::Get_Float(pParticle->vCenter.x - pParticle->vRange.x * 0.5f, pParticle->vCenter.x + pParticle->vRange.x * 0.5f),
+                CRandomUtil::Get_Float(pParticle->vCenter.y - pParticle->vRange.y * 0.5f, pParticle->vCenter.y + pParticle->vRange.y * 0.5f),
+                CRandomUtil::Get_Float(pParticle->vCenter.z - pParticle->vRange.z * 0.5f, pParticle->vCenter.z + pParticle->vRange.z * 0.5f),
+                1.f);
+
+            pRuntime->vecDirections[i] = _float4(0.f, 0.f, 1.f, 0.f);
+        }
+
+        pRuntime->vecInstances[i].vLifeTime = _float2(
+            CRandomUtil::Get_Float(pParticle->vLifeTime.x, pParticle->vLifeTime.y),
+            0.f);
+    }
+
+    pData->bParticleFinished = false;
 }
 
 uint32_t CMeshRenderer_Processor::Allocate_ParticleRuntime()

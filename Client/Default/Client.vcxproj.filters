@@ -98,6 +98,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{15c70c09-c694-4c1f-a243-c881e20b8bf8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -379,6 +382,9 @@
     <ClInclude Include="..\Public\Trail.h">
       <Filter>Equipment</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VFX_Manager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -623,6 +629,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Trail.cpp">
       <Filter>Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VFX_Manager.cpp">
+      <Filter>Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

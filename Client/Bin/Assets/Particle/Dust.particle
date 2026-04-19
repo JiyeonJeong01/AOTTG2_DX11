@@ -1,0 +1,14 @@
+{
+  "GUID": "CFF8BDEC-BDEC-BDEC-BDEC-F000A141BDEC",
+  "TextureGUID": "AA9C4A66-A939-4D8A-ADAC-EC37D14D5633",
+  "MaxParticles": 7,
+  "LifeTime": [1.2, 1.6],
+  "Speed": [2.0, 3.0],
+  "ScaleX": [0.8, 1.0],
+  "ScaleY": [0.8, 1.0],
+  "Center": [0.0, 0.0, 0.0],
+  "Range": [0.6, 0.6, 0.6],
+  "Pivot": [0.0, 0.0, 0.0],
+  "IsLoop": true,
+  "Simulation": 2
+}

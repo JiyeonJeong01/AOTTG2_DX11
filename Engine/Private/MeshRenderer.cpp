@@ -100,6 +100,31 @@ void CMeshRenderer::Set_ParticlePivot(const _float3& vPivot)
     _Data()->vParticlePivot = vPivot;
 }
 
+void CMeshRenderer::Reset_Particle()
+{
+    if (!_Data())
+        return;
+
+    _Data()->bParticleResetRequested = true;
+    _Data()->bParticleFinished = false;
+}
+
+void CMeshRenderer::Stop_Particle()
+{
+    if (!_Data())
+        return;
+
+    _Data()->bParticlePlaying = false;
+}
+
+_bool CMeshRenderer::Is_ParticleFinished() const
+{
+    if (!_Data())
+        return true;
+
+    return _Data()->bParticleFinished;
+}
+
 MESH_MODE CMeshRenderer::Get_Mode() const
 {
     if (!_Data())
@@ -132,4 +157,23 @@ const _float3& CMeshRenderer::Get_ParticlePivot() const
 
     return _Data()->vParticlePivot;
 }
+
+void CMeshRenderer::Set_ParticleForward(const _float3& vForward)
+{
+    if (!_Data())
+        return;
+
+    _Data()->vParticleForward = vForward;
+}
+
+const _float3& CMeshRenderer::Get_ParticleForward() const
+{
+    static const _float3 vDefault = { 0.f, 0.f, 1.f };
+
+    if (!_Data())
+        return vDefault;
+
+    return _Data()->vParticleForward;
+}
+
 NS_END

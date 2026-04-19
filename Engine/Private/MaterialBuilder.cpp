@@ -210,8 +210,9 @@ HRESULT CMaterialBuilder::Load_ParticleDesc(const std::filesystem::path& filePat
     {
         ifs >> j;
     }
-    catch (...)
+    catch (const std::exception& e)
     {
+        std::string errorMsg = e.what();
         return E_FAIL;
     }
 
@@ -252,15 +253,26 @@ HRESULT CMaterialBuilder::Load_ParticleDesc(const std::filesystem::path& filePat
         outDesc.vSpeed = _float2(a[0].get<_float>(), a[1].get<_float>());
     }
 
-    /* 필수값 : Scale [min, max] */
-    if (!j.contains("Scale") || !j.at("Scale").is_array() || j.at("Scale").size() != 2)
+    /* 필수값 : ScaleX [min, max] */
+    if (!j.contains("ScaleX") || !j.at("ScaleX").is_array() || j.at("ScaleX").size() != 2)
         return E_FAIL;
     {
-        const auto& a = j.at("Scale");
+        const auto& a = j.at("ScaleX");
         if (!a[0].is_number() || !a[1].is_number())
             return E_FAIL;
 
-        outDesc.vScale = _float2(a[0].get<_float>(), a[1].get<_float>());
+        outDesc.vScaleX = _float2(a[0].get<_float>(), a[1].get<_float>());
+    }
+
+    /* 필수값 : ScaleY [min, max] */
+    if (!j.contains("ScaleY") || !j.at("ScaleY").is_array() || j.at("ScaleY").size() != 2)
+        return E_FAIL;
+    {
+        const auto& a = j.at("ScaleY");
+        if (!a[0].is_number() || !a[1].is_number())
+            return E_FAIL;
+
+        outDesc.vScaleY = _float2(a[0].get<_float>(), a[1].get<_float>());
     }
 
     /* 선택값 : Center */

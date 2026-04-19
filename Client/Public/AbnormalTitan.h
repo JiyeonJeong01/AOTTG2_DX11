@@ -13,6 +13,7 @@ class CAbnormalTitanStateMachine;
 class CTargetSensor;
 class CTitanState;
 class CHurtBox;
+class CVFX_Manager;
 NS_END
 
 NS_BEGIN(Client)
@@ -32,6 +33,8 @@ public:
     void Late_Update(void* pCtx, _float fDT) override;
 
 private:
+    CVFX_Manager*   m_pVFX_Manager = nullptr;
+
     CGameObject*    m_goTitan = nullptr;
     CGameObject*    m_goTarget = nullptr;
     CGameObject*    m_goEren = nullptr;
@@ -43,6 +46,7 @@ private:
     PATROL_INFO             m_tPatrol{};
 
     _uint                   m_iStunnedAcc = 0;
+    _int                    m_iHitEffect = 0;
 
     std::unique_ptr<CAbnormalTitanStateMachine>     m_upStateMachine{};
     std::shared_ptr<CTitanState>                    m_spCurState{};
@@ -83,14 +87,15 @@ private:
     void On_DetectedHumanSide(CGameObject* goHuman);
     void OnChange_CurState(std::shared_ptr<CTitanState> spNewState);
 
-private :
 public:
     char        m_szState[32] = {};
+    SCRIPT_OBJECT_REF   m_refVFXManager{};
 
 SCRIPT_FIELDS_BEGIN(CAbnormalTitan)
     SCRIPT_FIELD_CHAR(m_szState)
     SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[0]);
     SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[1]);
+    SCRIPT_FIELD_OBJECT_REF(m_refVFXManager);
 SCRIPT_FIELDS_END(CAbnormalTitan)
 };
 

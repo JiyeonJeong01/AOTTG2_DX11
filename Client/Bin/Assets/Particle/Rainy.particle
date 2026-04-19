@@ -1,12 +1,13 @@
 {
   "GUID": "CFF84B0B-FD89-464F-BDEC-F000A1410954",
   "TextureGUID": "F22FBE91-9698-423D-8211-D68E399DE333",
-  "MaxParticles": 2000,
-  "LifeTime": [4.0, 6.0],
-  "Speed": [6.0, 8.0],
-  "Scale": [0.3, 1.0],
+  "MaxParticles": 500,
+  "LifeTime": [3.0, 5.0],
+  "Speed": [25.0, 35.0],
+  "ScaleX": [0.04, 0.07],
+  "ScaleY": [1.4, 2.0],
   "Center": [0.0, 0.0, 0.0],
-  "Range": [-200.0, 50.0, 200.0],
+  "Range": [-300.0, 30.0, 300.0],
   "Pivot": [0.0, 0.0, 0.0],
   "IsLoop": true,
   "Simulation": 1

@@ -11,6 +11,7 @@
 #include "GroundChecker.h"
 #include "HitBox.h"
 #include "Trail.h"
+#include "VFX_Manager.h"
 
 #include "TargetSensor.h"
 #include "AnimationClip_Player.h"
@@ -39,6 +40,12 @@ void CPlayer::Awake(void* pCtx)
 
 void CPlayer::Start(void* pCtx)
 {
+    {
+        CGameObject* goVFX = SYS_GAMEOBJECT.Get_Wrapper(m_refVFXManager.hObject);
+        IF_NULL_RETURN_MSG_BREAK(goVFX, , "goVFX is nullptr");
+        m_pVFX_Manager = goVFX->Get_Script<CVFX_Manager>();
+        IF_NULL_RETURN_MSG_BREAK(m_pVFX_Manager, , "m_pVFX_Manager is nullptr");
+    }
     /* 컴포넌트 참조 */
     {
         m_tComponents.transform = m_goPlayer->Get_Component<CTransform>();
@@ -107,6 +114,7 @@ void CPlayer::Start(void* pCtx)
     m_tContext.pStats = &m_tStats;
     m_tContext.pBlade = &m_tBlade;
     m_tContext.pHitBox = m_goPlayer->Get_Script_InChildren<CHitBox>();
+    m_tContext.pVFX_Manager = m_pVFX_Manager;
 
     /* 컨트롤러 */
     m_tContext.pSkillController = m_upSkillController.get();

@@ -252,7 +252,10 @@ void CPlayerState::Handle_SpeedLines(_float fDT)
         fMinValue = 0.6f;
     tDesc.fIntensity = min(fMinValue, fSpeed / 25.f);
 
-    _vector vVel = XMLoadFloat3(&m_tComponents.rigidbody->vLinearVel);
+    _float3 vVel3 = m_tComponents.rigidbody->vLinearVel;
+    vVel3.x *= 1.3f;
+    vVel3.y *= 0.3f;
+    _vector vVel = XMLoadFloat3(&vVel3);
     const _float fVelLenSq = XMVectorGetX(XMVector3LengthSq(vVel));
 
     if (fVelLenSq < 0.0001f)

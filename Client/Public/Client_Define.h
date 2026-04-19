@@ -105,6 +105,16 @@ namespace Client
 
     enum class WIDTH_TYPE { NONE, THIN, NORMAL, BOLD, END };
 
+    typedef struct tagVFXObject
+    {
+        CGameObject* pObject = nullptr;
+
+        CTransform       transform;
+        CMeshRenderer    meshRenderer;
+        CSpriteEffect    spriteEffect;
+
+    } VFX_OBJECT;
+
 }
 
 
