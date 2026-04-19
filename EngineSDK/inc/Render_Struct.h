@@ -109,6 +109,20 @@ typedef struct tagVertexCube
     };
 } VTXCUBE;
 
+typedef struct tagVertexCubeNormal
+{
+    XMFLOAT3    vPosition;
+    XMFLOAT3    vNormal;
+    XMFLOAT3    vTexcoord;
+
+    static const unsigned int iNumElements = 3;
+    static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }, 
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+    };
+} VTXCUBENOR;
+
 typedef struct tagVertexPosition
 {
     XMFLOAT3			vPosition;
@@ -168,7 +182,8 @@ static constexpr IL_DESC g_IL_TABLE[] = {
     { VTXCUBE::Elements, VTXCUBE::iNumElements },                                           // 5 
     { VTXPOS::Elements, VTXPOS::iNumElements },                                             // 6
     { VTXPARTICLE_POINTINSTANCE_DESC::Elements, VTXPARTICLE_POINTINSTANCE_DESC::iNumElements },     // 7
-    { VTXTRAIL::Elements, VTXTRAIL::iNumElements },     // 7
+    { VTXTRAIL::Elements, VTXTRAIL::iNumElements },     // 8
+    { VTXCUBENOR::Elements, VTXCUBENOR::iNumElements },     // 9
 };
 
 

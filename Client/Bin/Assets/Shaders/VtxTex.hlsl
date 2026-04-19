@@ -72,8 +72,8 @@ technique11 DefaultTechnique
     }
 
     pass SpriteEffect
-{
-    SetVertexShader( CompileShader( vs_5_0, VS_MAIN() ) );
-    SetPixelShader( CompileShader( ps_5_0, PS_MAIN_SPRITE_EFFECT() ) );
-}
+    {
+        SetVertexShader( CompileShader( vs_5_0, VS_MAIN() ) );
+        SetPixelShader( CompileShader( ps_5_0, PS_MAIN_SPRITE_EFFECT() ) ); 
+    }
 }

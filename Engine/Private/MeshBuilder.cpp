@@ -260,6 +260,45 @@ HRESULT CMeshBuilder::Create_Cube_VtxTex(ID3D11Device* pDevice, MESH_ENTRY& outE
     return Create_Mesh(pDevice, d, outEntry);
 }
 
+HRESULT CMeshBuilder::Create_Cube_VtxNorTex(ID3D11Device* pDevice, MESH_ENTRY& outEntry)
+{
+    VTXCUBENOR v[8];
+    v[0].vPosition = XMFLOAT3(-0.5f, 0.5f, -0.5f);
+    v[1].vPosition = XMFLOAT3(0.5f, 0.5f, -0.5f);
+    v[2].vPosition = XMFLOAT3(0.5f, -0.5f, -0.5f);
+    v[3].vPosition = XMFLOAT3(-0.5f, -0.5f, -0.5f);
+    v[4].vPosition = XMFLOAT3(-0.5f, 0.5f, 0.5f);
+    v[5].vPosition = XMFLOAT3(0.5f, 0.5f, 0.5f);
+    v[6].vPosition = XMFLOAT3(0.5f, -0.5f, 0.5f);
+    v[7].vPosition = XMFLOAT3(-0.5f, -0.5f, 0.5f);
+
+    for (int i = 0; i < 8; ++i)
+    {
+        v[i].vTexcoord = v[i].vPosition;
+        XMStoreFloat3(&v[i].vNormal, XMVector3Normalize(XMLoadFloat3(&v[i].vPosition)));
+    }
+
+    uint16_t idx[36] = {
+    0, 1, 2, 0, 2, 3, // front
+    1, 5, 6, 1, 6, 2, // right
+    5, 4, 7, 5, 7, 6, // back
+    4, 0, 3, 4, 3, 7, // left
+    4, 5, 1, 4, 1, 0, // up
+    3, 2, 6, 3, 6, 7  // down
+    };
+
+    MESH_DESC d{};
+    d.pVertices = v;
+    d.iVertexStride = sizeof(VTXCUBENOR);
+    d.iVertexCnt = 8;
+    d.pIndices = idx;
+    d.iIndexCnt = 36;
+    d.eIndexFormat = DXGI_FORMAT_R16_UINT;
+    d.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+
+    return Create_Mesh(pDevice, d, outEntry);
+}
+
 HRESULT CMeshBuilder::Create_Sphere_VtxCol(ID3D11Device* pDevice, MESH_ENTRY& outEntry, _uint iStack, _uint iSlice, _float fRadius)
 {
     std::vector<VTXCOL> vertices;
@@ -484,6 +523,8 @@ HRESULT CMeshBuilder::Create_Builtin(ID3D11Device* pDevice, MESH_ENTRY& outEntry
         hr = CMeshBuilder::Create_Rect_VtxNorTex(pDevice, outEntry);
     else if (tGUID == DEFAULT_ASSET_GUID::MESH_CUBE_TEX)
         hr = CMeshBuilder::Create_Cube_VtxTex(pDevice, outEntry);
+    else if (tGUID == DEFAULT_ASSET_GUID::MESH_CUBE_NOR_TEX)
+        hr = CMeshBuilder::Create_Cube_VtxNorTex(pDevice, outEntry);
 
     return hr;
 }

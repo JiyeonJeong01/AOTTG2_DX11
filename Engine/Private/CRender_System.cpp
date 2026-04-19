@@ -1226,6 +1226,7 @@ void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial,
     IF_NULL_RETURN_MSG_BREAK(pMesh, , "Mesh is nullptr.");
 
     MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(hMaterial);
+    if (!pMat) return;
     IF_NULL_RETURN_MSG_BREAK(pMat, , "Material is nullptr.");
 
     SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(pMat->hShader);

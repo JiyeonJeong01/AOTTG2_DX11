@@ -8,6 +8,7 @@ typedef struct ENGINE_DLL DefaultAssetGuid
 {
     static ASSET_GUID MESH_CUBE;
     static ASSET_GUID MESH_CUBE_TEX;
+    static ASSET_GUID MESH_CUBE_NOR_TEX;
     static ASSET_GUID MESH_RECT;
     static ASSET_GUID MESH_SPHERE;
     static ASSET_GUID MESH_LINE;
