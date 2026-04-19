@@ -69,6 +69,7 @@ private:
     _float          m_fSelectedTextScale = 1.15f;
     _float          m_fUnselectedTextScale = 1.f;
 
+    const _float2   m_vBaseSize = { 200.f, 100.f };
     _float2         m_vUILeftBaseSize = { 0.f, 0.f };
     _float2         m_vUIRightBaseSize = { 0.f, 0.f };
 

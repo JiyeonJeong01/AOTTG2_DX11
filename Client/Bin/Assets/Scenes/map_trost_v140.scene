@@ -5903,15 +5903,15 @@
               -188.48770141601563
             ],
             "Rotation": [
-              1.490120915548232e-08,
-              -1.7154921223049902e-16,
-              1.1512435449390068e-08,
-              1.0
+              3.567916095903456e-08,
+              -0.7031341195106506,
+              -1.4028996631054724e-08,
+              0.7110572457313538
             ],
             "Scale": [
-              0.4999946653842926,
+              0.499997615814209,
               0.5,
-              0.3500075936317444
+              0.3500094413757324
             ],
             "Type": 0
           },
@@ -6804,7 +6804,7 @@
           "data": {
             "Position": [
               -70.38318634033203,
-              -8548661.0,
+              -8550697.0,
               -63.84186553955078
             ],
             "Rotation": [
@@ -10661,20 +10661,20 @@
         {
           "data": {
             "Position": [
-              -3.080848217010498,
-              0.9853994846343994,
-              8.350610733032227
+              -103.51300048828125,
+              4.6817522048950195,
+              -206.19921875
             ],
             "Rotation": [
-              0.0003081035683862865,
-              -0.4501771926879883,
-              -0.0010180161334574223,
-              0.8929386734962463
+              -0.001245338935405016,
+              -0.4500725269317627,
+              -0.010860761627554893,
+              0.8929251432418823
             ],
             "Scale": [
-              0.010000002570450306,
+              0.010000001639127731,
               0.009999999776482582,
-              0.01000000350177288
+              0.010000007227063179
             ],
             "Type": 0
           },
@@ -11843,20 +11843,20 @@
         {
           "data": {
             "Position": [
-              -3.0808427333831787,
-              0.9853994846343994,
-              8.35059928894043
+              -103.513916015625,
+              4.6817522048950195,
+              -206.1973876953125
             ],
             "Rotation": [
-              0.0003062442410737276,
-              -0.4502018988132477,
-              -0.0010118290083482862,
-              0.8929262161254883
+              -0.0012400889536365867,
+              -0.45007312297821045,
+              -0.010827413760125637,
+              0.8929252028465271
             ],
             "Scale": [
-              0.010000002570450306,
+              0.010000001639127731,
               0.009999999776482582,
-              0.01000000350177288
+              0.010000007227063179
             ],
             "Type": 0
           },
@@ -12042,9 +12042,9 @@
         {
           "data": {
             "Position": [
-              -0.7590503692626953,
-              0.9906986355781555,
-              7.575122356414795
+              -101.28927612304688,
+              4.763379096984863,
+              -207.25160217285156
             ],
             "Rotation": [
               0.0,
@@ -15034,15 +15034,15 @@
         {
           "data": {
             "Position": [
-              -9.877731323242188,
-              2.444261312484741,
-              11.718303680419922
+              -102.08126831054688,
+              13.635929107666016,
+              -212.30397033691406
             ],
             "Rotation": [
-              -0.08484935015439987,
-              0.8386237621307373,
-              0.13673503696918488,
-              0.5203982591629028
+              0.3255942761898041,
+              -0.10875515639781952,
+              0.03773145005106926,
+              0.938476026058197
             ],
             "Scale": [
               1.0,
@@ -18515,12 +18515,12 @@
         {
           "data": {
             "PosPx": [
-              1566.0,
-              966.0
+              1556.0,
+              972.0
             ],
             "SizePx": [
-              91.0,
-              71.0
+              79.0,
+              65.0
             ],
             "Type": 11
           },
@@ -18536,7 +18536,7 @@
             "layer": 1,
             "rcClip": [
               0.0,
-              71.0,
+              65.0,
               0.0,
               0.0
             ],
@@ -18591,7 +18591,7 @@
         {
           "data": {
             "PosPx": [
-              1671.0,
+              1657.0,
               972.0
             ],
             "SizePx": [
@@ -18667,12 +18667,12 @@
         {
           "data": {
             "PosPx": [
-              1766.0,
-              972.0
+              1760.0,
+              966.0
             ],
             "SizePx": [
-              79.0,
-              65.0
+              91.0,
+              71.0
             ],
             "Type": 11
           },
@@ -18688,7 +18688,7 @@
             "layer": 1,
             "rcClip": [
               0.0,
-              65.0,
+              71.0,
               0.0,
               0.0
             ],
@@ -18829,7 +18829,7 @@
             ],
             "Scale": 1.0,
             "SortZ": 0.0,
-            "Text": " 23",
+            "Text": " 14",
             "Type": 15,
             "VisualPriority": 0
           },
@@ -18869,7 +18869,7 @@
             "flags": 1,
             "layer": 1,
             "rcClip": [
-              6.541265487670898,
+              0.0,
               0.0,
               0.0,
               0.0
@@ -18947,7 +18947,7 @@
             "rcClip": [
               0.0,
               0.0,
-              -6.541265487670898,
+              -0.0,
               0.0
             ],
             "rcUV": [
@@ -22077,7 +22077,7 @@
           "data": {
             "Position": [
               -98.03578186035156,
-              0.8900042772293091,
+              10.00042772293091,
               -68.1601333618164
             ],
             "Rotation": [
@@ -40241,8 +40241,8 @@
               385.0
             ],
             "SizePx": [
-              264.5,
-              132.25
+              230.0,
+              115.0
             ],
             "Type": 11
           },
@@ -41574,9 +41574,9 @@
         {
           "data": {
             "Position": [
-              -52.944358825683594,
-              1.5897670984268188,
-              18.580839157104492
+              -106.16339874267578,
+              12.300004005432129,
+              96.5949478149414
             ],
             "Rotation": [
               -0.0,
@@ -41678,7 +41678,7 @@
         },
         {
           "data": {
-            "AnimationClip": 0,
+            "AnimationClip": 54,
             "BlendDuration": 0.0,
             "BlendMap": [],
             "Enabled": true,
@@ -41722,10 +41722,14 @@
               {
                 "Clip": 79,
                 "Loop": true
+              },
+              {
+                "Clip": 54,
+                "Loop": true
               }
             ],
             "PlaySpeed": 1.0,
-            "Playing": false,
+            "Playing": true,
             "Type": 6
           },
           "type": 6
@@ -43060,9 +43064,9 @@
         {
           "data": {
             "Position": [
-              -3.0808427333831787,
-              0.9853994846343994,
-              8.35059928894043
+              -103.513916015625,
+              4.6817522048950195,
+              -206.1973876953125
             ],
             "Rotation": [
               0.0,
@@ -44347,7 +44351,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -44402,7 +44406,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -44457,7 +44461,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45062,7 +45066,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45117,7 +45121,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45172,7 +45176,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45227,7 +45231,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45282,7 +45286,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45337,7 +45341,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45392,7 +45396,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45447,7 +45451,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45502,7 +45506,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45557,7 +45561,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45612,7 +45616,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45766,7 +45770,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45821,7 +45825,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45876,7 +45880,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45931,7 +45935,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -45986,7 +45990,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46041,7 +46045,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46096,7 +46100,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46151,7 +46155,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46206,7 +46210,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46261,7 +46265,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46316,7 +46320,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46371,7 +46375,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46426,7 +46430,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46481,7 +46485,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46536,7 +46540,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46591,7 +46595,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46646,7 +46650,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46701,7 +46705,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46756,7 +46760,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46811,7 +46815,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46866,7 +46870,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46921,7 +46925,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -46976,7 +46980,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -47031,7 +47035,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -47086,7 +47090,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -47141,7 +47145,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -47196,7 +47200,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -47251,7 +47255,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -47306,7 +47310,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -47361,7 +47365,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -47416,7 +47420,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -47524,23 +47528,55 @@
                   }
                 },
                 {
+                  "Name": "m_refEren",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "E3494248-8DB5-43A7-857C-4FE5356FD891"
+                  }
+                },
+                {
+                  "Name": "m_refBoatNPC",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "59C90AF9-A644-4D11-8C69-C220CF897234"
+                  }
+                },
+                {
+                  "Name": "m_vBoatStartPos",
+                  "Type": 3,
+                  "Value": [
+                    -120.0,
+                    6.200000095367432,
+                    -210.0
+                  ]
+                },
+                {
                   "Name": "m_vBoatGoalPos",
                   "Type": 3,
                   "Value": [
                     -120.0,
-                    8.0,
+                    6.2,
                     -109.0
                   ]
                 },
                 {
                   "Name": "m_fBoatMoveSpeed",
                   "Type": 1,
-                  "Value": 3.0
+                  "Value": 2.5
                 },
                 {
-                  "Name": "m_fBoatArriveDist",
-                  "Type": 1,
-                  "Value": 0.5
+                  "Name": "m_refWhiteOutUI",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "77C50045-8682-4A87-888D-D39C9AAFCD6D"
+                  }
+                },
+                {
+                  "Name": "m_refErenTitan",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "FCE85F1F-1306-4BAB-AC65-AAB508AD5CB6"
+                  }
                 }
               ]
             },
@@ -47563,20 +47599,20 @@
         {
           "data": {
             "Position": [
-              -130.9292755126953,
-              8.341068267822266,
-              -214.47000122070313
+              -120.0,
+              8.10220718383789,
+              -109.0
             ],
             "Rotation": [
-              -0.49999910593032837,
-              0.4999989867210388,
-              0.5000010132789612,
-              -0.5000008940696716
+              0.5109080076217651,
+              -0.48884668946266174,
+              -0.5110234022140503,
+              0.4887300729751587
             ],
             "Scale": [
-              0.20000000298023224,
-              0.20000000298023224,
-              0.20000000298023224
+              0.10000000149011612,
+              0.10000000149011612,
+              0.10000000149011612
             ],
             "Type": 0
           },
@@ -47611,6 +47647,2205 @@
       "parent": "D16C696A-D579-4146-B060-55D3514C6DFE",
       "protoGuid": "00000000-0000-0000-0000-000000000000",
       "uuid": "50EAEB3A-FFFD-441B-8F59-4C86FADE54E5"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Opening_Eren",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -117.55538940429688,
+              7.223757266998291,
+              -101.21141815185547
+            ],
+            "Rotation": [
+              0.0,
+              1.0,
+              0.0,
+              -1.1920930376163597e-07
+            ],
+            "Scale": [
+              0.009999999776482582,
+              0.009999999776482582,
+              0.009999999776482582
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "043DDDE0-023B-4BE8-899B-DB190AF56E01",
+            "MeshGUID": "AF29D8EC-8A4F-4272-BBB8-7D927B5C226C",
+            "Mode": 0,
+            "OverrideMaterials": [
+              0,
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        },
+        {
+          "data": {
+            "AnimationClip": 71,
+            "BlendDuration": 0.0,
+            "BlendMap": [],
+            "Enabled": true,
+            "LoopMap": [
+              {
+                "Clip": 22,
+                "Loop": true
+              },
+              {
+                "Clip": 70,
+                "Loop": true
+              },
+              {
+                "Clip": 78,
+                "Loop": true
+              },
+              {
+                "Clip": 18,
+                "Loop": true
+              },
+              {
+                "Clip": 82,
+                "Loop": true
+              },
+              {
+                "Clip": 19,
+                "Loop": true
+              },
+              {
+                "Clip": 17,
+                "Loop": true
+              },
+              {
+                "Clip": 23,
+                "Loop": true
+              },
+              {
+                "Clip": 71,
+                "Loop": true
+              },
+              {
+                "Clip": 24,
+                "Loop": true
+              },
+              {
+                "Clip": 26,
+                "Loop": true
+              },
+              {
+                "Clip": 29,
+                "Loop": true
+              }
+            ],
+            "PlaySpeed": 1.0,
+            "Playing": true,
+            "Type": 6
+          },
+          "type": 6
+        }
+      ],
+      "parent": "D16C696A-D579-4146-B060-55D3514C6DFE",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "E3494248-8DB5-43A7-857C-4FE5356FD891"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Arm_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "FC959732-24D1-4DF4-B3C0-13A039CFEC04",
+            "MeshGUID": "56877A8C-AA63-4A66-AFC7-0C55D79AC35A",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "72AD484D-9803-4EC4-A307-B8F8BC6D0D00"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Arm_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "45C18129-F0EB-4E69-BD9A-B69B71B97A3B",
+            "MeshGUID": "E68EF54D-AFC3-43E1-8125-C74C9CC2F3C3",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "D6DF025F-1EA5-4518-BB30-BCFD02254C7B"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Uniform",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "D1B261CE-5FC0-4B03-97A3-4194D2E2EB22",
+            "MeshGUID": "9F7DFD06-2063-4CC4-814B-E3AA4AB811C1",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "F606D49F-9170-424C-86AA-2E4618259F5F"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Hand_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "36F34DC4-EF65-482E-B108-D00B93192C24",
+            "MeshGUID": "A56AD4B8-E026-4045-AE33-78AB9A84374B",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "B578D0A4-C038-4413-9125-6544F2CEC19D"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Hand_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "D0706350-E818-474B-BBA3-46D57B297C68",
+            "MeshGUID": "A8641BB0-E462-4776-B27D-92558A7829A1",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "5BC9F982-B28A-4D5C-9F98-15EAA52A7A1A"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Head",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -1.1084050299814407e-07,
+              -0.4526940882205963,
+              0.004272959660738707
+            ],
+            "Rotation": [
+              8.429372400087232e-08,
+              -0.7071065902709961,
+              0.7071069478988647,
+              8.429371689544496e-08
+            ],
+            "Scale": [
+              9.99915599822998,
+              9.999156951904297,
+              9.999156951904297
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "ACF11179-CE93-4239-95F1-96AA5A9684FC",
+            "MeshGUID": "8949521E-D499-44AF-B239-B24840A11F0C",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "FBC52A23-8613-4E68-ADC3-B4C7876CC45C"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Hair",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -6.704083066466637e-09,
+              -0.4565916061401367,
+              0.03330454230308533
+            ],
+            "Rotation": [
+              -8.226933090327293e-08,
+              -0.6901249289512634,
+              0.7236903309822083,
+              -8.627061731658614e-08
+            ],
+            "Scale": [
+              0.9999317526817322,
+              0.9999489784240723,
+              0.9999499320983887
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "1FE086AC-04E1-470E-8684-B40F66346AE1",
+            "MeshGUID": "F1F61B1C-3BBF-4DBF-BCD4-0B18BFB433C3",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "C8B7A664-13EA-4AB9-977F-23D73FCECA01"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Blade_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -0.002960225800052285,
+              0.004157936666160822,
+              0.39752599596977234
+            ],
+            "Rotation": [
+              -0.19522035121917725,
+              0.1940014511346817,
+              0.6404352784156799,
+              0.7170042395591736
+            ],
+            "Scale": [
+              0.9999536871910095,
+              0.999941349029541,
+              0.9999596476554871
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hand_L",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "3376B10E-974E-4124-AA37-654D0B02848B",
+            "MeshGUID": "A78F05A9-B3E6-4E93-AEE8-31B58F01C689",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "1ACA88DA-E36E-4793-A60D-6715C063BA10"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Blade_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -0.0635114386677742,
+              -0.051987070590257645,
+              0.39507463574409485
+            ],
+            "Rotation": [
+              0.14111727476119995,
+              0.17849302291870117,
+              0.7530937790870667,
+              -0.6173135042190552
+            ],
+            "Scale": [
+              0.9999496340751648,
+              0.9998422265052795,
+              0.9999592900276184
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hand_R",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "30A2F8D8-D82F-4652-91DB-0DA4E726129F",
+            "MeshGUID": "23C6D211-6848-438D-8049-7CDE32B49ADE",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "40343D7A-1CB4-4444-A5C9-6E9978459CF4"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Eye",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -1.5428369692926935e-07,
+              -0.45544999837875366,
+              0.007602137513458729
+            ],
+            "Rotation": [
+              8.429864095660378e-08,
+              -0.7071065902709961,
+              0.7071069478988647,
+              8.42986196403217e-08
+            ],
+            "Scale": [
+              0.9999452233314514,
+              0.999945342540741,
+              0.999945342540741
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9D69E97C-1544-428B-825C-63448150F072",
+            "MeshGUID": "58E87C6D-8062-4843-A9F1-010F95828E4D",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "9FF13342-D712-4AED-A2A9-8F8D5DFDF038"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "BladeKeeper",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -8.147254249024627e-08,
+              0.07697601616382599,
+              -0.3417205214500427
+            ],
+            "Rotation": [
+              0.0,
+              1.0,
+              0.0,
+              -1.1920930376163597e-07
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "701E9B21-40B1-4D46-BA4E-058DC2E442B9",
+            "MeshGUID": "78C089B3-C458-4D90-8C2F-266CE1053956",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "1773DFE3-7AF1-4E79-9599-76231C744F23"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "DMG",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              -0.012969084084033966,
+              0.18344935774803162
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "F3CE0944-B675-4D3C-8C95-2D093C73F590",
+            "MeshGUID": "6BF314FB-5574-4D72-99C6-D318485FC472",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "ECE95CC4-D307-4485-B76F-83FA158A75DD"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Scabbard_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -0.2082422971725464,
+              0.03324108570814133,
+              -0.12694098055362701
+            ],
+            "Rotation": [
+              1.0,
+              0.0,
+              0.0,
+              -1.1920930376163597e-07
+            ],
+            "Scale": [
+              0.9999998807907104,
+              0.9999993443489075,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "2694B57E-5771-4DD9-942D-1B9484DFDE0C",
+            "MeshGUID": "E815657E-FDD6-4E74-81CE-631163BB04B8",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "B2E2A670-E15D-4EBE-B033-226A8021D9DF"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Scabbard_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.20741751790046692,
+              0.03742123395204544,
+              -0.13531380891799927
+            ],
+            "Rotation": [
+              0.9999996423721313,
+              -1.0402905620265912e-10,
+              -0.0008726637461222708,
+              -1.1920840847778891e-07
+            ],
+            "Scale": [
+              0.9999964237213135,
+              1.000007152557373,
+              1.000007152557373
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "926AE4BD-9C98-4332-877E-EF50EDB9AAA9",
+            "MeshGUID": "2CCB16A0-B81D-4CA4-B9FD-E8AC216D0E78",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "6A9B14D7-601A-4183-ACC3-9917CFA59434"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Cloak",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              -0.3499999940395355,
+              -0.019999999552965164
+            ],
+            "Rotation": [
+              -8.429568509882301e-08,
+              -0.7071068286895752,
+              0.7071068286895752,
+              -8.429527298403627e-08
+            ],
+            "Scale": [
+              0.3387173116207123,
+              0.7129999995231628,
+              0.49999991059303284
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "chest",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "A985A5E4-5DCD-40B1-9932-1A59C09E3F49",
+            "MeshGUID": "EB1A05D1-BC0F-4102-9B5E-3A6CB2E591C0",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "91DB0F27-1626-409C-951A-8C1C1D8BA500"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Cloak2",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.05000000074505806,
+              0.6499999761581421
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              0.47999998927116394,
+              0.5299999713897705,
+              0.5
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "A985A5E4-5DCD-40B1-9932-1A59C09E3F49",
+            "MeshGUID": "D1605DDF-E2DF-4468-A09D-70830293816F",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "E3494248-8DB5-43A7-857C-4FE5356FD891",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "A828B766-3969-4523-904F-D716C866B7E2"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Opening_BoatNPC",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -118.55577087402344,
+              5.976851940155029,
+              -107.07097625732422
+            ],
+            "Rotation": [
+              0.0,
+              1.0,
+              0.0,
+              -1.1920930376163597e-07
+            ],
+            "Scale": [
+              0.010000001639127731,
+              0.009999999776482582,
+              0.010000001639127731
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "043DDDE0-023B-4BE8-899B-DB190AF56E01",
+            "MeshGUID": "AF29D8EC-8A4F-4272-BBB8-7D927B5C226C",
+            "Mode": 0,
+            "OverrideMaterials": [
+              0,
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        },
+        {
+          "data": {
+            "AnimationClip": 71,
+            "BlendDuration": 0.0,
+            "BlendMap": [],
+            "Enabled": true,
+            "LoopMap": [
+              {
+                "Clip": 78,
+                "Loop": true
+              },
+              {
+                "Clip": 70,
+                "Loop": true
+              },
+              {
+                "Clip": 22,
+                "Loop": true
+              },
+              {
+                "Clip": 18,
+                "Loop": true
+              },
+              {
+                "Clip": 82,
+                "Loop": true
+              },
+              {
+                "Clip": 19,
+                "Loop": true
+              },
+              {
+                "Clip": 17,
+                "Loop": true
+              },
+              {
+                "Clip": 23,
+                "Loop": true
+              },
+              {
+                "Clip": 71,
+                "Loop": true
+              },
+              {
+                "Clip": 24,
+                "Loop": true
+              },
+              {
+                "Clip": 26,
+                "Loop": true
+              },
+              {
+                "Clip": 29,
+                "Loop": true
+              }
+            ],
+            "PlaySpeed": 1.0,
+            "Playing": true,
+            "Type": 6
+          },
+          "type": 6
+        }
+      ],
+      "parent": "D16C696A-D579-4146-B060-55D3514C6DFE",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "59C90AF9-A644-4D11-8C69-C220CF897234"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Arm_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "FC959732-24D1-4DF4-B3C0-13A039CFEC04",
+            "MeshGUID": "56877A8C-AA63-4A66-AFC7-0C55D79AC35A",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "1851B8D4-9E4B-450D-AAC1-1B80F2D489F6"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Arm_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "45C18129-F0EB-4E69-BD9A-B69B71B97A3B",
+            "MeshGUID": "E68EF54D-AFC3-43E1-8125-C74C9CC2F3C3",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "E436E1DB-F674-487D-B73E-BB5DB202BF5C"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Uniform",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "D1B261CE-5FC0-4B03-97A3-4194D2E2EB22",
+            "MeshGUID": "9F7DFD06-2063-4CC4-814B-E3AA4AB811C1",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "7DB7E3CB-C4A2-4941-B27F-E46864A749CF"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Hand_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "36F34DC4-EF65-482E-B108-D00B93192C24",
+            "MeshGUID": "A56AD4B8-E026-4045-AE33-78AB9A84374B",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "4160CF05-F973-4942-B873-60A0F1E76AFC"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Hand_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "D0706350-E818-474B-BBA3-46D57B297C68",
+            "MeshGUID": "A8641BB0-E462-4776-B27D-92558A7829A1",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "1DC771E0-4C85-4577-ACD6-F1400B536DA8"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Head",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -1.1084050299814407e-07,
+              -0.4526940882205963,
+              0.004272959660738707
+            ],
+            "Rotation": [
+              8.429372400087232e-08,
+              -0.7071065902709961,
+              0.7071069478988647,
+              8.429371689544496e-08
+            ],
+            "Scale": [
+              9.99915599822998,
+              9.999156951904297,
+              9.999156951904297
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "ACF11179-CE93-4239-95F1-96AA5A9684FC",
+            "MeshGUID": "8949521E-D499-44AF-B239-B24840A11F0C",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "14005BA3-B7BA-4873-B19F-A8C8BA307424"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Hair",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -6.704083066466637e-09,
+              -0.4565916061401367,
+              0.03330454230308533
+            ],
+            "Rotation": [
+              -8.226933090327293e-08,
+              -0.6901249289512634,
+              0.7236903309822083,
+              -8.627061731658614e-08
+            ],
+            "Scale": [
+              0.9999317526817322,
+              0.9999489784240723,
+              0.9999499320983887
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "256394EB-26C0-43D9-8FE2-BF7E3084B1C8",
+            "MeshGUID": "2BB6C759-0B7A-4F20-A22A-9488C6103D56",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "2377AAF6-7F1B-4CEF-BD84-3C57F31C0483"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Blade_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -0.002960225800052285,
+              0.004157936666160822,
+              0.39752599596977234
+            ],
+            "Rotation": [
+              -0.19522035121917725,
+              0.1940014511346817,
+              0.6404352784156799,
+              0.7170042395591736
+            ],
+            "Scale": [
+              0.9999536871910095,
+              0.999941349029541,
+              0.9999596476554871
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hand_L",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "3376B10E-974E-4124-AA37-654D0B02848B",
+            "MeshGUID": "A78F05A9-B3E6-4E93-AEE8-31B58F01C689",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "BB8A7E7F-7C03-4D72-875C-DCC4B37741EC"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Blade_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -0.0635114386677742,
+              -0.051987070590257645,
+              0.39507463574409485
+            ],
+            "Rotation": [
+              0.14111727476119995,
+              0.17849302291870117,
+              0.7530937790870667,
+              -0.6173135042190552
+            ],
+            "Scale": [
+              0.9999496340751648,
+              0.9998422265052795,
+              0.9999592900276184
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hand_R",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "30A2F8D8-D82F-4652-91DB-0DA4E726129F",
+            "MeshGUID": "23C6D211-6848-438D-8049-7CDE32B49ADE",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "AECBA25F-55A5-4E56-88BD-CD4ED8B1B6FC"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Eye",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -1.5428369692926935e-07,
+              -0.45544999837875366,
+              0.007602137513458729
+            ],
+            "Rotation": [
+              8.429864095660378e-08,
+              -0.7071065902709961,
+              0.7071069478988647,
+              8.42986196403217e-08
+            ],
+            "Scale": [
+              0.9999452233314514,
+              0.999945342540741,
+              0.999945342540741
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9D69E97C-1544-428B-825C-63448150F072",
+            "MeshGUID": "58E87C6D-8062-4843-A9F1-010F95828E4D",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "C4D68ACD-609A-4059-BE88-FC9CBFC7B82D"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "BladeKeeper",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -8.147254249024627e-08,
+              0.07697601616382599,
+              -0.3417205214500427
+            ],
+            "Rotation": [
+              0.0,
+              1.0,
+              0.0,
+              -1.1920930376163597e-07
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "701E9B21-40B1-4D46-BA4E-058DC2E442B9",
+            "MeshGUID": "78C089B3-C458-4D90-8C2F-266CE1053956",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "6768E297-867A-4E13-AF35-8AC5217B68E7"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "DMG",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              -0.012969084084033966,
+              0.18344935774803162
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "F3CE0944-B675-4D3C-8C95-2D093C73F590",
+            "MeshGUID": "6BF314FB-5574-4D72-99C6-D318485FC472",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "3C61D9BA-F2CF-409F-B7BB-EF17154CFE56"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Scabbard_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -0.2082422971725464,
+              0.03324108570814133,
+              -0.12694098055362701
+            ],
+            "Rotation": [
+              1.0,
+              0.0,
+              0.0,
+              -1.1920930376163597e-07
+            ],
+            "Scale": [
+              0.9999998807907104,
+              0.9999993443489075,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "2694B57E-5771-4DD9-942D-1B9484DFDE0C",
+            "MeshGUID": "E815657E-FDD6-4E74-81CE-631163BB04B8",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "2A28B35C-5282-4210-A384-914CBE124F48"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Scabbard_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.20741751790046692,
+              0.03742123395204544,
+              -0.13531380891799927
+            ],
+            "Rotation": [
+              0.9999996423721313,
+              -1.0402905620265912e-10,
+              -0.0008726637461222708,
+              -1.1920840847778891e-07
+            ],
+            "Scale": [
+              0.9999964237213135,
+              1.000007152557373,
+              1.000007152557373
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "926AE4BD-9C98-4332-877E-EF50EDB9AAA9",
+            "MeshGUID": "2CCB16A0-B81D-4CA4-B9FD-E8AC216D0E78",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "411A22C7-1CAA-4A3D-B94D-B17C777418EE"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Cloak",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              -0.3499999940395355,
+              -0.019999999552965164
+            ],
+            "Rotation": [
+              -8.429568509882301e-08,
+              -0.7071068286895752,
+              0.7071068286895752,
+              -8.429527298403627e-08
+            ],
+            "Scale": [
+              0.3387173116207123,
+              0.7129999995231628,
+              0.49999991059303284
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "chest",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "A985A5E4-5DCD-40B1-9932-1A59C09E3F49",
+            "MeshGUID": "EB1A05D1-BC0F-4102-9B5E-3A6CB2E591C0",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "94FE9BD2-706C-412A-BC06-88EDCEF01BFE"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Cloak2",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.05000000074505806,
+              0.6499999761581421
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              0.47999998927116394,
+              0.5299999713897705,
+              0.5
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "A985A5E4-5DCD-40B1-9932-1A59C09E3F49",
+            "MeshGUID": "D1605DDF-E2DF-4468-A09D-70830293816F",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "59C90AF9-A644-4D11-8C69-C220CF897234",
+      "protoGuid": "3D03EECB-CD14-4C1A-AF58-CAF3748C8792",
+      "uuid": "7C267935-02F9-4518-BF38-60356B110FA4"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "Opening_UI",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              540.0
+            ],
+            "SizePx": [
+              100.0,
+              100.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "C94A99CC-0B00-4224-8F0C-6BB19A8DF721"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "WhiteOut",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              540.0
+            ],
+            "SizePx": [
+              1920.0,
+              1080.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "77777777-7777-7777-7777-777777777772",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              0.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "Color": [
+              1.0,
+              1.0,
+              1.0,
+              0.0
+            ],
+            "Enabled": true,
+            "TextureGuid": "77777777-7777-7777-7777-777777777772",
+            "Type": 13,
+            "UV": [
+              0.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "VisualPriority": 0
+          },
+          "type": 13
+        }
+      ],
+      "parent": "C94A99CC-0B00-4224-8F0C-6BB19A8DF721",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "77C50045-8682-4A87-888D-D39C9AAFCD6D"
     }
   ],
   "version": 1

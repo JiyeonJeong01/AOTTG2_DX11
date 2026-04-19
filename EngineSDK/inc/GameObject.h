@@ -5,6 +5,7 @@
 NS_BEGIN(Engine)
 
 class CGameObject_System;
+typedef struct tagComponentHandle COMPONENT_HANDLE;
 
 class ENGINE_DLL CGameObject : public LABEL
 {
@@ -43,6 +44,7 @@ public:
     template <typename TScript>
     std::vector<TScript*> Get_AllScripts_InChildren();
 
+    void                Remove_Component(COMPONENT_TYPE eComType, const COMPONENT_HANDLE& hCOmponent);
     void                Remove_Components(COMPONENT_TYPE eComType);
     void                Remove_All_Components();
 

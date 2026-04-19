@@ -20,6 +20,7 @@ public:
     void Enter(_uint iDetailFlag) override;
     void Exit() override;
 
+    void Cache_PlayerContext(const PLAYER_CONTEXT& tContext) override;
     void Setup_CachedPlayerContext() override;
 
 private :
@@ -35,6 +36,13 @@ private :
     _bool                   m_bAirReleasePlayed = false;
     _float                  m_fAirReleaseElapsedTime = 0.f;
     const _float            m_fTotalAirReleaseTime = 2.f;
+
+    class CVFX_Manager*     m_pVFX_Manager = nullptr;
+    VFX_OBJECT*             m_pSparkle = nullptr;
+    _float                  m_fSlideSparkAcc = 0.f;
+
+    _bool                   m_bContactGround = false;
+
 private:
     void    Decide_HookAnim();
 

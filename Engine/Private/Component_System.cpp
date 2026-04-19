@@ -244,7 +244,7 @@ void CComponent_System::Add_To_Group(uint32_t iGroupID, COMPONENT_HANDLE hNew)
 	m_pComGroupMgr->Add_To_Group(iGroupID, hNew);
 }
 
-const COMPONENT_GROUP& CComponent_System::Get_Group(uint32_t iGroupID)
+COMPONENT_GROUP& CComponent_System::Get_Group(uint32_t iGroupID)
 {
 	return m_pComGroupMgr->Get_Group(iGroupID);
 }

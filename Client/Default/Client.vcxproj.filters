@@ -391,6 +391,9 @@
     <ClInclude Include="..\Public\Opening_Director.h">
       <Filter>Director</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Client_Math.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">

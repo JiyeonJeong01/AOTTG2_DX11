@@ -4,6 +4,7 @@
 #include "ODM_Gear.h"
 #include "GroundChecker.h"
 #include "Player_SkillController.h"
+#include "VFX_Manager.h"
 
 CPlayerState_AirborneMove::CPlayerState_AirborneMove(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
     : CPlayerState(goPlayer, scPlayer, eState)
@@ -73,6 +74,62 @@ void CPlayerState_AirborneMove::Update(_float fDT)
         return;
 
     Update_AnchorAirOrSlide();
+
+    if (m_bContactGround && m_tRef.pGroundChecker->Get_OnWalkable())
+    {
+        m_pSparkle = m_pVFX_Manager->Start_Particle(PARTICLE_VFX::SLIDE_SPARK, m_tComponents.transform->vPosition);
+        if (m_pSparkle)
+        {
+            _vector vLook = XMVector3Normalize(m_tComponents.transform.Get_StateXM(STATE::LOOK)) * -1.f;
+            _vector vStartPos = XMLoadFloat3(&m_tComponents.transform->vPosition) + vLook * 0.05f;
+
+            _float3 vStartPos3{};
+            _float3 vForward3{};
+            XMStoreFloat3(&vStartPos3, vStartPos);
+
+            XMStoreFloat3(&vForward3, vLook);
+            m_pSparkle->meshRenderer.Set_ParticleForward(vForward3);
+            m_pSparkle->meshRenderer.Reset_Particle();
+
+        }
+
+        if (m_pVFX_Manager)
+        {
+            m_fSlideSparkAcc += fDT;
+
+            if (m_fSlideSparkAcc >= 0.03f)
+            {
+                m_fSlideSparkAcc = 0.f;
+
+                _vector vLook = XMVector3Normalize(m_tComponents.transform.Get_StateXM(STATE::LOOK)) * -1.f;
+                _vector vStartPos = XMLoadFloat3(&m_tComponents.transform->vPosition) + vLook * 0.05f;
+
+                _float3 vStartPos3{};
+                _float3 vForward3{};
+                XMStoreFloat3(&vStartPos3, vStartPos);
+                XMStoreFloat3(&vForward3, vLook);
+
+                auto* pSpark = m_pVFX_Manager->Start_Particle(PARTICLE_VFX::SLIDE_SPARK, vStartPos3);
+                if (pSpark != nullptr)
+                {
+                    pSpark->meshRenderer.Set_ParticleForward(vForward3);
+                    pSpark->meshRenderer.Reset_Particle();
+                    pSpark->meshRenderer.Set_ParticlePlaying(true);
+                }
+            }
+        }
+        return;
+    }
+
+    if (!m_bContactGround && m_tRef.pGroundChecker->Get_OnWalkable())
+    {
+        m_bContactGround = true;
+    }
+    else
+    {
+        m_bContactGround = false;
+    }
+
 }
 
 void CPlayerState_AirborneMove::Late_Update(_float fDT)
@@ -88,6 +145,7 @@ void CPlayerState_AirborneMove::Enter(_uint iDetailFlag)
     m_fGroundStableTime = 0.f;
     m_fAirStableTime = 0.f;
     m_fAirReleaseElapsedTime = m_fTotalAirReleaseTime; /* 바로 시작할 수 있도록 */
+    m_bContactGround = false;
 
     if (iDetailFlag < To<_uint>(AIRBORNE_MOVE::END))
         m_eAirborneState = To<AIRBORNE_MOVE>(iDetailFlag);
@@ -136,6 +194,13 @@ void CPlayerState_AirborneMove::Exit()
     m_fAirStableTime = 0.f;
 }
 
+void CPlayerState_AirborneMove::Cache_PlayerContext(const PLAYER_CONTEXT& tContext)
+{
+    CPlayerState::Cache_PlayerContext(tContext);
+
+    m_pVFX_Manager = tContext.pVFX_Manager;
+}
+
 void CPlayerState_AirborneMove::Decide_NextState()
 {
     _bool bLeftHook = m_tInputCmd.bLeftAnchorHeld;
@@ -148,7 +213,7 @@ void CPlayerState_AirborneMove::Decide_NextState()
         && m_tRef.pGroundChecker->Get_OnWalkable())
     {
         cout << "[AIRBORNE_MOVE] -> GROUNDED_MOVE\n";
-        const float THREASHOLD = 4.f;
+        const float THREASHOLD = 3.3f;
 
         _float3 fLinearVel = m_tComponents.rigidbody.Get_LinearVel();
         const _float fLinearVelSq = fLinearVel.x * fLinearVel.x + fLinearVel.z * fLinearVel.z;

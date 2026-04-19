@@ -41,9 +41,7 @@ void CResupplyStation::Start(void* pCtx)
     mr->extraPassFlags &= ~To<uint32_t>(EXTRA_RENDER_PASS::OUTLINE);
 
     m_eSide = SIDE::LEFT;
-
-    m_vUILeftBaseSize = m_rtUILeft->vSizePx;
-    m_vUIRightBaseSize = m_rtUIRight->vSizePx;
+    m_vUILeftBaseSize = m_vUIRightBaseSize = m_vBaseSize;
 
     Apply_UISelectionVisual();
 }

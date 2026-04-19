@@ -1,7 +1,7 @@
 {
   "GUID": "CFF84B0B-BDEC-FD89-BDEC-F000A1410954",
   "TextureGUID": "CE4B6BE1-106A-4A6C-BCB3-E3944EE43333",
-  "MaxParticles": 7,
+  "MaxParticles": 4,
   "LifeTime": [1.2, 1.6],
   "Speed": [9.0, 11.0],
   "ScaleX": [0.1, 0.15],

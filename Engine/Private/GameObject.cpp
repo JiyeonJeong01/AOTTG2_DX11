@@ -22,6 +22,94 @@ void CGameObject::Render()
         return;
 }
 
+void CGameObject::Remove_Component(COMPONENT_TYPE eComType, const COMPONENT_HANDLE& hCOmponent)
+{
+    if (!Is_Valid())
+        return;
+
+    GAMEOBJECT_DATA& data = SYS_GAMEOBJECT.Access_Data_Raw(m_hSelf);
+
+    const _uint iTypeIndex = SCAST(_uint, eComType);
+    uint32_t& iSlotData = data.iComponentSlots[iTypeIndex];
+
+    /* 현재 이 타입 슬롯 자체가 비어 있으면 종료 */
+    if (iSlotData == INVALID_HANDLE_UINT)
+        return;
+
+    /* 단일 슬롯 */
+    if ((iSlotData & Component::GROUP_FLAG) == 0)
+    {
+        COMPONENT_HANDLE hStored{};
+        hStored.iHandle = iSlotData;
+
+        /* 요청 핸들이 현재 슬롯과 다르면 잘못된 요청이므로 무시 */
+        if (hStored.iHandle != hCOmponent.iHandle)
+            return;
+
+        SYS_COMPONENT.Remove_Component_By_Type(eComType, hCOmponent);
+
+        iSlotData = INVALID_HANDLE_UINT;
+        data.componentMask &= ~Component::To_Bit(eComType);
+        return;
+    }
+
+    /* 그룹 슬롯 */
+    const uint32_t iGroupID = iSlotData & Component::DATA_MASK;
+    auto& tGroup = SYS_COMPONENT.Get_Group(iGroupID);
+
+    bool bRemoved = false;
+
+    if (tGroup.tPrimary.iHandle == hCOmponent.iHandle)
+    {
+        SYS_COMPONENT.Remove_Component_By_Type(eComType, hCOmponent);
+        tGroup.tPrimary = COMPONENT_HANDLE{};
+        tGroup.tPrimary = INVALID_HANDLE;
+        bRemoved = true;
+    }
+    else
+    {
+        for (auto it = tGroup.tExtras.begin(); it != tGroup.tExtras.end(); ++it)
+        {
+            if (it->iHandle == hCOmponent.iHandle)
+            {
+                SYS_COMPONENT.Remove_Component_By_Type(eComType, hCOmponent);
+                tGroup.tExtras.erase(it);
+                bRemoved = true;
+                break;
+            }
+        }
+    }
+
+    if (!bRemoved)
+        return;
+
+    const bool bPrimaryValid = (tGroup.tPrimary.iHandle != INVALID_HANDLE_UINT);
+    const bool bHasExtras = !tGroup.tExtras.empty();
+
+    /* 그룹이 완전히 비었으면 슬롯/마스크 제거 */
+    if (!bPrimaryValid && !bHasExtras)
+    {
+        SYS_COMPONENT.Free_Group(iGroupID);
+        iSlotData = INVALID_HANDLE_UINT;
+        data.componentMask &= ~Component::To_Bit(eComType);
+        return;
+    }
+
+    /* primary가 비었는데 extras가 남았으면 첫 extra를 primary로 승격 */
+    if (!bPrimaryValid && bHasExtras)
+    {
+        tGroup.tPrimary = tGroup.tExtras.front();
+        tGroup.tExtras.erase(tGroup.tExtras.begin());
+    }
+
+    /* 1개만 남았으면 그룹 해제하고 단일 슬롯으로 내림 */
+    if (tGroup.tExtras.empty())
+    {
+        iSlotData = tGroup.tPrimary.iHandle;
+        SYS_COMPONENT.Free_Group(iGroupID);
+    }
+}
+
 void CGameObject::Remove_Components(COMPONENT_TYPE eComType)
 {
     if (!Is_Valid())

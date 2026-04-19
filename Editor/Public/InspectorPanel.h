@@ -82,6 +82,7 @@ private:
     void Draw_AnimatorLoopView();
 
     void Validate_Target();
+    void Draw_RemoveComponent(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent);
 
 private:
     Engine::CScript_Processor* m_pScript_Processor = nullptr;

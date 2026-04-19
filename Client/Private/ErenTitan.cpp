@@ -90,6 +90,9 @@ void CErenTitan::Start(void* pCtx)
             tr->vPosition = _float3(100.f, 0.f, -148.f);
         }
     }
+
+    /* 추락 속도 */
+    m_rbEren.Add_LinearImpulse({ 0.f, -10.f, 0.f });
 }
 
 void CErenTitan::Priority_Update(void* pCtx, _float fDT)

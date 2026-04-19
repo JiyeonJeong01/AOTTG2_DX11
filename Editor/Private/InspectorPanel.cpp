@@ -124,6 +124,14 @@ void CInspectorPanel::Validate_Target()
     /* TODO : Validiate  */
 }
 
+void CInspectorPanel::Draw_RemoveComponent(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)
+{
+    if (m_pTarget == nullptr)
+        return;
+
+    m_pTarget->Remove_Component(eComType, hComponent);
+}
+
 void CInspectorPanel::Render()
 {
     if (!m_bOpen)
@@ -1391,7 +1399,6 @@ void CInspectorPanel::Draw_Collider()
         return;
 
     const ImGuiID idHeader = window->GetID("Collider_Header");
-    const ImGuiID idCheck = window->GetID("Collider_Enable");
 
     ImGui::PushID(idHeader);
 
@@ -1414,7 +1421,31 @@ void CInspectorPanel::Draw_Collider()
 
     const bool open = ImGui::TreeNodeEx("Collider", flags);
 
+    bool bRemoveComponent = false;
+
+    const float fButtonWidth = 22.f;
+    const float fRight = ImGui::GetWindowContentRegionMax().x + ImGui::GetWindowPos().x;
+    const float fCursorY = ImGui::GetItemRectMin().y;
+
+    ImGui::SameLine();
+    ImGui::SetCursorScreenPos({ fRight - fButtonWidth - 6.f, fCursorY });
+
+    if (ImGui::SmallButton("X"))
+    {
+        bRemoveComponent = true;
+    }
+
     ImGui::PopID();
+
+    if (bRemoveComponent)
+    {
+        Draw_RemoveComponent(COMPONENT_TYPE::COLLIDER, col.Get_Handle());
+
+        if (open)
+            ImGui::TreePop();
+
+        return;
+    }
 
     if (!open)
         return;
@@ -1621,7 +1652,29 @@ void CInspectorPanel::Draw_Rigidbody()
 
     const bool open = ImGui::TreeNodeEx("Rigidbody", flags);
 
+    bool bRemoveComponent = false;
+
+    const float fButtonWidth = 22.f;
+    const float fRight = ImGui::GetWindowContentRegionMax().x + ImGui::GetWindowPos().x;
+    const float fCursorY = ImGui::GetItemRectMin().y;
+
+    ImGui::SameLine();
+    ImGui::SetCursorScreenPos({ fRight - fButtonWidth - 6.f, fCursorY });
+
+    if (ImGui::SmallButton("X"))
+    {
+        bRemoveComponent = true;
+    }
+
     ImGui::PopID();
+
+    if (bRemoveComponent)
+    {
+        Draw_RemoveComponent(COMPONENT_TYPE::RIGIDBODY, rb.Get_Handle());
+        if (open)
+            ImGui::TreePop();
+        return;
+    }
 
     if (!open)
         return;
@@ -1863,7 +1916,29 @@ void CInspectorPanel::Draw_SpringJoint()
 
     const bool open = ImGui::TreeNodeEx("SpringJoint", flags);
 
+    bool bRemoveComponent = false;
+
+    const float fButtonWidth = 22.f;
+    const float fRight = ImGui::GetWindowContentRegionMax().x + ImGui::GetWindowPos().x;
+    const float fCursorY = ImGui::GetItemRectMin().y;
+
+    ImGui::SameLine();
+    ImGui::SetCursorScreenPos({ fRight - fButtonWidth - 6.f, fCursorY });
+
+    if (ImGui::SmallButton("X"))
+    {
+        bRemoveComponent = true;
+    }
+
     ImGui::PopID();
+
+    if (bRemoveComponent)
+    {
+        Draw_RemoveComponent(COMPONENT_TYPE::SPRING_JOINT, springJoint.Get_Handle());
+        if (open)
+            ImGui::TreePop();
+        return;
+    }
 
     if (!open)
         return;
@@ -2453,6 +2528,29 @@ void CInspectorPanel::Draw_AllScripts(COMPONENT_HANDLE hComponent)
     const bool open = ImGui::TreeNodeEx("Script", flags);
 
     ImGui::PopID();
+
+    bool bRemoveComponent = false;
+
+    const float fButtonWidth = 22.f;
+    const float fRight = ImGui::GetWindowContentRegionMax().x + ImGui::GetWindowPos().x;
+    const float fCursorY = ImGui::GetItemRectMin().y;
+
+    ImGui::SameLine();
+    ImGui::SetCursorScreenPos({ fRight - fButtonWidth - 6.f, fCursorY });
+
+    if (ImGui::SmallButton("X"))
+    {
+        bRemoveComponent = true;
+    }
+
+    /* 눌렀으면 바로 제거하고 종료 */
+    if (bRemoveComponent)
+    {
+        Draw_RemoveComponent(COMPONENT_TYPE::SCRIPT, sc.Get_Handle());
+        if (open)
+            ImGui::TreePop();
+        return;
+    }
 
     if (!open)
     {

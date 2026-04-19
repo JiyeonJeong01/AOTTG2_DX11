@@ -41,7 +41,7 @@ public : /* Component Processor */
 public : /* CComponentGroup_Manager */
 	uint32_t				Promote(COMPONENT_HANDLE hOld, COMPONENT_HANDLE hNew);
 	void					Add_To_Group(uint32_t iGroupID, COMPONENT_HANDLE hNew);
-	const COMPONENT_GROUP&	Get_Group(uint32_t iGroupID);
+	COMPONENT_GROUP&	    Get_Group(uint32_t iGroupID);
 	void					Free_Group(uint32_t iGroupID);
 
 private :

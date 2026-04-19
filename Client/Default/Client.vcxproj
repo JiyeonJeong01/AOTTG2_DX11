@@ -37,6 +37,7 @@
     <ClInclude Include="..\Public\Attacher.h" />
     <ClInclude Include="..\Public\CameraController.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
+    <ClInclude Include="..\Public\Client_Math.h" />
     <ClInclude Include="..\Public\CrawlerTitan.h" />
     <ClInclude Include="..\Public\CrawlerTitanStateMachine.h" />
     <ClInclude Include="..\Public\CrawlerTitanState_AttackEren.h" />

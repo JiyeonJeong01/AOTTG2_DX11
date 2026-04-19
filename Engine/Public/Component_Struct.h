@@ -29,7 +29,7 @@ typedef struct tagComponentHandle
 static inline COMPONENT_HANDLE INVALID_HANDLE{ };
 static inline uint32_t INVALID_HANDLE_UINT = { 0 };
 
-typedef struct tagComponentGroup
+typedef struct ENGINE_DLL tagComponentGroup
 {
     COMPONENT_HANDLE            tPrimary;
     std::vector<COMPONENT_HANDLE>    tExtras;

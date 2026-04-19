@@ -47,7 +47,7 @@ void CComponentGroup_Manager::Add_To_Group(uint32_t iGroupID, COMPONENT_HANDLE h
 	m_Groups[iGroupID].tExtras.push_back(hNew);
 }
 
-const COMPONENT_GROUP& CComponentGroup_Manager::Get_Group(uint32_t iGroupID) const
+COMPONENT_GROUP& CComponentGroup_Manager::Get_Group(uint32_t iGroupID)
 {
 	return m_Groups[iGroupID];
 }

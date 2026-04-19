@@ -464,8 +464,8 @@
                 "ExtraPassFlags": 0,
                 "Flags": 0,
                 "Layer": 1,
-                "MaterialGUID": "2518F57D-0160-435E-BC74-2803AD1786D2",
-                "MeshGUID": "F73811B9-C471-4AFF-A6FE-E0FDBCD5BC0E",
+                "MaterialGUID": "1FE086AC-04E1-470E-8684-B40F66346AE1",
+                "MeshGUID": "F1F61B1C-3BBF-4DBF-BCD4-0B18BFB433C3",
                 "Mode": 2,
                 "OverrideMaterials": [
                   0
@@ -994,6 +994,148 @@
         "iObjMask": 0,
         "isUI": false,
         "name": "Scabbard_Right"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.0,
+                  -0.3499999940395355,
+                  -0.019999999552965164
+                ],
+                "Rotation": [
+                  -8.429568509882301e-08,
+                  -0.7071068286895752,
+                  0.7071068286895752,
+                  -8.429527298403627e-08
+                ],
+                "Scale": [
+                  0.3387173116207123,
+                  0.7129999995231628,
+                  0.49999991059303284
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "chest",
+                "Enabled": true,
+                "ExtraPassFlags": 0,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "A985A5E4-5DCD-40B1-9932-1A59C09E3F49",
+                "MeshGUID": "EB1A05D1-BC0F-4102-9B5E-3A6CB2E591C0",
+                "Mode": 2,
+                "OverrideMaterials": [
+                  0
+                ],
+                "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+                "ParticlePivot": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "ParticlePlaying": false,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "Cloak"
+      },
+      {
+        "components": [
+          [
+            {
+              "data": {
+                "Position": [
+                  0.10189326107501984,
+                  -5.329070941717225e-15,
+                  -2.4293250078244455e-08
+                ],
+                "Rotation": [
+                  0.4999999403953552,
+                  0.5000000596046448,
+                  -0.5000000596046448,
+                  0.4999999403953552
+                ],
+                "Scale": [
+                  1.2199972867965698,
+                  1.4099998474121094,
+                  0.9700000286102295
+                ],
+                "Type": 0
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "data": {
+                "AttachBoneName": "",
+                "Enabled": true,
+                "ExtraPassFlags": 0,
+                "Flags": 0,
+                "Layer": 1,
+                "MaterialGUID": "A985A5E4-5DCD-40B1-9932-1A59C09E3F49",
+                "MeshGUID": "D1605DDF-E2DF-4468-A09D-70830293816F",
+                "Mode": 0,
+                "OverrideMaterials": [
+                  0
+                ],
+                "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+                "ParticlePivot": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "ParticlePlaying": false,
+                "SortZ": 0.0,
+                "Type": 5
+              }
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "iObjMask": 0,
+        "isUI": false,
+        "name": "Cloak2"
       }
     ],
     "components": [
@@ -1001,9 +1143,9 @@
         {
           "data": {
             "Position": [
-              -1.4884755611419678,
-              0.9854010343551636,
-              -18.98676872253418
+              0.0,
+              0.0,
+              0.0
             ],
             "Rotation": [
               -0.00010960882354993373,
@@ -1054,8 +1196,8 @@
       [
         {
           "data": {
-            "AnimationClip": 70,
-            "BlendDuration": 0.20000000298023224,
+            "AnimationClip": 71,
+            "BlendDuration": 0.0,
             "BlendMap": [],
             "Enabled": true,
             "LoopMap": [
@@ -1127,7 +1269,7 @@
     ],
     "iObjMask": 0,
     "isUI": false,
-    "name": "Character_Base"
+    "name": "Opening_Eren"
   },
   "version": 1
 }

@@ -8,7 +8,7 @@
  */
 NS_BEGIN(Engine)
 
-class CComponentGroup_Manager final
+class ENGINE_DLL CComponentGroup_Manager final
 {
 public:
 	CComponentGroup_Manager();
@@ -20,7 +20,7 @@ public :
 	/* Appends an additional component handle to an existing group. */
 	void					Add_To_Group(uint32_t iGroupID, COMPONENT_HANDLE hNew);
 
-	const COMPONENT_GROUP&	Get_Group(uint32_t iGroupID) const;
+	COMPONENT_GROUP&	    Get_Group(uint32_t iGroupID);
 	void					Free_Group(uint32_t iGroupID);
 
 private:
