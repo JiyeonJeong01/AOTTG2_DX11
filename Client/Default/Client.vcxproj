@@ -56,6 +56,7 @@
     <ClInclude Include="..\Public\NormalTitanState_Grab.h" />
     <ClInclude Include="..\Public\NormalTitanState_Hurt.h" />
     <ClInclude Include="..\Public\NormalTitanState_Stunned.h" />
+    <ClInclude Include="..\Public\Opening_Director.h" />
     <ClInclude Include="..\Public\PlayerState_Grabbed.h" />
     <ClInclude Include="..\Public\ResupplyStation.h" />
     <ClInclude Include="..\Public\ScoutBehavior_RequestResupply.h" />
@@ -146,6 +147,7 @@
     <ClCompile Include="..\Private\NormalTitanState_Grab.cpp" />
     <ClCompile Include="..\Private\NormalTitanState_Hurt.cpp" />
     <ClCompile Include="..\Private\NormalTitanState_Stunned.cpp" />
+    <ClCompile Include="..\Private\Opening_Director.cpp" />
     <ClCompile Include="..\Private\PlayerState_Grabbed.cpp" />
     <ClCompile Include="..\Private\ResupplyStation.cpp" />
     <ClCompile Include="..\Private\ScoutBehavior_RequestResupply.cpp" />

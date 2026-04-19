@@ -101,6 +101,9 @@
     <Filter Include="Manager">
       <UniqueIdentifier>{15c70c09-c694-4c1f-a243-c881e20b8bf8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Director">
+      <UniqueIdentifier>{14c705a1-bfa4-4422-afed-357109d9f753}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\MainApp.h">
@@ -385,6 +388,9 @@
     <ClInclude Include="..\Public\VFX_Manager.h">
       <Filter>Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Opening_Director.h">
+      <Filter>Director</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -632,6 +638,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\VFX_Manager.cpp">
       <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Opening_Director.cpp">
+      <Filter>Director</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

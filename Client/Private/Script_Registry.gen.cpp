@@ -21,6 +21,7 @@
 #include "MainMenu_Controller.h"
 #include "NormalTitan.h"
 #include "ODM_Gear.h"
+#include "Opening_Director.h"
 #include "Player.h"
 #include "ResupplyStation.h"
 #include "Scout.h"
@@ -106,6 +107,10 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\ODM_Gear.script");
         handler.Register_VTable(guid, ScriptBinder<CODM_Gear>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Opening_Director.script");
+        handler.Register_VTable(guid, ScriptBinder<COpening_Director>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Player.script");

@@ -1,0 +1,5 @@
+source=../../Converter/Bin/FBXs/Boat2Model.fbx
+meshCount=1
+part0Name=柱体.007
+part0MeshGuid=6CE01676-5C32-4245-B881-21740170EB5E
+part0MaterialGuid=746EB11E-00BA-4E82-BEBB-282A78925BDF

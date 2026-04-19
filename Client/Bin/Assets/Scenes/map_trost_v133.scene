@@ -4698,10 +4698,10 @@
               -236.4753875732422
             ],
             "Rotation": [
-              0.5,
-              0.5000001192092896,
-              -0.5000000596046448,
-              0.5
+              0.4999999403953552,
+              0.5000000596046448,
+              -0.5,
+              0.4999999403953552
             ],
             "Scale": [
               1.2000001668930054,
@@ -10579,10 +10579,10 @@
               "ClassName": "CEnvironment_Controller",
               "Fields": [
                 {
-                  "Name": "m_refRainy",
+                  "Name": "m_refWater",
                   "Type": 5,
                   "Value": {
-                    "UUID": "00000000-0000-0000-0000-000000000000"
+                    "UUID": "036765B7-3128-4C93-AED8-98AF21C7BCC6"
                   }
                 }
               ]
@@ -10897,7 +10897,7 @@
             "Enabled": true,
             "LoopMap": [
               {
-                "Clip": 22,
+                "Clip": 78,
                 "Loop": true
               },
               {
@@ -10905,7 +10905,7 @@
                 "Loop": true
               },
               {
-                "Clip": 78,
+                "Clip": 22,
                 "Loop": true
               },
               {
@@ -12795,11 +12795,11 @@
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
@@ -12815,12 +12815,12 @@
                 "Loop": true
               },
               {
-                "Clip": 100,
-                "Loop": false
-              },
-              {
                 "Clip": 108,
                 "Loop": true
+              },
+              {
+                "Clip": 100,
+                "Loop": false
               },
               {
                 "Clip": 91,
@@ -15859,11 +15859,11 @@
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
@@ -15879,12 +15879,12 @@
                 "Loop": true
               },
               {
-                "Clip": 100,
-                "Loop": false
-              },
-              {
                 "Clip": 108,
                 "Loop": true
+              },
+              {
+                "Clip": 100,
+                "Loop": false
               },
               {
                 "Clip": 91,
@@ -19791,10 +19791,10 @@
               -16.494319915771484
             ],
             "Rotation": [
-              -0.3469356596469879,
+              -0.3469356298446655,
               0.0,
               -0.0,
-              0.937889039516449
+              0.9378889203071594
             ],
             "Scale": [
               0.9999999403953552,
@@ -19925,10 +19925,10 @@
               -42.7973518371582
             ],
             "Rotation": [
-              -0.3469356596469879,
+              -0.3469356298446655,
               0.0,
               -0.0,
-              0.937889039516449
+              0.9378889203071594
             ],
             "Scale": [
               0.9999999403953552,
@@ -22383,20 +22383,20 @@
                 "Loop": true
               },
               {
-                "Clip": 19,
-                "Loop": true
-              },
-              {
                 "Clip": 11,
                 "Loop": true
               },
               {
-                "Clip": 20,
+                "Clip": 19,
                 "Loop": true
               },
               {
                 "Clip": 12,
                 "Loop": false
+              },
+              {
+                "Clip": 20,
+                "Loop": true
               },
               {
                 "Clip": 18,
@@ -24891,11 +24891,11 @@
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
@@ -24911,12 +24911,12 @@
                 "Loop": true
               },
               {
-                "Clip": 108,
-                "Loop": true
-              },
-              {
                 "Clip": 100,
                 "Loop": false
+              },
+              {
+                "Clip": 108,
+                "Loop": true
               },
               {
                 "Clip": 91,
@@ -28701,11 +28701,11 @@
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
@@ -28721,12 +28721,12 @@
                 "Loop": true
               },
               {
-                "Clip": 108,
-                "Loop": true
-              },
-              {
                 "Clip": 100,
                 "Loop": false
+              },
+              {
+                "Clip": 108,
+                "Loop": true
               },
               {
                 "Clip": 91,
@@ -32511,11 +32511,11 @@
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
@@ -32531,12 +32531,12 @@
                 "Loop": true
               },
               {
-                "Clip": 108,
-                "Loop": true
-              },
-              {
                 "Clip": 100,
                 "Loop": false
+              },
+              {
+                "Clip": 108,
+                "Loop": true
               },
               {
                 "Clip": 91,
@@ -36321,11 +36321,11 @@
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
@@ -36341,12 +36341,12 @@
                 "Loop": true
               },
               {
-                "Clip": 100,
-                "Loop": false
-              },
-              {
                 "Clip": 108,
                 "Loop": true
+              },
+              {
+                "Clip": 100,
+                "Loop": false
               },
               {
                 "Clip": 91,
@@ -41448,11 +41448,11 @@
             "Enabled": false,
             "LoopMap": [
               {
-                "Clip": 39,
+                "Clip": 47,
                 "Loop": true
               },
               {
-                "Clip": 47,
+                "Clip": 39,
                 "Loop": true
               },
               {
@@ -41684,11 +41684,15 @@
             "Enabled": true,
             "LoopMap": [
               {
+                "Clip": 72,
+                "Loop": true
+              },
+              {
                 "Clip": 56,
                 "Loop": true
               },
               {
-                "Clip": 72,
+                "Clip": 71,
                 "Loop": true
               },
               {
@@ -41696,15 +41700,11 @@
                 "Loop": false
               },
               {
-                "Clip": 71,
+                "Clip": 78,
                 "Loop": true
               },
               {
                 "Clip": 70,
-                "Loop": true
-              },
-              {
-                "Clip": 78,
                 "Loop": true
               },
               {
@@ -47431,7 +47431,7 @@
       "iObjMask": 0,
       "isUI": false,
       "layer": 0,
-      "name": "New GameObject",
+      "name": "Water",
       "overrides": [
         {
           "data": {
@@ -47478,9 +47478,139 @@
           "type": 5
         }
       ],
-      "parent": "",
+      "parent": "54212A61-CA43-4A90-847F-34DC21015F59",
       "protoGuid": "00000000-0000-0000-0000-000000000000",
       "uuid": "036765B7-3128-4C93-AED8-98AF21C7BCC6"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Opening",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "COpening_Director",
+              "Fields": [
+                {
+                  "Name": "m_refBoat",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "50EAEB3A-FFFD-441B-8F59-4C86FADE54E5"
+                  }
+                },
+                {
+                  "Name": "m_vBoatGoalPos",
+                  "Type": 3,
+                  "Value": [
+                    -120.0,
+                    8.0,
+                    -109.0
+                  ]
+                },
+                {
+                  "Name": "m_fBoatMoveSpeed",
+                  "Type": 1,
+                  "Value": 3.0
+                },
+                {
+                  "Name": "m_fBoatArriveDist",
+                  "Type": 1,
+                  "Value": 0.5
+                }
+              ]
+            },
+            "ScriptGuid": "404F8C2F-98FA-4912-9632-CE5A4E909FA4",
+            "Type": 4
+          },
+          "type": 4
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "D16C696A-D579-4146-B060-55D3514C6DFE"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Boat",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -130.9292755126953,
+              8.341068267822266,
+              -214.47000122070313
+            ],
+            "Rotation": [
+              -0.49999910593032837,
+              0.4999989867210388,
+              0.5000010132789612,
+              -0.5000008940696716
+            ],
+            "Scale": [
+              0.20000000298023224,
+              0.20000000298023224,
+              0.20000000298023224
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "746EB11E-00BA-4E82-BEBB-282A78925BDF",
+            "MeshGUID": "69E06870-C93D-4764-9FD2-64BD7BEC00D7",
+            "Mode": 0,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "D16C696A-D579-4146-B060-55D3514C6DFE",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "50EAEB3A-FFFD-441B-8F59-4C86FADE54E5"
     }
   ],
   "version": 1
