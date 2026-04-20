@@ -47,6 +47,9 @@ private:
     _bool Check_FixRockFinished() const;
 
 private:
+    class CHUDController*       m_pHUD = nullptr;
+    class CUI_NoticeController* m_pNotice = nullptr;
+
     CErenTitan*                 m_scEren = nullptr;
     CGameObject*                m_goEren = nullptr;
     CTransform                  m_trEren{};
@@ -62,6 +65,13 @@ private :
     /* TODO : 에렌_거인_테스트 */
     // const _int                  m_iNumTotalCombatTitans = 3;
     const _int                  m_iNumTotalCombatTitans = 2;
+
+private :
+    SCRIPT_OBJECT_REF           m_refHUDController{};
+
+    SCRIPT_FIELDS_BEGIN(CErenSequenceDirector)
+    SCRIPT_FIELD_OBJECT_REF(m_refHUDController)
+    SCRIPT_FIELDS_END(CErenSequenceDirector)
     
 };
 

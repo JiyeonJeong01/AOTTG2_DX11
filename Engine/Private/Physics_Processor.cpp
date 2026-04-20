@@ -505,9 +505,10 @@ void CPhysics_Processor::Process_Collision(vector<CONTACT_DESC>& outContacts)
 
     vector<COLLIDER_PAIR> outPair;
     m_CurPair.clear();
+    m_vCurPoints.clear();
 
     m_upCollision_Detector->Generate_BroadPhase_Pairs(m_ActivatedColliders, outPair);
-    m_upCollision_Detector->Process_NarrowPhase(outPair, outContacts, m_CurPair);
+    m_upCollision_Detector->Process_NarrowPhase(outPair, outContacts, m_CurPair, m_vCurPoints);
 
     Invoke_CollisionEvent();
 }
@@ -522,6 +523,11 @@ void CPhysics_Processor::Invoke_CollisionEvent()
         if (!pA || !pB)
             continue;
 
+        _float3 vPoint = { 0.f, 0.f, 0.f };
+        auto it = m_vCurPoints.find(k);
+        if (it != m_vCurPoints.end())
+            vPoint = it->second;
+
         COLLISION_DESC tA{};
         COLLISION_DESC tB{};
 
@@ -530,6 +536,8 @@ void CPhysics_Processor::Invoke_CollisionEvent()
 
         tB.hObject = pA->hObject;
         tB.pCounterCollider = pA;
+
+        tA.vPoint = tB.vPoint = vPoint;
 
         const _bool bTriggerPair = pA->bTrigger || pB->bTrigger;
         const _bool bEnter = (m_prevPair.find(k) == m_prevPair.end()); /* 이전에 충돌한 적이 없다면 Enter */

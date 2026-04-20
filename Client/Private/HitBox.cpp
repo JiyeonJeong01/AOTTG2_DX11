@@ -101,7 +101,7 @@ void CHitBox::OnTriggerEnter(const COLLISION_DESC& tDesc)
     tInfo.vHitPoint = tDesc.vPoint;
 
     pHurtBox->Try_ApplyHit(tInfo);
-    m_OnSuccessHit.Invoke(pOther);
+    m_OnSuccessHit.Invoke(pOther, tInfo);
 }
 
 NS_END;

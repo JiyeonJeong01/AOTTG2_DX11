@@ -259,7 +259,7 @@ void CAbnormalTitan::On_Dead(const _float fAccuracy)
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
 }
 
-void CAbnormalTitan::On_Stunned()
+void CAbnormalTitan::On_Stunned(const HIT_INFO& tHitInfo)
 {
     TITAN_STATE eState = m_spCurState->Get_State();
     if (eState == TITAN_STATE::STUNNED || eState == TITAN_STATE::DEAD)
@@ -268,6 +268,7 @@ void CAbnormalTitan::On_Stunned()
     if (m_goEren)
         Set_Target(m_goEren);
 
+    m_pVFX_Manager->Play_CombatEffect(To<COMBAT_VFX>(m_iHitEffect), tHitInfo.vHitPoint);
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::STUNNED), To<_uint>(eState));
 }
 
@@ -335,7 +336,6 @@ void CAbnormalTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHur
     if (eHurt == TITAN_HURT::END)
         return;
 
-    m_pVFX_Manager->Play_CombatEffect(To<COMBAT_VFX>(m_iHitEffect), tHitInfo.vHitPoint);
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::HURT), To<_uint>(eHurt));
 }
 

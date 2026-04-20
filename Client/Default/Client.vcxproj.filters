@@ -397,6 +397,9 @@
     <ClInclude Include="..\Public\CinematicCamera_Director.h">
       <Filter>Director</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UI_NoticeController.h">
+      <Filter>UI\HUD</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -650,6 +653,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\CinematicCamera_Director.cpp">
       <Filter>Director</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_NoticeController.cpp">
+      <Filter>UI\HUD</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

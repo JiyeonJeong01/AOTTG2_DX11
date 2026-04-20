@@ -69,7 +69,7 @@ private :
     void On_Dead() override;
 
     void OnChange_CurState(std::shared_ptr<CPlayerState> spNewState);
-    void On_BladeHit(CGameObject* goCounter);
+    void On_BladeHit(CGameObject* goCounter, const HIT_INFO& tHitInfo);
     void On_DetectedTitan(CGameObject* goTitan);
 
 public :

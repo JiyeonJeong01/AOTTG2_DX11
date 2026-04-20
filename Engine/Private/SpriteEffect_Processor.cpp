@@ -184,8 +184,6 @@ HRESULT CSpriteEffect_Processor::Initialize_From_Spec(
 
     const auto* spec = SCAST(const SPRITE_EFFECT_SPEC*, pSpec);
 
-    pData->hTransform = spec->hTransform;
-
     pData->hMaterial = SYS_RESOURCE.Load_Material(spec->materialGUID);
 
     if (spec->textureGUID.Is_Valid())
@@ -302,9 +300,6 @@ void CSpriteEffect_Processor::Initialize_Component_Data(COMPONENT_HANDLE hCompon
 
     pData->vSize = { 1.f, 1.f };
     pData->vColor = { 1.f, 1.f, 1.f, 1.f };
-
-    pData->fAccTime = 0.f;
-    pData->iCurFrame = 0;
 }
 
 uint64_t CSpriteEffect_Processor::Make_SortKey(const SPRITE_EFFECT_DATA& tData) const

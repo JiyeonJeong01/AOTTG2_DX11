@@ -27,7 +27,7 @@ private :
     _int            m_iDiscardtMask = 0;
 
     CTransform      m_trHitBox;
-    Engine::CEvent<Engine::CGameObject*>        m_OnSuccessHit;
+    Engine::CEvent<Engine::CGameObject*, const HIT_INFO&>        m_OnSuccessHit;
 
 public :
     CGameObject*    Get_HitBoxObject() const;
@@ -41,7 +41,7 @@ public :
 
 
     template <typename T>
-    ListenerID Subscribe_OnSuccessHit(void(T::* func)(Engine::CGameObject*), T* pInstance)
+    ListenerID Subscribe_OnSuccessHit(void(T::* func)(Engine::CGameObject*, const HIT_INFO&), T* pInstance)
     {
         return m_OnSuccessHit.Add_Listener(func, pInstance);
     }

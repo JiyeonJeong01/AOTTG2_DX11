@@ -113,6 +113,7 @@
     <ClInclude Include="..\Public\UI_BladeController.h" />
     <ClInclude Include="..\Public\UI_ErenController.h" />
     <ClInclude Include="..\Public\UI_GasController.h" />
+    <ClInclude Include="..\Public\UI_NoticeController.h" />
     <ClInclude Include="..\Public\UI_SkillController.h" />
     <ClInclude Include="..\Public\VFX_Manager.h" />
     <ClInclude Include="resource.h" />
@@ -200,6 +201,7 @@
     <ClCompile Include="..\Private\UI_BladeController.cpp" />
     <ClCompile Include="..\Private\UI_ErenController.cpp" />
     <ClCompile Include="..\Private\UI_GasController.cpp" />
+    <ClCompile Include="..\Private\UI_NoticeController.cpp" />
     <ClCompile Include="..\Private\UI_SkillController.cpp" />
     <ClCompile Include="..\Private\VFX_Manager.cpp" />
   </ItemGroup>

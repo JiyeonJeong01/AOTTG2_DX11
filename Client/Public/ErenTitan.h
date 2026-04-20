@@ -136,7 +136,7 @@ private :
 
     void    On_DetectedCombatTargets(CGameObject* goTitan);
     void    On_Hurt(const HIT_INFO& tHitBox, const std::string& strHurtBox);
-    void    On_SuccessAttack(CGameObject* goTitan);
+    void    On_SuccessAttack(CGameObject* goTitan, const HIT_INFO& tHitInfo);
 
 public :
     void    Set_ErenStep(EREN_STEP_TYPE eType);

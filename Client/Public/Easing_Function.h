@@ -26,6 +26,15 @@ public:
         );
     }
 
+    static _float3 Lerp(const _float3& a, const _float3& b, _float t)
+    {
+        return _float3(
+            a.x + (b.x - a.x) * t,
+            a.y + (b.y - a.y) * t,
+            a.z + (b.z - a.z) * t
+        );
+    }
+
     static _float EaseOutQuad(_float t)
     {
         t = Clamp01(t);

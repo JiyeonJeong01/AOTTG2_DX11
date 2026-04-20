@@ -92,7 +92,7 @@ void CErenTitan::Start(void* pCtx)
     }
 
     /* 추락 속도 */
-    m_rbEren.Add_LinearImpulse({ 0.f, -10.f, 0.f });
+    m_rbEren.Add_LinearImpulse({ 0.f, -50.f, 0.f });
 }
 
 void CErenTitan::Priority_Update(void* pCtx, _float fDT)
@@ -974,7 +974,7 @@ void CErenTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox
     m_OnDamaged.Invoke(m_fCurLife);
 }
 
-void CErenTitan::On_SuccessAttack(CGameObject* goTitan)
+void CErenTitan::On_SuccessAttack(CGameObject* goTitan, const HIT_INFO& tHitInfo)
 {
     CTitan* scTitan = goTitan->Get_Script_InChildren<CTitan>();
 
@@ -990,7 +990,7 @@ void CErenTitan::On_SuccessAttack(CGameObject* goTitan)
     }
 
 
-    scTitan->On_Stunned();
+    scTitan->On_Stunned(tHitInfo);
     CRigidbody rbTitan = goTitan->Get_Component<CRigidbody>();
     if (!rbTitan.Is_Valid())
         return;

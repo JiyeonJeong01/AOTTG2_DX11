@@ -235,7 +235,7 @@ void CCrawlerTitan::On_Dead(const _float fAccuracy)
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
 }
 
-void CCrawlerTitan::On_Stunned()
+void CCrawlerTitan::On_Stunned(const HIT_INFO& tHitInfo)
 {
     TITAN_STATE eState = m_spCurState->Get_State();
     if (eState == TITAN_STATE::STUNNED || eState == TITAN_STATE::DEAD)

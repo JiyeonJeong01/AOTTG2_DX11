@@ -40,12 +40,12 @@ HRESULT CMainPanel::Initialize()
 
     Add_Panel(std::move(pConsole));
     Add_Panel(std::move(pHierarchy));
-    Add_Panel(std::move(pProject));
     Add_Panel(std::move(pInspector));
     Add_Panel(std::move(pProfile));
     Add_Panel(std::move(pScene));
     Add_Panel(std::move(pResource));
     Add_Panel(std::move(pCinematic));
+    Add_Panel(std::move(pProject));
 
     const std::filesystem::path assetRootPath = ProjectConfig::PATH + ProjectConfig::ROOT;
 

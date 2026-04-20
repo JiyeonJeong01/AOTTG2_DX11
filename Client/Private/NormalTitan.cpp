@@ -261,7 +261,7 @@ void CNormalTitan::On_Dead(const _float fAccuracy)
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
 }
 
-void CNormalTitan::On_Stunned()
+void CNormalTitan::On_Stunned(const HIT_INFO& tHitInfo)
 {
     TITAN_STATE eState = m_spCurState->Get_State();
     if (eState == TITAN_STATE::DEAD)

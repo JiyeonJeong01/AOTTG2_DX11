@@ -34,6 +34,7 @@
 #include "UI_BladeController.h"
 #include "UI_ErenController.h"
 #include "UI_GasController.h"
+#include "UI_NoticeController.h"
 #include "UI_SkillController.h"
 #include "VFX_Manager.h"
 
@@ -160,6 +161,10 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\UI_GasController.script");
         handler.Register_VTable(guid, ScriptBinder<CUI_GasController>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\UI_NoticeController.script");
+        handler.Register_VTable(guid, ScriptBinder<CUI_NoticeController>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\UI_SkillController.script");

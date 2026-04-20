@@ -99,8 +99,9 @@ private:
     CComponent_Pool<CSpringJoint>       m_SpringJointPool;
 
     std::vector<COLLIDER_PROXY_DATA>    m_ActivatedColliders;   /* Transient */
-    std::unordered_set<PAIR_KEY, PAIR_KEY_HASHER> m_CurPair;    /* 충돌 이벤트 */
-    std::unordered_set<PAIR_KEY, PAIR_KEY_HASHER> m_prevPair;
+    std::unordered_set<PAIR_KEY, PAIR_KEY_HASHER>   m_CurPair;    /* 충돌 이벤트 */
+    std::unordered_set<PAIR_KEY, PAIR_KEY_HASHER>   m_prevPair;
+    std::unordered_map<PAIR_KEY, _float3, PAIR_KEY_HASHER>           m_vCurPoints;
 
     CTransform_Processor*                       m_pTransformProcessor{};
     std::unique_ptr<CUniform_Grid>              m_upUniform_Grid{};

@@ -1465,6 +1465,8 @@ void CRender_System::Apply_Pass_State_NonBlend()
 
 void CRender_System::Apply_Pass_State_Blend()
 {
+    SYS_CORE.Bind_SceneRTV();
+
     Bind_BlendState_Alpha();
     Bind_DepthState_ReadOnly();
     Bind_RasterizerState_Default();

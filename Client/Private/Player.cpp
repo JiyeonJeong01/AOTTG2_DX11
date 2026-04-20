@@ -189,7 +189,7 @@ void CPlayer::OnChange_CurState(std::shared_ptr<CPlayerState> spNewState)
     strncpy_s(m_szState, sizeof(m_szState), spNewState->Get_StateName(), _TRUNCATE);
 }
 
-void CPlayer::On_BladeHit(CGameObject* goCounter)
+void CPlayer::On_BladeHit(CGameObject* goCounter, const HIT_INFO& tHitInfo)
 {
     if (!goCounter)
         return;

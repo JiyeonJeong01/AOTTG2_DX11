@@ -1,6 +1,8 @@
 ﻿#include "ErenSequenceDirector.h"
 #include "AnimationClip_Eren.h"
 #include "ErenTitan.h"
+#include "HUDController.h"
+#include "UI_NoticeController.h"
 
 NS_BEGIN(Client)
 
@@ -27,6 +29,14 @@ void CErenSequenceDirector::Awake(void* pCtx)
 
     m_animEren = m_goEren->Get_Component<CAnimator>();
     IF_TRUE_RETURN_MSG_BREAK(m_animEren.Is_Valid() == false, , "m_animEren is invalid.");
+
+    CGameObject* goHUD = GAME_INSTANCE.Find_GameObject(m_refHUDController.hObject);
+    IF_NULL_RETURN_MSG_BREAK(goHUD, , "goHUD is nullptr.");
+
+    m_pHUD = goHUD->Get_Script<CHUDController>();
+    m_pNotice = goHUD->Get_Script_InChildren<CUI_NoticeController>();
+    IF_NULL_RETURN_MSG_BREAK(m_pHUD, , "m_pHUD is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_pNotice, , "m_pNotice is nullptr.");
 }
 
 void CErenSequenceDirector::Start(void* pCtx)
@@ -238,6 +248,15 @@ void CErenSequenceDirector::Command_PlayAnim(const _char* pAnimName)
 void CErenSequenceDirector::Command_Combat()
 {
     m_scEren->Start_Combat();
+
+    if (!m_pNotice)
+    {
+        __debugbreak();        return;
+    }
+
+    m_pNotice->Show_Notice(NOTICE_TYPE::SAVE_EREN, 3.f);
+
+
 }
 
 
