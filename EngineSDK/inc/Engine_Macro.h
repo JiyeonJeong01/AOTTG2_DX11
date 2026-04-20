@@ -108,10 +108,11 @@ private:                                                    \
 #define SYS_INPUT		        GET_INSTANCE(Engine::CInput_System)
 #define SYS_RENDER		        GET_INSTANCE(Engine::CRender_System)
 #define SYS_EVENT		        GET_INSTANCE(Engine::CEvent_System)
+#define SYS_CINEMATIC           GET_INSTANCE(Engine::CCinematic_System)
 
 #define SYS_EDITOR		        GET_INSTANCE(Engine::CEditor_System)
 
-#define GAME_INSTANCE		        GET_INSTANCE(Engine::CGameInstance)
+#define GAME_INSTANCE		    GET_INSTANCE(Engine::CGameInstance)
 
 
 //#define RESOURCES	GET_INSTANCE(CResourceManager)

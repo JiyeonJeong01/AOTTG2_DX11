@@ -394,6 +394,9 @@
     <ClInclude Include="..\Public\Client_Math.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\CinematicCamera_Director.h">
+      <Filter>Director</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -643,6 +646,9 @@
       <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Opening_Director.cpp">
+      <Filter>Director</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CinematicCamera_Director.cpp">
       <Filter>Director</Filter>
     </ClCompile>
   </ItemGroup>

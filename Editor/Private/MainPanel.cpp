@@ -12,6 +12,7 @@
 #include "ProfilerPanel.h"
 #include "ScenePanel.h"
 #include "ResourcePanel.h"
+#include "CinematicPanel.h"
 #include "Scene.h"
 #include "Event_System.h"
 #include "magic_enum.hpp"
@@ -35,6 +36,7 @@ HRESULT CMainPanel::Initialize()
     auto pProfile = CProfilerPanel::Create(PANEL_PROFILE);
     auto pScene = CScenePanel::Create(PANEL_SCENE, pHierarchy.get(), this);
     auto pResource = CResourcePanel::Create(PANEL_RESOURCE);
+    auto pCinematic = CCinematicPanel::Create(PANEL_CINEMATIC, pHierarchy.get());
 
     Add_Panel(std::move(pConsole));
     Add_Panel(std::move(pHierarchy));
@@ -43,6 +45,7 @@ HRESULT CMainPanel::Initialize()
     Add_Panel(std::move(pProfile));
     Add_Panel(std::move(pScene));
     Add_Panel(std::move(pResource));
+    Add_Panel(std::move(pCinematic));
 
     const std::filesystem::path assetRootPath = ProjectConfig::PATH + ProjectConfig::ROOT;
 

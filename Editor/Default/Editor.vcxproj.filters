@@ -52,6 +52,9 @@
     <Filter Include="01. Editor Panel\Resource">
       <UniqueIdentifier>{411eb739-ecc3-4c8f-9187-f8da9b68cb83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Cinematic">
+      <UniqueIdentifier>{8b9155e8-1de3-4c18-b03d-54a7cf196a82}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Editor.cpp">
@@ -113,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\ResourcePanel.cpp">
       <Filter>01. Editor Panel\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CinematicPanel.cpp">
+      <Filter>Cinematic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -193,6 +199,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\ResourcePanel.h">
       <Filter>01. Editor Panel\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CinematicPanel.h">
+      <Filter>Cinematic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

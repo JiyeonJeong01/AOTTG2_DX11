@@ -93,6 +93,11 @@ private : /* ----------- Scene ----------- */
 public : /* ---------- Post Process ----------- */
     void Set_PostProcessDesc(const POST_PROCESS_DESC& tPostProcessDesc);
     void Submit_SpeedLine(const SPEED_LINE_DESC& tDesc);
+
+public :
+    void Test_SaveLoad_Cinematic();
+    void Test_Start_Cinematic(class CCamera* pCam);
+    void Test_Cinematic_Event(_float fDT);
 };
 
 

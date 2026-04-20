@@ -36,6 +36,7 @@
     <ClInclude Include="..\Public\AnimationClip_Titan.h" />
     <ClInclude Include="..\Public\Attacher.h" />
     <ClInclude Include="..\Public\CameraController.h" />
+    <ClInclude Include="..\Public\CinematicCamera_Director.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Client_Math.h" />
     <ClInclude Include="..\Public\CrawlerTitan.h" />
@@ -130,6 +131,7 @@
     <ClCompile Include="..\Private\AbnormalTitanState_Stunned.cpp" />
     <ClCompile Include="..\Private\Attacher.cpp" />
     <ClCompile Include="..\Private\CameraController.cpp" />
+    <ClCompile Include="..\Private\CinematicCamera_Director.cpp" />
     <ClCompile Include="..\Private\CrawlerTitan.cpp" />
     <ClCompile Include="..\Private\CrawlerTitanStateMachine.cpp" />
     <ClCompile Include="..\Private\CrawlerTitanState_AttackEren.cpp" />

@@ -7,6 +7,7 @@
 #include "AbnormalTitan.h"
 #include "Attacher.h"
 #include "CameraController.h"
+#include "CinematicCamera_Director.h"
 #include "CrawlerTitan.h"
 #include "Environment_Controller.h"
 #include "ErenSequenceDirector.h"
@@ -51,6 +52,10 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\CameraController.script");
         handler.Register_VTable(guid, ScriptBinder<CCameraController>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\CinematicCamera_Director.script");
+        handler.Register_VTable(guid, ScriptBinder<CCinematicCamera_Director>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\CrawlerTitan.script");

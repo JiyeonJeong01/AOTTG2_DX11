@@ -8,6 +8,7 @@
 #include "CRender_System.h"
 #include "Render_Context.h"
 #include "Editor_System.h"
+#include "CinematicSystem.h"
 
 #include "Asset_Registry.h"
 #include "Resource_System.h"
@@ -19,6 +20,7 @@
 #include "Physics_Processor.h"
 
 #include "Animator_Processor.h"
+#include "CinematicIO.h"
 #include "MeshRenderer_Processor.h"
 
 #include "Mesh.h"
@@ -366,4 +368,85 @@ void CGameInstance::Set_PostProcessDesc(const POST_PROCESS_DESC& tPostProcessDes
 void CGameInstance::Submit_SpeedLine(const SPEED_LINE_DESC& tDesc)
 {
     SYS_RENDER.Submit_SpeedLine(tDesc);
+}
+
+void CGameInstance::Test_SaveLoad_Cinematic()
+{
+}
+
+void CGameInstance::Test_Start_Cinematic(class CCamera* pCam)
+{
+    if (pCam == nullptr)
+        return;
+
+    CINEMATIC_CLIP tClip{};
+    strcpy_s(tClip.szName, "test");
+    tClip.fDuration = 6.f;
+
+    CINEMATIC_CAMERA_KEY k0{};
+    k0.fTime = 0.f;
+    k0.vPosition = { 0.f, 2.f, -5.f };
+    k0.vRotationQuat = { 0.f, 0.f, 0.f, 1.f };
+    k0.fFovy = 60.f;
+
+    CINEMATIC_CAMERA_KEY k1{};
+    k1.fTime = 2.f;
+    k1.vPosition = { 2.f, 8.f, -10.f };
+    k1.vRotationQuat = { 0.f, 0.f, 0.f, 1.f };
+    k1.fFovy = 40.f;
+    k1.eEase = CINEMATIC_EASE::EASE_IN_OUT;
+
+    CINEMATIC_CAMERA_KEY k2{};
+    k2.fTime = 4.f;
+    k2.vPosition = { 10.f, 9.f, -20.f };
+    k2.vRotationQuat = { 0.f, 0.f, 0.f, 1.f };
+    k2.fFovy = 40.f;
+    k2.eEase = CINEMATIC_EASE::EASE_IN_OUT;
+
+    tClip.vecCameraKeys.push_back(k0);
+    tClip.vecCameraKeys.push_back(k1);
+    tClip.vecCameraKeys.push_back(k2);
+
+    CINEMATIC_EVENT_KEY e0{};
+    e0.fTime = 1.5f;
+    e0.eType = CINEMATIC_EVENT_TYPE::CUSTOM;
+    strcpy_s(e0.szEventName, "TestEvent");
+    tClip.vecEventKeys.push_back(e0);
+
+    CINEMATIC_SHAKE_KEY h0{};
+    h0.fStartTime = 2.f;
+    h0.fEndTime = 2.5f;
+    h0.fAmplitudePos = 0.05f;
+    h0.fAmplitudeRot = 1.0f;
+    h0.fFrequency = 16.f;
+    tClip.vecShakeKeys.push_back(h0);
+
+    CINEMATIC_SHOT_KEY s0{};
+    s0.fTime = 0.f;
+    s0.iCameraKeyIndex = 0;
+    s0.eType = CINEMATIC_SHOT_TYPE::CUT;
+
+    CINEMATIC_SHOT_KEY s1{};
+    s1.fTime = 2.f;
+    s1.iCameraKeyIndex = 1;
+    s1.eType = CINEMATIC_SHOT_TYPE::BLEND;
+    s1.fBlendDuration = 1.f;
+
+    CINEMATIC_SHOT_KEY s2{};
+    s2.fTime = 4.f;
+    s2.iCameraKeyIndex = 2;
+    s2.eType = CINEMATIC_SHOT_TYPE::BLEND;
+    s2.fBlendDuration = 1.f;
+
+    tClip.vecShotKeys.push_back(s0);
+    tClip.vecShotKeys.push_back(s1);
+    tClip.vecShotKeys.push_back(s2);
+
+    CCinematicIO::Save("test", tClip);
+    SYS_CINEMATIC.Load("test");
+}
+
+void CGameInstance::Test_Cinematic_Event(_float fDT)
+{
+
 }

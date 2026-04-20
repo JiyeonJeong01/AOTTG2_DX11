@@ -11,6 +11,7 @@
 #include "CRender_System.h"
 #include "Editor_System.h"
 #include "GameInstance.h"
+#include "CinematicSystem.h"
 
 /* --- sub --- */
 #include "Graphic_Device.h"
@@ -43,6 +44,7 @@ CCore_System::~CCore_System()
     SYS_EVENT.DestroyInstance();
     SYS_RENDER.DestroyInstance();
     SYS_RESOURCE.DestroyInstance();
+    SYS_CINEMATIC.DestroyInstance();
 }
 
 HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice,
@@ -95,6 +97,9 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
 
     /* --- GameInstance --- */
     IF_FAIL_RETURN_MSG_BREAK(GAME_INSTANCE.Initialize(m_pDevice, m_pContext), E_FAIL, "GAME_INSTANCE failed Initialize");
+
+    /* --- Cinematic System --- */
+    IF_FAIL_RETURN_MSG_BREAK(SYS_CINEMATIC.Initialize(), E_FAIL, "SYS_CINEMATIC failed Initialize");
 
     /* --- Register event --- */
     SYS_EVENT.Subscribe(EVENT_TYPE::On_Window_Resize, &CCore_System::On_Resize, this);

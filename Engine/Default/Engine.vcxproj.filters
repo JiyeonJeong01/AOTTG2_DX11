@@ -199,6 +199,9 @@
     <Filter Include="01. Utility\04. Component\10. SpriteEffect">
       <UniqueIdentifier>{ba6dc3cf-7e4a-4e1a-a9b7-d7db266d6333}</UniqueIdentifier>
     </Filter>
+    <Filter Include="09. Cinematic">
+      <UniqueIdentifier>{6f17b6d4-f53a-4949-8cb1-34bd395ebe35}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -547,6 +550,18 @@
     <ClInclude Include="..\Public\SpriteEffect_Processor.h">
       <Filter>01. Utility\04. Component\10. SpriteEffect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Cinematic_Define.h">
+      <Filter>09. Cinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CinematicIO.h">
+      <Filter>09. Cinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CinematicSystem.h">
+      <Filter>09. Cinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Cinematic_Event.h">
+      <Filter>00. System\11. Event\Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -753,6 +768,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\SpriteEffect_Processor.cpp">
       <Filter>01. Utility\04. Component\10. SpriteEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CinematicIO.cpp">
+      <Filter>09. Cinematic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CinematicSystem.cpp">
+      <Filter>09. Cinematic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -167,6 +167,10 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Animation_Event.h" />
     <ClInclude Include="..\Public\Animator.h" />
     <ClInclude Include="..\Public\Animator_Processor.h" />
+    <ClInclude Include="..\Public\CinematicIO.h" />
+    <ClInclude Include="..\Public\CinematicSystem.h" />
+    <ClInclude Include="..\Public\Cinematic_Define.h" />
+    <ClInclude Include="..\Public\Cinematic_Event.h" />
     <ClInclude Include="..\Public\Engine_Component.h" />
     <ClInclude Include="..\Public\Font.h" />
     <ClInclude Include="..\Public\Line.h" />
@@ -282,6 +286,8 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
   <ItemGroup>
     <ClCompile Include="..\Private\Animator.cpp" />
     <ClCompile Include="..\Private\Animator_Processor.cpp" />
+    <ClCompile Include="..\Private\CinematicSystem.cpp" />
+    <ClCompile Include="..\Private\CinematicIO.cpp" />
     <ClCompile Include="..\Private\DebugDraw.cpp" />
     <ClCompile Include="..\Private\Debug_Renderer.cpp" />
     <ClCompile Include="..\Private\Collider_Proxy_Builder.cpp" />
