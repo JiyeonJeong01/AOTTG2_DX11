@@ -40,6 +40,19 @@ private:
     SCOUT_CONTEXT   m_tContext{};
 
     CScoutBehavior* m_pBehavior = nullptr;
+
+    CGameObject*    m_goStagingCamera = nullptr;
+
+private :
+    SCRIPT_OBJECT_REF   m_refStagingCamera;
+    SCRIPT_OBJECT_REF   m_refFadeUI;
+    SCRIPT_OBJECT_REF   m_refDialogueUI;
+
+    SCRIPT_FIELDS_BEGIN(CScout)
+        SCRIPT_FIELD_OBJECT_REF(m_refStagingCamera)
+        SCRIPT_FIELD_OBJECT_REF(m_refFadeUI)
+        SCRIPT_FIELD_OBJECT_REF(m_refDialogueUI)
+    SCRIPT_FIELDS_END(CScout)
 };
 
 NS_END

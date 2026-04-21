@@ -10,7 +10,7 @@ typedef struct tagFogDesc
     _float3 vColor = { 0.62f, 0.66f, 0.72f };
     _float  fStart = 0.2f;
     _float  fEnd = 90.f;
-    _float  fDensity = 0.03f;
+    _float  fDensity = 0.012f;
     _float  fPadding[3] = {};
 } FOG_DESC;
 

@@ -150,6 +150,7 @@ void CAnimator::Set_NextAnimationClip(const std::string& strNextAnimClip)
 
     Set_NextAnimationClip(iNextAnimClip);
 }
+
 void CAnimator::Set_NextAnimationClip(uint32_t iNextAnimClip)
 {
     if (!m_pData)
@@ -175,6 +176,7 @@ void CAnimator::Set_NextAnimationClip(uint32_t iNextAnimClip)
             m_pData->fBlendDuration = 0.f;
             m_pData->fTrackPosition = 0.f;
             m_pData->bPlaying = true;
+            cout << RED << "bPlaying false -> INVALID_ANIM_CLIP_INDEX is playing " << RESET << endl;
         }
         else
         {
@@ -234,14 +236,14 @@ _uint CAnimator::Get_AnimationClipIdx_By_Name(const std::string& strName) const
 const std::string& CAnimator::Get_Name_By_AnimationCliIdx(_uint iIdx) const
 {
     if (!m_pData)
-        return "";
+        return NONE_STR;
 
     for (const auto& pair : m_pData->NameToClipIndex)
     {
         if (pair.second == iIdx)
             return pair.first;
     }
-    return "";
+    return NONE_STR;
 }
 
 void CAnimator::Reset_CurrentKeyFrameIndices()

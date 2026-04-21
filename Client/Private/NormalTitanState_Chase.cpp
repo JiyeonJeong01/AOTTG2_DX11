@@ -99,6 +99,7 @@ void CNormalTitanState_Chase::Enter(_uint iDetailFlag)
     {
         m_tRef.pBoundCtlr->Clear_PendingGrabAnim();
         m_tRef.pBoundCtlr->Set_GrabTriggerEnabled(true);
+        m_tRef.pBoundCtlr->Enable_Colliders(true);
     }
 
     m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::RUN_WALK);
@@ -110,6 +111,7 @@ void CNormalTitanState_Chase::Exit()
     {
         m_tRef.pBoundCtlr->Clear_PendingGrabAnim();
         m_tRef.pBoundCtlr->Set_GrabTriggerEnabled(false);
+        m_tRef.pBoundCtlr->Enable_Colliders(false);
     }
 
     CTitanState::Exit();
@@ -129,7 +131,6 @@ _uint CNormalTitanState_Chase::Get_DetailState() const
 
 void CNormalTitanState_Chase::Decide_NextState()
 {
-    /* 공통 유틸(Detect 유효성 / Attack 진입 / Hurt / Dead 판정)은 추후 분리 예정 */
 }
 
 void CNormalTitanState_Chase::Decide_NextAnim()

@@ -74,6 +74,8 @@ public:
 
     void                Reset_CurrentKeyFrameIndices();
     void                Reset_CurrentKeyFrameIndices(size_t iChannelCount);
+
+    std::string         NONE_STR = "NONE_NAME";
 };
 
 NS_END

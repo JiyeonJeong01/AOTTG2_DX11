@@ -1,4 +1,4 @@
-float4x4 g_ViewMatrix, g_ProjMatrix;
+float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
 struct VS_IN
 {

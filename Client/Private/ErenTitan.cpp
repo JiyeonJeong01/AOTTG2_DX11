@@ -44,6 +44,14 @@ void CErenTitan::Awake(void* pCtx)
     m_pSensor->Subscribe_OnDetectedTarget(&CErenTitan::On_DetectedCombatTargets, this);
 
     m_animEren->OnAnimationFinished.Add_Listener(&CErenTitan::On_AnimFinished, this);
+
+    {
+        m_iRunAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::RUN);
+        m_iWalkAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::WALK);
+        m_iLiftAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::ROCK_LIFT);
+        m_iMoveRockAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::ROCK_WALK);
+        m_iHurtAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::HIT_ANNIE_1);
+    }
 }
 
 void CErenTitan::Start(void* pCtx)
@@ -73,8 +81,6 @@ void CErenTitan::Start(void* pCtx)
     for (auto& hit : m_AllHitBoxes)
         hit.second->Set_Active(false);
 
-    m_iHurtAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::HIT_ANNIE_1);
-
     auto scripts = m_goEren->Get_AllScripts<CAttacher>();
     for (auto script : scripts)
     {
@@ -97,14 +103,7 @@ void CErenTitan::Start(void* pCtx)
 
 void CErenTitan::Priority_Update(void* pCtx, _float fDT)
 {
-    /* TODO _______________________________________________________________________________________________ */
-    if (SYS_INPUT.Get_KeyDown('L'))
-    {
-        m_fCurLife -= 10.f;
-        if (m_fCurLife < 0.f)
-            m_fCurLife = 0.f;
-        m_OnDamaged.Invoke(m_fCurLife);
-    }
+
 }
 
 void CErenTitan::Update(void* pCtx, _float fDT)
@@ -221,10 +220,18 @@ void CErenTitan::Look_To(_fvector vDir, _float fDT)
 
 void CErenTitan::Process_Born(_float fDT)
 {
-    if (m_eBorn == EREN_BORN::CAN_LAND && m_pGroundChecker->Get_OnWalkable())
+    if (m_eBorn == EREN_BORN::CAN_LAND)
     {
-        m_eBorn = EREN_BORN::LAND;
-        m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::BORN);
+        if (m_pGroundChecker->Get_OnWalkable())
+        {
+            m_eBorn = EREN_BORN::LAND;
+            m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::BORN);
+        }
+        else
+        {
+            _float3 vDown = { 0.f, -30.f, 0.f };
+            m_rbEren.Add_LinearImpulse(vDown);
+        }
     }
 }
 
@@ -249,6 +256,10 @@ void CErenTitan::Process_Combat(_float fDT)
 
     const _float fDist = XMVectorGetX(XMVector3Length(vDiff));
 
+    /* 공격 애니메이션 재생 중이면 끝날 때까지 아무 것도 하지 않음 */
+    if (Is_CombatAttacking())
+        return;
+
     _vector vDir = vDiff;
     vDir = XMVectorSetY(vDir, 0.f);
 
@@ -256,12 +267,6 @@ void CErenTitan::Process_Combat(_float fDT)
     {
         vDir = XMVector3Normalize(vDir);
         Look_To(vDir, fDT);
-    }
-
-    /* 공격 애니메이션 재생 중이면 끝날 때까지 아무 것도 하지 않음 */
-    if (Is_CombatAttacking())
-    {
-        return;
     }
 
     const EREN_COMBAT_PATTERN& tPattern = m_CombatPattern[m_iCurComboIndex];
@@ -275,19 +280,21 @@ void CErenTitan::Process_Combat(_float fDT)
         if (fDist > m_fShouldRunDistance)
         {
             m_fCombatSpeed = m_fRunSpeed;
-            m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::RUN);
+
+            if (m_animEren->iAnimationClip != m_iRunAnimIndex) /* 애니메이션 전환 */
+                m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::RUN);
         }
         else
         {
             m_fCombatSpeed = m_fWalkSpeed;
-            m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::WALK);
+            if (m_animEren->iAnimationClip != m_iWalkAnimIndex) /* 애니메이션 전환 */
+                m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::WALK);
         }
 
         Move_To(vDir, fDT, m_fCombatSpeed);
         return;
     }
 
-    /* TODO : 쿨다운 없애고 일단 바로 공격하도록 설정 */
     Start_ComboAttack(tPattern.eCombatType);
 
     ++m_iCurComboIndex;
@@ -327,7 +334,8 @@ void CErenTitan::Process_MoveTo(_float fDT)
             {
                 m_eCombat = EREN_COMBAT::APPROACHING;
                 m_fCombatSpeed = m_fWalkSpeed;
-                m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::WALK);
+                if (m_animEren->iAnimationClip != m_iWalkAnimIndex) /* 애니메이션 전환 */
+                    m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::WALK);
                 Move_To(vTargetDir, fDT, m_fCombatSpeed);
                 return;
             }
@@ -399,7 +407,9 @@ void CErenTitan::Process_MoveTo(_float fDT)
 
     m_eCombat = EREN_COMBAT::APPROACHING;
     m_fCombatSpeed = m_fRunSpeed;
-    m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::RUN);
+
+    if (m_animEren->iAnimationClip != m_iRunAnimIndex) /* 애니메이션 전환 */
+        m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::RUN);
     Move_To(vMoveDir, fDT, m_fCombatSpeed);
 }
 
@@ -410,8 +420,8 @@ void CErenTitan::Process_Lift(_float fDT)
         return;
     if (m_bLiftAnimStarted)
         return;
-
-    m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::ROCK_LIFT);
+    if (m_animEren->iAnimationClip != m_iLiftAnimIndex)
+        m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::ROCK_LIFT);
 
     m_fElapsedWaitToAttach += fDT;
     if (m_fElapsedWaitToAttach < m_fTotalWaitToAttach)
@@ -476,7 +486,8 @@ void CErenTitan::Process_MoveRock(_float fDT)
     Look_To(vMoveDir, fDT);
 
     m_fCombatSpeed = m_fWalkSpeed;
-    m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::ROCK_WALK);
+    if (m_animEren->iAnimationClip != m_iMoveRockAnimIndex)
+        m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::ROCK_WALK);
     Move_To(vMoveDir, fDT, m_fCombatSpeed);
 }
 
@@ -962,13 +973,18 @@ void CErenTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox
     if (m_fCurLife <= 0.f)
         m_fCurLife = 0.f;
 
+
     /* hurt 애니메이션은 특정 상황에서만 재생 */
     if (m_eStepType == EREN_STEP_TYPE::COMBAT || m_eStepType == EREN_STEP_TYPE::MOVE_TO)
     {
         m_eCombat = EREN_COMBAT::HURT;
+
         if (m_animEren->bPlaying == false)
             m_animEren->bPlaying = true;
-        m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::HIT_ANNIE_1);
+
+        if (m_animEren->iAnimationClip != m_iHurtAnimIndex
+            && m_animEren->iNextAnimationClip != m_iHurtAnimIndex)
+            m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::HIT_ANNIE_1);
     }
 
     m_OnDamaged.Invoke(m_fCurLife);
@@ -988,7 +1004,6 @@ void CErenTitan::On_SuccessAttack(CGameObject* goTitan, const HIT_INFO& tHitInfo
         scTitan = goTitan->Get_Script_InChildren<CTitan>();
         if (!scTitan) return;
     }
-
 
     scTitan->On_Stunned(tHitInfo);
     CRigidbody rbTitan = goTitan->Get_Component<CRigidbody>();

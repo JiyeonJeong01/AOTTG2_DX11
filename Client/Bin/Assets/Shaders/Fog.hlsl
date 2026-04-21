@@ -92,12 +92,12 @@ PS_OUT PS_MAIN_FOG(PS_IN In)
         /* 멀어질수록 1에 가까워진다. */ 
         float fFogFactor = 1.f - exp2(-pow(max(fFogDist - g_vFogParams.x, 0.f) * g_vFogParams.z, 2.f));
 
-        /* 월드 y의 0 ~ 25 사이에 변화를 준다. */
-        float fHeightMask = 1.f - smoothstep(0.f, 35.f, vWorldPos.y);
+        /* 월드 y의 0 ~ 45 사이에 변화를 준다. */
+        float fHeightMask = 1.f - smoothstep(0.f, 45.f, vWorldPos.y);
         fHeightMask = saturate(fHeightMask);
         fHeightMask *= fHeightMask;
 
-        /* 높은 곳에서는 8% */
+        /* 높은 곳에서는 15% */
         fFogFactor *= lerp(0.15f, 1.f, fHeightMask);
 
         /* 가까운 곳도 완전 0으로는 안 떨어지게 */
@@ -111,7 +111,7 @@ PS_OUT PS_MAIN_FOG(PS_IN In)
         fFogFactor *= fNoise;
 
         fFogFactor = saturate(fFogFactor);
-        fFogFactor = min(fFogFactor, 0.5f);
+        fFogFactor = min(fFogFactor, 0.7f);
 
         vColor.rgb = lerp(vColor.rgb, g_vFogColor.rgb, fFogFactor);
     }

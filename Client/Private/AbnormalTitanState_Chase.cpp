@@ -144,6 +144,7 @@ void CAbnormalTitanState_Chase::Enter(_uint iDetailFlag)
     {
         m_tRef.pBoundCtlr->Clear_PendingGrabAnim();
         m_tRef.pBoundCtlr->Set_GrabTriggerEnabled(true);
+        m_tRef.pBoundCtlr->Enable_Colliders(true);
     }
 }
 
@@ -153,6 +154,7 @@ void CAbnormalTitanState_Chase::Exit()
     {
         m_tRef.pBoundCtlr->Clear_PendingGrabAnim();
         m_tRef.pBoundCtlr->Set_GrabTriggerEnabled(false);
+        m_tRef.pBoundCtlr->Enable_Colliders(false);
     }
     m_fRotateSharpness = m_fOriginalRotationSharpness;
 

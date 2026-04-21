@@ -64,14 +64,14 @@ VS_OUT VS_MAIN(VS_IN In)
         g_BoneMatrices[In.vBlendIndex.z] * In.vBlendWeight.z + 
         g_BoneMatrices[In.vBlendIndex.w] * fWeightW;
     
-    vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
-    
+    float4 vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
+    float4 vNormal = mul(float4(In.vNormal, 0.f), BoneMatrix);
     
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
     
     Out.vPosition = mul(vPosition, matWVP);
-    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix));
+    Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
     
     Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(vPosition, g_WorldMatrix);
@@ -102,31 +102,31 @@ VS_OUT VS_OUTLINE(VS_IN In)
     
     float4x4 matWV, matWVP;
 
-    float3 vNormal = normalize(In.vNormal);
-    float3 vOutlinePos = In.vPosition + vNormal * g_OutlineWidth;
-
     float fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
 
     matrix BoneMatrix = g_BoneMatrices[In.vBlendIndex.x] * In.vBlendWeight.x + 
-    g_BoneMatrices[In.vBlendIndex.y] * In.vBlendWeight.y + 
-    g_BoneMatrices[In.vBlendIndex.z] * In.vBlendWeight.z + 
-    g_BoneMatrices[In.vBlendIndex.w] * fWeightW;
+                        g_BoneMatrices[In.vBlendIndex.y] * In.vBlendWeight.y + 
+                        g_BoneMatrices[In.vBlendIndex.z] * In.vBlendWeight.z + 
+                        g_BoneMatrices[In.vBlendIndex.w] * fWeightW;
 
-    vector vPosition = mul(float4(vOutlinePos, 1.f), BoneMatrix);
-    
+    float4 vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
+    float4 vNormal = mul(float4(In.vNormal, 0.f), BoneMatrix);
+    vNormal = normalize(vNormal);
+
+    float4 vOutlinePos = float4(vPosition.xyz + vNormal.xyz * g_OutlineWidth, 1.f);
+
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
     
-    Out.vPosition = mul(vPosition, matWVP);
-    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix));
+    Out.vPosition = mul(vOutlinePos, matWVP);
+    Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
     
     Out.vTexcoord = In.vTexcoord;
-    Out.vWorldPos = mul(vPosition, g_WorldMatrix);
+    Out.vWorldPos = mul(vOutlinePos, g_WorldMatrix);
     Out.vProjPos = Out.vPosition;
 
     return Out;
 }
-
 
 PS_OUT PS_OUTLINE(PS_IN In)
 {

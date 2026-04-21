@@ -23,6 +23,10 @@ void CScout::Awake(void* pCtx)
 
     m_mrOwner = m_goOwner->Get_Component<CMeshRenderer>();
     IF_TRUE_RETURN_MSG_BREAK(!m_mrOwner.Is_Valid(), , "m_mrOwner is invalid");
+
+    m_goStagingCamera = GAME_INSTANCE.Find_GameObject(m_refStagingCamera.hObject);
+    IF_NULL_RETURN_MSG_BREAK(m_goStagingCamera, , "m_goStagingCamera is nullptr");
+
 }
 
 void CScout::Start(void* pCtx)
@@ -82,11 +86,19 @@ void CScout::SetUp_Behavior()
 
     const SCOUT_BEHAVIOR eBehavior = scScoutSO->Get_Behavior();
     m_tContext.eBehaviour = eBehavior;
+    CGameObject* pFade = nullptr;
+    CGameObject* pDialogue = nullptr;
 
     switch (eBehavior)
     {
     case SCOUT_BEHAVIOR::REQUEST_RESUPPLY:
         m_pBehavior = new CScoutBehavior_RequestResupply(m_goOwner, this, eBehavior);
+        To< CScoutBehavior_RequestResupply*>(m_pBehavior)->Set_SpecialCamera(m_goStagingCamera);
+
+        pFade = GAME_INSTANCE.Find_GameObject(m_refFadeUI.hObject);
+        pDialogue = GAME_INSTANCE.Find_GameObject(m_refDialogueUI.hObject);
+
+        To< CScoutBehavior_RequestResupply*>(m_pBehavior)->Set_UI(pDialogue, pFade);
         break;
 
     case SCOUT_BEHAVIOR::NONE:

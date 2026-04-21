@@ -149,6 +149,9 @@ void CAbnormalTitan::Start(void* pCtx)
     /* 히트박스 전부 끄기 */
     for (auto& hit : m_AllHitBoxes)
         hit.second->Set_Active(false);
+
+    /* 타겟 감지 바운드 전부 끄기 */
+    m_tRef.pBoundCtlr->Enable_Colliders(false);
 }
 
 void CAbnormalTitan::Priority_Update(void* pCtx, _float fDT)

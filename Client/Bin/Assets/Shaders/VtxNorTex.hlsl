@@ -63,7 +63,7 @@ VS_TEXOUT VS_TEX(VS_IN In)
 
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
     Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix));
-    Out.vTexcoord = In.vTexcoord * 3;
+    Out.vTexcoord = In.vTexcoord * 6;
     Out.vProjPos = Out.vPosition;
 
     return Out;

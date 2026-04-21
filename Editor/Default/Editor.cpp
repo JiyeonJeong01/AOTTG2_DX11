@@ -88,6 +88,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     unique_ptr<Editor::CMainPanel> upMainPanel = Editor::CMainPanel::Create(strMain);
 
     _bool bCursorActive = true;
+
+    {
+        HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+        if (hOut == INVALID_HANDLE_VALUE) int a = 10;
+
+        DWORD dwMode = 0;
+        if (!GetConsoleMode(hOut, &dwMode)) int a = 10;
+
+        // ANSI 이스케이프 시퀀스 처리 모드 활성화
+        dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+        SetConsoleMode(hOut, dwMode);
+    }
     
 
     // 기본 메시지 루프입니다:

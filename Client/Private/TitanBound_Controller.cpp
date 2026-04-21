@@ -151,6 +151,21 @@ void CTitanBound_Controller::Late_Update(void* pCtx, _float fDT)
         Sync_Bound(tBound, vOwnerPos, vOwnerRot);
 }
 
+void CTitanBound_Controller::Enable_Colliders(_bool bEnable)
+{
+    _int iEnabledBound = 0;
+
+    for (auto& bound : m_vecBounds)
+    {
+        if (!bound.colObject.Is_Valid())
+            continue;
+        bound.colObject.Set_Enable(bEnable);
+        iEnabledBound++;
+    }
+
+    LOG_INFO("Enabled  %s : Bound - %d", bEnable ? "true" : "false", iEnabledBound);
+}
+
 void CTitanBound_Controller::Attach(const SCRIPT_OBJECT_REF& refObject, const std::string& strBoneName, const _float3& vOffset)
 {
     if (!Is_Valid_ObjectRef(refObject))
@@ -167,6 +182,10 @@ void CTitanBound_Controller::Attach(const SCRIPT_OBJECT_REF& refObject, const st
     if (trChild.Is_Valid() == false)
         return;
 
+    CCollider colAttach = pChildObject->Get_Component<CCollider>();
+    if (colAttach.Is_Valid() == false)
+        __debugbreak();
+
     TITAN_ATTACH_BONE tAttach{};
 
     if (!GAME_INSTANCE.Find_AttachBoneInfo(m_hObject, strBoneName, tAttach.pAnimData, tAttach.iBoneIndex))
@@ -175,6 +194,7 @@ void CTitanBound_Controller::Attach(const SCRIPT_OBJECT_REF& refObject, const st
     tAttach.trParent = m_trOwner;
     tAttach.trChild = trChild;
     tAttach.vOffset = vOffset;
+    tAttach.colObject = colAttach;
 
     m_vecAttachBones.push_back(tAttach);
 }
@@ -215,11 +235,16 @@ void CTitanBound_Controller::Register_Bound(std::vector<TITAN_BOUND_NODE>& vecBo
     if (trBound.Is_Valid() == false)
         return;
 
+    CCollider colAttach = pBound->Get_Component<CCollider>();
+    if (colAttach.Is_Valid() == false)
+        __debugbreak();
+
     TITAN_BOUND_NODE tNode{};
     tNode.refObject = refBound;
     tNode.pObject = pBound;
     tNode.trObject = trBound;
     tNode.pOffset = &vOffset;
+    tNode.colObject = colAttach;
 
     vecBounds.push_back(tNode);
 }

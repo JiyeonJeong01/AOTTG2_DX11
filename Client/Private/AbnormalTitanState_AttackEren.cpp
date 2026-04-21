@@ -278,14 +278,21 @@ void CAbnormalTitanState_AttackEren::Select_AttackAnim()
     }
 
     m_iAttackAnimClip = iAnimClip;
-    m_bAttackAnimPlaying = true;
+    m_tComponents.animator.Set_NextAnimationClip(m_iAttackAnimClip);
+
+    if ((m_tComponents.animator->iAnimationClip != m_iAttackAnimClip &&
+        m_tComponents.animator->iNextAnimationClip != m_iAttackAnimClip))
+    {
+        m_bAttackAnimPlaying = true;
+
+        if (m_bUsePunch)
+            Set_PunchHitBoxActive(true);
+    }
 
     if (m_bUsePunch)
     {
         Set_PunchHitBoxActive(true);
     }
-
-    m_tComponents.animator.Set_NextAnimationClip(m_iAttackAnimClip);
 }
 
 void CAbnormalTitanState_AttackEren::Ready_Throw()
@@ -335,6 +342,7 @@ void CAbnormalTitanState_AttackEren::Finish_Attack()
     Set_PunchHitBoxActive(false);
 
     m_bAttackAnimPlaying = false;
+
     m_bUsePunch = false;
     m_iAttackAnimClip = INVALID_ANIM_CLIP_INDEX;
     m_bThrown = false;
@@ -444,6 +452,7 @@ void CAbnormalTitanState_AttackEren::On_AnimFinished(const Engine::ANIMATION_EVE
         if (m_bThrown)
         {
             m_bAttackAnimPlaying = false;
+
             m_bUsePunch = false;
             m_iAttackAnimClip = INVALID_ANIM_CLIP_INDEX;
             m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::IDLE);

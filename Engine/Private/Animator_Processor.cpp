@@ -199,12 +199,6 @@ void CAnimator_Processor::Update_TrackPosition(ANIMATOR_DATA* pData, const ANIMA
     {
         const _bool bLoop = Is_LoopClip(pData, pData->iAnimationClip);
 
-        cout << "[ANIM] End Reached | ClipIdx : " << pData->iAnimationClip
-            << " | Name : " << tClip.strName
-            << " | Duration : " << tClip.fDuration
-            << " | Track : " << pData->fTrackPosition
-            << " | Loop : " << bLoop << "\n";
-
         if (!bLoop)
         {
             pData->fTrackPosition = tClip.fDuration;

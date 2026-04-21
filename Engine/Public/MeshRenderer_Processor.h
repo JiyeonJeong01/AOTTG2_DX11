@@ -63,7 +63,8 @@ private :
     CTransform_Processor*       m_pTransformProcessor{};
     CAnimator_Processor*        m_pAnimatorProcessor{};
 
-    uint32_t                       m_hSharedOutlineMaterial = INVALID_HANDLE_UINT;
+    uint32_t                       m_hNonAnimOutlineMat = INVALID_HANDLE_UINT;
+    uint32_t                       m_hAnimOutlineMat = INVALID_HANDLE_UINT;
 
     std::vector<PARTICLE_RUNTIME>  m_vecParticleRuntime;
     std::vector<uint32_t>          m_vecFreeParticleRuntime;

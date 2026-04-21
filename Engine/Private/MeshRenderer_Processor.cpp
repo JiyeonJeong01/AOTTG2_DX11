@@ -30,7 +30,8 @@ HRESULT CMeshRenderer_Processor::Initialize()
     /* 프로페서에서 new 생성하는 객체는 직접 해제해준다. */
     m_Pool.Subscribe_OnDeallocate(&CMeshRenderer_Processor::Reset_Data_On_Deallocate, this);
 
-    m_hSharedOutlineMaterial = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::MATERIAL_OUTLINE);
+    m_hNonAnimOutlineMat = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::MATERIAL_OUTLINE);
+    m_hAnimOutlineMat = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::MATERIAL_OUTLINE_ANIM);
 
     return S_OK;
 }
@@ -158,19 +159,34 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             /* -------------------- Outline Extra Pass -------------------- */
             if ((pData->extraPassFlags & To<uint32_t>(EXTRA_RENDER_PASS::OUTLINE)) != 0)
             {
-                if (m_hSharedOutlineMaterial == INVALID_HANDLE_UINT)
-                    continue;
+                const _bool bAnimMesh =
+                    pData->hAnimator.Is_Valid() ||
+                    pData->hSkinningSourceAnimator.Is_Valid();
+
+                uint32_t hOutlineMat = INVALID_HANDLE_UINT;
+
+                if (bAnimMesh)
+                {
+                    if (m_hAnimOutlineMat == INVALID_HANDLE_UINT)
+                        continue;
+
+                    hOutlineMat = m_hAnimOutlineMat;
+                }
+                else
+                {
+                    if (m_hNonAnimOutlineMat == INVALID_HANDLE_UINT)
+                        continue;
+
+                    hOutlineMat = m_hNonAnimOutlineMat;
+                }
 
                 DRAW_CMD tOutlineCmd = tCmd;
-                tOutlineCmd.mesh.hMaterial = m_hSharedOutlineMaterial;
-
-                /* 기존 per-object params 그대로 사용 */
+                tOutlineCmd.mesh.hMaterial = hOutlineMat;
                 tOutlineCmd.mesh.hPerObjectParams = pData->hPerObjectParams;
-
                 tOutlineCmd.sortKey += 1;
+
                 outCmds.push_back(tOutlineCmd);
             }
-
         }
     }
 }

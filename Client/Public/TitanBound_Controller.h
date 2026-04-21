@@ -17,6 +17,9 @@ public:
     void Update(void* pCtx, _float fDT) override;
     void Late_Update(void* pCtx, _float fDT) override;
 
+public :
+    void Enable_Colliders(_bool bEnable);
+
 private:
     struct TITAN_BOUND_NODE
     {
@@ -24,6 +27,7 @@ private:
         Engine::CGameObject*    pObject{};
         CTransform              trObject{};
         _float3*                pOffset{};
+        CCollider               colObject{};
     };
 
     struct TITAN_ATTACH_BONE
@@ -33,6 +37,7 @@ private:
         _uint           iBoneIndex = 0;
         CTransform      trParent;
         CTransform      trChild;
+        CCollider               colObject{};
     };
 
 private :
