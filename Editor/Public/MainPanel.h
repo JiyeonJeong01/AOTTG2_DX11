@@ -67,6 +67,8 @@ private:
     _bool m_bForceSceneView = false;
 
     EDITOR_PICK_MODE        m_ePickMode = EDITOR_PICK_MODE::NORMAL;
+private:
+    std::string m_strCameraPreview = "";
 
     static constexpr const char* PANEL_HIERARCHY = "Hierarchy";
     static constexpr const char* PANEL_INSPECTOR = "Inspector";

@@ -11,7 +11,7 @@ void CCinematicCamera_Director::Awake(void* pCtx)
 
     m_camCinematic = goCinematic->Get_Component<CCamera>();
 
-    SYS_CINEMATIC.Load("test_clip");
+    SYS_CINEMATIC.Load("siva_clip");
 }
 
 void CCinematicCamera_Director::Start(void* pCtx)

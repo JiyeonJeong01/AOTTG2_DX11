@@ -16,6 +16,7 @@
 #include "Scene.h"
 #include "Event_System.h"
 #include "magic_enum.hpp"
+#include "Input_System.h"
 
 NS_BEGIN(Editor)
     CMainPanel::CMainPanel(const std::string& strPanelName)
@@ -440,6 +441,27 @@ void CMainPanel::Request_Exit()
 void CMainPanel::Draw_Toolbar()
 {
     ImGui::BeginChild("##MainToolbar", ImVec2(0, 34.f), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+    if (SYS_INPUT.Get_KeyDown(VK_F8))
+    {
+        const _float3 vPos = SYS_EDITOR.Get_Position();
+        const _float3 vRot = SYS_EDITOR.Get_RotationEuler();
+
+        char szBuffer[256]{};
+        sprintf_s(szBuffer, "Pos : %.2f, %.2f, %.2f | Rot : %.2f, %.2f, %.2f",
+            vPos.x, vPos.y, vPos.z,
+            vRot.x, vRot.y, vRot.z);
+
+        m_strCameraPreview = szBuffer;
+
+        ImGui::SameLine();
+    }
+
+    if (!m_strCameraPreview.empty())
+    {
+        ImGui::TextUnformatted(m_strCameraPreview.c_str());
+        ImGui::SameLine();
+    }
 
     const _float button_size = 70.0f;
     const _float checkbox_size = 250.0f;

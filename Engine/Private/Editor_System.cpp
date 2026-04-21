@@ -233,6 +233,60 @@ void CEditor_System::Focus_Object(CGameObject* pObj)
     m_vCamVel = { 0.f, 0.f, 0.f };
 }
 
+_float3 CEditor_System::Get_Position() const
+{
+    using namespace DirectX;
+
+    const XMMATRIX matView = XMLoadFloat4x4(&m_matCamView);
+    const XMMATRIX matWorld = XMMatrixInverse(nullptr, matView);
+
+    XMFLOAT4X4 world{};
+    XMStoreFloat4x4(&world, matWorld);
+
+    return _float3(world._41, world._42, world._43);
+}
+
+_float3 CEditor_System::Get_RotationEuler() const
+{
+    using namespace DirectX;
+
+    const XMMATRIX matView = XMLoadFloat4x4(&m_matCamView);
+    const XMMATRIX matWorld = XMMatrixInverse(nullptr, matView);
+
+    XMFLOAT4X4 world{};
+    XMStoreFloat4x4(&world, matWorld);
+
+    /* 카메라의 월드 기준 forward */
+    const _float3 vForward =
+    {
+        world._31,
+        world._32,
+        world._33
+    };
+
+    _float3 vEuler{};
+
+    /* pitch */
+    vEuler.x = asinf(-vForward.y);
+
+    /* yaw */
+    if (fabsf(cosf(vEuler.x)) > 0.0001f)
+        vEuler.y = atan2f(vForward.x, vForward.z);
+    else
+        vEuler.y = 0.f;
+
+    /* roll = 0 */
+    vEuler.z = 0.f;
+
+    /* 라디안 -> 도 */
+    constexpr _float RAD2DEG = 180.f / XM_PI;
+    vEuler.x *= RAD2DEG;
+    vEuler.y *= RAD2DEG;
+    vEuler.z *= RAD2DEG;
+
+    return vEuler;
+}
+
 /* Editor 마우스 피킹은 Ray <-> AABB */
 static inline bool Ray_AABB(const _float3& vOrigin, const _float3& vDir, const _float3& vMin, const _float3& vMax, _float* fOutT)
 {

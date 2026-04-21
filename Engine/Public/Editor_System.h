@@ -41,6 +41,9 @@ public:
 
     void Focus_Object(CGameObject* pObj);
 
+    _float3 Get_Position() const;
+    _float3 Get_RotationEuler() const;
+
 
 private: /* SceneView Camera */
     void Build_SceneView_Matrices();
