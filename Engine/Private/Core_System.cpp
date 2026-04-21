@@ -227,10 +227,44 @@ void CCore_System::Share_LightSRV(ID3D11ShaderResourceView** ppSRV)
     *ppSRV = m_pGraphic_Device ? m_pGraphic_Device->Get_LightSRV() : nullptr;
 }
 
-void CCore_System::Share_SceneDepthSRV(ID3D11ShaderResourceView** ppSRV)
+void CCore_System::Share_DepthSRV(ID3D11ShaderResourceView** ppSRV)
 {
-    if (!ppSRV) return;
-    *ppSRV = m_pGraphic_Device ? m_pGraphic_Device->Get_SceneDepthSRV() : nullptr;
+    if (nullptr == ppSRV)
+        return;
+
+    *ppSRV = m_pGraphic_Device->Get_DepthSRV();
+}
+
+void CCore_System::Share_SpecularSRV(ID3D11ShaderResourceView** ppSRV)
+{
+    if (nullptr == ppSRV)
+        return;
+
+    *ppSRV = m_pGraphic_Device->Get_SpecularSRV();
+}
+
+void CCore_System::Share_PostProcessSRV(ID3D11ShaderResourceView** ppSRV)
+{
+    if (ppSRV == nullptr || m_pGraphic_Device == nullptr)
+        return;
+
+    *ppSRV = m_pGraphic_Device->Get_PostProcessSRV();
+}
+
+void CCore_System::Bind_PostProcessRTV()
+{
+    if (m_pGraphic_Device == nullptr)
+        return;
+
+    m_pGraphic_Device->Bind_PostProcessRTV();
+}
+
+HRESULT CCore_System::Clear_PostProcess_RTV(const _float4* pClearColor)
+{
+    if (m_pGraphic_Device == nullptr)
+        return E_FAIL;
+
+    return m_pGraphic_Device->Clear_PostProcess_RTV(pClearColor);
 }
 
 HRESULT CCore_System::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
@@ -266,11 +300,6 @@ void CCore_System::Bind_GBufferRTV()
 void CCore_System::Bind_LightRTV()
 {
     m_pGraphic_Device->Bind_LightRTV();
-}
-
-void CCore_System::Bind_SceneDepthSRV(_uint iSlot)
-{
-    m_pGraphic_Device->Bind_SceneDepthSRV(iSlot);
 }
 
 void CCore_System::Unbind_PS_SRV(_uint iSlot)
@@ -328,6 +357,15 @@ HRESULT CCore_System::Clear_Light_Buffer(const _float4* pClearColor) const
     return S_OK;
 }
 
+HRESULT CCore_System::Clear_Depth_RTV(const _float4* pClearColor)
+{
+    return m_pGraphic_Device->Clear_Depth_RTV(pClearColor);
+}
+
+HRESULT CCore_System::Clear_Specular_RTV(const _float4* pClearColor)
+{
+    return m_pGraphic_Device->Clear_Specular_RTV(pClearColor);
+}
 
 HRESULT CCore_System::Present() const
 {

@@ -18,17 +18,30 @@ CGraphic_Device::~CGraphic_Device()
     Safe_Release(m_pSceneRTV);
     Safe_Release(m_pSceneSRV);
     Safe_Release(m_pSceneDSV);
-    Safe_Release(m_pSceneDepthSRV);
 
     Safe_Release(m_pDiffuseTexture);
     Safe_Release(m_pDiffuseRTV);
     Safe_Release(m_pDiffuseSRV);
+
     Safe_Release(m_pNormalTexture);
     Safe_Release(m_pNormalRTV);
     Safe_Release(m_pNormalSRV);
+
+    Safe_Release(m_pDepthTexture);
+    Safe_Release(m_pDepthRTV);
+    Safe_Release(m_pDepthSRV);
+
     Safe_Release(m_pLightTexture);
     Safe_Release(m_pLightRTV);
     Safe_Release(m_pLightSRV);
+
+    Safe_Release(m_pSpecularTexture);
+    Safe_Release(m_pSpecularRTV);
+    Safe_Release(m_pSpecularSRV);
+
+    Safe_Release(m_pPostProcessSRV);
+    Safe_Release(m_pPostProcessRTV);
+    Safe_Release(m_pPostProcessTexture);
 
 #if defined(DEBUG) || defined(_DEBUG)
     ID3D11Debug* d3dDebug;
@@ -143,9 +156,12 @@ HRESULT CGraphic_Device::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
     ID3D11RenderTargetView* pSceneRTV = nullptr;
     ID3D11ShaderResourceView* pSceneSRV = nullptr;
 
+    ID3D11Texture2D* pPostProcessTexture = nullptr;
+    ID3D11RenderTargetView* pPostProcessRTV = nullptr;
+    ID3D11ShaderResourceView* pPostProcessSRV = nullptr;
+
     ID3D11Texture2D* pDepthStencilTexture = nullptr;
     ID3D11DepthStencilView* pSceneDSV = nullptr;
-    ID3D11ShaderResourceView* pSceneDepthSRV = nullptr;
 
     /* --- Create Scene Texture --- */
     D3D11_TEXTURE2D_DESC textureDesc{};
@@ -160,29 +176,56 @@ HRESULT CGraphic_Device::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
     textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
     textureDesc.CPUAccessFlags = 0;
     textureDesc.MiscFlags = 0;
-
-    hr = m_pDevice->CreateTexture2D(&textureDesc, nullptr, &pSceneTexture);
-    if (FAILED(hr))
     {
-        Safe_Release(pSceneTexture);
-        return E_FAIL;
+        hr = m_pDevice->CreateTexture2D(&textureDesc, nullptr, &pSceneTexture);
+        if (FAILED(hr))
+        {
+            Safe_Release(pSceneTexture);
+            return E_FAIL;
+        }
+
+        hr = m_pDevice->CreateRenderTargetView(pSceneTexture, nullptr, &pSceneRTV);
+        if (FAILED(hr))
+        {
+            Safe_Release(pSceneRTV);
+            Safe_Release(pSceneTexture);
+            return E_FAIL;
+        }
+
+        hr = m_pDevice->CreateShaderResourceView(pSceneTexture, nullptr, &pSceneSRV);
+        if (FAILED(hr))
+        {
+            Safe_Release(pSceneSRV);
+            Safe_Release(pSceneRTV);
+            Safe_Release(pSceneTexture);
+            return E_FAIL;
+        }
     }
 
-    hr = m_pDevice->CreateRenderTargetView(pSceneTexture, nullptr, &pSceneRTV);
-    if (FAILED(hr))
     {
-        Safe_Release(pSceneRTV);
-        Safe_Release(pSceneTexture);
-        return E_FAIL;
-    }
+        hr = m_pDevice->CreateTexture2D(&textureDesc, nullptr, &pPostProcessTexture);
+        if (FAILED(hr))
+        {
+            Safe_Release(pPostProcessTexture);
+            return E_FAIL;
+        }
 
-    hr = m_pDevice->CreateShaderResourceView(pSceneTexture, nullptr, &pSceneSRV);
-    if (FAILED(hr))
-    {
-        Safe_Release(pSceneSRV);
-        Safe_Release(pSceneRTV);
-        Safe_Release(pSceneTexture);
-        return E_FAIL;
+        hr = m_pDevice->CreateRenderTargetView(pPostProcessTexture, nullptr, &pPostProcessRTV);
+        if (FAILED(hr))
+        {
+            Safe_Release(pPostProcessRTV);
+            Safe_Release(pPostProcessTexture);
+            return E_FAIL;
+        }
+
+        hr = m_pDevice->CreateShaderResourceView(pPostProcessTexture, nullptr, &pPostProcessSRV);
+        if (FAILED(hr))
+        {
+            Safe_Release(pPostProcessSRV);
+            Safe_Release(pPostProcessRTV);
+            Safe_Release(pPostProcessTexture);
+            return E_FAIL;
+        }
     }
 
     /* --- Create Scene Depth Stencil --- */
@@ -229,38 +272,22 @@ HRESULT CGraphic_Device::Ready_SceneRenderTarget(_uint iWidth, _uint iHeight)
         return E_FAIL;
     }
 
-    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-    srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D.MostDetailedMip = 0;
-    srvDesc.Texture2D.MipLevels = 1;
-
-    hr = m_pDevice->CreateShaderResourceView(pDepthStencilTexture, &srvDesc, &pSceneDepthSRV);
-    if (FAILED(hr))
-    {
-        Safe_Release(pSceneDepthSRV);
-        Safe_Release(pSceneDSV);
-        Safe_Release(pDepthStencilTexture);
-
-        Safe_Release(pSceneSRV);
-        Safe_Release(pSceneRTV);
-        Safe_Release(pSceneTexture);
-
-        return E_FAIL;
-    }
-
     /* --- Commit : 성공 시에만 멤버에 붙인다. --- */
     Safe_Release(m_pSceneDSV);
     Safe_Release(m_pSceneSRV);
     Safe_Release(m_pSceneRTV);
     Safe_Release(m_pSceneTexture);
-    Safe_Release(m_pSceneDepthSRV);
+    Safe_Release(m_pPostProcessSRV);
+    Safe_Release(m_pPostProcessRTV);
+    Safe_Release(m_pPostProcessTexture);
 
     m_pSceneTexture = pSceneTexture;         pSceneTexture = nullptr;
     m_pSceneRTV = pSceneRTV;                 pSceneRTV = nullptr;
     m_pSceneSRV = pSceneSRV;                 pSceneSRV = nullptr;
     m_pSceneDSV = pSceneDSV;                 pSceneDSV = nullptr;
-    m_pSceneDepthSRV = pSceneDepthSRV;       pSceneDepthSRV = nullptr;
+    m_pPostProcessTexture = pPostProcessTexture;   pPostProcessTexture = nullptr;
+    m_pPostProcessRTV = pPostProcessRTV;           pPostProcessRTV = nullptr;
+    m_pPostProcessSRV = pPostProcessSRV;           pPostProcessSRV = nullptr;
 
     Safe_Release(pDepthStencilTexture);
 
@@ -325,6 +352,21 @@ void CGraphic_Device::Bind_SceneRTV_WithoutDSV()
 {
     m_pDeviceContext->OMSetRenderTargets(1, &m_pSceneRTV, nullptr);
     Set_Viewport(m_iDeferredW, m_iDeferredH);
+}
+
+void CGraphic_Device::Bind_PostProcessRTV()
+{
+    m_pDeviceContext->OMSetRenderTargets(1, &m_pPostProcessRTV, nullptr);
+    Set_Viewport(m_iSceneW, m_iSceneH);
+}
+
+HRESULT CGraphic_Device::Clear_PostProcess_RTV(const _float4* pClearColor)
+{
+    if (nullptr == m_pDeviceContext || nullptr == m_pPostProcessRTV)
+        return E_FAIL;
+
+    m_pDeviceContext->ClearRenderTargetView(m_pPostProcessRTV, reinterpret_cast<const _float*>(pClearColor));
+    return S_OK;
 }
 
 HRESULT CGraphic_Device::Ensure_SceneRenderTarget(_uint w, _uint h)
@@ -489,9 +531,17 @@ HRESULT CGraphic_Device::Ready_DeferredRenderTargets(_uint iWidth, _uint iHeight
     ID3D11RenderTargetView* pNormalRTV = nullptr;
     ID3D11ShaderResourceView* pNormalSRV = nullptr;
 
+    ID3D11Texture2D* pDepthTexture = nullptr;
+    ID3D11RenderTargetView* pDepthRTV = nullptr;
+    ID3D11ShaderResourceView* pDepthSRV = nullptr;
+
     ID3D11Texture2D* pLightTexture = nullptr;
     ID3D11RenderTargetView* pLightRTV = nullptr;
     ID3D11ShaderResourceView* pLightSRV = nullptr;
+
+    ID3D11Texture2D* pSpecularTexture = nullptr;
+    ID3D11RenderTargetView* pSpecularRTV = nullptr;
+    ID3D11ShaderResourceView* pSpecularSRV = nullptr;
 
     if (FAILED(Create_RT_Texture(m_pDevice, iWidth, iHeight, DXGI_FORMAT_R8G8B8A8_UNORM,
         &pDiffuseTexture, &pDiffuseRTV, &pDiffuseSRV)))
@@ -506,9 +556,47 @@ HRESULT CGraphic_Device::Ready_DeferredRenderTargets(_uint iWidth, _uint iHeight
         return E_FAIL;
     }
 
+    if (FAILED(Create_RT_Texture(m_pDevice, iWidth, iHeight, DXGI_FORMAT_R32G32B32A32_FLOAT,
+        &pDepthTexture, &pDepthRTV, &pDepthSRV)))
+    {
+        Safe_Release(pNormalSRV);
+        Safe_Release(pNormalRTV);
+        Safe_Release(pNormalTexture);
+
+        Safe_Release(pDiffuseSRV);
+        Safe_Release(pDiffuseRTV);
+        Safe_Release(pDiffuseTexture);
+        return E_FAIL;
+    }
+
     if (FAILED(Create_RT_Texture(m_pDevice, iWidth, iHeight, DXGI_FORMAT_R16G16B16A16_UNORM,
         &pLightTexture, &pLightRTV, &pLightSRV)))
     {
+        Safe_Release(pDepthSRV);
+        Safe_Release(pDepthRTV);
+        Safe_Release(pDepthTexture);
+
+        Safe_Release(pNormalSRV);
+        Safe_Release(pNormalRTV);
+        Safe_Release(pNormalTexture);
+
+        Safe_Release(pDiffuseSRV);
+        Safe_Release(pDiffuseRTV);
+        Safe_Release(pDiffuseTexture);
+        return E_FAIL;
+    }
+
+    if (FAILED(Create_RT_Texture(m_pDevice, iWidth, iHeight, DXGI_FORMAT_R16G16B16A16_UNORM,
+        &pSpecularTexture, &pSpecularRTV, &pSpecularSRV)))
+    {
+        Safe_Release(pLightSRV);
+        Safe_Release(pLightRTV);
+        Safe_Release(pLightTexture);
+
+        Safe_Release(pDepthSRV);
+        Safe_Release(pDepthRTV);
+        Safe_Release(pDepthTexture);
+
         Safe_Release(pNormalSRV);
         Safe_Release(pNormalRTV);
         Safe_Release(pNormalTexture);
@@ -527,9 +615,17 @@ HRESULT CGraphic_Device::Ready_DeferredRenderTargets(_uint iWidth, _uint iHeight
     Safe_Release(m_pNormalRTV);
     Safe_Release(m_pNormalTexture);
 
+    Safe_Release(m_pDepthSRV);
+    Safe_Release(m_pDepthRTV);
+    Safe_Release(m_pDepthTexture);
+
     Safe_Release(m_pLightSRV);
     Safe_Release(m_pLightRTV);
     Safe_Release(m_pLightTexture);
+
+    Safe_Release(m_pSpecularSRV);
+    Safe_Release(m_pSpecularRTV);
+    Safe_Release(m_pSpecularTexture);
 
     m_pDiffuseTexture = pDiffuseTexture;
     m_pDiffuseRTV = pDiffuseRTV;
@@ -539,9 +635,17 @@ HRESULT CGraphic_Device::Ready_DeferredRenderTargets(_uint iWidth, _uint iHeight
     m_pNormalRTV = pNormalRTV;
     m_pNormalSRV = pNormalSRV;
 
+    m_pDepthTexture = pDepthTexture;
+    m_pDepthRTV = pDepthRTV;
+    m_pDepthSRV = pDepthSRV;
+
     m_pLightTexture = pLightTexture;
     m_pLightRTV = pLightRTV;
     m_pLightSRV = pLightSRV;
+
+    m_pSpecularTexture = pSpecularTexture;
+    m_pSpecularRTV = pSpecularRTV;
+    m_pSpecularSRV = pSpecularSRV;
 
     m_iDeferredW = iWidth;
     m_iDeferredH = iHeight;
@@ -555,7 +659,8 @@ HRESULT CGraphic_Device::Ensure_DeferredRenderTargets(_uint iWidth, _uint iHeigh
         return E_FAIL;
 
     if (m_iDeferredW == iWidth && m_iDeferredH == iHeight &&
-        m_pDiffuseSRV && m_pNormalSRV && m_pLightSRV)
+        m_pDiffuseSRV && m_pNormalSRV && m_pDepthSRV &&
+        m_pLightSRV && m_pSpecularSRV)
         return S_OK;
 
     return Ready_DeferredRenderTargets(iWidth, iHeight);
@@ -563,25 +668,21 @@ HRESULT CGraphic_Device::Ensure_DeferredRenderTargets(_uint iWidth, _uint iHeigh
 
 void CGraphic_Device::Bind_GBufferRTV()
 {
-    ID3D11RenderTargetView* pRTVs[2] = { m_pDiffuseRTV, m_pNormalRTV };
-    m_pDeviceContext->OMSetRenderTargets(2, pRTVs, m_pSceneDSV);
+    ID3D11RenderTargetView* pRTVs[3] = { m_pDiffuseRTV, m_pNormalRTV, m_pDepthRTV };
+    m_pDeviceContext->OMSetRenderTargets(3, pRTVs, m_pSceneDSV);
     Set_Viewport(m_iDeferredW, m_iDeferredH);
 }
 
 void CGraphic_Device::Bind_LightRTV()
 {
-    m_pDeviceContext->OMSetRenderTargets(1, &m_pLightRTV, m_pSceneDSV);
+    ID3D11RenderTargetView* pRTVs[2] = { m_pLightRTV, m_pSpecularRTV };
+    m_pDeviceContext->OMSetRenderTargets(2, pRTVs, m_pSceneDSV);
     Set_Viewport(m_iDeferredW, m_iDeferredH);
 }
 
 void CGraphic_Device::Bind_SceneSRV(_uint iSlot)
 {
     m_pDeviceContext->PSSetShaderResources(iSlot, 1, &m_pSceneSRV);
-}
-
-void CGraphic_Device::Bind_SceneDepthSRV(_uint iSlot)
-{
-    m_pDeviceContext->PSSetShaderResources(iSlot, 1, &m_pSceneDepthSRV);
 }
 
 void CGraphic_Device::Unbind_PS_SRV(_uint iSlot)
@@ -658,6 +759,24 @@ HRESULT CGraphic_Device::Clear_Light_RTV(const _float4* pClearColor)
         return E_FAIL;
 
     m_pDeviceContext->ClearRenderTargetView(m_pLightRTV, reinterpret_cast<const _float*>(pClearColor));
+    return S_OK;
+}
+
+HRESULT CGraphic_Device::Clear_Depth_RTV(const _float4* pClearColor)
+{
+    if (nullptr == m_pDeviceContext || nullptr == m_pDepthRTV)
+        return E_FAIL;
+
+    m_pDeviceContext->ClearRenderTargetView(m_pDepthRTV, reinterpret_cast<const _float*>(pClearColor));
+    return S_OK;
+}
+
+HRESULT CGraphic_Device::Clear_Specular_RTV(const _float4* pClearColor)
+{
+    if (nullptr == m_pDeviceContext || nullptr == m_pSpecularRTV)
+        return E_FAIL;
+
+    m_pDeviceContext->ClearRenderTargetView(m_pSpecularRTV, reinterpret_cast<const _float*>(pClearColor));
     return S_OK;
 }
 

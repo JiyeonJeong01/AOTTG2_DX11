@@ -33,7 +33,9 @@ public :
     void        Share_DiffuseSRV(ID3D11ShaderResourceView** ppSRV);
     void        Share_NormalSRV(ID3D11ShaderResourceView** ppSRV);
     void        Share_LightSRV(ID3D11ShaderResourceView** ppSRV);
-    void        Share_SceneDepthSRV(ID3D11ShaderResourceView** ppSRV);
+    void        Share_DepthSRV(ID3D11ShaderResourceView** ppSRV);
+    void        Share_SpecularSRV(ID3D11ShaderResourceView** ppSRV);
+    void        Share_PostProcessSRV(ID3D11ShaderResourceView** ppSRV);
 
     HRESULT     Ready_SceneRenderTarget(_uint iWidth, _uint iHeight);
     HRESULT     Ready_DeferredRenderTargets(_uint iWidth, _uint iHeight);
@@ -43,10 +45,9 @@ public :
     void        Bind_SceneRTV_WithoutDSV();
     void        Bind_GBufferRTV();
     void        Bind_LightRTV();
+    void        Bind_PostProcessRTV();
 
     void        Bind_SceneSRV(_uint iSlot);
-    void        Bind_SceneDepthSRV(_uint iSlot);
-
     void        Unbind_PS_SRV(_uint iSlot);
 
 public :
@@ -54,7 +55,11 @@ public :
     HRESULT     Clear_Scene_Buffers(const _float4* pClearColor) const;
     HRESULT     Clear_GBuffer_Buffers(const _float4* pDiffuseClearColor, const _float4* pNormalClearColor) const;
     HRESULT     Clear_Light_Buffer(const _float4* pClearColor) const;
+    HRESULT     Clear_Depth_RTV(const _float4* pClearColor);
+    HRESULT     Clear_Specular_RTV(const _float4* pClearColor);
+    HRESULT     Clear_PostProcess_RTV(const _float4* pClearColor);
 	HRESULT		Present() const;
+
 
 public: /* For.Timer_Manager */
 	_float Compute_SystemDT() const;

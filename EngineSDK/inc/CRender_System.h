@@ -7,7 +7,8 @@
 #include "Shader.h"
 
 NS_BEGIN(Engine)
-    class CRender_Context;
+
+class CRender_Context;
 
 class ENGINE_DLL CRender_System final
 {
@@ -35,53 +36,6 @@ public:
     }
 
 private:
-    /* COM 객체*/
-    ID3D11Device*                                   m_pDevice{};
-    ID3D11DeviceContext*                            m_pContext{};
-
-    Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_rsScissor;
-    Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_rsNoScissor;
-    std::unique_ptr<DirectX::SpriteBatch>           m_pSpriteBatch;
-
-    ID3D11BlendState*                               m_pBlendState_None = nullptr;
-    ID3D11BlendState*                               m_pBlendState_Alpha = nullptr;
-
-    ID3D11DepthStencilState*                        m_pDepthState_Default = nullptr;
-    ID3D11DepthStencilState*                        m_pDepthState_ReadOnly = nullptr;
-    ID3D11DepthStencilState*                        m_pDepthState_Disabled = nullptr;
-
-    ID3D11RasterizerState*                          m_pRasterizerState_Default = nullptr;
-    ID3D11RasterizerState*                          m_pRasterizerState_CullCw = nullptr;
-    ID3D11RasterizerState*                          m_pRasterizerState_CullNone = nullptr;
-
-    /* Render Context */
-    std::unique_ptr<CRender_Context>                m_upRenderContext{};
-    /* Render Context 캐싱 */
-    _float4x4                                       m_matView{};
-    _float4x4                                       m_matProj{};
-    UI_GLOBAL                                       m_gUI{};
-
-    uint32_t                                        m_hUIRectMesh{};
-    uint32_t                                        m_hDefaultBaseMap{};
-    uint32_t                                        m_hDefaultNormalMap{};
-    uint32_t                                        m_hVtxParticlePoint{};
-    uint32_t                                        m_hDeferredShader{};
-    uint32_t                                        m_hSpeedLineShader{};
-
-    /* Draw Calls */
-    vector<DRAW_CMD>                                m_AllDrawCmds;
-    vector<DRAW_CMD>                                m_PendingDrawCmds;
-    std::array<std::vector<DRAW_CMD*>, SCAST(size_t, RENDER_LAYER::END)> m_LayerCmds;
-
-    class CTransform_Processor*                     m_pTransform_Processor{};
-    class CRectTransform_Processor*                 m_pRectTransform_Processor{};
-    class CAnimator_Processor*                      m_pAnimator_Processor{};
-    class CMeshRenderer_Processor*                  m_pMeshRenderer_Processor{};
-
-    _bool                                           bSubmittedThisFrame{}; /* 프레임당 하나의 카메라의 submit만 받는다. */
-    RENDER_LAYER                                    m_eCurLayer = RENDER_LAYER::END;
-
-private:
     HRESULT Create_RenderState();
 
     void    Build_RenderQueue();
@@ -91,6 +45,7 @@ private:
     void    Render_CombinedPass();
     void    Render_SpeedLinePass();
     void    Render_PostProcess();
+    void    Render_PostProcessComposite();
 
     void    Execute_RenderQueue();
     void    Execute_Pass(RENDER_LAYER layer);
@@ -109,11 +64,15 @@ private:
     void    Apply_Pass_State_Skybox();
     void    Apply_Pass_State_Priority();
     void    Apply_Pass_State_NonBlend();
+    void    Apply_Pass_State_Light();
+    void    Apply_Pass_State_Combined();
+    void    Apply_Pass_State_PostProcess();
     void    Apply_Pass_State_Blend();
     void    Apply_Pass_State_UI();
 
     void    Bind_BlendState_None();
     void    Bind_BlendState_Alpha();
+    void    Bind_BlendState_Add();
 
     void    Bind_DepthState_Default();
     void    Bind_DepthState_ReadOnly();
@@ -124,6 +83,55 @@ private:
     void    Bind_RasterizerState_CullNone();
 
     void    Unbind_PS_SRVs();
+
+private:
+    /* COM 객체*/
+    ID3D11Device* m_pDevice{};
+    ID3D11DeviceContext* m_pContext{};
+
+    Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_rsScissor;
+    Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_rsNoScissor;
+    std::unique_ptr<DirectX::SpriteBatch>           m_pSpriteBatch;
+
+    ID3D11BlendState* m_pBlendState_None = nullptr;
+    ID3D11BlendState* m_pBlendState_Alpha = nullptr;
+    ID3D11BlendState* m_pBlendState_Add = nullptr;
+
+    ID3D11DepthStencilState* m_pDepthState_Default = nullptr;
+    ID3D11DepthStencilState* m_pDepthState_ReadOnly = nullptr;
+    ID3D11DepthStencilState* m_pDepthState_Disabled = nullptr;
+
+    ID3D11RasterizerState* m_pRasterizerState_Default = nullptr;
+    ID3D11RasterizerState* m_pRasterizerState_CullCw = nullptr;
+    ID3D11RasterizerState* m_pRasterizerState_CullNone = nullptr;
+
+    /* Render Context */
+    std::unique_ptr<CRender_Context>                m_upRenderContext{};
+    /* Render Context 캐싱 */
+    _float4x4                                       m_matView{};
+    _float4x4                                       m_matProj{};
+    UI_GLOBAL                                       m_gUI{};
+
+    uint32_t                                        m_hUIRectMesh{};
+    uint32_t                                        m_hDefaultBaseMap{};
+    uint32_t                                        m_hDefaultNormalMap{};
+    uint32_t                                        m_hVtxParticlePoint{};
+    uint32_t                                        m_hDeferredShader{};
+    uint32_t                                        m_hSpeedLineShader{};
+    uint32_t                                        m_hFogShader{};
+
+    /* Draw Calls */
+    vector<DRAW_CMD>                                m_AllDrawCmds;
+    vector<DRAW_CMD>                                m_PendingDrawCmds;
+    std::array<std::vector<DRAW_CMD*>, SCAST(size_t, RENDER_LAYER::END)> m_LayerCmds;
+
+    class CTransform_Processor* m_pTransform_Processor{};
+    class CRectTransform_Processor* m_pRectTransform_Processor{};
+    class CAnimator_Processor* m_pAnimator_Processor{};
+    class CMeshRenderer_Processor* m_pMeshRenderer_Processor{};
+
+    _bool                                           bSubmittedThisFrame{}; /* 프레임당 하나의 카메라의 submit만 받는다. */
+    RENDER_LAYER                                    m_eCurLayer = RENDER_LAYER::END;
 
 
     /* 후처리 */
