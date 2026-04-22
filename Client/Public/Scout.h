@@ -41,15 +41,24 @@ private:
 
     CScoutBehavior* m_pBehavior = nullptr;
 
-    CGameObject*    m_goStagingCamera = nullptr;
+    /* 연출용 UI */
+    class CHUDController*       m_pHUD = nullptr;
+    class CUI_NoticeController* m_pNotice = nullptr;
 
 private :
+    SCRIPT_OBJECT_REF   m_refHUDController{};
+
+    SCRIPT_OBJECT_REF   m_refCinematicCamera;
     SCRIPT_OBJECT_REF   m_refStagingCamera;
     SCRIPT_OBJECT_REF   m_refFadeUI;
     SCRIPT_OBJECT_REF   m_refDialogueUI;
 
     SCRIPT_FIELDS_BEGIN(CScout)
+        SCRIPT_FIELD_OBJECT_REF(m_refHUDController)
+
+        SCRIPT_FIELD_OBJECT_REF(m_refCinematicCamera)
         SCRIPT_FIELD_OBJECT_REF(m_refStagingCamera)
+
         SCRIPT_FIELD_OBJECT_REF(m_refFadeUI)
         SCRIPT_FIELD_OBJECT_REF(m_refDialogueUI)
     SCRIPT_FIELDS_END(CScout)

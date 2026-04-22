@@ -26,6 +26,7 @@ public:
     bool Play(const std::string& strClipName, CCamera camera);
     void Stop();
     void Pause(_bool bPause);
+    void Reset_Cinematic();
 
     _bool Is_Playing() const { return m_bPlaying; }
 

@@ -1,10 +1,12 @@
 ﻿#pragma once
 #include "ScoutBehavior.h"
+#include "Cinematic_Event.h"
 
 NS_BEGIN(Client)
 
 class CPlayer;
 class CScout;
+class CUI_NoticeController;
 
 class CScoutBehavior_RequestResupply final : public CScoutBehavior
 {
@@ -12,6 +14,7 @@ public:
     enum class RESUPPLY_STATE : uint32_t
     {
         NONE,
+        REQUEST_NOTICE,
         IDLE_WAIT,
         DETECTED,
         APPROACH,
@@ -68,15 +71,17 @@ public:
     void Late_Update(_float fDT) override;
 
 public:
-    void Set_SpecialCamera(CGameObject* pCameraObject);
-    void Set_UI(CGameObject* pDialogue, CGameObject* pFade);
+    void Process_Start();
+
+    void Set_SpecialCamera(CGameObject* pSpecial, CGameObject* pCinematic);
+    void Set_UI(CUI_NoticeController* pNotice, CGameObject* pDialogue, CGameObject* pFade);
 private:
     HRESULT SetUp_References();
 
-    void Process_Start();
 
     void Process_IdleWait(_float fDT);
     void Process_Detected(_float fDT);
+    void Process_RequestNotice(_float fDT);
     void Process_Approach(_float fDT);
     void Process_Resupply();
     void Process_Special(_float fDT);
@@ -97,6 +102,9 @@ private:
     void OnTriggerEnter(const COLLISION_DESC& tCollisionDesc);
     void OnTriggerExit(const COLLISION_DESC& tCollisionDesc);
     void On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData);
+    void On_CinematicEvent(const CINEMATIC_EVENT_DATA& tEventData);
+
+    void Place_RequestNoticeCamera();
 
 private:
     void Begin_SpecialCamera();
@@ -115,7 +123,9 @@ private:
     void Set_FadeVisible(_bool bVisible);
     void Update_Fade(_float fDT);
 
+
 private:
+    CUI_NoticeController*           m_pNotice = nullptr;
     RESUPPLY_STATE                   m_eState = RESUPPLY_STATE::NONE;
 
     _bool                            m_bPlayerDetected = false;
@@ -134,6 +144,16 @@ private:
     _float                           m_fBehindDistance = 2.f;
     _float                           m_fResupplyDistance = 0.5f;
     _float3                          m_vExitPos = { 0.f, 0.f, 0.f };
+
+    _bool                           m_bNoticeShown = false;
+    _float                          m_fRequestNoticeTime = 0.f;
+    _float                          m_fRequestNoticeDuration = 4.f;
+
+
+private :
+    CGameObject*                    m_goCinematicCamera = nullptr;
+    CCamera                         m_scCinematicCamera{};
+
 
 private:
     CGameObject*                     m_goSpecialCamera = nullptr;
@@ -170,14 +190,14 @@ private:
     _uint                            m_iCurDialogueChar = 0;
 
     _float                           m_fDialogueCharTime = 0.f;
-    _float                           m_fDialogueCharInterval = 0.045f;
+    _float                           m_fDialogueCharInterval = 0.1f;      /* 대사 글자 출력 */
 
     _float                           m_fDialogueWaitTime = 0.f;
-    _float                           m_fDialogueLineWaitDuration = 0.45f;
-    _float                           m_fDialogueEndWaitDuration = 0.35f;
+    _float                           m_fDialogueLineWaitDuration = 0.5f;    /* 대사 종료 후 다음 라인 */
+    _float                           m_fDialogueEndWaitDuration = 0.9f;     /* 대화 종료 후 페이드 대기 */
 
     _float                           m_fFadeAlpha = 0.f;
-    _float                           m_fFadeDuration = 0.5f;
+    _float                           m_fFadeDuration = 5.f;                /* 페이드 속도 */
     _float                           m_fFadeTime = 0.f;
 
 };

@@ -2,6 +2,8 @@
 #include "ScoutBehavior.h"
 #include "Scout_Scriptable_Object.h"
 #include "ScoutBehavior_RequestResupply.h"
+#include "HUDController.h"
+#include "UI_NoticeController.h"
 
 NS_BEGIN(Client)
 
@@ -24,8 +26,13 @@ void CScout::Awake(void* pCtx)
     m_mrOwner = m_goOwner->Get_Component<CMeshRenderer>();
     IF_TRUE_RETURN_MSG_BREAK(!m_mrOwner.Is_Valid(), , "m_mrOwner is invalid");
 
-    m_goStagingCamera = GAME_INSTANCE.Find_GameObject(m_refStagingCamera.hObject);
-    IF_NULL_RETURN_MSG_BREAK(m_goStagingCamera, , "m_goStagingCamera is nullptr");
+
+    CGameObject* goHUD = GAME_INSTANCE.Find_GameObject(m_refHUDController.hObject);
+    IF_NULL_RETURN_MSG_BREAK(goHUD, , "goHUD is nullptr.");
+    m_pHUD = goHUD->Get_Script<CHUDController>();
+    m_pNotice = goHUD->Get_Script_InChildren<CUI_NoticeController>();
+    IF_NULL_RETURN_MSG_BREAK(m_pHUD, , "m_pHUD is nullptr.");
+    IF_NULL_RETURN_MSG_BREAK(m_pNotice, , "m_pNotice is nullptr.");
 
 }
 
@@ -40,6 +47,11 @@ void CScout::Start(void* pCtx)
 void CScout::Priority_Update(void* pCtx, _float fDT)
 {
     UNREFERENCED_PARAMETER(pCtx);
+
+    if (SYS_INPUT.Get_KeyDown(VK_F1))
+    {
+        To<CScoutBehavior_RequestResupply*>(m_pBehavior)->Process_Start();
+    }
 
     if (m_pBehavior)
         m_pBehavior->Priority_Update(fDT);
@@ -86,6 +98,9 @@ void CScout::SetUp_Behavior()
 
     const SCOUT_BEHAVIOR eBehavior = scScoutSO->Get_Behavior();
     m_tContext.eBehaviour = eBehavior;
+    CGameObject* pStaging = nullptr;
+    CGameObject* pCinematic = nullptr;
+
     CGameObject* pFade = nullptr;
     CGameObject* pDialogue = nullptr;
 
@@ -93,12 +108,15 @@ void CScout::SetUp_Behavior()
     {
     case SCOUT_BEHAVIOR::REQUEST_RESUPPLY:
         m_pBehavior = new CScoutBehavior_RequestResupply(m_goOwner, this, eBehavior);
-        To< CScoutBehavior_RequestResupply*>(m_pBehavior)->Set_SpecialCamera(m_goStagingCamera);
+        pStaging = GAME_INSTANCE.Find_GameObject(m_refStagingCamera.hObject);
+        pCinematic = GAME_INSTANCE.Find_GameObject(m_refCinematicCamera.hObject);
 
         pFade = GAME_INSTANCE.Find_GameObject(m_refFadeUI.hObject);
         pDialogue = GAME_INSTANCE.Find_GameObject(m_refDialogueUI.hObject);
 
-        To< CScoutBehavior_RequestResupply*>(m_pBehavior)->Set_UI(pDialogue, pFade);
+        To< CScoutBehavior_RequestResupply*>(m_pBehavior)->Set_SpecialCamera(pStaging, pCinematic);
+        To< CScoutBehavior_RequestResupply*>(m_pBehavior)->Set_UI(m_pNotice, pDialogue, pFade);
+
         break;
 
     case SCOUT_BEHAVIOR::NONE:

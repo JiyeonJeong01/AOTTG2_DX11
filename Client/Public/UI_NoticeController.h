@@ -8,7 +8,7 @@ enum class NOTICE_TYPE : uint32_t
 {
     NONE = 0,
     SAVE_EREN,
-    RESUPPLY_GAS,
+    REQUEST_RESUPPLY,
     END
 };
 

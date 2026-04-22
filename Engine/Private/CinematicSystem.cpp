@@ -109,6 +109,12 @@ void CCinematic_System::Pause(_bool bPause)
     m_bPause = bPause;
 }
 
+void CCinematic_System::Reset_Cinematic()
+{
+    Stop();
+    m_strCurrentClipName.clear();
+}
+
 void CCinematic_System::Set_TestClip(const CINEMATIC_CLIP& tClip)
 {
     Stop();

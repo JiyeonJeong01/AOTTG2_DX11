@@ -76,7 +76,7 @@ void CUI_NoticeController::Initialize_NoticeText()
 
     m_strNotice[To<_uint>(NOTICE_TYPE::NONE)] = L"";
     m_strNotice[To<_uint>(NOTICE_TYPE::SAVE_EREN)] = L"에렌을 엄호하세요";
-    m_strNotice[To<_uint>(NOTICE_TYPE::RESUPPLY_GAS)] = L"동료에게 가스를 재보급하세요";
+    m_strNotice[To<_uint>(NOTICE_TYPE::REQUEST_RESUPPLY)] = L"동료에게 가스를 보급하세요";
 }
 
 void CUI_NoticeController::Set_NoticeText(NOTICE_TYPE eType)

@@ -26,6 +26,8 @@ void CCinematicCamera_Director::Awake(void* pCtx)
 
 void CCinematicCamera_Director::Start(void* pCtx)
 {
+    _bool bSuccess = SYS_CINEMATIC.Load("Scout_RequestResupply");
+    IF_TRUE_RETURN_MSG_BREAK(!bSuccess, , "Scout_RequestResupply load failed");
 }
 
 void CCinematicCamera_Director::Priority_Update(void* pCtx, _float fDT)
@@ -36,8 +38,7 @@ void CCinematicCamera_Director::Priority_Update(void* pCtx, _float fDT)
         m_bPlay = true;
 
     }
-    if (m_bPlay)
-        SYS_CINEMATIC.Update(fDT);
+    SYS_CINEMATIC.Update(fDT);
 }
 
 void CCinematicCamera_Director::Update(void* pCtx, _float fDT)
