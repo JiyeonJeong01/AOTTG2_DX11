@@ -70,6 +70,18 @@ typedef struct ENGINE_DLL tagCinematicShotKey
 
     CINEMATIC_SHOT_TYPE     eType = CINEMATIC_SHOT_TYPE::CUT;
 
+    _bool                   bUseLookAt = false;
+    _float3                 vLookAtPosition{ 0.f, 0.f, 0.f };
+    _float                  fLookAtBlendRatio = 1.f;
+
+    _bool                   bUseOrbit = false;
+    _float3                 vOrbitCenter{ 0.f, 0.f, 0.f };
+    _float                  fOrbitRadius = 5.f;
+    _float                  fOrbitStartAngleDeg = 0.f;
+    _float                  fOrbitSweepAngleDeg = 180.f;
+    _float                  fOrbitStartHeightOffset = 0.f;
+    _float                  fOrbitEndHeightOffset = 0.f;
+
 } CINEMATIC_SHOT_KEY;
 
 typedef struct ENGINE_DLL tagCinematicClip
@@ -87,7 +99,7 @@ typedef struct ENGINE_DLL tagCinematicClip
 typedef struct ENGINE_DLL tagCinematicFileHeader
 {
     uint32_t    iMagic = 'CMTK';
-    uint32_t    iVersion = 1;
+    uint32_t    iVersion = 2;
 
     uint32_t    iCameraKeyCount = 0;
     uint32_t    iEventKeyCount = 0;
@@ -96,7 +108,27 @@ typedef struct ENGINE_DLL tagCinematicFileHeader
 
 } CINEMATIC_FILE_HEADER;
 
+typedef struct tagCinematicEventChannelKey
+{
+    std::string             strClipName{};
+    CINEMATIC_EVENT_TYPE    eType = CINEMATIC_EVENT_TYPE::NONE;
 
+    bool operator==(const tagCinematicEventChannelKey& rhs) const
+    {
+        return strClipName == rhs.strClipName &&
+            eType == rhs.eType;
+    }
 
+} CINEMATIC_EVENT_CHANNEL_KEY;
+
+struct CINEMATIC_EVENT_CHANNEL_KEY_HASH
+{
+    size_t operator()(const CINEMATIC_EVENT_CHANNEL_KEY& tKey) const
+    {
+        const size_t h1 = std::hash<std::string>{}(tKey.strClipName);
+        const size_t h2 = std::hash<int>{}(static_cast<int>(tKey.eType));
+        return h1 ^ (h2 << 1);
+    }
+};
 
 NS_END

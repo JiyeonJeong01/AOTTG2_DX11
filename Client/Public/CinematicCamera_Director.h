@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Client_Define.h"
+#include "Cinematic_Event.h"
 #include "Script.h"
 
 NS_BEGIN(Client)
@@ -13,6 +14,7 @@ public:
     void Priority_Update(void* pCtx, _float fDT) override;
     void Update(void* pCtx, _float fDT) override;
     void Late_Update(void* pCtx, _float fDT) override;
+    void On_TestCinematicEvent(const CINEMATIC_EVENT_DATA& tEventData);
 
 private :
     CCamera m_camCinematic{};

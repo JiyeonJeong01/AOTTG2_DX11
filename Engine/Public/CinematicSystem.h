@@ -23,6 +23,7 @@ public:
 public:
     bool Load(const std::string& strFileName);
     bool Play(CCamera camera);
+    bool Play(const std::string& strClipName, CCamera camera);
     void Stop();
     void Pause(_bool bPause);
 
@@ -31,27 +32,36 @@ public:
     void Set_TestClip(const CINEMATIC_CLIP& tClip);
     _bool Preview(CCamera camera, _float fTime);
 
-private:
+    CINEMATIC_CLIP&         Get_CurClip() { return m_tCurClip; }
+    const CINEMATIC_CLIP&   Get_CurClip() const { return m_tCurClip; }
+    _bool                   Set_CurClip(const std::string& strClipName);
+
 private:
     void Evaluate(_float fTime);
 
-    _bool Try_Apply_ShotTrack(_float fTime);
-    _bool Apply_DefaultCameraFallback(_float fTime);
+    _bool   Try_Apply_ShotTrack(_float fTime);
+    _bool   Apply_DefaultCameraFallback(_float fTime);
+    void    Apply_CameraKey(const CINEMATIC_CAMERA_KEY& tKey);
+    void    Apply_CameraKey(const CINEMATIC_CAMERA_KEY& tA, const CINEMATIC_CAMERA_KEY& tB, _float fRatio);
+    void    Apply_ShotLookAt(const CINEMATIC_SHOT_KEY& tShot, CINEMATIC_CAMERA_KEY& tInOutKey);
+    void    Apply_Shake(_float fTime);
+    _float  Apply_Ease(CINEMATIC_EASE eEase, _float fRatio) const;
 
     int32_t Find_ActiveShotIndex(_float fTime) const;
     int32_t Find_PreviousValidShotIndex(int32_t iShotIndex) const;
 
-    void Apply_CameraKey(const CINEMATIC_CAMERA_KEY& tKey);
-    void Apply_CameraKey(const CINEMATIC_CAMERA_KEY& tA, const CINEMATIC_CAMERA_KEY& tB, _float fRatio);
-
-    void Process_EventKeys(_float fPrevTime, _float fCurTime);
-    void Apply_Shake(_float fTime);
+    void    Process_EventKeys(_float fPrevTime, _float fCurTime);
+    _float4 Make_LookAt_Quaternion(const _float3& vFromPos, const _float3& vLookAtPos) const;
 
 
+    _float Get_ShotEndTime(int32_t iShotIndex) const;
+    void Build_OrbitCameraKey(const CINEMATIC_SHOT_KEY& tShot, const CINEMATIC_CAMERA_KEY& tBaseKey, _float fOrbitRatio, CINEMATIC_CAMERA_KEY& tOutKey) const;
+
+    void Invoke_CinematicEvent_Channel(const std::string& strClipName, CINEMATIC_EVENT_TYPE eType, const CINEMATIC_EVENT_DATA& tEventData);
 private:
-    CINEMATIC_CLIP  m_tClip{};
+    std::unordered_map<std::string, CINEMATIC_CLIP>  m_umClips{};
+    CINEMATIC_CLIP                              m_tCurClip{};
 
-    _bool           m_bLoaded = false;
     _bool           m_bPlaying = false;
     _bool           m_bPause = false;
 
@@ -64,9 +74,30 @@ private:
     uint8_t         m_iPrevPriority = 0;
 
     /* 이벤트 */
+    std::unordered_map<
+        CINEMATIC_EVENT_CHANNEL_KEY,
+        CEvent<const CINEMATIC_EVENT_DATA&>,
+        CINEMATIC_EVENT_CHANNEL_KEY_HASH>    m_umCinematicEvents{};
 
-    CEvent<const CINEMATIC_EVENT_DATA&> OnCinematicEvent;
-    CEvent<const CINEMATIC_EVENT_DATA&> OnCinematicFinished;
+    std::string                              m_strCurrentClipName{};
+
+public :
+    template <typename T>
+    void Subscribe_CinematicEvent(
+        const std::string& strClipName,
+        CINEMATIC_EVENT_TYPE eType,
+        void (T::* pFunc)(const CINEMATIC_EVENT_DATA&),
+        T* pObj)
+    {
+        CINEMATIC_EVENT_CHANNEL_KEY tKey{};
+        tKey.strClipName = strClipName;
+        tKey.eType = eType;
+
+        auto& Event = m_umCinematicEvents[tKey];
+        Event.Add_Listener(pFunc, pObj);
+    }
 };
+
+
 
 NS_END

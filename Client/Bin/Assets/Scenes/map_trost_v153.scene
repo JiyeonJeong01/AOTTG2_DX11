@@ -43257,7 +43257,7 @@
         {
           "data": {
             "AttachBoneName": "chest",
-            "Enabled": true,
+            "Enabled": false,
             "ExtraPassFlags": 0,
             "Flags": 0,
             "Layer": 1,

@@ -11,7 +11,17 @@ void CCinematicCamera_Director::Awake(void* pCtx)
 
     m_camCinematic = goCinematic->Get_Component<CCamera>();
 
-    SYS_CINEMATIC.Load("siva_clip");
+    _bool bSuccess = SYS_CINEMATIC.Load("siva_clip");
+    SYS_CINEMATIC.Subscribe_CinematicEvent(
+        "siva_clip",
+        CINEMATIC_EVENT_TYPE::FINISH,
+        &CCinematicCamera_Director::On_TestCinematicEvent,
+        this);
+    SYS_CINEMATIC.Subscribe_CinematicEvent(
+        "siva_clip",
+        CINEMATIC_EVENT_TYPE::CUSTOM,
+        &CCinematicCamera_Director::On_TestCinematicEvent,
+        this);
 }
 
 void CCinematicCamera_Director::Start(void* pCtx)
@@ -22,7 +32,7 @@ void CCinematicCamera_Director::Priority_Update(void* pCtx, _float fDT)
 {
     if (SYS_INPUT.Get_KeyDown('T') && m_camCinematic.Is_Valid())
     {
-        SYS_CINEMATIC.Play(m_camCinematic);
+        SYS_CINEMATIC.Play("siva_clip", m_camCinematic);
         m_bPlay = true;
 
     }
@@ -36,6 +46,18 @@ void CCinematicCamera_Director::Update(void* pCtx, _float fDT)
 
 void CCinematicCamera_Director::Late_Update(void* pCtx, _float fDT)
 {
+}
+
+// cpp
+void CCinematicCamera_Director::On_TestCinematicEvent(const CINEMATIC_EVENT_DATA& tEventData)
+{
+    LOG_INFO("Cinematic Event : %s", tEventData.strEventName.c_str());
+
+    if (tEventData.strEventName == "siva")
+    {
+        LOG_INFO("Cinematic Event : %s", tEventData.strEventName.c_str());
+
+    }
 }
 
 NS_END;

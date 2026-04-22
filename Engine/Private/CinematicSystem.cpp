@@ -21,29 +21,34 @@ CCinematic_System::~CCinematic_System()
 
 HRESULT CCinematic_System::Initialize()
 {
-    m_bLoaded = false;
     m_bPlaying = false;
     m_bPause = false;
     m_fCurrentTime = 0.f;
     m_iPrevPriority = 0;
+
+    m_strCurrentClipName.clear();
 
     return S_OK;
 }
 
 bool CCinematic_System::Load(const std::string& strFileName)
 {
-    Stop();
+    std::filesystem::path pathFile(strFileName);
+    std::string strClipName = pathFile.stem().string();
 
-    if (false == CCinematicIO::Load(strFileName, m_tClip))
+    CINEMATIC_CLIP newClip{};
+
+    if (false == CCinematicIO::Load(strFileName, newClip))
         return false;
 
-    m_bLoaded = true;
-    return true;
+    auto [it, inserted] = m_umClips.insert_or_assign(strClipName, std::move(newClip));
+
+    return inserted;
 }
 
 bool CCinematic_System::Play(CCamera camera)
 {
-    if (false == m_bLoaded)
+    if (m_tCurClip.vecCameraKeys.empty())
         return false;
 
     if (false == camera.Is_Valid())
@@ -68,11 +73,22 @@ bool CCinematic_System::Play(CCamera camera)
     m_bPause = false;
     m_bPlaying = true;
 
-    /* 시작 시점 평가 */
     Evaluate(0.f);
     Apply_Shake(0.f);
 
     return true;
+}
+
+bool CCinematic_System::Play(const std::string& strClipName, CCamera camera)
+{
+    auto it = m_umClips.find(strClipName);
+    if (it == m_umClips.end())
+        return false;
+
+    m_strCurrentClipName = strClipName;
+    m_tCurClip = it->second;
+
+    return Play(camera);
 }
 
 void CCinematic_System::Stop()
@@ -96,8 +112,8 @@ void CCinematic_System::Pause(_bool bPause)
 void CCinematic_System::Set_TestClip(const CINEMATIC_CLIP& tClip)
 {
     Stop();
-    m_tClip = tClip;
-    m_bLoaded = true;
+    m_tCurClip = tClip;
+    m_strCurrentClipName = tClip.szName;
 }
 
 _bool CCinematic_System::Preview(CCamera camera, _float fTime)
@@ -115,7 +131,7 @@ _bool CCinematic_System::Preview(CCamera camera, _float fTime)
     if (false == m_tr.Is_Valid())
         return false;
 
-    const _float fClampedTime = std::clamp(fTime, 0.f, m_tClip.fDuration);
+    const _float fClampedTime = std::clamp(fTime, 0.f, m_tCurClip.fDuration);
 
     Evaluate(fClampedTime);
     Apply_Shake(fClampedTime);
@@ -137,7 +153,7 @@ void CCinematic_System::Update(_float fDT)
     if (false == m_tr.Is_Valid())
         return;
 
-    if (m_tClip.vecCameraKeys.empty())
+    if (m_tCurClip.vecCameraKeys.empty())
     {
         Stop();
         return;
@@ -145,23 +161,37 @@ void CCinematic_System::Update(_float fDT)
 
     m_fPrevTime = m_fCurrentTime;
     m_fCurrentTime += fDT;
-    m_fCurrentTime = std::clamp(m_fCurrentTime, 0.f, m_tClip.fDuration);
+    m_fCurrentTime = std::clamp(m_fCurrentTime, 0.f, m_tCurClip.fDuration);
 
     Evaluate(m_fCurrentTime);
     Apply_Shake(m_fCurrentTime);
     Process_EventKeys(m_fPrevTime, m_fCurrentTime);
 
-    if (m_fCurrentTime >= m_tClip.fDuration)
+    if (m_fCurrentTime >= m_tCurClip.fDuration)
     {
+        CINEMATIC_EVENT_DATA tEventData{ "FINISH" };
+        Invoke_CinematicEvent_Channel(m_strCurrentClipName, CINEMATIC_EVENT_TYPE::FINISH, tEventData);
+
         Stop();
     }
 }
 
+_bool CCinematic_System::Set_CurClip(const std::string& strClipName)
+{
+    auto it = m_umClips.find(strClipName);
+    if (it == m_umClips.end())
+        return false;
+
+    m_strCurrentClipName = strClipName;
+    m_tCurClip = it->second;
+
+    return true;
+}
+
 void CCinematic_System::Evaluate(_float fTime)
 {
-    /* 2번 방식:
-       Shot이 있으면 Shot이 주도권을 가짐.
-       Shot이 하나도 없거나, 적용 가능한 Shot이 없을 때만 CameraKey 기본 보간 fallback. */
+    /* Shot이 있으면 Shot이 주도권을 가짐.
+       Shot이 하나도 없거나, 적용 가능한 Shot이 없을 때만 CameraKey 기본 보간으로 fallback한다. */
     if (Try_Apply_ShotTrack(fTime))
         return;
 
@@ -170,14 +200,14 @@ void CCinematic_System::Evaluate(_float fTime)
 
 _bool CCinematic_System::Try_Apply_ShotTrack(_float fTime)
 {
-    const auto& vecShotKeys = m_tClip.vecShotKeys;
-    const auto& vecCameraKeys = m_tClip.vecCameraKeys;
+    const auto& vecShotKeys = m_tCurClip.vecShotKeys;
+    const auto& vecCameraKeys = m_tCurClip.vecCameraKeys;
 
     if (vecShotKeys.empty())
         return false;
 
     const int32_t iActiveShotIndex = Find_ActiveShotIndex(fTime);
-    if (iActiveShotIndex < 0 || iActiveShotIndex >= (int32_t)vecShotKeys.size())
+    if (iActiveShotIndex < 0 || iActiveShotIndex >= To<int32_t>(vecShotKeys.size()))
         return false;
 
     const auto& tShot = vecShotKeys[iActiveShotIndex];
@@ -185,16 +215,118 @@ _bool CCinematic_System::Try_Apply_ShotTrack(_float fTime)
     if (tShot.iCameraKeyIndex >= vecCameraKeys.size())
         return false;
 
-    /* CUT:
-       해당 Shot 시점부터 다음 Shot 전까지 지정 CameraKey 유지 */
+    CINEMATIC_CAMERA_KEY tEval{};
+    const auto& tShotBaseKey = vecCameraKeys[tShot.iCameraKeyIndex];
+
+    /* Orbit Shot */
+    if (tShot.bUseOrbit)
+    {
+        const _float fShotStart = tShot.fTime;
+        const _float fShotEnd = Get_ShotEndTime(iActiveShotIndex);
+        const _float fShotDuration = std::fmaxf(0.0001f, fShotEnd - fShotStart);
+
+        CINEMATIC_CAMERA_KEY tOrbitStart{};
+        Build_OrbitCameraKey(tShot, tShotBaseKey, 0.f, tOrbitStart);
+        Apply_ShotLookAt(tShot, tOrbitStart);
+
+        /* CUT Orbit */
+        if (tShot.eType == CINEMATIC_SHOT_TYPE::CUT)
+        {
+            _float fOrbitRatio = (fTime - fShotStart) / fShotDuration;
+            fOrbitRatio = Apply_Ease(tShotBaseKey.eEase, fOrbitRatio);
+
+            Build_OrbitCameraKey(tShot, tShotBaseKey, fOrbitRatio, tEval);
+            Apply_ShotLookAt(tShot, tEval);
+            Apply_CameraKey(tEval);
+            return true;
+        }
+
+        /* Blend Orbit */
+        if (tShot.eType == CINEMATIC_SHOT_TYPE::BLEND)
+        {
+            const int32_t iPrevShotIndex = Find_PreviousValidShotIndex(iActiveShotIndex);
+
+            /* 이전 Shot이 없는 경우 */
+            if (iPrevShotIndex < 0)
+            {
+                _float fOrbitRatio = (fTime - fShotStart) / fShotDuration;
+                fOrbitRatio = Apply_Ease(tShotBaseKey.eEase, fOrbitRatio);
+
+                Build_OrbitCameraKey(tShot, tShotBaseKey, fOrbitRatio, tEval);
+                Apply_ShotLookAt(tShot, tEval);
+                Apply_CameraKey(tEval);
+                return true;
+            }
+
+            /* 현재 Shot이 마지막 키인 경우 */
+            const auto& tPrevShot = vecShotKeys[iPrevShotIndex];
+            if (tPrevShot.iCameraKeyIndex >= vecCameraKeys.size())
+            {
+                _float fOrbitRatio = (fTime - fShotStart) / fShotDuration;
+                fOrbitRatio = Apply_Ease(tShotBaseKey.eEase, fOrbitRatio);
+
+                Build_OrbitCameraKey(tShot, tShotBaseKey, fOrbitRatio, tEval);
+                Apply_ShotLookAt(tShot, tEval);
+                Apply_CameraKey(tEval);
+                return true;
+            }
+
+            /* 이전 Cam Key랑 보간 시작 */
+            const auto& tPrevKey = vecCameraKeys[tPrevShot.iCameraKeyIndex];
+
+            const _float fBlendDuration = std::fmaxf(0.f, tShot.fBlendDuration);
+            const _float fBlendEnd = fShotStart + fBlendDuration;
+
+            if (fBlendDuration > 0.f && fTime < fBlendEnd)
+            {
+                _float fBlendRatio = (fTime - fShotStart) / fBlendDuration;
+                fBlendRatio = Apply_Ease(tPrevKey.eEase, fBlendRatio);
+
+                _vector vPosA = XMLoadFloat3(&tPrevKey.vPosition);
+                _vector vPosB = XMLoadFloat3(&tOrbitStart.vPosition);
+
+                _vector vQuatA = XMLoadFloat4(&tPrevKey.vRotationQuat);
+                _vector vQuatB = XMLoadFloat4(&tOrbitStart.vRotationQuat);
+
+                _vector vPos = XMVectorLerp(vPosA, vPosB, fBlendRatio);
+                _vector vRot = XMQuaternionSlerp(vQuatA, vQuatB, fBlendRatio);
+
+                XMStoreFloat3(&tEval.vPosition, vPos);
+                XMStoreFloat4(&tEval.vRotationQuat, XMQuaternionNormalize(vRot));
+
+                tEval.fTime = fTime;
+                tEval.fFovy = tPrevKey.fFovy + (tOrbitStart.fFovy - tPrevKey.fFovy) * fBlendRatio;
+                tEval.eEase = tOrbitStart.eEase;
+
+                Apply_CameraKey(tEval);
+                return true;
+            }
+
+            const _float fOrbitStartTime = fBlendEnd;
+            const _float fOrbitDuration = std::fmaxf(0.0001f, fShotEnd - fOrbitStartTime);
+
+            _float fOrbitRatio = (fTime - fOrbitStartTime) / fOrbitDuration;
+            fOrbitRatio = Apply_Ease(tShotBaseKey.eEase, fOrbitRatio);
+
+            Build_OrbitCameraKey(tShot, tShotBaseKey, fOrbitRatio, tEval);
+            Apply_ShotLookAt(tShot, tEval);
+            Apply_CameraKey(tEval);
+            return true;
+
+        }
+    }
+
+
+    /* CUT : 해당 Shot 시점부터 다음 Shot 전까지 지정 CameraKey 유지 */
     if (tShot.eType == CINEMATIC_SHOT_TYPE::CUT)
     {
-        Apply_CameraKey(vecCameraKeys[tShot.iCameraKeyIndex]);
+        tEval = vecCameraKeys[tShot.iCameraKeyIndex];
+        Apply_ShotLookAt(tShot, tEval);
+        Apply_CameraKey(tEval);
         return true;
     }
 
-    /* BLEND:
-       Shot 시작~종료 동안 이전 Shot 카메라 -> 현재 Shot 카메라 보간
+    /* BLEND : Shot 시작 ~ 종료 동안 이전 Shot 카메라 -> 현재 Shot 카메라 보간
        종료 후에는 현재 Shot 카메라 유지 */
     if (tShot.eType == CINEMATIC_SHOT_TYPE::BLEND)
     {
@@ -203,7 +335,9 @@ _bool CCinematic_System::Try_Apply_ShotTrack(_float fTime)
         /* 이전 Shot이 없으면 시작점부터 대상 카메라 유지 */
         if (iPrevShotIndex < 0)
         {
-            Apply_CameraKey(vecCameraKeys[tShot.iCameraKeyIndex]);
+            tEval = vecCameraKeys[tShot.iCameraKeyIndex];
+            Apply_ShotLookAt(tShot, tEval);
+            Apply_CameraKey(tEval);
             return true;
         }
 
@@ -211,7 +345,9 @@ _bool CCinematic_System::Try_Apply_ShotTrack(_float fTime)
 
         if (tPrevShot.iCameraKeyIndex >= vecCameraKeys.size())
         {
-            Apply_CameraKey(vecCameraKeys[tShot.iCameraKeyIndex]);
+            tEval = vecCameraKeys[tShot.iCameraKeyIndex];
+            Apply_ShotLookAt(tShot, tEval);
+            Apply_CameraKey(tEval);
             return true;
         }
 
@@ -220,7 +356,9 @@ _bool CCinematic_System::Try_Apply_ShotTrack(_float fTime)
 
         if (tShot.fBlendDuration <= 0.f)
         {
-            Apply_CameraKey(tTo);
+            tEval = tTo;
+            Apply_ShotLookAt(tShot, tEval);
+            Apply_CameraKey(tEval);
             return true;
         }
 
@@ -229,20 +367,43 @@ _bool CCinematic_System::Try_Apply_ShotTrack(_float fTime)
 
         if (fTime <= fBlendStart)
         {
-            Apply_CameraKey(tFrom);
+            tEval = tFrom;
+            Apply_ShotLookAt(tShot, tEval);
+            Apply_CameraKey(tEval);
             return true;
         }
 
         if (fTime >= fBlendEnd)
         {
-            Apply_CameraKey(tTo);
+            tEval = tTo;
+            Apply_ShotLookAt(tShot, tEval);
+            Apply_CameraKey(tEval);
             return true;
         }
 
         _float fRatio = (fTime - fBlendStart) / tShot.fBlendDuration;
         fRatio = std::clamp(fRatio, 0.f, 1.f);
 
-        Apply_CameraKey(tFrom, tTo, fRatio);
+        fRatio = Apply_Ease(tFrom.eEase, fRatio);
+
+        _vector vPosA = XMLoadFloat3(&tFrom.vPosition);
+        _vector vPosB = XMLoadFloat3(&tTo.vPosition);
+
+        _vector vQuatA = XMLoadFloat4(&tFrom.vRotationQuat);
+        _vector vQuatB = XMLoadFloat4(&tTo.vRotationQuat);
+
+        _vector vPos = XMVectorLerp(vPosA, vPosB, fRatio);
+        _vector vRot = XMQuaternionSlerp(vQuatA, vQuatB, fRatio);
+
+        XMStoreFloat3(&tEval.vPosition, vPos);
+        XMStoreFloat4(&tEval.vRotationQuat, XMQuaternionNormalize(vRot));
+
+        tEval.fTime = fTime;
+        tEval.fFovy = tFrom.fFovy + (tTo.fFovy - tFrom.fFovy) * fRatio;
+        tEval.eEase = tTo.eEase;
+
+        Apply_ShotLookAt(tShot, tEval);
+        Apply_CameraKey(tEval);
         return true;
     }
 
@@ -251,7 +412,7 @@ _bool CCinematic_System::Try_Apply_ShotTrack(_float fTime)
 
 _bool CCinematic_System::Apply_DefaultCameraFallback(_float fTime)
 {
-    auto& vecKeys = m_tClip.vecCameraKeys;
+    auto& vecKeys = m_tCurClip.vecCameraKeys;
 
     if (vecKeys.empty())
         return false;
@@ -292,27 +453,7 @@ _bool CCinematic_System::Apply_DefaultCameraFallback(_float fTime)
         _float fRatio = (fTime - tA.fTime) / fRange;
         fRatio = std::clamp(fRatio, 0.f, 1.f);
 
-        switch (tA.eEase)
-        {
-        case CINEMATIC_EASE::EASE_IN:
-            fRatio = fRatio * fRatio;
-            break;
-
-        case CINEMATIC_EASE::EASE_OUT:
-            fRatio = 1.f - (1.f - fRatio) * (1.f - fRatio);
-            break;
-
-        case CINEMATIC_EASE::EASE_IN_OUT:
-            if (fRatio < 0.5f)
-                fRatio = 2.f * fRatio * fRatio;
-            else
-                fRatio = 1.f - powf(-2.f * fRatio + 2.f, 2.f) * 0.5f;
-            break;
-
-        default:
-            break;
-        }
-
+        fRatio = Apply_Ease(tA.eEase, fRatio);
         Apply_CameraKey(tA, tB, fRatio);
         return true;
     }
@@ -322,14 +463,15 @@ _bool CCinematic_System::Apply_DefaultCameraFallback(_float fTime)
 
 int32_t CCinematic_System::Find_ActiveShotIndex(_float fTime) const
 {
-    const auto& vecShotKeys = m_tClip.vecShotKeys;
+    const auto& vecShotKeys = m_tCurClip.vecShotKeys;
 
     if (vecShotKeys.empty())
         return -1;
 
     int32_t iActiveShotIndex = -1;
 
-    for (int32_t i = 0; i < (int32_t)vecShotKeys.size(); ++i)
+    /* e.g., fTime = 2.f이고 vecshotkeys[5] = 2.3f라면 index는 4 */
+    for (int32_t i = 0; i < To<int32_t>(vecShotKeys.size()); ++i)
     {
         if (vecShotKeys[i].fTime > fTime)
             break;
@@ -342,11 +484,11 @@ int32_t CCinematic_System::Find_ActiveShotIndex(_float fTime) const
 
 int32_t CCinematic_System::Find_PreviousValidShotIndex(int32_t iShotIndex) const
 {
-    const auto& vecShotKeys = m_tClip.vecShotKeys;
+    const auto& vecShotKeys = m_tCurClip.vecShotKeys;
 
     for (int32_t i = iShotIndex - 1; i >= 0; --i)
     {
-        if (vecShotKeys[i].iCameraKeyIndex < m_tClip.vecCameraKeys.size())
+        if (vecShotKeys[i].iCameraKeyIndex < m_tCurClip.vecCameraKeys.size())
             return i;
     }
 
@@ -378,9 +520,92 @@ void CCinematic_System::Apply_CameraKey(const CINEMATIC_CAMERA_KEY& tA, const CI
     m_camera.Set_Fovy(fFovy);
 }
 
+void CCinematic_System::Apply_ShotLookAt(const CINEMATIC_SHOT_KEY& tShot, CINEMATIC_CAMERA_KEY& tInOutKey)
+{
+    _bool bShouldLookAt = false;
+    _float3 vLookAtPos = { 0.f, 0.f, 0.f };
+    _float fBlendRatio = 1.f;
+
+    if (tShot.bUseLookAt)
+    {
+        bShouldLookAt = true;
+        vLookAtPos = tShot.vLookAtPosition;
+        fBlendRatio = std::clamp(tShot.fLookAtBlendRatio, 0.f, 1.f);
+    }
+    else if (tShot.bUseOrbit)
+    {
+        /* Orbit면 기본적으로 중심을 바라보게 */
+        bShouldLookAt = true;
+        vLookAtPos = tShot.vOrbitCenter;
+        fBlendRatio = 1.f;
+    }
+
+    if (false == bShouldLookAt)
+        return;
+
+    _float4 vLookQuat = Make_LookAt_Quaternion(tInOutKey.vPosition, vLookAtPos);
+
+    _vector vBaseQuat = XMLoadFloat4(&tInOutKey.vRotationQuat);
+    _vector vTargetQuat = XMLoadFloat4(&vLookQuat);
+
+    _vector vFinalQuat = XMQuaternionSlerp(vBaseQuat, vTargetQuat, fBlendRatio);
+    vFinalQuat = XMQuaternionNormalize(vFinalQuat);
+
+    XMStoreFloat4(&tInOutKey.vRotationQuat, vFinalQuat);
+}
+
+
+_float CCinematic_System::Apply_Ease(CINEMATIC_EASE eEase, _float fRatio) const
+{
+    fRatio = std::clamp(fRatio, 0.f, 1.f);
+
+    switch (eEase)
+    {
+    case CINEMATIC_EASE::EASE_IN:
+        return fRatio * fRatio;
+
+    case CINEMATIC_EASE::EASE_OUT:
+        return 1.f - (1.f - fRatio) * (1.f - fRatio);
+
+    case CINEMATIC_EASE::EASE_IN_OUT:
+        if (fRatio < 0.5f)
+            return 2.f * fRatio * fRatio;
+        else
+            return 1.f - powf(-2.f * fRatio + 2.f, 2.f) * 0.5f;
+
+    case CINEMATIC_EASE::LINEAR:
+    default:
+        return fRatio;
+    }
+}
+
+_float4 CCinematic_System::Make_LookAt_Quaternion(const _float3& vFromPos, const _float3& vLookAtPos) const
+{
+    const _vector vEye = XMLoadFloat3(&vFromPos);
+    const _vector vAt = XMLoadFloat3(&vLookAtPos);
+    const _vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+    _vector vDir = XMVector3Normalize(vAt - vEye);
+
+    if (XMVectorGetX(XMVector3LengthSq(vDir)) <= 0.000001f)
+    {
+        return _float4(0.f, 0.f, 0.f, 1.f);
+    }
+
+    _matrix matView = XMMatrixLookAtLH(vEye, vAt, vUp);
+    _matrix matWorld = XMMatrixInverse(nullptr, matView);
+
+    _vector vQuat = XMQuaternionRotationMatrix(matWorld);
+    vQuat = XMQuaternionNormalize(vQuat);
+
+    _float4 vOut{};
+    XMStoreFloat4(&vOut, vQuat);
+    return vOut;
+}
+
 void CCinematic_System::Process_EventKeys(_float fPrevTime, _float fCurTime)
 {
-    for (const auto& tEventKey : m_tClip.vecEventKeys)
+    for (const auto& tEventKey : m_tCurClip.vecEventKeys)
     {
         if (tEventKey.fTime <= fPrevTime)
             continue;
@@ -389,7 +614,7 @@ void CCinematic_System::Process_EventKeys(_float fPrevTime, _float fCurTime)
             continue;
 
         CINEMATIC_EVENT_DATA tEventData{ tEventKey.szEventName };
-        OnCinematicEvent.Invoke(tEventData);
+        Invoke_CinematicEvent_Channel(m_strCurrentClipName, tEventKey.eType, tEventData);
     }
 }
 
@@ -398,7 +623,7 @@ void CCinematic_System::Apply_Shake(_float fTime)
     if (false == m_tr.Is_Valid())
         return;
 
-    const auto& vecShakeKeys = m_tClip.vecShakeKeys;
+    const auto& vecShakeKeys = m_tCurClip.vecShakeKeys;
     if (vecShakeKeys.empty())
         return;
 
@@ -458,4 +683,55 @@ void CCinematic_System::Apply_Shake(_float fTime)
 
     m_tr.Set_Position(vBasePos);
     m_tr.Set_Rotation_Quaternion(vFinalQuat);
+}
+
+_float CCinematic_System::Get_ShotEndTime(int32_t iShotIndex) const
+{
+    const auto& vecShotKeys = m_tCurClip.vecShotKeys;
+
+    if (iShotIndex < 0 || iShotIndex >= To<int32_t>(vecShotKeys.size()))
+        return m_tCurClip.fDuration;
+
+    if (iShotIndex + 1 < To<int32_t>(vecShotKeys.size()))
+        return vecShotKeys[iShotIndex + 1].fTime;
+
+    return m_tCurClip.fDuration;
+}
+
+void CCinematic_System::Build_OrbitCameraKey(
+    const CINEMATIC_SHOT_KEY& tShot,
+    const CINEMATIC_CAMERA_KEY& tBaseKey,
+    _float fOrbitRatio,
+    CINEMATIC_CAMERA_KEY& tOutKey) const
+{
+    tOutKey = tBaseKey;
+
+    fOrbitRatio = std::clamp(fOrbitRatio, 0.f, 1.f);
+
+    const _float fAngleDeg = tShot.fOrbitStartAngleDeg + tShot.fOrbitSweepAngleDeg * fOrbitRatio;
+    const _float fAngleRad = XMConvertToRadians(fAngleDeg);
+
+    const _float fHeightOffset =
+        tShot.fOrbitStartHeightOffset +
+        (tShot.fOrbitEndHeightOffset - tShot.fOrbitStartHeightOffset) * fOrbitRatio;
+
+    tOutKey.vPosition.x = tShot.vOrbitCenter.x + cosf(fAngleRad) * tShot.fOrbitRadius;
+    tOutKey.vPosition.y = tShot.vOrbitCenter.y + fHeightOffset;
+    tOutKey.vPosition.z = tShot.vOrbitCenter.z + sinf(fAngleRad) * tShot.fOrbitRadius;
+}
+
+void CCinematic_System::Invoke_CinematicEvent_Channel(
+    const std::string& strClipName,
+    CINEMATIC_EVENT_TYPE eType,
+    const CINEMATIC_EVENT_DATA& tEventData)
+{
+    CINEMATIC_EVENT_CHANNEL_KEY tKey{};
+    tKey.strClipName = strClipName;
+    tKey.eType = eType;
+
+    auto it = m_umCinematicEvents.find(tKey);
+    if (it == m_umCinematicEvents.end())
+        return;
+
+    it->second.Invoke(tEventData);
 }

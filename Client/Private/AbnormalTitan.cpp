@@ -95,19 +95,19 @@ void CAbnormalTitan::Start(void* pCtx)
             hurt->Subscribe_OnHurt(&CAbnormalTitan::On_Hurt, this);
 
             ///* ERASE_마스크_설정 */
-            //{
-            //    auto* goHurt = hurt->Get_HurtBoxObject();
-            //    if (!goHurt)
-            //        __debugbreak();
-            //    auto col = goHurt->Get_Component<CCollider>();
-            //    col->iMask |= (O_HURTBOX | O_ENEMY);
-            //    col->iDiscardMask |= (O_HURTBOX | O_ENEMY | O_WALKABLE);
-            //}
+            {
+                auto* goHurt = hurt->Get_HurtBoxObject();
+                if (!goHurt)
+                    __debugbreak();
+                auto col = goHurt->Get_Component<CCollider>();
+                //col->iMask |= (O_HURTBOX | O_ENEMY);
+                //col->iDiscardMask |= (O_HURTBOX | O_ENEMY | O_WALKABLE);
+                if (goHurt && goHurt->Get_Label() == TITAN_WEAK_POINT)
+                {
+                    m_goWeakPoint = goHurt;
+                }
+            }
 
-            //if (goHurt && goHurt->Get_Label() == TITAN_WEAK_POINT)
-            //{
-            //    m_goWeakPoint = goHurt;
-            //}
         }
         //IF_NULL_RETURN_MSG_BREAK(m_goWeakPoint, , "m_goWeakPoint is nullptr");
 
@@ -315,26 +315,24 @@ void CAbnormalTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHur
         if (m_ePose == TITAN_POSE::STAND)
             eHurt = TITAN_HURT::STAND_LEG_R;
     }
-    //else if (strHurtBox == TITAN_WEAK_POINT)
-    //{
-    //    if (tHitInfo.goAttacker->Is_ExactMask(O_PLAYER | O_HITBOX)) /* 플레이어의 공격만 받는다 */
-    //    {
-    //        CTransform tr = m_goWeakPoint->Get_Component<CTransform>();
-    //        const _vector vPoint = XMLoadFloat3(&tr->vPosition);
-    //        _vector vDiff = vPoint - XMLoadFloat3(&tHitInfo.vHitPoint);
-    //        _float fDiff = XMVectorGetX(XMVector3Length(vDiff));
-
-    //        On_Dead(fDiff);
-    //    }
-
-    //    if (m_ePose == TITAN_POSE::STAND)
-    //        m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), To<_uint>(TITAN_DEAD::STAND_DEAD));
-    //    else if (m_ePose == TITAN_POSE::SIT)
-    //        m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), To<_uint>(TITAN_DEAD::SIT_DEAD));
-    //    else if (m_ePose == TITAN_POSE::CRAWL)
-    //        m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), To<_uint>(TITAN_DEAD::CRAWL_DEAD));
-    //    return;
-    //}
+    else if (strHurtBox == TITAN_WEAK_POINT)
+    {
+        if (tHitInfo.goAttacker->Is_ExactMask(O_PLAYER | O_HITBOX)) /* 플레이어의 공격만 받는다 */
+        {
+            CTransform tr = m_goWeakPoint->Get_Component<CTransform>();
+            const _vector vPoint = XMLoadFloat3(&tr->vPosition);
+            _vector vDiff = vPoint - XMLoadFloat3(&tHitInfo.vHitPoint);
+            _float fDiff = XMVectorGetX(XMVector3Length(vDiff));
+            On_Dead(fDiff);
+        }
+        if (m_ePose == TITAN_POSE::STAND)
+            m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), To<_uint>(TITAN_DEAD::STAND_DEAD));
+        else if (m_ePose == TITAN_POSE::SIT)
+            m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), To<_uint>(TITAN_DEAD::SIT_DEAD));
+        else if (m_ePose == TITAN_POSE::CRAWL)
+            m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), To<_uint>(TITAN_DEAD::CRAWL_DEAD));
+        return;
+    }
 
     if (eHurt == TITAN_HURT::END)
         return;

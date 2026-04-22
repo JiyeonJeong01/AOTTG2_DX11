@@ -255,8 +255,6 @@ void CErenSequenceDirector::Command_Combat()
     }
 
     m_pNotice->Show_Notice(NOTICE_TYPE::SAVE_EREN, 3.f);
-
-
 }
 
 

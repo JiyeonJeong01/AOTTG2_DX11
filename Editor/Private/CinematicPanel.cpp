@@ -10,6 +10,8 @@
 #include "CinematicSystem.h"
 #include "HierarchyPanel.h"
 
+#include "Editor_System.h"
+
 #include <algorithm>
 #include <cmath>
 
@@ -162,8 +164,12 @@ void CCinematicPanel::Draw_Toolbar()
     ImGui::SameLine();
     if (ImGui::Button("Load"))
     {
-        if (CCinematicIO::Load(m_tClip.szName, m_tClip))
+        
+
+        if (SYS_CINEMATIC.Load(m_tClip.szName))
         {
+            SYS_CINEMATIC.Set_CurClip(m_tClip.szName);
+            m_tClip = SYS_CINEMATIC.Get_CurClip();
             m_fPreviewTime = 0.f;
             m_fTimelineOffsetTime = 0.f;
             Clear_Selection();
@@ -339,6 +345,7 @@ void CCinematicPanel::Draw_CameraKey_Inspector()
     ImGui::Separator();
 
     ImGui::SliderFloat("Time", &t.fTime, 0.f, m_tClip.fDuration, "%.2f");
+
     ImGui::InputFloat3("Position", &t.vPosition.x);
     ImGui::InputFloat("Fovy", &t.fFovy);
 
@@ -359,6 +366,16 @@ void CCinematicPanel::Draw_CameraKey_Inspector()
     if (ImGui::InputFloat3("Rotation Euler", vEuler))
     {
         m_vCachedCameraKeyEuler = { vEuler[0], vEuler[1], vEuler[2] };
+        t.vRotationQuat = EulerDegree_To_Quaternion(m_vCachedCameraKeyEuler);
+    }
+
+    if (ImGui::Button("Current", ImVec2(-1.f, 0.f)))
+    {
+        const _float3 vPos = SYS_EDITOR.Get_Position();
+        const _float3 vRot = SYS_EDITOR.Get_RotationEuler();
+
+        t.vPosition = vPos;
+        m_vCachedCameraKeyEuler = vRot;
         t.vRotationQuat = EulerDegree_To_Quaternion(m_vCachedCameraKeyEuler);
     }
 
@@ -434,6 +451,54 @@ void CCinematicPanel::Draw_ShotKey_Inspector()
     if (t.eType == CINEMATIC_SHOT_TYPE::BLEND)
     {
         ImGui::SliderFloat("Blend Duration", &t.fBlendDuration, 0.f, 5.f, "%.2f");
+    }
+
+    ImGui::Separator();
+    ImGui::Checkbox("Use Orbit", &t.bUseOrbit);
+
+    if (t.bUseOrbit)
+    {
+        ImGui::InputFloat3("Orbit Center", &t.vOrbitCenter.x);
+        ImGui::InputFloat("Orbit Radius", &t.fOrbitRadius);
+        ImGui::InputFloat("Orbit Start Height", &t.fOrbitStartHeightOffset);
+        ImGui::InputFloat("Orbit End Height", &t.fOrbitEndHeightOffset);
+        ImGui::InputFloat("Orbit Start Angle", &t.fOrbitStartAngleDeg);
+        ImGui::InputFloat("Orbit Sweep Angle", &t.fOrbitSweepAngleDeg);
+
+        if (ImGui::Button("Current Orbit Center", ImVec2(-1.f, 0.f)))
+        {
+            t.vOrbitCenter = SYS_EDITOR.Get_Position();
+        }
+
+        if (ImGui::Button("Bake Orbit From CameraKey", ImVec2(-1.f, 0.f)))
+        {
+            if (t.iCameraKeyIndex < m_tClip.vecCameraKeys.size())
+            {
+                const auto& tCam = m_tClip.vecCameraKeys[t.iCameraKeyIndex];
+
+                const _float dx = tCam.vPosition.x - t.vOrbitCenter.x;
+                const _float dz = tCam.vPosition.z - t.vOrbitCenter.z;
+
+                t.fOrbitRadius = sqrtf(dx * dx + dz * dz);
+                t.fOrbitStartHeightOffset = tCam.vPosition.y - t.vOrbitCenter.y;
+                t.fOrbitEndHeightOffset = t.fOrbitStartHeightOffset;
+                t.fOrbitStartAngleDeg = DirectX::XMConvertToDegrees(atan2f(dz, dx));
+            }
+        }
+    }
+
+    ImGui::Separator();
+    ImGui::Checkbox("Use LookAt", &t.bUseLookAt);
+
+    if (t.bUseLookAt)
+    {
+        ImGui::InputFloat3("LookAt Position", &t.vLookAtPosition.x);
+        ImGui::SliderFloat("LookAt Blend", &t.fLookAtBlendRatio, 0.f, 1.f, "%.2f");
+
+        if (ImGui::Button("Current LookAt", ImVec2(-1.f, 0.f)))
+        {
+            t.vLookAtPosition = SYS_EDITOR.Get_Position();
+        }
     }
 
     if (ImGui::Button("Jump Preview Here", ImVec2(-1.f, 0.f)))
@@ -544,6 +609,18 @@ void CCinematicPanel::Add_ShotKey()
     t.eType = CINEMATIC_SHOT_TYPE::CUT;
     t.iCameraKeyIndex = 0;
     t.fBlendDuration = 1.f;
+
+    t.bUseLookAt = false;
+    t.vLookAtPosition = { 0.f, 0.f, 0.f };
+    t.fLookAtBlendRatio = 1.f;
+
+    t.bUseOrbit = false;
+    t.vOrbitCenter = { 0.f, 0.f, 0.f };
+    t.fOrbitRadius = 5.f;
+    t.fOrbitStartHeightOffset = 0.f;
+    t.fOrbitEndHeightOffset = 0.f;
+    t.fOrbitStartAngleDeg = 0.f;
+    t.fOrbitSweepAngleDeg = 180.f;
 
     m_tClip.vecShotKeys.push_back(t);
     Clear_Selection();
@@ -776,6 +853,12 @@ void CCinematicPanel::Clamp_All_Key_Time()
 
         if (t.fBlendDuration < 0.f)
             t.fBlendDuration = 0.f;
+
+        t.fLookAtBlendRatio = std::clamp(t.fLookAtBlendRatio, 0.f, 1.f);
+
+        if (t.fOrbitRadius < 0.01f)
+            t.fOrbitRadius = 0.01f;
+
     }
 
     for (auto& t : m_tClip.vecEventKeys)
