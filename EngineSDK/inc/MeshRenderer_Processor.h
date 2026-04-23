@@ -2,9 +2,11 @@
 #include "Render_Struct.h"
 #include "MeshRenderer.h"
 #include "Component_Processor_Impl.h"
+#include "Mesh.h"
 
 NS_BEGIN(Engine)
 
+typedef struct tagMeshEntry MESH;
 class CTransform_Processor;
 class CAnimator_Processor;
 class CRenderer_System;
@@ -56,6 +58,15 @@ private:
     _bool               Create_ParticleBuffers(PARTICLE_RUNTIME* pRuntime);
     _bool               Ensure_ParticleRuntime(MESH_RENDERER_DATA* pData);
     void                Reset_ParticleRuntime(MESH_RENDERER_DATA* pData);
+
+private:
+    _float4x4 m_matViewProj{};
+
+private:
+    _bool Update_Frustum();
+    _bool Try_Get_WorldMatrix(COMPONENT_HANDLE hTransform, _float4x4& matWorld) const;
+    _bool Is_Culled_By_Frustum(const MESH_ENTRY* pMesh, COMPONENT_HANDLE hTransform) const;
+    _bool Is_Culled_Renderer_By_Frustum(const MESH_RENDERER_DATA* pData) const;
 
 private :
     ID3D11Device*               m_pDevice{};

@@ -741,19 +741,9 @@ void CCinematicPanel::Preview_CurrentTime()
     Sort_All_Keys();
     Clamp_All_Key_Time();
 
-    LOG_INFO("==== Preview_CurrentTime ====");
-    LOG_INFO("m_fPreviewTime = %.2f", m_fPreviewTime);
-
     if (m_iSelectedCameraKey >= 0 && m_iSelectedCameraKey < (int)m_tClip.vecCameraKeys.size())
     {
         const auto& tKey = m_tClip.vecCameraKeys[m_iSelectedCameraKey];
-        LOG_INFO("Selected CameraKey Index = %d", m_iSelectedCameraKey);
-        LOG_INFO("Selected CameraKey Pos = %.2f, %.2f, %.2f",
-            tKey.vPosition.x, tKey.vPosition.y, tKey.vPosition.z);
-    }
-    else
-    {
-        LOG_INFO("Selected CameraKey Index = NONE");
     }
 
     SYS_CINEMATIC.Set_TestClip(m_tClip);

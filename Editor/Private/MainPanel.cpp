@@ -87,7 +87,7 @@ void CMainPanel::Update()
             _DEBUG_ERROR_BREAK("CMainPanel Update failed : panel is nullptr");
             continue;
         }
-        if (pPanel->GetTitle() == PANEL_PROFILE || pPanel->GetTitle() == PANEL_SCENE)
+        //if (pPanel->GetTitle() == PANEL_PROFILE || pPanel->GetTitle() == PANEL_SCENE)
             pPanel->Update();
     }
 }
@@ -676,7 +676,7 @@ void CMainPanel::Draw_Panels()
         }
         if (!pPanel->IsOpen())
             continue;
-        if (pPanel->GetTitle() == PANEL_PROFILE || pPanel->GetTitle() == PANEL_SCENE)
+        //if (pPanel->GetTitle() == PANEL_PROFILE || pPanel->GetTitle() == PANEL_SCENE)
             pPanel->Render();
     }
 }

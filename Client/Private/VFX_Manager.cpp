@@ -104,6 +104,28 @@ void CVFX_Manager::Start(void* pCtx)
         Cache_Object(m_refFootDust_6, m_vecFootDustPool);
         Cache_Object(m_refFootDust_7, m_vecFootDustPool);
         Cache_Object(m_refFootDust_8, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_9, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_10, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_11, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_12, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_13, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_14, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_15, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_16, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_17, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_18, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_19, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_20, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_21, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_22, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_23, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_24, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_25, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_26, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_27, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_28, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_29, m_vecFootDustPool);
+        Cache_Object(m_refFootDust_30, m_vecFootDustPool);
     }
 
     {
@@ -136,6 +158,16 @@ void CVFX_Manager::Start(void* pCtx)
     }
 
     Set_Rain_Enable(m_bRainEnable);
+
+    Disable_Pool(m_vecSlideSparkPool);
+    Disable_Pool(m_vecFootDustPool);
+    Disable_Pool(m_vecSignalFlarePool);
+
+    Disable_Pool(m_vecHit01Pool);
+    Disable_Pool(m_vecHit02Pool);
+    Disable_Pool(m_vecHit03Pool);
+    Disable_Pool(m_vecHit04Pool);
+    Disable_Pool(m_vecHit05Pool);
 }
 
 void CVFX_Manager::Priority_Update(void* pCtx, _float fDT)
@@ -144,6 +176,15 @@ void CVFX_Manager::Priority_Update(void* pCtx, _float fDT)
 
 void CVFX_Manager::Update(void* pCtx, _float fDT)
 {
+    Update_PoolFinished(m_vecHit01Pool);
+    Update_PoolFinished(m_vecHit02Pool);
+    Update_PoolFinished(m_vecHit03Pool);
+    Update_PoolFinished(m_vecHit04Pool);
+    Update_PoolFinished(m_vecHit05Pool);
+
+    Update_PoolFinished(m_vecSlideSparkPool);
+    Update_PoolFinished(m_vecFootDustPool);
+    Update_PoolFinished(m_vecSignalFlarePool);
 }
 
 void CVFX_Manager::Late_Update(void* pCtx, _float fDT)
@@ -163,6 +204,32 @@ void CVFX_Manager::Cache_Object(SCRIPT_OBJECT_REF& refObj, std::vector<VFX_OBJEC
     tObj.spriteEffect = tObj.pObject->Get_Component<CSpriteEffect>();
 
     vecPool.push_back(tObj);
+}
+
+void CVFX_Manager::Update_PoolFinished(std::vector<VFX_OBJECT>& vecPool)
+{
+    for (auto& tObj : vecPool)
+    {
+        if (!tObj.pObject)
+            continue;
+
+        if (tObj.meshRenderer.Is_Valid())
+        {
+            if (tObj.meshRenderer.Is_ParticleFinished())
+            {
+                tObj.meshRenderer.Stop_Particle();
+                tObj.pObject->Set_Enable(false);
+            }
+        }
+
+        if (tObj.spriteEffect.Is_Valid())
+        {
+            if (tObj.spriteEffect.Is_Finished())
+            {
+                tObj.pObject->Set_Enable(false);
+            }
+        }
+    }
 }
 
 std::vector<VFX_OBJECT>* CVFX_Manager::Get_ParticlePool(PARTICLE_VFX eType)
@@ -365,10 +432,26 @@ void CVFX_Manager::Finish_Particle(VFX_OBJECT* pVFX)
     if (pVFX == nullptr)
         return;
 
-    if (!pVFX->meshRenderer.Is_Valid())
-        return;
+    if (pVFX->meshRenderer.Is_Valid())
+        pVFX->meshRenderer.Stop_Particle();
 
-    pVFX->meshRenderer.Stop_Particle();
+    if (pVFX->pObject)
+        pVFX->pObject->Set_Enable(false);
+}
+
+void CVFX_Manager::Disable_Pool(std::vector<VFX_OBJECT>& vecPool)
+{
+    for (auto& tObj : vecPool)
+    {
+        if (tObj.pObject)
+            tObj.pObject->Set_Enable(false);
+
+        if (tObj.meshRenderer.Is_Valid())
+            tObj.meshRenderer.Set_ParticlePlaying(false);
+
+        if (tObj.spriteEffect.Is_Valid())
+            tObj.spriteEffect.Stop();
+    }
 }
 
 void CVFX_Manager::Play_ParticleBurst(PARTICLE_VFX eType, const _float3& vWorldPos)

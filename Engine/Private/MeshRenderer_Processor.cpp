@@ -9,6 +9,8 @@
 #include "Texture.h"
 #include "Animator.h"
 #include "RandomUtil.h"
+#include "CRender_System.h"
+#include "Render_Context.h"
 
 CMeshRenderer_Processor::CMeshRenderer_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : m_pDevice(pDevice), m_pContext(pContext)
@@ -77,31 +79,44 @@ void CMeshRenderer_Processor::LateUpdate(_float fDT)
 
 void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
 {
-    if (!m_pTransformProcessor /* || !m_pCam */)
+    if (!m_pTransformProcessor)
         return;
+
+    //_uint iTotalRendererCount = 0;
+    //_uint iCulledRendererCount = 0;
+    //_uint iDrawRendererCount = 0;
+    //_uint iParticleCount = 0;
+
+    const _bool bCanFrustumCull = Update_Frustum();
+
     const auto& Pages = m_Pool.GetPages();
     for (const auto& upPage : Pages)
     {
         auto* pPage = upPage.get();
-        if (!pPage) continue;
+        if (!pPage)
+            continue;
 
         for (uint32_t i = 0; i < PAGE_SIZE; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;
+
             auto* pData = pPage->Get_Ptr(i);
             if (!pData || !pData->bEnable)
                 continue;
 
-            /* 파티클 처리 */
+            //iTotalRendererCount++;
+
+            /* 파티클은 컬링하지 않음 */
             if (pData->eMode == MESH_MODE::PARTICLE)
             {
-
-                if (pData->hParticle == INVALID_HANDLE_UINT)
+                if (!pData->bParticlePlaying || pData->bParticleFinished)
                     continue;
 
                 if (!Ensure_ParticleRuntime(pData))
                     continue;
+
+                //++iParticleCount;
 
                 DRAW_CMD cmd{};
                 cmd.mesh.eMode = MESH_MODE::PARTICLE;
@@ -114,8 +129,19 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
                 continue;
             }
 
-            if (pData->hMesh == INVALID_HANDLE_UINT /*|| pData->hMaterial == INVALID_HANDLE_UINT*/)
+            if (pData->hMesh == INVALID_HANDLE_UINT)
                 continue;
+
+            if (bCanFrustumCull)
+            {
+                if (Is_Culled_Renderer_By_Frustum(pData))
+                {
+                    //++iCulledRendererCount;
+                    continue;
+                }
+            }
+
+            //++iDrawRendererCount;
 
             COMPONENT_HANDLE hReferenceAnimator = INVALID_HANDLE;
 
@@ -149,14 +175,11 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             else if (pData->hAttachSourceAnimator.Is_Valid())
             {
                 if (Build_Attach_BoneMatrix(pData))
-                {
                     tCmd.mesh.matAttach = pData->matFinalAttach;
-                }
             }
 
             outCmds.push_back(tCmd);
 
-            /* -------------------- Outline Extra Pass -------------------- */
             if ((pData->extraPassFlags & To<uint32_t>(EXTRA_RENDER_PASS::OUTLINE)) != 0)
             {
                 const _bool bAnimMesh =
@@ -189,6 +212,14 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             }
         }
     }
+    //LOG_INFO(
+    //    "FrustumCull Total=%u, Draw=%u, Culled=%u, Particle=%u, Cmds=%u",
+    //    iTotalRendererCount,
+    //    iDrawRendererCount,
+    //    iCulledRendererCount,
+    //    iParticleCount,
+    //    static_cast<_uint>(outCmds.size())
+    //);
 }
 
 HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
@@ -1149,6 +1180,213 @@ PARTICLE_RUNTIME* CMeshRenderer_Processor::Get_ParticleRuntime(uint32_t iRuntime
         return nullptr;
 
     return &m_vecParticleRuntime[iRuntime];
+}
+
+_bool CMeshRenderer_Processor::Update_Frustum()
+{
+    _float4x4 matView{};
+    _float4x4 matProj{};
+
+    matView = SYS_RENDER.Contexts()->Get_View();
+    matProj = SYS_RENDER.Contexts()->Get_Proj();
+
+    _matrix matViewXM = XMLoadFloat4x4(&matView);
+    _matrix matProjXM = XMLoadFloat4x4(&matProj);
+
+    _matrix matViewProjXM = matViewXM * matProjXM;
+
+    XMStoreFloat4x4(&m_matViewProj, matViewProjXM);
+
+    return true;
+}
+
+_bool CMeshRenderer_Processor::Try_Get_WorldMatrix(COMPONENT_HANDLE hTransform, _float4x4& matWorld) const
+{
+    if (!hTransform.Is_Valid())
+        return false;
+    TRANSFORM_DATA* pTransformData = To<TRANSFORM_DATA*>(m_pTransformProcessor->Get_DataPtr(COMPONENT_TYPE::TRANSFORM, hTransform));
+    if (!pTransformData)
+        return false;
+
+    matWorld = pTransformData->matWorld;
+    return true;
+}
+
+_bool CMeshRenderer_Processor::Is_Culled_By_Frustum(const MESH_ENTRY* pMesh, COMPONENT_HANDLE hTransform) const
+{
+    if (!pMesh)
+        return false;
+
+    _float4x4 matWorld{};
+    if (!Try_Get_WorldMatrix(hTransform, matWorld))
+        return false;
+
+    const _float fSizeX = pMesh->maxAABB.x - pMesh->minAABB.x;
+    const _float fSizeY = pMesh->maxAABB.y - pMesh->minAABB.y;
+    const _float fSizeZ = pMesh->maxAABB.z - pMesh->minAABB.z;
+
+    if (fSizeX <= 0.0001f || fSizeY <= 0.0001f || fSizeZ <= 0.0001f)
+        return false;
+
+    if (!isfinite(fSizeX) || !isfinite(fSizeY) || !isfinite(fSizeZ))
+        return false;
+
+    _float3 vCenter =
+    {
+        (pMesh->minAABB.x + pMesh->maxAABB.x) * 0.5f,
+        (pMesh->minAABB.y + pMesh->maxAABB.y) * 0.5f,
+        (pMesh->minAABB.z + pMesh->maxAABB.z) * 0.5f
+    };
+
+    _float3 vExtent =
+    {
+        fSizeX * 0.5f,
+        fSizeY * 0.5f,
+        fSizeZ * 0.5f
+    };
+
+    /*
+        일부 잘림/깜빡임 방지용 안전 패딩.
+    */
+    const _float fPadding = 0.5f;
+
+    vExtent.x += fPadding;
+    vExtent.y += fPadding;
+    vExtent.z += fPadding;
+
+    _float3 vMin =
+    {
+        vCenter.x - vExtent.x,
+        vCenter.y - vExtent.y,
+        vCenter.z - vExtent.z
+    };
+
+    _float3 vMax =
+    {
+        vCenter.x + vExtent.x,
+        vCenter.y + vExtent.y,
+        vCenter.z + vExtent.z
+    };
+
+    const _vector vLocalCorners[8] =
+    {
+        XMVectorSet(vMin.x, vMin.y, vMin.z, 1.f),
+        XMVectorSet(vMax.x, vMin.y, vMin.z, 1.f),
+        XMVectorSet(vMin.x, vMax.y, vMin.z, 1.f),
+        XMVectorSet(vMax.x, vMax.y, vMin.z, 1.f),
+
+        XMVectorSet(vMin.x, vMin.y, vMax.z, 1.f),
+        XMVectorSet(vMax.x, vMin.y, vMax.z, 1.f),
+        XMVectorSet(vMin.x, vMax.y, vMax.z, 1.f),
+        XMVectorSet(vMax.x, vMax.y, vMax.z, 1.f)
+    };
+
+    _matrix matWorldXM = XMLoadFloat4x4(&matWorld);
+    _matrix matViewProjXM = XMLoadFloat4x4(&m_matViewProj);
+
+    _matrix matWVP = matWorldXM * matViewProjXM;
+
+    _bool bAllLeft = true;
+    _bool bAllRight = true;
+    _bool bAllBottom = true;
+    _bool bAllTop = true;
+    _bool bAllNear = true;
+    _bool bAllFar = true;
+
+    for (_uint i = 0; i < 8; ++i)
+    {
+        _vector vClip = XMVector4Transform(vLocalCorners[i], matWVP);
+
+        const _float x = XMVectorGetX(vClip);
+        const _float y = XMVectorGetY(vClip);
+        const _float z = XMVectorGetZ(vClip);
+        const _float w = XMVectorGetW(vClip);
+
+        if (fabsf(w) <= 0.0001f)
+            return false;
+
+        const _float fBias = fabsf(w) * 0.15f;
+
+        if (x >= -w - fBias) bAllLeft = false;
+        if (x <= w + fBias) bAllRight = false;
+
+        if (y >= -w - fBias) bAllBottom = false;
+        if (y <= w + fBias) bAllTop = false;
+
+        if (z >= 0.f - fBias) bAllNear = false;
+        if (z <= w + fBias) bAllFar = false;
+    }
+
+    if (bAllLeft || bAllRight || bAllBottom || bAllTop || bAllNear || bAllFar)
+        return true;
+
+    return false;
+}
+
+_bool CMeshRenderer_Processor::Is_Culled_Renderer_By_Frustum(const MESH_RENDERER_DATA* pData) const
+{
+    if (!pData)
+        return false;
+
+    if (pData->hMesh == INVALID_HANDLE_UINT)
+        return false;
+
+    if (pData->layer == RENDER_LAYER::SKY)
+        return false;
+
+    if (pData->eMode == MESH_MODE::PARTICLE)
+        return false;
+
+    /*
+        애니메이션 / 스키닝 / 어태치는 일단 안전하게 컬링 제외
+    */
+    if (pData->hAnimator.Is_Valid() ||
+        pData->hSkinningSourceAnimator.Is_Valid() ||
+        pData->hAttachSourceAnimator.Is_Valid())
+    {
+        return false;
+    }
+
+    if (SYS_RESOURCE.Is_ModelHandle(pData->hMesh))
+    {
+        MODEL_ENTRY* pModel = SYS_RESOURCE.Get_Model(pData->hMesh);
+        if (!pModel)
+            return false;
+
+        _bool bHasValidPart = false;
+
+        for (const auto& pPart : pModel->parts)
+        {
+            MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(pPart.hMesh);
+            if (!pMesh)
+                continue;
+
+            bHasValidPart = true;
+
+            /*
+                파트 하나라도 프러스텀에 걸리면 모델 전체를 살림.
+            */
+            if (!Is_Culled_By_Frustum(pMesh, pData->hTransform))
+                return false;
+        }
+
+        /*
+            유효 파트가 없으면 괜히 사라지게 하지 않음.
+        */
+        if (!bHasValidPart)
+            return false;
+
+        /*
+            모든 파트가 프러스텀 밖이면 모델 컬링.
+        */
+        return true;
+    }
+
+    MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(pData->hMesh);
+    if (!pMesh)
+        return false;
+
+    return Is_Culled_By_Frustum(pMesh, pData->hTransform);
 }
 
 std::unique_ptr<CMeshRenderer_Processor> CMeshRenderer_Processor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

@@ -1,12 +1,14 @@
 ﻿#pragma once
 #include "Eren_Struct.h"
 #include "Script.h"
+#include "Titan_Struct.h"
 
 NS_BEGIN(Engine)
-class CNavMesh;
+    class CNavMesh;
 NS_END
 
 NS_BEGIN(Client)
+class CVFX_Manager;
 class CGroundChecker;
 class CTargetSensor;
 class CHitBox;
@@ -31,6 +33,8 @@ public:
 
 private :
     /* ----- Utils ----- */
+    CVFX_Manager*                       m_pVFX_Manager = nullptr;
+
     CGameObject*                        m_goEren{};
     CGroundChecker*                     m_pGroundChecker{};
     CTargetSensor*                      m_pSensor{};
@@ -38,8 +42,12 @@ private :
     CHurtBox*                           m_scHurtBox = nullptr;
     CAttacher*                          m_scAttach{};
 
-    /* ----- Eren Stats ----- */
+    TITAN_DUST_RUNTIME        m_tDustRun{};
+    TITAN_DUST_RUNTIME        m_tDustWalk{};
+    TITAN_DUST_RUNTIME        m_tDustRockWalk{};
 
+
+    /* ----- Eren Stats ----- */
     /* TODO : 에렌_거인_테스트 */
     //const _float                        m_fMaxSpeed = 30.f;     /* rigidbody 기반 이동에 대한 제한 */
     //_float                              m_fWalkSpeed = 30.f;     
@@ -158,13 +166,15 @@ public :
     _bool   Is_MoveRockCompleted() const;
     _bool   Is_FixCompleted() const;
 
+    void Set_FootDust();
+    void Update_FootDust();
+
 public :
     template <typename T>
     ListenerID Subscribe_OnDamaged(void(T::* func)(_float), T* pInstance)
     {
         return m_OnDamaged.Add_Listener(func, pInstance);
     }
-
 
 private :
     void    Activate_Hitbox(const std::string& strKey, _bool bActive);
@@ -174,6 +184,13 @@ private :
     _vector Get_AttackPower();
     _bool   Is_MovePathPointArrived(const _float3& vCurPos, const _float3& vTargetPos) const;
 
+
+public:
+    SCRIPT_OBJECT_REF   m_refVFXManager{};
+
+    SCRIPT_FIELDS_BEGIN(CErenTitan)
+        SCRIPT_FIELD_OBJECT_REF(m_refVFXManager);
+    SCRIPT_FIELDS_END(CErenTitan)
 };
 
 

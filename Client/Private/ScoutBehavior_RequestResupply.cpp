@@ -117,11 +117,6 @@ void CScoutBehavior_RequestResupply::Initialize()
                     pBlock->block.Set_Float4("g_OutlineColor", { 1.f, 1.f, 1.f, 1.f });
                 }
 
-                LOG_INFO("label=%s, perObj=%u, width=%.4f",
-                    pChild->Get_Label().data(),
-                    mr->hPerObjectParams,
-                    fWidth);
-
                 m_vecOutlines.emplace_back(mr, fWidth);
             }
         }
@@ -222,7 +217,6 @@ void CScoutBehavior_RequestResupply::Process_None(_float fDT)
     if (m_bSignalFlarePlaying)
     {
         Handle_SignalFlare(fDT);
-        LOG_INFO("handling");
     }
 }
 
@@ -590,8 +584,6 @@ void CScoutBehavior_RequestResupply::On_CinematicEvent(const CINEMATIC_EVENT_DAT
             + XMVectorSet(0.f, 1.5f, 0.f, 0.f);
 
         XMStoreFloat3(&m_vSignalFlarePos, vStartPos);
-
-        LOG_INFO("CScoutBehavior_RequestResupply : SIGNALFLARE");
     }
 }
 
@@ -970,8 +962,6 @@ void CScoutBehavior_RequestResupply::Handle_SignalFlare(_float fDT)
             pSmoke->meshRenderer.Set_ParticleForward(vForward3);
             pSmoke->meshRenderer.Reset_Particle();
             pSmoke->meshRenderer.Set_ParticlePlaying(true);
-
-            LOG_INFO("signal flare pos : %.2f, %.2f, %.2f", m_vSignalFlarePos.x, m_vSignalFlarePos.y, m_vSignalFlarePos.z);
         }
     }
 

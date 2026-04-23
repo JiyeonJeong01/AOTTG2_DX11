@@ -147,6 +147,8 @@ void CCrawlerTitan::Start(void* pCtx)
     /* 히트박스 전부 끄기 */
     for (auto& hit : m_AllHitBoxes)
         hit.second->Set_Active(false);
+
+    Set_FootDust();
 }
 
 void CCrawlerTitan::Priority_Update(void* pCtx, _float fDT)
@@ -158,6 +160,7 @@ void CCrawlerTitan::Priority_Update(void* pCtx, _float fDT)
 void CCrawlerTitan::Update(void* pCtx, _float fDT)
 {
     m_upStateMachine->Update(fDT);
+    Update_FootDust();
 }
 
 void CCrawlerTitan::Late_Update(void* pCtx, _float fDT)
@@ -358,10 +361,10 @@ void CCrawlerTitan::OnChange_CurState(std::shared_ptr<CTitanState> spNewState)
 
 void CCrawlerTitan::Set_FootDust()
 {
-    TITAN_DUST_DESC tLeft{ false, 21.f, {2.f, 0.6f, 1.f} };
+    TITAN_DUST_DESC tLeft{ false, 14.f, {2.f, 0.6f, -3.f} };
     m_tDustRuntime.tLeft = tLeft;
 
-    TITAN_DUST_DESC tRight{ false, 38.f, {-2.f, 0.6f, 1.f} };
+    TITAN_DUST_DESC tRight{ false, 20.f, {-2.f, 0.6f, 3.f} };
     m_tDustRuntime.tRight = tRight;
 }
 
@@ -378,14 +381,11 @@ void CCrawlerTitan::Update_FootDust()
     _bool bCanPlayDust = eState == TITAN_STATE::MOVE || eState == TITAN_STATE::CHASE;
     if (!bCanPlayDust)
         return;
-    else
-        LOG_INFO("bCanPlayDust true");
 
     _float3 vWorldPos{};
     if (m_tDustRuntime.Try_PlayDust(m_tComponents.animator, m_tComponents.transform, vWorldPos))
     {
         m_pVFX_Manager->Play_ParticleBurst(PARTICLE_VFX::FOOT_DUST, vWorldPos);
-        LOG_INFO("=============Play Paritlce Brust==============");
     }
 }
 

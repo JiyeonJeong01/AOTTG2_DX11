@@ -48,8 +48,10 @@ public:
     void Update_Particle(VFX_OBJECT* pVFX, const _float3& vWorldPos);
     void Update_Particle(VFX_OBJECT* pVFX, const _float3& vWorldPos, const _float3& vPivot);
 
-    void Finish_Particle(VFX_OBJECT* pVFX);
+    void Update_PoolFinished(std::vector<VFX_OBJECT>& vecPool);
 
+    void Finish_Particle(VFX_OBJECT* pVFX);
+    void Disable_Pool(std::vector<VFX_OBJECT>& vecPool);
 public:
     void Play_ParticleBurst(PARTICLE_VFX eType, const _float3& vWorldPos);
     void Play_ParticleBurst(PARTICLE_VFX eType, const _float3& vWorldPos, const _float3& vPivot);

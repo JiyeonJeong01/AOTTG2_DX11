@@ -405,14 +405,11 @@ void CNormalTitan::Update_FootDust()
     _bool bCanPlayDust = eState == TITAN_STATE::MOVE || eState == TITAN_STATE::CHASE;
     if (!bCanPlayDust)
         return;
-    else
-        LOG_INFO("bCanPlayDust true");
 
     _float3 vWorldPos{};
     if (m_tDustRuntime.Try_PlayDust(m_tComponents.animator, m_tComponents.transform, vWorldPos))
     {
         m_pVFX_Manager->Play_ParticleBurst(PARTICLE_VFX::FOOT_DUST, vWorldPos);
-        LOG_INFO("=============Play Paritlce Brust==============");
     }
 }
 

@@ -7,9 +7,10 @@
 #include "HurtBox.h"
 #include "Attacher.h"
 #include "NavMesh.h"
+#include "VFX_Manager.h"
 
 NS_BEGIN(Client)
-CErenTitan::CErenTitan()
+    CErenTitan::CErenTitan()
 {
 }
 
@@ -99,6 +100,11 @@ void CErenTitan::Start(void* pCtx)
 
     /* 추락 속도 */
     m_rbEren.Add_LinearImpulse({ 0.f, -50.f, 0.f });
+
+    CGameObject* goVFX = SYS_GAMEOBJECT.Get_Wrapper(m_refVFXManager.hObject);
+    IF_NULL_RETURN_MSG_BREAK(goVFX, , "goVFX is nullptr");
+    m_pVFX_Manager = goVFX->Get_Script<CVFX_Manager>();
+    IF_NULL_RETURN_MSG_BREAK(m_pVFX_Manager, , "m_pVFX_Manager is nullptr");
 }
 
 void CErenTitan::Priority_Update(void* pCtx, _float fDT)
@@ -137,6 +143,8 @@ void CErenTitan::Update(void* pCtx, _float fDT)
     case EREN_STEP_TYPE::END :
         return;
     }
+
+    Update_FootDust();
 }
 
 void CErenTitan::Late_Update(void* pCtx, _float fDT)
@@ -1019,6 +1027,64 @@ void CErenTitan::On_SuccessAttack(CGameObject* goTitan, const HIT_INFO& tHitInfo
     rbTitan.Set_Restitution(1.f);
     rbTitan.Add_LinearImpulse(vAttack);
 }
+
+void CErenTitan::Set_FootDust()
+{
+    TITAN_DUST_DESC tLeftRun{ false, 15.f, { 3.f, 0.6f, 1.f } };
+    TITAN_DUST_DESC tRightRun{ false, 41.f, { -3.f, 0.6f, 1.f } };
+
+    m_tDustRun.tLeft = tLeftRun;
+    m_tDustRun.tRight = tRightRun;
+
+    TITAN_DUST_DESC tLeftWalk{ false, 44.f, { 3.f, 0.6f, 1.f } };
+    TITAN_DUST_DESC tRightWalk{ false, 105.f, { -3.f, 0.6f, 1.f } };
+
+    m_tDustWalk.tLeft = tLeftWalk;
+    m_tDustWalk.tRight = tRightWalk;
+
+    TITAN_DUST_DESC tLeftRock{ false, 44.f, { 3.f, 0.6f, 1.f } };
+    TITAN_DUST_DESC tRightRock{ false, 105.f, { -3.f, 0.6f, 1.f } };
+
+    m_tDustRockWalk.tLeft = tLeftRock;
+    m_tDustRockWalk.tRight = tRightRock;
+}
+
+
+void CErenTitan::Update_FootDust()
+{
+    if (!m_pVFX_Manager)
+        return;
+
+    TITAN_DUST_RUNTIME* pRuntime = nullptr;
+
+    const _uint iCurAnim = m_animEren->iAnimationClip;
+
+    if (iCurAnim == m_iRunAnimIndex)
+    {
+        pRuntime = &m_tDustRun;
+    }
+    else if (iCurAnim == m_iWalkAnimIndex)
+    {
+        pRuntime = &m_tDustWalk;
+    }
+    else if (iCurAnim == m_iMoveRockAnimIndex)
+    {
+        pRuntime = &m_tDustRockWalk;
+    }
+    else
+    {
+        return;
+    }
+
+    _float3 vWorldPos{};
+    if (pRuntime->Try_PlayDust(m_animEren, m_trEren, vWorldPos))
+    {
+        m_pVFX_Manager->Play_ParticleBurst(
+            PARTICLE_VFX::FOOT_DUST,
+            vWorldPos);
+    }
+}
+
 
 void CErenTitan::Set_ErenStep(EREN_STEP_TYPE eType)
 {

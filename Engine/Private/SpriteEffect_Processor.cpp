@@ -142,6 +142,9 @@ void CSpriteEffect_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             if (pData->hTransform == INVALID_HANDLE)
                 continue;
 
+            if (!pData->bPlay || pData->bFinished)
+                continue;
+
             DRAW_CMD tCmd{};
 
             /* --- 공통 --- */
