@@ -3,6 +3,9 @@
 #include "Client_Define.h"
 
 NS_BEGIN(Client)
+
+enum class TITAN_TYPE { NONE, NORMAL, ABNORMAL, CRAWLER, END };
+
 class CTitan;
 
 class CHuman
@@ -23,6 +26,7 @@ public :
     virtual void On_Grab(SIDE eSide, CHuman* pHuman) = 0;
     virtual void On_Dead(const _float fAccuracy) {};
     virtual void On_Stunned(const HIT_INFO& tHitInfo) {};
+    virtual TITAN_TYPE Get_TitanType() const = 0;
 
     _bool           Is_Alive() const {
         return m_bAlive;

@@ -8,10 +8,11 @@
 #include "HurtBox.h"
 #include "NavMesh.h"
 #include "Titan_Scriptable_Object.h"
+#include "VFX_Manager.h"
+#include "UI_HitController.h"
 
 NS_BEGIN(Client)
-
-CCrawlerTitan::CCrawlerTitan()
+    CCrawlerTitan::CCrawlerTitan()
 {
 }
 
@@ -30,6 +31,18 @@ void CCrawlerTitan::Awake(void* pCtx)
 
 void CCrawlerTitan::Start(void* pCtx)
 {
+    {
+        CGameObject* goVFX = SYS_GAMEOBJECT.Get_Wrapper(m_refVFXManager.hObject);
+        IF_NULL_RETURN_MSG_BREAK(goVFX, , "goVFX is nullptr");
+        m_pVFX_Manager = goVFX->Get_Script<CVFX_Manager>();
+        IF_NULL_RETURN_MSG_BREAK(m_pVFX_Manager, , "m_pVFX_Manager is nullptr");
+
+        CGameObject* goUI = GAME_INSTANCE.Find_GameObject(m_refUIHit.hObject);
+        IF_NULL_RETURN_MSG_BREAK(goUI, , "goUI is nullptr");
+        m_pUIHitController = goUI->Get_Script<CUI_HitController>();
+        IF_NULL_RETURN_MSG_BREAK(m_pUIHitController, , "m_pUIHitController is nullptr");
+    }
+
     /* 컴포넌트 참조 */
     {
         m_tComponents.transform = m_goTitan->Get_Component<CTransform>();
@@ -232,6 +245,7 @@ void CCrawlerTitan::On_Dead(const _float fAccuracy)
     if (eState == TITAN_STATE::DEAD)
         return;
 
+    m_pUIHitController->On_PlayerKillTitan(fAccuracy);
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
 }
 
@@ -256,24 +270,28 @@ void CCrawlerTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurt
     if (!((iPlayerAtkMask == iAttackerMask) || (iCropsAtkMask == iAttackerMask)))
         return;
 
+    if (strHurtBox == TITAN_WEAK_POINT)
+    {
+        if (tHitInfo.goAttacker->Is_ExactMask(O_PLAYER | O_HITBOX)) /* 플레이어의 공격만 받는다 */
+        {
+            CTransform tr = m_goWeakPoint->Get_Component<CTransform>();
+            const _vector vPoint = XMLoadFloat3(&tr->vPosition);
+            _vector vDiff = vPoint - XMLoadFloat3(&tHitInfo.vHitPoint);
+            _float fDiff = XMVectorGetX(XMVector3Length(vDiff));
+            On_Dead(fDiff);
+        }
+        if (m_ePose == TITAN_POSE::STAND)
+            m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), To<_uint>(TITAN_DEAD::STAND_DEAD));
+        else if (m_ePose == TITAN_POSE::SIT)
+            m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), To<_uint>(TITAN_DEAD::SIT_DEAD));
+        else if (m_ePose == TITAN_POSE::CRAWL)
+            m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), To<_uint>(TITAN_DEAD::CRAWL_DEAD));
+        return;
+    }
+
     TITAN_HURT eHurt = TITAN_HURT::END;
 
     eHurt = TITAN_HURT::CRAWL_EYE;
-
-    //else if (strHurtBox == TITAN_WEAK_POINT)
-    //{
-    //    if (tHitInfo.goAttacker->Is_ExactMask(O_PLAYER | O_HITBOX))
-    //    {
-    //        CTransform tr = m_goWeakPoint->Get_Component<CTransform>();
-    //        const _vector vPoint = XMLoadFloat3(&tr->vPosition);
-    //        _vector vDiff = vPoint - XMLoadFloat3(&tHitInfo.vHitPoint);
-    //        _float fDiff = XMVectorGetX(XMVector3Length(vDiff));
-    //
-    //        On_Dead(fDiff);
-    //    }
-    //
-    //    return;
-    //}
 
     if (eHurt == TITAN_HURT::END)
         return;
@@ -337,5 +355,39 @@ void CCrawlerTitan::OnChange_CurState(std::shared_ptr<CTitanState> spNewState)
     m_spCurState = spNewState;
     strncpy_s(m_szState, sizeof(m_szState), spNewState->Get_StateName(), _TRUNCATE);
 }
+
+void CCrawlerTitan::Set_FootDust()
+{
+    TITAN_DUST_DESC tLeft{ false, 21.f, {2.f, 0.6f, 1.f} };
+    m_tDustRuntime.tLeft = tLeft;
+
+    TITAN_DUST_DESC tRight{ false, 38.f, {-2.f, 0.6f, 1.f} };
+    m_tDustRuntime.tRight = tRight;
+}
+
+
+void CCrawlerTitan::Update_FootDust()
+{
+    if (!m_pVFX_Manager)
+        return;
+
+    if (!m_spCurState)
+        return;
+
+    auto eState = m_spCurState->Get_State();
+    _bool bCanPlayDust = eState == TITAN_STATE::MOVE || eState == TITAN_STATE::CHASE;
+    if (!bCanPlayDust)
+        return;
+    else
+        LOG_INFO("bCanPlayDust true");
+
+    _float3 vWorldPos{};
+    if (m_tDustRuntime.Try_PlayDust(m_tComponents.animator, m_tComponents.transform, vWorldPos))
+    {
+        m_pVFX_Manager->Play_ParticleBurst(PARTICLE_VFX::FOOT_DUST, vWorldPos);
+        LOG_INFO("=============Play Paritlce Brust==============");
+    }
+}
+
 
 NS_END;

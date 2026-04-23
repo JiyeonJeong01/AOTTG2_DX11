@@ -728,6 +728,22 @@ void CMeshRenderer_Processor::Update_Particle(MESH_RENDERER_DATA* pData, _float 
             vPos += vDir * pRuntime->vecSpeeds[i] * fDT;
             XMStoreFloat4(&pRuntime->vecInstances[i].vTranslation, vPos);
         }
+        else if (pParticle->eSimulation == PARTICLE_SIMULATION::DUST)
+        {
+            _vector vPos = XMLoadFloat4(&pRuntime->vecInstances[i].vTranslation);
+            _vector vPivot = XMLoadFloat3(&pData->vParticlePivot);
+            _vector vDiff = vPos - vPivot;
+            if (XMVectorGetY(vDiff) < 0.f)
+                vDiff = XMVectorSetY(vDiff, 0.f);
+
+            _vector vDir = XMVectorSetW(vDiff, 0.f);
+
+            if (!XMVector3NearEqual(vDir, XMVectorZero(), XMVectorReplicate(0.0001f)))
+            {
+                vPos += XMVector3Normalize(vDir) * pRuntime->vecSpeeds[i] * fDT;
+                XMStoreFloat4(&pRuntime->vecInstances[i].vTranslation, vPos);
+            }
+        }
 
         /* life 타임 끝 */
         if (pRuntime->vecInstances[i].vLifeTime.y >= pRuntime->vecInstances[i].vLifeTime.x)
@@ -1060,6 +1076,28 @@ void CMeshRenderer_Processor::Reset_ParticleRuntime(MESH_RENDERER_DATA* pData)
                 XMVectorSet(0.f, fUp, 0.f, 0.f));
 
             XMStoreFloat4(&pRuntime->vecDirections[i], XMVectorSetW(vDir, 0.f));
+        }
+        else if (pParticle->eSimulation == PARTICLE_SIMULATION::DUST)
+        {
+            const _float fSpawnSide = CRandomUtil::Get_Float(-0.18f, 0.18f);
+            const _float fSpawnForward = CRandomUtil::Get_Float(-0.18f, 0.18f);
+            const _float fSpawnUp = CRandomUtil::Get_Float(0.00f, 0.10f);
+
+            _vector vSpawn =
+                vRightBase * fSpawnSide +
+                vForward * fSpawnForward +
+                XMVectorSet(0.f, fSpawnUp, 0.f, 0.f);
+
+            _float3 vSpawn3{};
+            XMStoreFloat3(&vSpawn3, vSpawn);
+
+            pRuntime->vecInstances[i].vTranslation = _float4(
+                pParticle->vCenter.x + vSpawn3.x,
+                pParticle->vCenter.y + vSpawn3.y,
+                pParticle->vCenter.z + vSpawn3.z,
+                1.f);
+
+            pRuntime->vecDirections[i] = _float4(0.f, 0.f, 1.f, 0.f);
         }
         else
         {

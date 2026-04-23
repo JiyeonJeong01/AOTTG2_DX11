@@ -79,11 +79,13 @@ private:
     _bool            m_bUseTitanShake = true;
     _float           m_fTitanShakeRadius = 25.f;          /* 이 거리 밖이면 흔들림 없음 */
     _float           m_fTitanShakeMaxStrength = 0.2f;    /* 최대 흔들림 세기 */
-    _float           m_fTitanShakeFrequency = 2.f;       /* 흔들림 속도 */ 
+    _float           m_fTitanShakeFrequency = 2.f;       /* 흔들림 속도 */
+    _float           m_fShakeRatioByTitan = 1.f;
     _float           m_fTitanShakeTime = 0.f;             /* 내부 누적 시간 */ 
 
 private:
     _float  Get_TitanShakeStrength();
+    _float  Get_TitanRatioByTitan() const;
     void    Apply_TitanShake(_float3& vCamPos, _float3& vLookTargetPos, _float fDT);
 
 public:

@@ -9,6 +9,7 @@ class CNavMesh;
 NS_END
 
 NS_BEGIN(Client)
+class CUI_HitController;
 class CVFX_Manager;
 class CNormalTitanStateMachine;
 class CTargetSensor;
@@ -19,17 +20,6 @@ NS_BEGIN(Client)
 
 class CNormalTitan : public IScript, public CTitan
 {
-public:
-    char        m_szState[32] = {};
-    SCRIPT_OBJECT_REF   m_refVFXManager{};
-
-SCRIPT_FIELDS_BEGIN(CNormalTitan)
-    SCRIPT_FIELD_CHAR(m_szState)
-    SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[0]);
-    SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[1]);
-    SCRIPT_FIELD_OBJECT_REF(m_refVFXManager);
-SCRIPT_FIELDS_END(CNormalTitan)
-
 public:
     CNormalTitan();
     ~CNormalTitan();
@@ -43,16 +33,19 @@ public:
     void Late_Update(void* pCtx, _float fDT) override;
 
 private :
-    CVFX_Manager* m_pVFX_Manager = nullptr;
+    CVFX_Manager*       m_pVFX_Manager = nullptr;
+    CUI_HitController*  m_pUIHitController = nullptr;
 
     CGameObject*            m_goTitan = nullptr;
     CGameObject*            m_goTarget = nullptr;
+    CGameObject*            m_goWeakPoint = nullptr;
 
     TITAN_COMPONENTS        m_tComponents{};
     TITAN_RUNTIME_REF       m_tRef{};
     TITAN_STATS             m_tStats{};
     TITAN_POSE              m_ePose = TITAN_POSE::END;
     PATROL_INFO             m_tPatrol{};
+    TITAN_DUST_RUNTIME      m_tDustRuntime{};
 
     _uint                   m_iStunnedAcc = 0;
     _int                    m_iHitEffect = 0;
@@ -67,6 +60,7 @@ private :
 
 public :
     TITAN_CONTEXT Get_TitanContext();
+    TITAN_TYPE Get_TitanType() const override { return TITAN_TYPE::NORMAL; }
 
     template <typename T>
     ListenerID Subscribe_OnChangedTarget(void(T::* func)(Engine::CGameObject*), T* pInstance)
@@ -92,6 +86,22 @@ private:
 
     void On_DetectedHumanSide(CGameObject* goHuman);
     void OnChange_CurState(std::shared_ptr<CTitanState> spNewState);
+
+    void Set_FootDust();
+    void Update_FootDust();
+
+private :
+    char        m_szState[32] = {};
+    SCRIPT_OBJECT_REF   m_refVFXManager{};
+    SCRIPT_OBJECT_REF   m_refUIHit{};
+
+    SCRIPT_FIELDS_BEGIN(CNormalTitan)
+        SCRIPT_FIELD_CHAR(m_szState)
+        SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[0]);
+        SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[1]);
+        SCRIPT_FIELD_OBJECT_REF(m_refVFXManager);
+        SCRIPT_FIELD_OBJECT_REF(m_refUIHit);
+    SCRIPT_FIELDS_END(CNormalTitan)
 };
 
 

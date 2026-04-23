@@ -472,8 +472,8 @@ void CRender_System::Render_LightPass()
 
     _float4 vLightDir = { -1.f, -1.f, 1.f, 0.f };
     _float4 vDiffuseLight = { 1.f, 1.f, 1.f, 1.f };
-    _float4 vAmbientLight = { 0.5f, 0.5f, 0.5f, 1.f };
-    _float4 vSpecularLight = { 0.2f, 0.2f, 0.2f, 1.f };
+    _float4 vAmbientLight = { 0.35f, 0.35f, 0.35f, 1.f };
+    _float4 vSpecularLight = { 0.15f, 0.15f, 0.15f, 1.f };
 
     _float4 vDiffuseMtrl = { 1.f, 1.f, 1.f, 1.f };
     _float4 vAmbientMtrl = { 1.f, 1.f, 1.f, 1.f };

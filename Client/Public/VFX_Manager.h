@@ -149,6 +149,28 @@ private:
     SCRIPT_OBJECT_REF m_refFootDust_6;
     SCRIPT_OBJECT_REF m_refFootDust_7;
     SCRIPT_OBJECT_REF m_refFootDust_8;
+    SCRIPT_OBJECT_REF m_refFootDust_9;
+    SCRIPT_OBJECT_REF m_refFootDust_10;
+    SCRIPT_OBJECT_REF m_refFootDust_11;
+    SCRIPT_OBJECT_REF m_refFootDust_12;
+    SCRIPT_OBJECT_REF m_refFootDust_13;
+    SCRIPT_OBJECT_REF m_refFootDust_14;
+    SCRIPT_OBJECT_REF m_refFootDust_15;
+    SCRIPT_OBJECT_REF m_refFootDust_16;
+    SCRIPT_OBJECT_REF m_refFootDust_17;
+    SCRIPT_OBJECT_REF m_refFootDust_18;
+    SCRIPT_OBJECT_REF m_refFootDust_19;
+    SCRIPT_OBJECT_REF m_refFootDust_20;
+    SCRIPT_OBJECT_REF m_refFootDust_21;
+    SCRIPT_OBJECT_REF m_refFootDust_22;
+    SCRIPT_OBJECT_REF m_refFootDust_23;
+    SCRIPT_OBJECT_REF m_refFootDust_24;
+    SCRIPT_OBJECT_REF m_refFootDust_25;
+    SCRIPT_OBJECT_REF m_refFootDust_26;
+    SCRIPT_OBJECT_REF m_refFootDust_27;
+    SCRIPT_OBJECT_REF m_refFootDust_28;
+    SCRIPT_OBJECT_REF m_refFootDust_29;
+    SCRIPT_OBJECT_REF m_refFootDust_30;
 
     SCRIPT_OBJECT_REF m_refSignalFlare_0;
     SCRIPT_OBJECT_REF m_refSignalFlare_1;
@@ -268,8 +290,28 @@ private:
         SCRIPT_FIELD_OBJECT_REF(m_refFootDust_6)
         SCRIPT_FIELD_OBJECT_REF(m_refFootDust_7)
         SCRIPT_FIELD_OBJECT_REF(m_refFootDust_8)
-
-
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_9)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_10)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_11)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_12)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_13)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_14)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_15)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_16)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_17)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_18)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_19)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_20)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_21)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_22)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_23)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_24)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_25)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_26)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_27)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_28)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_29)
+        SCRIPT_FIELD_OBJECT_REF(m_refFootDust_30)
 
         SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_0)
         SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_1)

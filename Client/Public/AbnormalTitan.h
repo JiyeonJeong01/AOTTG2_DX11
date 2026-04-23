@@ -34,8 +34,8 @@ public:
     void Late_Update(void* pCtx, _float fDT) override;
 
 private:
-    CVFX_Manager*   m_pVFX_Manager = nullptr;
-    CUI_HitController* m_pUIHitController = nullptr;
+    CVFX_Manager*       m_pVFX_Manager = nullptr;
+    CUI_HitController*  m_pUIHitController = nullptr;
 
     CGameObject*    m_goTitan = nullptr;
     CGameObject*    m_goTarget = nullptr;
@@ -46,6 +46,7 @@ private:
     TITAN_STATS             m_tStats{};
     TITAN_POSE              m_ePose = TITAN_POSE::END;
     PATROL_INFO             m_tPatrol{};
+    TITAN_DUST_RUNTIME      m_tDustRuntime{};
 
     _uint                   m_iStunnedAcc = 0;
     _int                    m_iHitEffect = 0;
@@ -60,8 +61,10 @@ private:
     Engine::CEvent<Engine::CGameObject*>        m_OnChanged_Target;
 
 
+
 public:
     TITAN_CONTEXT Get_TitanContext();
+    TITAN_TYPE Get_TitanType() const override { return TITAN_TYPE::ABNORMAL; }
 
     template <typename T>
     ListenerID Subscribe_OnChangedTarget(void(T::* func)(Engine::CGameObject*), T* pInstance)
@@ -89,6 +92,9 @@ private:
     void On_DetectedHumanSide(CGameObject* goHuman);
     void OnChange_CurState(std::shared_ptr<CTitanState> spNewState);
 
+    void Set_FootDust();
+    void Update_FootDust();
+
 public:
     char        m_szState[32] = {};
     SCRIPT_OBJECT_REF   m_refVFXManager{};
@@ -102,6 +108,7 @@ SCRIPT_FIELDS_BEGIN(CAbnormalTitan)
     SCRIPT_FIELD_OBJECT_REF(m_refUIHit);
 SCRIPT_FIELDS_END(CAbnormalTitan)
 };
+
 
 
 NS_END;

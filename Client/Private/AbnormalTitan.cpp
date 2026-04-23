@@ -80,15 +80,6 @@ void CAbnormalTitan::Start(void* pCtx)
             CGameObject* goHitBox = hit->Get_HitBoxObject();
             IF_NULL_RETURN_MSG_BREAK(goHitBox, , "goHitBox is nullptr");
 
-            ///* ERASE_마스크_설정 */
-            //{
-            //    if (!goHitBox)
-            //        __debugbreak();
-            //    auto col = goHitBox->Get_Component<CCollider>();
-            //    col->iMask = (O_HITBOX | O_ENEMY);
-            //    col->iDiscardMask |= (O_HITBOX | O_ENEMY /*| O_WALKABLE*/);
-            //}
-
             auto [iter, bInserted] = m_AllHitBoxes.emplace(string(goHitBox->Get_Label()), hit);
             IF_TRUE_RETURN_MSG_BREAK(!bInserted, , "duplicated hitbox label");
         }
@@ -100,14 +91,12 @@ void CAbnormalTitan::Start(void* pCtx)
             if (!hurt) continue;
             hurt->Subscribe_OnHurt(&CAbnormalTitan::On_Hurt, this);
 
-            ///* ERASE_마스크_설정 */
             {
                 auto* goHurt = hurt->Get_HurtBoxObject();
                 if (!goHurt)
                     __debugbreak();
                 auto col = goHurt->Get_Component<CCollider>();
-                //col->iMask |= (O_HURTBOX | O_ENEMY);
-                //col->iDiscardMask |= (O_HURTBOX | O_ENEMY | O_WALKABLE);
+
                 if (goHurt && goHurt->Get_Label() == TITAN_WEAK_POINT)
                 {
                     m_goWeakPoint = goHurt;
@@ -117,7 +106,6 @@ void CAbnormalTitan::Start(void* pCtx)
         }
         if (!m_goWeakPoint)
             __debugbreak();
-        //IF_NULL_RETURN_MSG_BREAK(m_goWeakPoint, , "m_goWeakPoint is nullptr");
 
         m_tRef.m_pStunnedAcc = &m_iStunnedAcc;
         m_tRef.pAllHitBoxes = &m_AllHitBoxes;
@@ -160,6 +148,8 @@ void CAbnormalTitan::Start(void* pCtx)
 
     /* 타겟 감지 바운드 전부 끄기 */
     m_tRef.pBoundCtlr->Enable_Colliders(false);
+
+    Set_FootDust();
 }
 
 void CAbnormalTitan::Priority_Update(void* pCtx, _float fDT)
@@ -171,6 +161,7 @@ void CAbnormalTitan::Priority_Update(void* pCtx, _float fDT)
 void CAbnormalTitan::Update(void* pCtx, _float fDT)
 {
     m_upStateMachine->Update(fDT);
+    Update_FootDust();
 }
 
 void CAbnormalTitan::Late_Update(void* pCtx, _float fDT)
@@ -402,7 +393,42 @@ void CAbnormalTitan::OnChange_CurState(std::shared_ptr<CTitanState> spNewState)
     IF_NULL_RETURN_MSG_BREAK(spNewState, , "spNewState is nullptr");
 
     m_spCurState = spNewState;
+    m_tDustRuntime.Reset_PlayState();
     strncpy_s(m_szState, sizeof(m_szState), spNewState->Get_StateName(), _TRUNCATE);
 }
+
+void CAbnormalTitan::Set_FootDust()
+{
+    TITAN_DUST_DESC tLeft{ false, 21.f, {2.f, 0.6f, 1.f} };
+    m_tDustRuntime.tLeft = tLeft;
+
+    TITAN_DUST_DESC tRight{ false, 38.f, {-2.f, 0.6f, 1.f} };
+    m_tDustRuntime.tRight = tRight;
+}
+
+
+void CAbnormalTitan::Update_FootDust()
+{
+    if (!m_pVFX_Manager)
+        return;
+
+    if (!m_spCurState)
+        return;
+
+    auto eState = m_spCurState->Get_State();
+    _bool bCanPlayDust = eState == TITAN_STATE::MOVE || eState == TITAN_STATE::CHASE;
+    if (!bCanPlayDust)
+        return;
+    else
+        LOG_INFO("bCanPlayDust true");
+
+    _float3 vWorldPos{};
+    if (m_tDustRuntime.Try_PlayDust(m_tComponents.animator, m_tComponents.transform, vWorldPos))
+    {
+        m_pVFX_Manager->Play_ParticleBurst(PARTICLE_VFX::FOOT_DUST, vWorldPos);
+        LOG_INFO("=============Play Paritlce Brust==============");
+    }
+}
+
 
 NS_END;

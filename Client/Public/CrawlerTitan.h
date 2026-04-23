@@ -13,6 +13,8 @@ class CCrawlerTitanStateMachine;
 class CTargetSensor;
 class CTitanState;
 class CHurtBox;
+class CVFX_Manager;
+class CUI_HitController;
 NS_END
 
 NS_BEGIN(Client)
@@ -32,6 +34,9 @@ public:
     void Late_Update(void* pCtx, _float fDT) override;
 
 private:
+    CVFX_Manager*       m_pVFX_Manager = nullptr;
+    CUI_HitController*  m_pUIHitController = nullptr;
+
     CGameObject* m_goTitan = nullptr;
     CGameObject* m_goTarget = nullptr;
     CGameObject* m_goEren = nullptr;
@@ -41,6 +46,7 @@ private:
     TITAN_STATS             m_tStats{};
     TITAN_POSE              m_ePose = TITAN_POSE::CRAWL;
     PATROL_INFO             m_tPatrol{};
+    TITAN_DUST_RUNTIME      m_tDustRuntime{};
 
     _uint                   m_iStunnedAcc = 0;
 
@@ -55,6 +61,7 @@ private:
 
 public:
     TITAN_CONTEXT Get_TitanContext();
+    TITAN_TYPE Get_TitanType() const override { return TITAN_TYPE::CRAWLER; }
 
     template <typename T>
     ListenerID Subscribe_OnChangedTarget(void(T::* func)(Engine::CGameObject*), T* pInstance)
@@ -81,14 +88,22 @@ private:
     void On_DetectedHumanSide(CGameObject* goHuman);
     void OnChange_CurState(std::shared_ptr<CTitanState> spNewState);
 
+    void Set_FootDust();
+    void Update_FootDust();
+
 private:
+    SCRIPT_OBJECT_REF   m_refVFXManager{};
+    SCRIPT_OBJECT_REF   m_refUIHit{};
+
 public:
     char        m_szState[32] = {};
 
     SCRIPT_FIELDS_BEGIN(CCrawlerTitan)
         SCRIPT_FIELD_CHAR(m_szState)
         SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[0]);
-    SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[1]);
+        SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[1]);
+        SCRIPT_FIELD_OBJECT_REF(m_refVFXManager);
+        SCRIPT_FIELD_OBJECT_REF(m_refUIHit);
     SCRIPT_FIELDS_END(CCrawlerTitan)
 };
 

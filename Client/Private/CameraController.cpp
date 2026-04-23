@@ -251,13 +251,31 @@ _float CCameraController::Get_TitanShakeStrength()
     return fRatio * m_fTitanShakeMaxStrength;
 }
 
+_float CCameraController::Get_TitanRatioByTitan() const
+{
+    if (m_scTitan == nullptr)
+        return 1.f;
+
+    switch (m_scTitan->Get_TitanType())
+    {
+    case TITAN_TYPE::NORMAL :
+        return 0.35f;
+    case TITAN_TYPE::ABNORMAL :
+        return 1.2f;
+    case TITAN_TYPE::CRAWLER :
+        return 1.f;
+    }
+
+    return 1.f;
+}
+
 void CCameraController::Apply_TitanShake(_float3& vCamPos, _float3& vLookTargetPos, _float fDT)
 {
     const _float fStrength = Get_TitanShakeStrength();
     if (fStrength <= 0.f)
         return;
 
-    m_fTitanShakeTime += fDT * m_fTitanShakeFrequency;
+    m_fTitanShakeTime += fDT * m_fTitanShakeFrequency * m_fShakeRatioByTitan;
 
     const _float fShakeX = sinf(m_fTitanShakeTime * 1.5f) * (fStrength * 0.09f);
     const _float fShakeY = fabsf(sinf(m_fTitanShakeTime * 4.f)) * fStrength;
@@ -276,6 +294,7 @@ void CCameraController::On_Change_DetectedTitan(CGameObject* goTitan, CTitan* sc
 {
     m_goDetectedTitan = goTitan;
     m_scTitan = scTitan;
+    m_fShakeRatioByTitan = Get_TitanRatioByTitan();
 }
 
 NS_END;

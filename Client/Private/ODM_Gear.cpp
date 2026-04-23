@@ -28,7 +28,7 @@ void CODM_Gear::Handle_RopeState(CRope::ROPE_STATE eState, SIDE eSide)
                 _vector vAnchorDir = XMVector3Normalize(vDiff);
 
                 /* 앵커 반대 방향 성분(outward) 일부 제거 */
-                vLinearVelXM = vLinearVelXM - vAnchorDir * (fToward * 1.2f);
+                vLinearVelXM = vLinearVelXM - vAnchorDir * (fToward * 0.9f);
 
                 XMStoreFloat3(&m_rb->vLinearVel, vLinearVelXM);
             }
