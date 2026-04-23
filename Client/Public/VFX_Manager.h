@@ -19,6 +19,7 @@ enum class PARTICLE_VFX : uint32_t
     RAIN,
     SLIDE_SPARK,
     FOOT_DUST,
+    SIGNAL_FLARE_SMOKE,
     END
 };
 
@@ -149,6 +150,33 @@ private:
     SCRIPT_OBJECT_REF m_refFootDust_7;
     SCRIPT_OBJECT_REF m_refFootDust_8;
 
+    SCRIPT_OBJECT_REF m_refSignalFlare_0;
+    SCRIPT_OBJECT_REF m_refSignalFlare_1;
+    SCRIPT_OBJECT_REF m_refSignalFlare_2;
+    SCRIPT_OBJECT_REF m_refSignalFlare_3;
+    SCRIPT_OBJECT_REF m_refSignalFlare_4;
+    SCRIPT_OBJECT_REF m_refSignalFlare_5;
+    SCRIPT_OBJECT_REF m_refSignalFlare_6;
+    SCRIPT_OBJECT_REF m_refSignalFlare_7;
+    SCRIPT_OBJECT_REF m_refSignalFlare_8;
+    SCRIPT_OBJECT_REF m_refSignalFlare_9;
+    SCRIPT_OBJECT_REF m_refSignalFlare_10;
+    SCRIPT_OBJECT_REF m_refSignalFlare_11;
+    SCRIPT_OBJECT_REF m_refSignalFlare_12;
+    SCRIPT_OBJECT_REF m_refSignalFlare_13;
+    SCRIPT_OBJECT_REF m_refSignalFlare_14;
+    SCRIPT_OBJECT_REF m_refSignalFlare_15;
+    SCRIPT_OBJECT_REF m_refSignalFlare_16;
+    SCRIPT_OBJECT_REF m_refSignalFlare_17;
+    SCRIPT_OBJECT_REF m_refSignalFlare_18;
+    SCRIPT_OBJECT_REF m_refSignalFlare_19;
+    SCRIPT_OBJECT_REF m_refSignalFlare_20;
+    SCRIPT_OBJECT_REF m_refSignalFlare_21;
+    SCRIPT_OBJECT_REF m_refSignalFlare_22;
+    SCRIPT_OBJECT_REF m_refSignalFlare_23;
+    SCRIPT_OBJECT_REF m_refSignalFlare_24;
+    SCRIPT_OBJECT_REF m_refSignalFlare_25;
+
 private:
     VFX_OBJECT m_tRain{};
 
@@ -160,6 +188,7 @@ private:
 
     std::vector<VFX_OBJECT> m_vecSlideSparkPool;
     std::vector<VFX_OBJECT> m_vecFootDustPool;
+    std::vector<VFX_OBJECT> m_vecSignalFlarePool;
 
 private:
     _bool m_bRainEnable = true;
@@ -239,6 +268,36 @@ private:
         SCRIPT_FIELD_OBJECT_REF(m_refFootDust_6)
         SCRIPT_FIELD_OBJECT_REF(m_refFootDust_7)
         SCRIPT_FIELD_OBJECT_REF(m_refFootDust_8)
+
+
+
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_0)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_1)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_2)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_3)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_4)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_5)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_6)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_7)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_8)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_9)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_10)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_11)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_12)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_13)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_14)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_15)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_16)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_17)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_18)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_19)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_20)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_21)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_22)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_23)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_24)
+        SCRIPT_FIELD_OBJECT_REF(m_refSignalFlare_25)
+
 
         SCRIPT_FIELDS_END(CVFX_Manager)
 };

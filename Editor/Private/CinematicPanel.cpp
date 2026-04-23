@@ -164,8 +164,6 @@ void CCinematicPanel::Draw_Toolbar()
     ImGui::SameLine();
     if (ImGui::Button("Load"))
     {
-        
-
         if (SYS_CINEMATIC.Load(m_tClip.szName))
         {
             SYS_CINEMATIC.Set_CurClip(m_tClip.szName);

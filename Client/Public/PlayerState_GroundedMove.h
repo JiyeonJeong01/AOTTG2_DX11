@@ -32,7 +32,7 @@ private:
 
 private:
     GROUNDED_MOVE   m_eGroundedMoveState = GROUNDED_MOVE::RUN;
-    _float          m_fOriginDrag = 0.f;
+    _float*         m_pOriginDrag = nullptr;
     const _float    m_fSlidingDrag = 0.1f;
     const _float    m_fRunCorrectionDT = 8.f;
     const _float    m_fSlideThreshold = 4.f;

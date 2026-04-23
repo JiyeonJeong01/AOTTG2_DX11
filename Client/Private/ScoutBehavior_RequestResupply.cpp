@@ -5,6 +5,7 @@
 #include "Easing_Function.h"
 #include "CinematicSystem.h"
 #include "UI_NoticeController.h"
+#include "VFX_Manager.h"
 
 NS_BEGIN(Client)
     CScoutBehavior_RequestResupply::CScoutBehavior_RequestResupply(
@@ -149,6 +150,11 @@ void CScoutBehavior_RequestResupply::Process_Start()
     SYS_CINEMATIC.Play("Scout_RequestResupply", m_scCinematicCamera);
 }
 
+void CScoutBehavior_RequestResupply::Set_Managers(CVFX_Manager* pVFXMgr)
+{
+    m_pVFXMgr = pVFXMgr;
+}
+
 void CScoutBehavior_RequestResupply::Priority_Update(_float fDT)
 {
     UNREFERENCED_PARAMETER(fDT);
@@ -159,6 +165,7 @@ void CScoutBehavior_RequestResupply::Update(_float fDT)
     switch (m_eState)
     {
     case RESUPPLY_STATE::NONE:
+        Process_None(fDT);
         return;
 
     case RESUPPLY_STATE::IDLE_WAIT:
@@ -208,6 +215,15 @@ HRESULT CScoutBehavior_RequestResupply::SetUp_References()
     trigger->OnTriggerExit.Add_Listener(&CScoutBehavior_RequestResupply::OnTriggerExit, this);
 
     return S_OK;
+}
+
+void CScoutBehavior_RequestResupply::Process_None(_float fDT)
+{
+    if (m_bSignalFlarePlaying)
+    {
+        Handle_SignalFlare(fDT);
+        LOG_INFO("handling");
+    }
 }
 
 void CScoutBehavior_RequestResupply::Change_State(RESUPPLY_STATE eState)
@@ -320,6 +336,7 @@ void CScoutBehavior_RequestResupply::Process_RequestNotice(_float fDT)
 
         if (m_pNotice)
             m_pNotice->Show_Notice(NOTICE_TYPE::REQUEST_RESUPPLY, m_fRequestNoticeDuration);
+        m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::EMOTE_NO);
     }
 
     m_fRequestNoticeTime += fDT;
@@ -469,11 +486,6 @@ void CScoutBehavior_RequestResupply::Start_Directing()
 
 void CScoutBehavior_RequestResupply::Finish_Directing()
 {
-    /* TODO:
-       - UI 정리
-       - 플레이어 입력 복구
-    */
-
     if (Is_SpecialCameraReady())
     {
         m_fSpecialCameraLerpTime = 0.f;
@@ -491,6 +503,14 @@ void CScoutBehavior_RequestResupply::On_AnimFinished(const Engine::ANIMATION_EVE
     const _uint iWaveIdx = m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::EMOTE_WAVE);
     const _uint iResupplyIdx = m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::RESUPPLY);
     const _uint iSpecialIdx = m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_PLAYER::SPECIAL_ARMIN);
+
+    if (m_eState == RESUPPLY_STATE::REQUEST_NOTICE)
+    {
+        if (iIndex == iNoIdx)
+            m_tComponents.animator.Set_NextAnimationClip(iIdleIdx);
+
+        return;
+    }
 
     if (m_eState == RESUPPLY_STATE::IDLE_WAIT)
     {
@@ -559,6 +579,19 @@ void CScoutBehavior_RequestResupply::On_CinematicEvent(const CINEMATIC_EVENT_DAT
     {
         SYS_CINEMATIC.Reset_Cinematic();
         Change_State(RESUPPLY_STATE::REQUEST_NOTICE);
+    }
+    else if (tEventData.strEventName == "SIGNALFLARE")
+    {
+        m_bSignalFlarePlaying = true;
+        m_fSignalFlareTime = 0.f;
+        m_fSignalSmokeAcc = 0.f;
+
+        _vector vStartPos = XMLoadFloat3(&m_tComponents.transform->vPosition)
+            + XMVectorSet(0.f, 1.5f, 0.f, 0.f);
+
+        XMStoreFloat3(&m_vSignalFlarePos, vStartPos);
+
+        LOG_INFO("CScoutBehavior_RequestResupply : SIGNALFLARE");
     }
 }
 
@@ -661,16 +694,30 @@ void CScoutBehavior_RequestResupply::Update_Fade(_float fDT)
         m_crFadeUI.Set_Color(vColor);
     }
 
+    /* fade 70% 진행 시 대화창 먼저 숨김 */
+    if (t >= 0.7f)
+    {
+        if (m_crDialoguePanel.Is_Valid())
+            m_crDialoguePanel.Set_Enable(false);
+
+        if (m_txtDialogue.Is_Valid())
+            m_txtDialogue.Set_Enable(false);
+    }
+
     if (m_fFadeTime >= m_fFadeDuration)
     {
         m_eDialogueState = DIALOGUE_STATE::DONE;
 
         Set_DialogueVisible(false);
-
-        if (m_goScout)
-            m_goScout->Set_Enable(false);
+        Set_FadeVisible(false);
 
         Finish_Directing();
+
+        /* 강제로 meshrenderer 꺼두기 */
+        for (auto& mr : m_vecOutlines)
+        {
+            mr.mr.Set_Enable(false);
+        }
     }
 }
 
@@ -884,7 +931,53 @@ void CScoutBehavior_RequestResupply::Update_SpecialCamera(_float fDT)
         {
             Apply_SpecialCameraPose(m_vSpecialCameraStartPos, m_vSpecialCameraStartLookTarget);
             End_SpecialCamera();
+
+            if (m_goScout)
+                m_goScout->Set_Enable(false);
         }
+    }
+}
+
+void CScoutBehavior_RequestResupply::Handle_SignalFlare(_float fDT)
+{
+    if (!m_bSignalFlarePlaying)
+        return;
+
+    m_fSignalFlareTime += fDT;
+    m_fSignalSmokeAcc += fDT;
+
+    m_fSignalFlareVerticalSpeed -= 9.8f * 0.35f * fDT;
+
+    _vector vPos = XMLoadFloat3(&m_vSignalFlarePos);
+    _vector vMoveDir = XMLoadFloat3(&m_vSignalFlareMoveDir);
+
+    vPos += vMoveDir * m_fSignalFlareHorizontalSpeed * fDT;
+    vPos += XMVectorSet(0.f, m_fSignalFlareVerticalSpeed * fDT, 0.f, 0.f);
+
+    _float3 vPos3{};
+    XMStoreFloat3(&vPos3, vPos);
+    m_vSignalFlarePos = vPos3;
+
+    if (m_fSignalSmokeAcc >= 0.05f)
+    {
+        m_fSignalSmokeAcc = 0.f;
+
+        auto* pSmoke = m_pVFXMgr->Start_Particle(PARTICLE_VFX::SIGNAL_FLARE_SMOKE, m_vSignalFlarePos);
+        if (pSmoke != nullptr)
+        {
+            _float3 vForward3 = { 0.f, 0.f, 1.f };
+
+            pSmoke->meshRenderer.Set_ParticleForward(vForward3);
+            pSmoke->meshRenderer.Reset_Particle();
+            pSmoke->meshRenderer.Set_ParticlePlaying(true);
+
+            LOG_INFO("signal flare pos : %.2f, %.2f, %.2f", m_vSignalFlarePos.x, m_vSignalFlarePos.y, m_vSignalFlarePos.z);
+        }
+    }
+
+    if (m_fSignalFlareTime >= m_fSignalFlareDuration)
+    {
+        m_bSignalFlarePlaying = false;
     }
 }
 

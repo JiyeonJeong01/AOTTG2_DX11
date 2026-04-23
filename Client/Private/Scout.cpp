@@ -4,6 +4,7 @@
 #include "ScoutBehavior_RequestResupply.h"
 #include "HUDController.h"
 #include "UI_NoticeController.h"
+#include "VFX_Manager.h"
 
 NS_BEGIN(Client)
 
@@ -98,6 +99,9 @@ void CScout::SetUp_Behavior()
 
     const SCOUT_BEHAVIOR eBehavior = scScoutSO->Get_Behavior();
     m_tContext.eBehaviour = eBehavior;
+    CGameObject* pVFXMgr = nullptr;
+    CVFX_Manager* scVFXMgr = nullptr;
+
     CGameObject* pStaging = nullptr;
     CGameObject* pCinematic = nullptr;
 
@@ -108,12 +112,17 @@ void CScout::SetUp_Behavior()
     {
     case SCOUT_BEHAVIOR::REQUEST_RESUPPLY:
         m_pBehavior = new CScoutBehavior_RequestResupply(m_goOwner, this, eBehavior);
+        pVFXMgr = GAME_INSTANCE.Find_GameObject(m_refVFXManager.hObject);
+        if (pVFXMgr)    
+            scVFXMgr = pVFXMgr->Get_Script<CVFX_Manager>();
+
         pStaging = GAME_INSTANCE.Find_GameObject(m_refStagingCamera.hObject);
         pCinematic = GAME_INSTANCE.Find_GameObject(m_refCinematicCamera.hObject);
 
         pFade = GAME_INSTANCE.Find_GameObject(m_refFadeUI.hObject);
         pDialogue = GAME_INSTANCE.Find_GameObject(m_refDialogueUI.hObject);
 
+        To< CScoutBehavior_RequestResupply*>(m_pBehavior)->Set_Managers(scVFXMgr);
         To< CScoutBehavior_RequestResupply*>(m_pBehavior)->Set_SpecialCamera(pStaging, pCinematic);
         To< CScoutBehavior_RequestResupply*>(m_pBehavior)->Set_UI(m_pNotice, pDialogue, pFade);
 

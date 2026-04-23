@@ -41,7 +41,8 @@ bool CCinematic_System::Load(const std::string& strFileName)
     if (false == CCinematicIO::Load(strFileName, newClip))
         return false;
 
-    auto [it, inserted] = m_umClips.insert_or_assign(strClipName, std::move(newClip));
+    m_umClips.erase(strClipName);
+    auto [it, inserted] = m_umClips.insert({strClipName, std::move(newClip)});
 
     return inserted;
 }

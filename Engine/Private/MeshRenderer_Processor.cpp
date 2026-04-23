@@ -720,7 +720,16 @@ void CMeshRenderer_Processor::Update_Particle(MESH_RENDERER_DATA* pData, _float 
             vPos += vDir * pRuntime->vecSpeeds[i] * fDT;
             XMStoreFloat4(&pRuntime->vecInstances[i].vTranslation, vPos);
         }
+        else if (pParticle->eSimulation == PARTICLE_SIMULATION::DRIFT)
+        {
+            _vector vPos = XMLoadFloat4(&pRuntime->vecInstances[i].vTranslation);
+            _vector vDir = XMLoadFloat4(&pRuntime->vecDirections[i]);
 
+            vPos += vDir * pRuntime->vecSpeeds[i] * fDT;
+            XMStoreFloat4(&pRuntime->vecInstances[i].vTranslation, vPos);
+        }
+
+        /* life 타임 끝 */
         if (pRuntime->vecInstances[i].vLifeTime.y >= pRuntime->vecInstances[i].vLifeTime.x)
         {
             if (pParticle->isLoop)
@@ -767,6 +776,33 @@ void CMeshRenderer_Processor::Update_Particle(MESH_RENDERER_DATA* pData, _float 
                     _vector vDir = XMVector3Normalize(
                         vBack +
                         vRightBase * fSide +
+                        XMVectorSet(0.f, fUp, 0.f, 0.f));
+
+                    XMStoreFloat4(&pRuntime->vecDirections[i], XMVectorSetW(vDir, 0.f));
+                }
+                else if (pParticle->eSimulation == PARTICLE_SIMULATION::DRIFT)
+                {
+                    _vector vForward = XMLoadFloat3(&pData->vParticleForward);
+                    if (XMVector3NearEqual(vForward, XMVectorZero(), XMVectorReplicate(0.0001f)))
+                        vForward = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+
+                    vForward = XMVector3Normalize(vForward);
+
+                    _vector vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+                    _vector vRightBase = XMVector3Cross(vWorldUp, -vForward);
+
+                    if (XMVector3NearEqual(vRightBase, XMVectorZero(), XMVectorReplicate(0.0001f)))
+                        vRightBase = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+
+                    vRightBase = XMVector3Normalize(vRightBase);
+
+                    const _float fSide = CRandomUtil::Get_Float(-0.25f, 0.25f);
+                    const _float fForward = CRandomUtil::Get_Float(-0.15f, 0.15f);
+                    const _float fUp = CRandomUtil::Get_Float(0.35f, 0.75f);
+
+                    _vector vDir = XMVector3Normalize(
+                        vRightBase * fSide +
+                        vForward * fForward +
                         XMVectorSet(0.f, fUp, 0.f, 0.f));
 
                     XMStoreFloat4(&pRuntime->vecDirections[i], XMVectorSetW(vDir, 0.f));
@@ -990,6 +1026,37 @@ void CMeshRenderer_Processor::Reset_ParticleRuntime(MESH_RENDERER_DATA* pData)
             _vector vDir = XMVector3Normalize(
                 vBack +
                 vRightBase * fSide +
+                XMVectorSet(0.f, fUp, 0.f, 0.f));
+
+            XMStoreFloat4(&pRuntime->vecDirections[i], XMVectorSetW(vDir, 0.f));
+        }
+        else if (pParticle->eSimulation == PARTICLE_SIMULATION::DRIFT)
+        {
+            const _float fSpawnSide = CRandomUtil::Get_Float(-0.08f, 0.08f);
+            const _float fSpawnForward = CRandomUtil::Get_Float(-0.08f, 0.08f);
+            const _float fSpawnUp = CRandomUtil::Get_Float(-0.02f, 0.08f);
+
+            _vector vSpawn =
+                vRightBase * fSpawnSide +
+                vForward * fSpawnForward +
+                XMVectorSet(0.f, fSpawnUp, 0.f, 0.f);
+
+            _float3 vSpawn3{};
+            XMStoreFloat3(&vSpawn3, vSpawn);
+
+            pRuntime->vecInstances[i].vTranslation = _float4(
+                pParticle->vCenter.x + vSpawn3.x,
+                pParticle->vCenter.y + vSpawn3.y,
+                pParticle->vCenter.z + vSpawn3.z,
+                1.f);
+
+            const _float fSide = CRandomUtil::Get_Float(-0.25f, 0.25f);
+            const _float fForward = CRandomUtil::Get_Float(-0.15f, 0.15f);
+            const _float fUp = CRandomUtil::Get_Float(0.35f, 0.75f);
+
+            _vector vDir = XMVector3Normalize(
+                vRightBase * fSide +
+                vForward * fForward +
                 XMVectorSet(0.f, fUp, 0.f, 0.f));
 
             XMStoreFloat4(&pRuntime->vecDirections[i], XMVectorSetW(vDir, 0.f));

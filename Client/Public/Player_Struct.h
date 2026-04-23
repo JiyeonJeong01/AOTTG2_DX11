@@ -172,7 +172,7 @@ typedef struct tagPlayerContext
 
     class CHitBox* pHitBox = nullptr;
 
-    _float                  fOriginDrag = 0.5f;
+    _float*                  pOriginDrag = nullptr;
 
 } PLAYER_CONTEXT;
 

@@ -237,7 +237,7 @@ void CPhysics_Processor::Process_SpringJoints(_float fDT)
 
             _float3 vForce3{};
             Math::Store(vForce3, vForce);
-            vForce3.y *= 2.f;
+            vForce3.y *= 3.f;
 
             {
                 _float3 vN3{};

@@ -47,6 +47,7 @@ private:
 
 private :
     SCRIPT_OBJECT_REF   m_refHUDController{};
+    SCRIPT_OBJECT_REF   m_refVFXManager{};
 
     SCRIPT_OBJECT_REF   m_refCinematicCamera;
     SCRIPT_OBJECT_REF   m_refStagingCamera;
@@ -55,6 +56,7 @@ private :
 
     SCRIPT_FIELDS_BEGIN(CScout)
         SCRIPT_FIELD_OBJECT_REF(m_refHUDController)
+        SCRIPT_FIELD_OBJECT_REF(m_refVFXManager)
 
         SCRIPT_FIELD_OBJECT_REF(m_refCinematicCamera)
         SCRIPT_FIELD_OBJECT_REF(m_refStagingCamera)

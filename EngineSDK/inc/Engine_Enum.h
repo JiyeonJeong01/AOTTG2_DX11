@@ -39,7 +39,7 @@ namespace Engine
     enum class MODEL_TYPE : uint8_t             { NONANIM = 0, ANIM, };
     enum class MESH_MODE : uint8_t              { NONE = 0, PARTS, ATTACH, PARTICLE };
     enum class DEBUG_DRAW : uint8_t             { NONE = 0, ALL, SELECT, ALL_GRID, SELECT_GRID, ALL_NAV, SELECT_NAV, NAV };
-    enum class PARTICLE_SIMULATION : uint8_t    { NONE = 0, DROP, SPREAD, SLIDE, END };
+    enum class PARTICLE_SIMULATION : uint8_t    { NONE = 0, DROP, SPREAD, SLIDE, DRIFT, END };
     enum class LINE_TYPE : uint8_t              { NORMAL, TRAIL, END };
 
 

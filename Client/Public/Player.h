@@ -20,12 +20,15 @@ class CPlayer : public IScript, public CHuman
 public:
     _float              m_fSpeed = 0;
     char                m_szState[32] = {};
+    _float              m_fForceDrag = 0.5f;
+
     SCRIPT_OBJECT_REF   m_refVFXManager{};
 
 public:
     SCRIPT_FIELDS_BEGIN(CPlayer)
         SCRIPT_FIELD_CHAR(m_szState)
         SCRIPT_FIELD_FLOAT(m_fSpeed)
+        SCRIPT_FIELD_FLOAT(m_fForceDrag)
         SCRIPT_FIELD_OBJECT_REF(m_refVFXManager);
     SCRIPT_FIELDS_END(CPlayer)
 

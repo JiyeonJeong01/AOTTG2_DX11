@@ -7,6 +7,7 @@ NS_BEGIN(Client)
 class CPlayer;
 class CScout;
 class CUI_NoticeController;
+class CVFX_Manager;
 
 class CScoutBehavior_RequestResupply final : public CScoutBehavior
 {
@@ -73,12 +74,13 @@ public:
 public:
     void Process_Start();
 
+    void Set_Managers(CVFX_Manager* pVFXMgr);
     void Set_SpecialCamera(CGameObject* pSpecial, CGameObject* pCinematic);
     void Set_UI(CUI_NoticeController* pNotice, CGameObject* pDialogue, CGameObject* pFade);
 private:
     HRESULT SetUp_References();
 
-
+    void Process_None(_float fDT);
     void Process_IdleWait(_float fDT);
     void Process_Detected(_float fDT);
     void Process_RequestNotice(_float fDT);
@@ -105,7 +107,7 @@ private:
     void On_CinematicEvent(const CINEMATIC_EVENT_DATA& tEventData);
 
     void Place_RequestNoticeCamera();
-
+    void Handle_SignalFlare(_float fDT);
 private:
     void Begin_SpecialCamera();
     void End_SpecialCamera();
@@ -125,6 +127,7 @@ private:
 
 
 private:
+    CVFX_Manager*                   m_pVFXMgr = nullptr;
     CUI_NoticeController*           m_pNotice = nullptr;
     RESUPPLY_STATE                   m_eState = RESUPPLY_STATE::NONE;
 
@@ -147,14 +150,22 @@ private:
 
     _bool                           m_bNoticeShown = false;
     _float                          m_fRequestNoticeTime = 0.f;
-    _float                          m_fRequestNoticeDuration = 4.f;
+    _float                          m_fRequestNoticeDuration = 2.8f;
 
 
 private :
     CGameObject*                    m_goCinematicCamera = nullptr;
     CCamera                         m_scCinematicCamera{};
 
-
+private:
+    _bool                           m_bSignalFlarePlaying = false;
+    _float                          m_fSignalFlareTime = 0.f;
+    _float                          m_fSignalSmokeAcc = 0.f;
+    _float                          m_fSignalFlareDuration = 18.f;
+    _float                          m_fSignalFlareHorizontalSpeed = 5.f;
+    _float                          m_fSignalFlareVerticalSpeed = 18.f;
+    _float3                         m_vSignalFlareMoveDir = { 0.5f, 0.f, -0.5f };
+    _float3                         m_vSignalFlarePos = {};
 private:
     CGameObject*                     m_goSpecialCamera = nullptr;
     CCamera                          m_scSpecialCamera{};
@@ -171,7 +182,7 @@ private:
     _float                           m_fSpecialCameraLerpDuration = 0.75f;
 
     _float                           m_fDirectingTime = 0.f;
-    _float                           m_fDirectingDuration = 1.5f;
+    _float                           m_fDirectingDuration = 2.9f;
 
 private:
 
@@ -197,7 +208,7 @@ private:
     _float                           m_fDialogueEndWaitDuration = 0.9f;     /* 대화 종료 후 페이드 대기 */
 
     _float                           m_fFadeAlpha = 0.f;
-    _float                           m_fFadeDuration = 5.f;                /* 페이드 속도 */
+    _float                           m_fFadeDuration = 3.f;                /* 페이드 속도 */
     _float                           m_fFadeTime = 0.f;
 
 };

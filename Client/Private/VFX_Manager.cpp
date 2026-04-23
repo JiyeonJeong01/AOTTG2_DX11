@@ -29,20 +29,22 @@ void CVFX_Manager::Start(void* pCtx)
         m_tRain.spriteEffect = m_tRain.pObject->Get_Component<CSpriteEffect>();
     }
 
-    Cache_Object(m_refHit01_0, m_vecHit01Pool);
-    Cache_Object(m_refHit01_1, m_vecHit01Pool);
+    {
+        Cache_Object(m_refHit01_0, m_vecHit01Pool);
+        Cache_Object(m_refHit01_1, m_vecHit01Pool);
 
-    Cache_Object(m_refHit02_0, m_vecHit02Pool);
-    Cache_Object(m_refHit02_1, m_vecHit02Pool);
+        Cache_Object(m_refHit02_0, m_vecHit02Pool);
+        Cache_Object(m_refHit02_1, m_vecHit02Pool);
 
-    Cache_Object(m_refHit03_0, m_vecHit03Pool);
-    Cache_Object(m_refHit03_1, m_vecHit03Pool);
+        Cache_Object(m_refHit03_0, m_vecHit03Pool);
+        Cache_Object(m_refHit03_1, m_vecHit03Pool);
 
-    Cache_Object(m_refHit04_0, m_vecHit04Pool);
-    Cache_Object(m_refHit04_1, m_vecHit04Pool);
+        Cache_Object(m_refHit04_0, m_vecHit04Pool);
+        Cache_Object(m_refHit04_1, m_vecHit04Pool);
 
-    Cache_Object(m_refHit05_0, m_vecHit05Pool);
-    Cache_Object(m_refHit05_1, m_vecHit05Pool);
+        Cache_Object(m_refHit05_0, m_vecHit05Pool);
+        Cache_Object(m_refHit05_1, m_vecHit05Pool);
+    }
 
     {
         Cache_Object(m_refSlideSpark_0, m_vecSlideSparkPool);
@@ -104,6 +106,34 @@ void CVFX_Manager::Start(void* pCtx)
         Cache_Object(m_refFootDust_8, m_vecFootDustPool);
     }
 
+    {
+        Cache_Object(m_refSignalFlare_0, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_1, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_2, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_3, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_4, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_5, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_6, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_7, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_8, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_9, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_10, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_11, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_12, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_13, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_14, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_15, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_16, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_17, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_18, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_19, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_20, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_21, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_22, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_23, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_24, m_vecSignalFlarePool);
+        Cache_Object(m_refSignalFlare_25, m_vecSignalFlarePool);
+    }
 
     Set_Rain_Enable(m_bRainEnable);
 }
@@ -144,6 +174,8 @@ std::vector<VFX_OBJECT>* CVFX_Manager::Get_ParticlePool(PARTICLE_VFX eType)
 
     case PARTICLE_VFX::FOOT_DUST:
         return &m_vecFootDustPool;
+    case PARTICLE_VFX::SIGNAL_FLARE_SMOKE:
+        return &m_vecSignalFlarePool;
 
     default:
         return nullptr;

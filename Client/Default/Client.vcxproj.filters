@@ -400,6 +400,9 @@
     <ClInclude Include="..\Public\UI_NoticeController.h">
       <Filter>UI\HUD</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UI_HitController.h">
+      <Filter>UI\HUD</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -655,6 +658,9 @@
       <Filter>Director</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_NoticeController.cpp">
+      <Filter>UI\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_HitController.cpp">
       <Filter>UI\HUD</Filter>
     </ClCompile>
   </ItemGroup>

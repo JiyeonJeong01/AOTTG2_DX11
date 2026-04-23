@@ -109,6 +109,8 @@ void CAbnormalTitan::Start(void* pCtx)
             }
 
         }
+        if (!m_goWeakPoint)
+            __debugbreak();
         //IF_NULL_RETURN_MSG_BREAK(m_goWeakPoint, , "m_goWeakPoint is nullptr");
 
         m_tRef.m_pStunnedAcc = &m_iStunnedAcc;

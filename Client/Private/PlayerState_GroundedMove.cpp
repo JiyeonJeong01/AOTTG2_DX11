@@ -137,7 +137,7 @@ void CPlayerState_GroundedMove::Exit()
     CPlayerState::Exit();
 
     /* 유체 저항 복구 */
-    m_tComponents.rigidbody.Set_Drag(m_fOriginDrag);
+    m_tComponents.rigidbody.Set_Drag(*m_pOriginDrag);
     m_pSparkle = nullptr;
     //m_pVFX_Manager->Finish_Particle(m_pSparkle);
 
@@ -147,7 +147,7 @@ void CPlayerState_GroundedMove::Cache_PlayerContext(const PLAYER_CONTEXT& tConte
 {
     CPlayerState::Cache_PlayerContext(tContext);
 
-    m_fOriginDrag = tContext.fOriginDrag;
+    m_pOriginDrag = tContext.pOriginDrag;
     m_pVFX_Manager = tContext.pVFX_Manager;
 }
 
@@ -240,7 +240,7 @@ void CPlayerState_GroundedMove::Decide_NextAnim()
             {
                 m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);
                 m_eGroundedMoveState = GROUNDED_MOVE::RUN;
-                m_tComponents.rigidbody.Set_Drag(m_fOriginDrag);
+                m_tComponents.rigidbody.Set_Drag(*m_pOriginDrag);
                 GroundedMove(m_fRunCorrectionDT);
 
                 cout << "[GROUNDED_MOVE] SLIDE -> RUN\n";

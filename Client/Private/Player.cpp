@@ -118,7 +118,7 @@ void CPlayer::Start(void* pCtx)
 
     /* 컨트롤러 */
     m_tContext.pSkillController = m_upSkillController.get();
-
+    m_tContext.pOriginDrag = &m_fForceDrag;
     m_upStateMachine->Cache_PlayerInfos(m_tContext);
     m_tRef.pGear->Bind_PlayerContext(m_tContext);
 
