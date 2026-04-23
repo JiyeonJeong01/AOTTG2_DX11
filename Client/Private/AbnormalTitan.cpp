@@ -9,6 +9,7 @@
 #include "NavMesh.h"
 #include "Titan_Scriptable_Object.h"
 #include "VFX_Manager.h"
+#include "UI_HitController.h"
 
 NS_BEGIN(Client)
 
@@ -36,6 +37,11 @@ void CAbnormalTitan::Start(void* pCtx)
         IF_NULL_RETURN_MSG_BREAK(goVFX, , "goVFX is nullptr");
         m_pVFX_Manager = goVFX->Get_Script<CVFX_Manager>();
         IF_NULL_RETURN_MSG_BREAK(m_pVFX_Manager, , "m_pVFX_Manager is nullptr");
+
+        CGameObject* goUI = GAME_INSTANCE.Find_GameObject(m_refUIHit.hObject);
+        IF_NULL_RETURN_MSG_BREAK(goUI, , "goUI is nullptr");
+        m_pUIHitController = goUI->Get_Script<CUI_HitController>();
+        IF_NULL_RETURN_MSG_BREAK(m_pUIHitController, , "m_pUIHitController is nullptr");
     }
 
     /* 컴포넌트 참조 */
@@ -261,6 +267,7 @@ void CAbnormalTitan::On_Dead(const _float fAccuracy)
     if (eState == TITAN_STATE::DEAD)
         return;
 
+    m_pUIHitController->On_PlayerKillTitan(fAccuracy);
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
 }
 

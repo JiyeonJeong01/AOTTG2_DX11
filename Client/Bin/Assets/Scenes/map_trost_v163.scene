@@ -4698,10 +4698,10 @@
               -236.4753875732422
             ],
             "Rotation": [
-              0.5,
-              0.5000001192092896,
-              -0.5000000596046448,
-              0.5
+              0.4999999403953552,
+              0.5000000596046448,
+              -0.5,
+              0.4999999403953552
             ],
             "Scale": [
               1.2000001668930054,
@@ -5279,7 +5279,7 @@
           },
           "type": 0
         },
-  {
+        {
           "data": {
             "DebugDraw": false,
             "DiscardMask": 0,
@@ -5308,7 +5308,6 @@
           },
           "type": 1
         },
-
         {
           "data": {
             "AttachBoneName": "",
@@ -5367,7 +5366,7 @@
           },
           "type": 0
         },
- {
+        {
           "data": {
             "DebugDraw": false,
             "DiscardMask": 0,
@@ -5396,7 +5395,6 @@
           },
           "type": 1
         },
-
         {
           "data": {
             "AttachBoneName": "",
@@ -6864,7 +6862,7 @@
           "data": {
             "Position": [
               -70.38318634033203,
-              -22292250.0,
+              -22292524.0,
               -63.84186553955078
             ],
             "Rotation": [
@@ -10727,9 +10725,9 @@
             ],
             "Rotation": [
               0.0,
-              0.9154980778694153,
+              0.9154981970787048,
               0.0,
-              0.40232226252555847
+              0.40232232213020325
             ],
             "Scale": [
               0.009999774396419525,
@@ -10842,6 +10840,13 @@
                   "Type": 5,
                   "Value": {
                     "UUID": "F0F99AD8-2FC0-4C77-8870-74C44938B67E"
+                  }
+                },
+                {
+                  "Name": "m_refUIHit",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "3DBD5D7D-82B0-4C43-9687-3851B244A987"
                   }
                 }
               ]
@@ -10956,13 +10961,13 @@
         },
         {
           "data": {
-            "AnimationClip": 70,
-            "BlendDuration": 0.20000000298023224,
+            "AnimationClip": 44,
+            "BlendDuration": 0.0,
             "BlendMap": [],
             "Enabled": true,
             "LoopMap": [
               {
-                "Clip": 22,
+                "Clip": 78,
                 "Loop": true
               },
               {
@@ -10970,7 +10975,7 @@
                 "Loop": true
               },
               {
-                "Clip": 78,
+                "Clip": 22,
                 "Loop": true
               },
               {
@@ -11914,9 +11919,9 @@
             ],
             "Rotation": [
               0.0,
-              0.9154980778694153,
+              0.9154981970787048,
               0.0,
-              0.40232226252555847
+              0.40232232213020325
             ],
             "Scale": [
               0.009999774396419525,
@@ -12107,9 +12112,9 @@
         {
           "data": {
             "Position": [
-              -105.18749237060547,
-              4.9804863929748535,
-              -185.6963653564453
+              -104.0465087890625,
+              4.568091869354248,
+              -185.12464904785156
             ],
             "Rotation": [
               0.0,
@@ -12896,11 +12901,11 @@
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
@@ -12916,12 +12921,12 @@
                 "Loop": true
               },
               {
-                "Clip": 100,
-                "Loop": false
-              },
-              {
                 "Clip": 108,
                 "Loop": true
+              },
+              {
+                "Clip": 100,
+                "Loop": false
               },
               {
                 "Clip": 91,
@@ -15135,15 +15140,15 @@
         {
           "data": {
             "Position": [
-              -104.05883026123047,
-              12.25946044921875,
-              -193.349609375
+              -104.49742126464844,
+              11.931761741638184,
+              -193.49110412597656
             ],
             "Rotation": [
-              0.22975307703018188,
-              0.0,
-              -0.0,
-              0.9732489585876465
+              0.20755870640277863,
+              0.029358403757214546,
+              -0.006232183426618576,
+              0.9777620434761047
             ],
             "Scale": [
               1.0,
@@ -15291,6 +15296,13 @@
                   "Type": 5,
                   "Value": {
                     "UUID": "F0F99AD8-2FC0-4C77-8870-74C44938B67E"
+                  }
+                },
+                {
+                  "Name": "m_refUIHit",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "3DBD5D7D-82B0-4C43-9687-3851B244A987"
                   }
                 }
               ]
@@ -15960,11 +15972,11 @@
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
@@ -15980,12 +15992,12 @@
                 "Loop": true
               },
               {
-                "Clip": 100,
-                "Loop": false
-              },
-              {
                 "Clip": 108,
                 "Loop": true
+              },
+              {
+                "Clip": 100,
+                "Loop": false
               },
               {
                 "Clip": 91,
@@ -18930,7 +18942,7 @@
             ],
             "Scale": 1.0,
             "SortZ": 0.0,
-            "Text": " 16",
+            "Text": " 17",
             "Type": 15,
             "VisualPriority": 0
           },
@@ -19892,10 +19904,10 @@
               -16.494319915771484
             ],
             "Rotation": [
-              -0.3469356596469879,
+              -0.3469356298446655,
               0.0,
               -0.0,
-              0.937889039516449
+              0.9378889203071594
             ],
             "Scale": [
               0.9999999403953552,
@@ -20026,10 +20038,10 @@
               -42.7973518371582
             ],
             "Rotation": [
-              -0.3469356596469879,
+              -0.3469356298446655,
               0.0,
               -0.0,
-              0.937889039516449
+              0.9378889203071594
             ],
             "Scale": [
               0.9999999403953552,
@@ -22506,13 +22518,13 @@
               },
               {
                 "Duration": 0.4099999964237213,
-                "FromClip": 8,
-                "ToClip": 3
+                "FromClip": 4,
+                "ToClip": 8
               },
               {
                 "Duration": 0.4099999964237213,
-                "FromClip": 4,
-                "ToClip": 8
+                "FromClip": 8,
+                "ToClip": 3
               },
               {
                 "Duration": 0.4099999964237213,
@@ -22547,20 +22559,20 @@
                 "Loop": true
               },
               {
-                "Clip": 19,
-                "Loop": true
-              },
-              {
                 "Clip": 11,
                 "Loop": true
               },
               {
-                "Clip": 20,
+                "Clip": 19,
                 "Loop": true
               },
               {
                 "Clip": 12,
                 "Loop": false
+              },
+              {
+                "Clip": 20,
+                "Loop": true
               },
               {
                 "Clip": 18,
@@ -24387,6 +24399,13 @@
                   "Value": {
                     "UUID": "F0F99AD8-2FC0-4C77-8870-74C44938B67E"
                   }
+                },
+                {
+                  "Name": "m_refUIHit",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "3DBD5D7D-82B0-4C43-9687-3851B244A987"
+                  }
                 }
               ]
             },
@@ -25055,11 +25074,11 @@
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
@@ -25075,12 +25094,12 @@
                 "Loop": true
               },
               {
-                "Clip": 108,
-                "Loop": true
-              },
-              {
                 "Clip": 100,
                 "Loop": false
+              },
+              {
+                "Clip": 108,
+                "Loop": true
               },
               {
                 "Clip": 91,
@@ -28197,6 +28216,13 @@
                   "Value": {
                     "UUID": "F0F99AD8-2FC0-4C77-8870-74C44938B67E"
                   }
+                },
+                {
+                  "Name": "m_refUIHit",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "3DBD5D7D-82B0-4C43-9687-3851B244A987"
+                  }
                 }
               ]
             },
@@ -28865,11 +28891,11 @@
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
@@ -28885,12 +28911,12 @@
                 "Loop": true
               },
               {
-                "Clip": 108,
-                "Loop": true
-              },
-              {
                 "Clip": 100,
                 "Loop": false
+              },
+              {
+                "Clip": 108,
+                "Loop": true
               },
               {
                 "Clip": 91,
@@ -32007,6 +32033,13 @@
                   "Value": {
                     "UUID": "F0F99AD8-2FC0-4C77-8870-74C44938B67E"
                   }
+                },
+                {
+                  "Name": "m_refUIHit",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "3DBD5D7D-82B0-4C43-9687-3851B244A987"
+                  }
                 }
               ]
             },
@@ -32675,11 +32708,11 @@
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
@@ -32695,12 +32728,12 @@
                 "Loop": true
               },
               {
-                "Clip": 108,
-                "Loop": true
-              },
-              {
                 "Clip": 100,
                 "Loop": false
+              },
+              {
+                "Clip": 108,
+                "Loop": true
               },
               {
                 "Clip": 91,
@@ -35817,6 +35850,13 @@
                   "Value": {
                     "UUID": "F0F99AD8-2FC0-4C77-8870-74C44938B67E"
                   }
+                },
+                {
+                  "Name": "m_refUIHit",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "3DBD5D7D-82B0-4C43-9687-3851B244A987"
+                  }
                 }
               ]
             },
@@ -36485,11 +36525,11 @@
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
@@ -36505,12 +36545,12 @@
                 "Loop": true
               },
               {
-                "Clip": 100,
-                "Loop": false
-              },
-              {
                 "Clip": 108,
                 "Loop": true
+              },
+              {
+                "Clip": 100,
+                "Loop": false
               },
               {
                 "Clip": 91,
@@ -41612,11 +41652,11 @@
             "Enabled": false,
             "LoopMap": [
               {
-                "Clip": 39,
+                "Clip": 47,
                 "Loop": true
               },
               {
-                "Clip": 47,
+                "Clip": 39,
                 "Loop": true
               },
               {
@@ -41895,15 +41935,11 @@
             "Enabled": true,
             "LoopMap": [
               {
-                "Clip": 56,
-                "Loop": false
-              },
-              {
                 "Clip": 72,
                 "Loop": true
               },
               {
-                "Clip": 63,
+                "Clip": 56,
                 "Loop": false
               },
               {
@@ -41911,11 +41947,15 @@
                 "Loop": true
               },
               {
-                "Clip": 70,
-                "Loop": true
+                "Clip": 63,
+                "Loop": false
               },
               {
                 "Clip": 78,
+                "Loop": true
+              },
+              {
+                "Clip": 70,
                 "Loop": true
               },
               {
@@ -43211,7 +43251,7 @@
     {
       "iObjMask": 0,
       "isUI": false,
-      "layer": 255,
+      "layer": 0,
       "name": "weakpoint",
       "overrides": [
         {
@@ -47993,14 +48033,14 @@
           "data": {
             "Position": [
               -120.0,
-              6.227124214172363,
-              -209.15553283691406
+              6.269385814666748,
+              -177.37728881835938
             ],
             "Rotation": [
-              0.4972700774669647,
-              -0.5027132630348206,
-              -0.4918595552444458,
-              0.5080118775367737
+              0.4862622320652008,
+              -0.5133684873580933,
+              -0.4799906611442566,
+              0.5192406177520752
             ],
             "Scale": [
               0.10000039637088776,
@@ -48050,9 +48090,9 @@
         {
           "data": {
             "Position": [
-              -117.49666595458984,
-              5.930371284484863,
-              -200.43052673339844
+              -117.50108337402344,
+              6.379373073577881,
+              -168.64675903320313
             ],
             "Rotation": [
               0.0,
@@ -48103,7 +48143,7 @@
             "Enabled": true,
             "LoopMap": [
               {
-                "Clip": 78,
+                "Clip": 22,
                 "Loop": true
               },
               {
@@ -48111,7 +48151,7 @@
                 "Loop": true
               },
               {
-                "Clip": 22,
+                "Clip": 78,
                 "Loop": true
               },
               {
@@ -49099,9 +49139,9 @@
         {
           "data": {
             "Position": [
-              -118.47927856445313,
-              4.302105903625488,
-              -206.19882202148438
+              -118.47834014892578,
+              4.490671157836914,
+              -174.3360137939453
             ],
             "Rotation": [
               0.0,
@@ -49152,7 +49192,7 @@
             "Enabled": true,
             "LoopMap": [
               {
-                "Clip": 22,
+                "Clip": 78,
                 "Loop": true
               },
               {
@@ -49160,7 +49200,7 @@
                 "Loop": true
               },
               {
-                "Clip": 78,
+                "Clip": 22,
                 "Loop": true
               },
               {
@@ -50774,9 +50814,9 @@
             ],
             "sortZ": 0.0,
             "vColor": [
-              0.0,
-              0.0,
-              0.0,
+              1.0,
+              1.0,
+              1.0,
               0.0
             ]
           },
@@ -50790,7 +50830,7 @@
               0.0,
               1.0
             ],
-            "Enabled": true,
+            "Enabled": false,
             "TextureGuid": "77777777-7777-7777-7777-777777777772",
             "Type": 13,
             "UV": [
@@ -50991,7 +51031,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51046,7 +51086,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51101,7 +51141,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51156,7 +51196,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51211,7 +51251,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51266,7 +51306,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51321,7 +51361,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51376,7 +51416,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51431,7 +51471,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51486,7 +51526,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51541,7 +51581,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51596,7 +51636,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51651,7 +51691,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51706,7 +51746,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51761,7 +51801,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51816,7 +51856,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51871,7 +51911,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51926,7 +51966,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -51981,7 +52021,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -52036,7 +52076,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -52091,7 +52131,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -52146,7 +52186,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -52201,7 +52241,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -52256,7 +52296,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -52311,7 +52351,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -52366,7 +52406,7 @@
               0.0,
               0.0
             ],
-            "ParticlePlaying": true,
+            "ParticlePlaying": false,
             "SortZ": 0.0,
             "Type": 5
           },
@@ -52454,6 +52494,417 @@
       "parent": "E5324FEB-7FE5-484A-87A8-FD4255353AC2",
       "protoGuid": "00000000-0000-0000-0000-000000000000",
       "uuid": "23D210B3-C720-498C-BA89-B96D34C1E7BF"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "Hit",
+      "overrides": [
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CUI_HitController",
+              "Fields": [
+                {
+                  "Name": "m_refBloodImage0",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "F42AC691-2AFA-44CC-8353-86EC61C57756"
+                  }
+                },
+                {
+                  "Name": "m_refBloodImage1",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "17B8056A-087D-4FA1-B83C-D0C20DD902A5"
+                  }
+                },
+                {
+                  "Name": "m_refBloodImage2",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "CC551590-99D7-42CE-BFDB-53BCB753233A"
+                  }
+                },
+                {
+                  "Name": "m_refDamageText0",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "ECD6B5D0-5FFB-473C-8164-BC5924EF33C7"
+                  }
+                },
+                {
+                  "Name": "m_refDamageText1",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "90BAEF3E-8FEA-4844-B4AA-21FB28A8939A"
+                  }
+                }
+              ]
+            },
+            "ScriptGuid": "7DCA10A3-E0C3-4026-B3DC-4433AA94EB8E",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              540.0
+            ],
+            "SizePx": [
+              100.0,
+              100.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        }
+      ],
+      "parent": "D6232983-9023-44E3-8A3B-A72CE3F0CFBC",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "3DBD5D7D-82B0-4C43-9687-3851B244A987"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "Blood0",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              265.0,
+              203.0
+            ],
+            "SizePx": [
+              450.0,
+              200.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "0F8DE36D-5187-4508-9E2A-B830ED6F9B9E",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "Color": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "TextureGuid": "0F8DE36D-5187-4508-9E2A-B830ED6F9B9E",
+            "Type": 13,
+            "UV": [
+              0.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "VisualPriority": 0
+          },
+          "type": 13
+        }
+      ],
+      "parent": "3DBD5D7D-82B0-4C43-9687-3851B244A987",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "F42AC691-2AFA-44CC-8353-86EC61C57756"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "Blood1",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              1715.0,
+              208.0
+            ],
+            "SizePx": [
+              500.0,
+              280.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "7C4EA605-B635-4A38-A17F-69E7EB5133D7",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "Color": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "TextureGuid": "7C4EA605-B635-4A38-A17F-69E7EB5133D7",
+            "Type": 13,
+            "UV": [
+              0.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "VisualPriority": 0
+          },
+          "type": 13
+        }
+      ],
+      "parent": "3DBD5D7D-82B0-4C43-9687-3851B244A987",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "17B8056A-087D-4FA1-B83C-D0C20DD902A5"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "Blood2",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              1014.0
+            ],
+            "SizePx": [
+              700.0,
+              200.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "TextureGUID": "33A6535A-F8D2-4A80-BA3E-2C05801C3D46",
+            "Type": 12,
+            "flags": 0,
+            "layer": 1,
+            "rcClip": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rcUV": [
+              0.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "sortZ": 0.0,
+            "vColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": 12
+        },
+        {
+          "data": {
+            "Color": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Enabled": true,
+            "TextureGuid": "33A6535A-F8D2-4A80-BA3E-2C05801C3D46",
+            "Type": 13,
+            "UV": [
+              0.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "VisualPriority": 0
+          },
+          "type": 13
+        }
+      ],
+      "parent": "3DBD5D7D-82B0-4C43-9687-3851B244A987",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "CC551590-99D7-42CE-BFDB-53BCB753233A"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "DamageText0",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              540.0
+            ],
+            "SizePx": [
+              100.0,
+              100.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Center": true,
+            "ClipRect": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Color": [
+              0.994413435459137,
+              0.5780390501022339,
+              0.12777380645275116,
+              1.0
+            ],
+            "Enabled": true,
+            "Flags": 0,
+            "FontGuid": "3C44E740-15D6-4100-BD73-E390EFB36070",
+            "Offset": [
+              0.0,
+              0.0
+            ],
+            "Scale": 1.0,
+            "SortZ": 0.0,
+            "Text": "ddddd",
+            "Type": 15,
+            "VisualPriority": 1
+          },
+          "type": 15
+        }
+      ],
+      "parent": "3DBD5D7D-82B0-4C43-9687-3851B244A987",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "ECD6B5D0-5FFB-473C-8164-BC5924EF33C7"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": true,
+      "layer": 31,
+      "name": "DamageText1",
+      "overrides": [
+        {
+          "data": {
+            "PosPx": [
+              960.0,
+              540.0
+            ],
+            "SizePx": [
+              100.0,
+              100.0
+            ],
+            "Type": 11
+          },
+          "type": 11
+        },
+        {
+          "data": {
+            "Center": true,
+            "ClipRect": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Color": [
+              0.28770947456359863,
+              0.28770947456359863,
+              0.28770947456359863,
+              1.0
+            ],
+            "Enabled": true,
+            "Flags": 0,
+            "FontGuid": "3C44E740-15D6-4100-BD73-E390EFB36070",
+            "Offset": [
+              0.0,
+              0.0
+            ],
+            "Scale": 1.0,
+            "SortZ": 0.0,
+            "Text": "ddddd",
+            "Type": 15,
+            "VisualPriority": 0
+          },
+          "type": 15
+        }
+      ],
+      "parent": "3DBD5D7D-82B0-4C43-9687-3851B244A987",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "90BAEF3E-8FEA-4844-B4AA-21FB28A8939A"
     }
   ],
   "version": 1

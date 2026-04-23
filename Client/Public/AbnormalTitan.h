@@ -14,6 +14,7 @@ class CTargetSensor;
 class CTitanState;
 class CHurtBox;
 class CVFX_Manager;
+class CUI_HitController;
 NS_END
 
 NS_BEGIN(Client)
@@ -34,6 +35,7 @@ public:
 
 private:
     CVFX_Manager*   m_pVFX_Manager = nullptr;
+    CUI_HitController* m_pUIHitController = nullptr;
 
     CGameObject*    m_goTitan = nullptr;
     CGameObject*    m_goTarget = nullptr;
@@ -90,12 +92,14 @@ private:
 public:
     char        m_szState[32] = {};
     SCRIPT_OBJECT_REF   m_refVFXManager{};
+    SCRIPT_OBJECT_REF   m_refUIHit{};
 
 SCRIPT_FIELDS_BEGIN(CAbnormalTitan)
     SCRIPT_FIELD_CHAR(m_szState)
     SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[0]);
     SCRIPT_FIELD_FLOAT3(m_tPatrol.vPos[1]);
     SCRIPT_FIELD_OBJECT_REF(m_refVFXManager);
+    SCRIPT_FIELD_OBJECT_REF(m_refUIHit);
 SCRIPT_FIELDS_END(CAbnormalTitan)
 };
 

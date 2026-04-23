@@ -6,6 +6,7 @@
 NS_BEGIN(Client)
 class CPlayer_InputController;
 class CPlayer_SkillController;
+class CUI_HitController;
 class CPlayerStateMachine;
 class CPlayerState;
 class CCameraController;
@@ -23,6 +24,7 @@ public:
     _float              m_fForceDrag = 0.5f;
 
     SCRIPT_OBJECT_REF   m_refVFXManager{};
+    SCRIPT_OBJECT_REF   m_refUIHit{};
 
 public:
     SCRIPT_FIELDS_BEGIN(CPlayer)
@@ -30,6 +32,7 @@ public:
         SCRIPT_FIELD_FLOAT(m_fSpeed)
         SCRIPT_FIELD_FLOAT(m_fForceDrag)
         SCRIPT_FIELD_OBJECT_REF(m_refVFXManager);
+        SCRIPT_FIELD_OBJECT_REF(m_refUIHit);
     SCRIPT_FIELDS_END(CPlayer)
 
 public :
@@ -54,6 +57,7 @@ private:
 
     PLAYER_CONTEXT      m_tContext{};
     CVFX_Manager*       m_pVFX_Manager = nullptr;
+    CUI_HitController*  m_pUIHitController = nullptr;
 
     std::unique_ptr<CPlayer_InputController>    m_upInputController{};
     std::unique_ptr<CPlayer_SkillController>    m_upSkillController{};
@@ -83,7 +87,11 @@ public :
 
 private :
     void Display_GasResupply(_bool bDisplay);
-    
+
+    void Set_ReferenceObject();
+    void Set_ReferenceComponent();
+    void Set_ReferenceScript();
+    void Build_Context();
 };
 
 

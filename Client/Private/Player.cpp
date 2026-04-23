@@ -1,4 +1,5 @@
-﻿#include "Player.h"
+﻿#pragma region HEADER
+#include "Player.h"
 
 #include "Player_InputController.h"
 #include "Player_SkillController.h"
@@ -16,10 +17,12 @@
 #include "TargetSensor.h"
 #include "AnimationClip_Player.h"
 
+#include "UI_HitController.h"
+#pragma endregion
+
 NS_BEGIN(Client)
 
 CPlayer::CPlayer() {}
-
 CPlayer::~CPlayer() {}
 
 void CPlayer::Awake(void* pCtx)
@@ -40,56 +43,22 @@ void CPlayer::Awake(void* pCtx)
 
 void CPlayer::Start(void* pCtx)
 {
-    {
-        CGameObject* goVFX = SYS_GAMEOBJECT.Get_Wrapper(m_refVFXManager.hObject);
-        IF_NULL_RETURN_MSG_BREAK(goVFX, , "goVFX is nullptr");
-        m_pVFX_Manager = goVFX->Get_Script<CVFX_Manager>();
-        IF_NULL_RETURN_MSG_BREAK(m_pVFX_Manager, , "m_pVFX_Manager is nullptr");
-    }
+    /* 오브젝트 참조 */
+    Set_ReferenceObject();
+
     /* 컴포넌트 참조 */
-    {
-        m_tComponents.transform = m_goPlayer->Get_Component<CTransform>();
-        IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.transform.Is_Valid(), , "transform is invalid");
+    Set_ReferenceComponent();
 
-        m_tComponents.animator = m_goPlayer->Get_Component<CAnimator>();
-        IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.animator.Is_Valid(), , "animator is invalid");
-
-        m_tComponents.collider = m_goPlayer->Get_Component<CCollider>();
-        IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.collider.Is_Valid(), , "collider is invalid");
-
-        m_tComponents.rigidbody = m_goPlayer->Get_Component<CRigidbody>();
-        IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.rigidbody.Is_Valid(), , "rigidbody is invalid");
-
-        m_tComponents.rigidbody->bDebugLog = true;
-
-        m_tComponents.springJoint = m_goPlayer->Get_Component<CSpringJoint>();
-        IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.springJoint.Is_Valid(), , "springJoint is invalid");
-
-        m_tComponents.meshRenderer = m_goPlayer->Get_Component<CMeshRenderer>();
-        IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.meshRenderer.Is_Valid(), , "meshRenderer is invalid");
-    }
-
-    /* 런타임 정보 참조 */
-    {
-        m_pGear = m_tRef.pGear = m_goPlayer->Get_Script_InChildren<CODM_Gear>();
-        m_tRef.pGroundChecker = m_goPlayer->Get_Script_InChildren<CGroundChecker>();
-        m_tRef.pFSM = m_upStateMachine.get();
-        m_pCameraController = m_tRef.pCameraController = m_goPlayer->Get_Script<CCameraController>();
-        m_tRef.pSensor = m_goPlayer->Get_Script_InChildren<CTargetSensor>();
-        m_tRef.pTrail = m_upTrail.get();
-        m_tRef.pAllHitBoxes = &m_AllHitBoxes;
-    }
+    /* script 정보 참조 */
+    Set_ReferenceScript();
 
     m_tRef.pSensor->Set_TargetMask(O_ENEMY);
     m_tRef.pSensor->Subscribe_OnDetectedTarget(&CPlayer::On_DetectedTitan, this);
 
     m_tRef.pCameraController->Bind_PlayerSensor(m_tRef.pSensor);
 
-
     /* 플레이어 스킬 정보 */
-    {
-        m_upSkillController->SetUp_SkillSet();
-    }
+    m_upSkillController->SetUp_SkillSet();
 
     const auto& children = m_goPlayer->Get_Children();
     for (const auto& child : children)
@@ -108,17 +77,9 @@ void CPlayer::Start(void* pCtx)
     IF_NULL_RETURN_MSG_BREAK(m_tBlade.pRightBlade, , "pRightBlade is nullptr");
     IF_NULL_RETURN_MSG_BREAK(m_goGasResupply, , "Gas_Resupply is nullptr");
 
-    /* 플레이어 상태에게 전달 */
-    m_tContext.tComponents = m_tComponents;
-    m_tContext.tRef = m_tRef;
-    m_tContext.pStats = &m_tStats;
-    m_tContext.pBlade = &m_tBlade;
-    m_tContext.pHitBox = m_goPlayer->Get_Script_InChildren<CHitBox>();
-    m_tContext.pVFX_Manager = m_pVFX_Manager;
+    /* PlayerContext 구조체 값 넣기 */
+    Build_Context();
 
-    /* 컨트롤러 */
-    m_tContext.pSkillController = m_upSkillController.get();
-    m_tContext.pOriginDrag = &m_fForceDrag;
     m_upStateMachine->Cache_PlayerInfos(m_tContext);
     m_tRef.pGear->Bind_PlayerContext(m_tContext);
 
@@ -200,7 +161,10 @@ void CPlayer::On_BladeHit(CGameObject* goCounter, const HIT_INFO& tHitInfo)
     if (!m_tBlade.Can_ConsumeBladeAtk())
         return;
 
+    /* TODO : m_pUIHitControlelr 여기에 UI 연결하기 */
+
     m_tBlade.Consume_Blade();
+    m_pUIHitController->On_PlayerHitTitan();
 }
 
 void CPlayer::On_DetectedTitan(CGameObject* goTitan)
@@ -288,6 +252,68 @@ void CPlayer::Display_GasResupply(_bool bDisplay)
         return;
 
     mr.Set_Enable(bDisplay);
+}
+
+void CPlayer::Set_ReferenceObject()
+{
+    CGameObject* goVFX = SYS_GAMEOBJECT.Get_Wrapper(m_refVFXManager.hObject);
+    IF_NULL_RETURN_MSG_BREAK(goVFX, , "goVFX is nullptr");
+    m_pVFX_Manager = goVFX->Get_Script<CVFX_Manager>();
+    IF_NULL_RETURN_MSG_BREAK(m_pVFX_Manager, , "m_pVFX_Manager is nullptr");
+
+    CGameObject* goUI = GAME_INSTANCE.Find_GameObject(m_refUIHit.hObject);
+    IF_NULL_RETURN_MSG_BREAK(goUI, , "goUI is nullptr");
+    m_pUIHitController = goUI->Get_Script<CUI_HitController>();
+    IF_NULL_RETURN_MSG_BREAK(m_pUIHitController, , "m_pUIHitController is nullptr");
+}
+
+void CPlayer::Set_ReferenceComponent()
+{
+    m_tComponents.transform = m_goPlayer->Get_Component<CTransform>();  
+    IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.transform.Is_Valid(), , "transform is invalid");
+
+    m_tComponents.animator = m_goPlayer->Get_Component<CAnimator>();
+    IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.animator.Is_Valid(), , "animator is invalid");
+
+    m_tComponents.collider = m_goPlayer->Get_Component<CCollider>();
+    IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.collider.Is_Valid(), , "collider is invalid");
+
+    m_tComponents.rigidbody = m_goPlayer->Get_Component<CRigidbody>();
+    IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.rigidbody.Is_Valid(), , "rigidbody is invalid");
+
+    m_tComponents.rigidbody->bDebugLog = true;
+
+    m_tComponents.springJoint = m_goPlayer->Get_Component<CSpringJoint>();
+    IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.springJoint.Is_Valid(), , "springJoint is invalid");
+
+    m_tComponents.meshRenderer = m_goPlayer->Get_Component<CMeshRenderer>();
+    IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.meshRenderer.Is_Valid(), , "meshRenderer is invalid");
+}
+
+void CPlayer::Set_ReferenceScript()
+{
+    m_pGear = m_tRef.pGear = m_goPlayer->Get_Script_InChildren<CODM_Gear>();
+    m_tRef.pGroundChecker = m_goPlayer->Get_Script_InChildren<CGroundChecker>();
+    m_tRef.pFSM = m_upStateMachine.get();
+    m_pCameraController = m_tRef.pCameraController = m_goPlayer->Get_Script<CCameraController>();
+    m_tRef.pSensor = m_goPlayer->Get_Script_InChildren<CTargetSensor>();
+    m_tRef.pTrail = m_upTrail.get();
+    m_tRef.pAllHitBoxes = &m_AllHitBoxes;
+}
+
+void CPlayer::Build_Context()
+{
+    /* 플레이어 상태에게 전달 */
+    m_tContext.tComponents = m_tComponents;
+    m_tContext.tRef = m_tRef;
+    m_tContext.pStats = &m_tStats;
+    m_tContext.pBlade = &m_tBlade;
+    m_tContext.pHitBox = m_goPlayer->Get_Script_InChildren<CHitBox>();
+    m_tContext.pVFX_Manager = m_pVFX_Manager;
+
+    /* 컨트롤러 */
+    m_tContext.pSkillController = m_upSkillController.get();
+    m_tContext.pOriginDrag = &m_fForceDrag;
 }
 
 NS_END;

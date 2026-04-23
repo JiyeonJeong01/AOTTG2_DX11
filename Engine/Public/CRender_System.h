@@ -120,6 +120,8 @@ private:
     uint32_t                                        m_hSpeedLineShader{};
     uint32_t                                        m_hFogShader{};
 
+    _bool                                           m_bBeginThisFrame = false;
+
     /* Draw Calls */
     vector<DRAW_CMD>                                m_AllDrawCmds;
     vector<DRAW_CMD>                                m_PendingDrawCmds;

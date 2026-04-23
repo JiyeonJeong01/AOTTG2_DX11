@@ -1114,6 +1114,12 @@ void CRender_System::Execute_Draw_Text(const DRAW_CMD& tCmd)
     if (!rt.Is_Valid())
         return;
 
+    //if (!m_bBeginThisFrame)
+    //{
+        m_pSpriteBatch->Begin(DirectX::SpriteSortMode_Deferred, m_pBlendState_Alpha);
+    //    m_bBeginThisFrame = true;
+    //}
+
     const _float2 vPos = rt->vPosPx;
 
     DirectX::XMVECTOR vColor = DirectX::XMVectorSet(
@@ -1123,7 +1129,10 @@ void CRender_System::Execute_Draw_Text(const DRAW_CMD& tCmd)
         tCmd.text.vColor.w
     );
 
-    m_pSpriteBatch->Begin();
+    if (tCmd.text.vColor.w < 0.f)
+    {
+        DEBUG_POINT;
+    }
 
     DirectX::XMFLOAT2 vOrigin = { 0.f, 0.f };
     if (tCmd.text.bCenter)
@@ -1154,6 +1163,9 @@ void CRender_System::Render()
 {
     m_pContext->RSSetState(m_rsNoScissor.Get());
     Build_RenderQueue();
+
+    m_bBeginThisFrame = false;
+
     Execute_RenderQueue();
 }
 
