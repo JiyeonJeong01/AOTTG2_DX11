@@ -44,6 +44,8 @@ void CPlayerState_AirborneMove::Priority_Update(_float fDT)
     else
         Handle_Trail(fDT, WIDTH_TYPE::NORMAL);
 
+    Handle_BladeTrail(fDT, WIDTH_TYPE::NONE);
+
     Handle_SpeedLines(fDT);
 }
 

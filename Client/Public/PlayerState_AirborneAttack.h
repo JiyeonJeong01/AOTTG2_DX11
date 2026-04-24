@@ -76,7 +76,7 @@ private:
     _bool               m_bBladeHitBoxStarted = false;
 
 private :
-    void    Update_BladeHitBox();
+    void    Update_BladeHitBox(_float fDT);
     void    Spin_Horizontal(_float fDT);
     void    Spin_Vertical(_float fDT);
     void    Throw_Blade(_float fDT);

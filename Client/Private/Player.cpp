@@ -18,6 +18,7 @@
 #include "AnimationClip_Player.h"
 
 #include "UI_HitController.h"
+#include "Attacher.h"
 #pragma endregion
 
 NS_BEGIN(Client)
@@ -33,6 +34,9 @@ void CPlayer::Awake(void* pCtx)
     m_upInputController = CPlayer_InputController::Create();
     m_upSkillController = CPlayer_SkillController::Create(&m_tSkillSet);
     m_upTrail = CTrail::Create();
+
+    m_upLeftBladeTrail = CTrail::Create();
+    m_upRightBladeTrail = CTrail::Create();
 
     IF_NULL_RETURN_MSG_BREAK(m_upStateMachine, , "m_upStateMachine is nullptr");
     IF_NULL_RETURN_MSG_BREAK(m_upInputController, , "m_upInputController is nullptr");
@@ -298,6 +302,31 @@ void CPlayer::Set_ReferenceScript()
     m_pCameraController = m_tRef.pCameraController = m_goPlayer->Get_Script<CCameraController>();
     m_tRef.pSensor = m_goPlayer->Get_Script_InChildren<CTargetSensor>();
     m_tRef.pTrail = m_upTrail.get();
+
+    CGameObject* pLeftBladeAttacher = nullptr;
+    CGameObject* pRightBladeAttacher = nullptr;
+    auto attachers = m_goPlayer->Get_AllScripts<CAttacher>();
+
+    for (auto attacher : attachers)
+    {
+        auto* goObj = attacher->Get_AttachObject();
+        if (!goObj) continue;
+        if (goObj->Get_Label() == "LeftTrail")
+            pLeftBladeAttacher = goObj;
+        else if (goObj->Get_Label() == "RightTrail")
+            pRightBladeAttacher = goObj;
+    }
+
+    if (pLeftBladeAttacher)
+    {
+        m_tRef.tLeftBladeTrail = { pLeftBladeAttacher->Get_Component<CTransform>(), m_upLeftBladeTrail.get() };
+        m_upLeftBladeTrail->Set_Color({ 1.f, 0.f, 0.f, 1.f });
+    }
+    if (pRightBladeAttacher)
+    {
+        m_tRef.tRightBladeTrail = { pRightBladeAttacher->Get_Component<CTransform>(), m_upRightBladeTrail.get() };
+        m_upRightBladeTrail->Set_Color({ 1.f, 0.f, 0.f, 1.f });
+    }
     m_tRef.pAllHitBoxes = &m_AllHitBoxes;
 }
 

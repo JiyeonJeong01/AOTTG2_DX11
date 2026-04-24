@@ -44,7 +44,7 @@ void CPlayerState_Reload::Priority_Update(_float fDT)
     }
     else
         Handle_Trail(fDT, WIDTH_TYPE::NONE);
-
+    Handle_BladeTrail(fDT, WIDTH_TYPE::NONE);
 }
 
 void CPlayerState_Reload::Update(_float fDT)

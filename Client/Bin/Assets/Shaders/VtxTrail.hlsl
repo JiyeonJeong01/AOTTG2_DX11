@@ -47,11 +47,11 @@ PS_OUT PS_MAIN(PS_IN In) : SV_TARGET
     float fWhiteColor = 1 - pow(In.vTexcoord.x - 0.5f, 2) * 4.f;
     fWhiteColor = saturate(fWhiteColor);
     
-    float fOuter = pow(fWhiteColor, 50.f);
-    float fAlphaPow = pow(fWhiteColor, 1.2f);
+    float fOuter = pow(fWhiteColor, 3.f);
+    float fAlphaPow = pow(fWhiteColor, 2.f);
     
-    float3 vColor = lerp(In.vColor.rgb, float3(1.f, 1.f, 1.f), fWhiteColor);
-    float fAlpha = In.vColor.a * (0.15f + fAlphaPow * 0.85f);
+    float3 vColor = lerp(In.vColor.rgb, float3(1.f, 1.f, 1.f), fOuter);
+    float fAlpha = In.vColor.a * (0.1f + fAlphaPow * 0.5f);
 
     Out.vColor = float4(vColor, fAlpha);
     return Out;

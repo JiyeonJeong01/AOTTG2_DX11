@@ -46,13 +46,13 @@ void CPlayerState_AirborneAttack::Update(_float fDT)
 {
     if (m_eAirborneAttackState == AIRBORNE_ATTACK::NORMAL)
     {
-        Update_BladeHitBox();
+        Update_BladeHitBox(fDT);
         return;
     }
     if (m_eAirborneAttackState == AIRBORNE_ATTACK::SPIN_H)
     {
         Spin_Horizontal(fDT);
-        Update_BladeHitBox();
+        Update_BladeHitBox(fDT);
         return;
     }
     if (m_eAirborneAttackState == AIRBORNE_ATTACK::THROW)
@@ -63,9 +63,10 @@ void CPlayerState_AirborneAttack::Update(_float fDT)
     if (m_eAirborneAttackState == AIRBORNE_ATTACK::SPIN_V)
     {
         Spin_Vertical(fDT);
-        Update_BladeHitBox();
+        Update_BladeHitBox(fDT);
         return;
     }
+    Handle_BladeTrail(fDT, WIDTH_TYPE::NONE);
 }
 
 void CPlayerState_AirborneAttack::Late_Update(_float fDT)
@@ -270,10 +271,11 @@ void CPlayerState_AirborneAttack::On_SpinV_Finished(const Engine::ANIMATION_EVEN
     cout << " => [AIRBORNE_ATTACK] On_SpinV_Finished\n";
 }
 
-void CPlayerState_AirborneAttack::Update_BladeHitBox()
+void CPlayerState_AirborneAttack::Update_BladeHitBox(_float fDT)
 {
     if (!m_pBladeHitBox)
         return;
+    Handle_BladeTrail(fDT, WIDTH_TYPE::THIN);
 
     /* 히트박스 on */
     if (!m_bBladeHitBoxStarted)
@@ -291,6 +293,7 @@ void CPlayerState_AirborneAttack::Update_BladeHitBox()
     {
         m_pBladeHitBox->Set_Active(false);
     }
+
 }
 
 void CPlayerState_AirborneAttack::Spin_Horizontal(_float fDT)

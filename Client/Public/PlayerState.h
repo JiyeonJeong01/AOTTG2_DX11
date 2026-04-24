@@ -41,6 +41,7 @@ public :
     void            Finish_Grappling();
     void            GroundedMove(_float fDT);
     void            Handle_Trail(_float fDT, WIDTH_TYPE eWidth);
+    void            Handle_BladeTrail(_float fDT, WIDTH_TYPE eWidth = WIDTH_TYPE::BOLD);
     void            Handle_SpeedLines(_float fDT);
     _bool           Set_HitBoxActive(const std::string& strHitBox, _bool bActive);
     void            Sync_HiBox(const std::string& strHitBox);
@@ -57,12 +58,15 @@ protected:
     Engine::CGameObject*    m_goPlayer{};
     CPlayer*                m_scPlayer{};
     CTrail*                 m_pTrail{};
+    ATTACH_TRAIL            m_tLeftBladeTrail{};
+    ATTACH_TRAIL            m_tRightBladeTrail{};
 
     PLAYER_INPUT_COMMAND    m_tInputCmd{};
     PLAYER_COMPONENTS       m_tComponents{};
     PLAYER_RUNTIME_REF      m_tRef{};
     PLAYER_STATS*           m_pStats{};
     BLADE_DURABILITY*       m_pBlade{};
+
 
     class CPlayer_SkillController*  m_pSkillController{};
 

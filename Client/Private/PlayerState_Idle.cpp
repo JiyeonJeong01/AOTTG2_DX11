@@ -30,6 +30,7 @@ void CPlayerState_Idle::Priority_Update(_float fDT)
     LookTo_InputDir(fDT);
     Try_Grappling();
     Handle_Trail(fDT, WIDTH_TYPE::NONE);
+    Handle_BladeTrail(fDT, WIDTH_TYPE::NONE);
 
     //Finish_Grappling(); 스크립트 호출 순서 상 IDLE에서 이 함수 호출 시 ODMGear가 아직 Start가 호출되지 않아, 예외 발생 
 }

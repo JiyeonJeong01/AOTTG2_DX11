@@ -10935,6 +10935,78 @@
         },
         {
           "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CAttacher",
+              "Fields": [
+                {
+                  "Name": "m_tAttachObject.refObject",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "5D784342-BCBD-493F-B05E-3E05528E61CD"
+                  }
+                },
+                {
+                  "Name": "m_tAttachObject.szBoneName",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "hand_L"
+                  }
+                },
+                {
+                  "Name": "m_tAttachObject.vOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.5,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "ScriptGuid": "B886028A-40EA-4299-9CFF-D9B4B0914444",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CAttacher",
+              "Fields": [
+                {
+                  "Name": "m_tAttachObject.refObject",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "F9352FFA-9DC9-4483-A213-86319E56F24B"
+                  }
+                },
+                {
+                  "Name": "m_tAttachObject.szBoneName",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "hand_R"
+                  }
+                },
+                {
+                  "Name": "m_tAttachObject.vOffset",
+                  "Type": 3,
+                  "Value": [
+                    0.5,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            "ScriptGuid": "B886028A-40EA-4299-9CFF-D9B4B0914444",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
             "AttachBoneName": "",
             "Enabled": true,
             "ExtraPassFlags": 0,
@@ -22292,6 +22364,18 @@
         {
           "data": {
             "Enabled": false,
+            "ExposedFields": {
+              "ClassName": "CErenTitan",
+              "Fields": [
+                {
+                  "Name": "m_refVFXManager",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "F0F99AD8-2FC0-4C77-8870-74C44938B67E"
+                  }
+                }
+              ]
+            },
             "ScriptGuid": "5D64A0DA-ACAB-4C8F-8A91-B1ED4821E413",
             "Type": 4
           },
@@ -41396,7 +41480,7 @@
                   "Name": "m_refVFXManager",
                   "Type": 5,
                   "Value": {
-                    "UUID": "00000000-0000-0000-0000-000000000000"
+                    "UUID": "F0F99AD8-2FC0-4C77-8870-74C44938B67E"
                   }
                 },
                 {
@@ -54255,6 +54339,72 @@
       "parent": "0603F93B-25DB-46A8-A8A0-BAA6864F749E",
       "protoGuid": "00000000-0000-0000-0000-000000000000",
       "uuid": "AEEBE745-5A3A-407F-B076-11F1958F8B9B"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "LeftTrail",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        }
+      ],
+      "parent": "703AD01E-ED33-4D2A-98EA-464A5AF4F2FB",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "5D784342-BCBD-493F-B05E-3E05528E61CD"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "RightTrail",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        }
+      ],
+      "parent": "78A78173-868B-4481-A931-4A1EC203328E",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "F9352FFA-9DC9-4483-A213-86319E56F24B"
     }
   ],
   "version": 1

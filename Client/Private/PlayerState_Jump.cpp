@@ -27,6 +27,7 @@ void CPlayerState_Jump::Priority_Update(_float fDT)
     Finish_Grappling();
 
     Handle_Trail(fDT, WIDTH_TYPE::THIN);
+    Handle_BladeTrail(fDT, WIDTH_TYPE::NONE);
 }
 
 void CPlayerState_Jump::Update(_float fDT)

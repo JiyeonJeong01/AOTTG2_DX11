@@ -43,7 +43,7 @@ private:
 
     _float3                         m_vStartPoint{};
     _float3                         m_vDefaultRight{ 1.f, 0.f, 0.f };
-    _float4                         m_vColor{ 1.f, 0.5f, 0.1f, 0.7f };
+    _float4                         m_vColor{ 0.5f, 0.5f, 0.5f, 0.7f };
 
     _int                            m_iNumPoints = 30;
     _float                          m_fPointLifeTime = 0.7f;

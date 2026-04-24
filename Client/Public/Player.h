@@ -64,6 +64,8 @@ private:
     std::unique_ptr<CPlayerStateMachine>        m_upStateMachine{};
     std::shared_ptr<CPlayerState>               m_spCurState{};
     std::unique_ptr<CTrail>                     m_upTrail{};
+    std::unique_ptr<CTrail>                     m_upLeftBladeTrail{};
+    std::unique_ptr<CTrail>                     m_upRightBladeTrail{};
 
     CCameraController*                          m_pCameraController{};
     CODM_Gear*                                  m_pGear{};

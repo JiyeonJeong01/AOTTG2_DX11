@@ -37,6 +37,7 @@ void CPlayerState_Resupply::Priority_Update(_float fDT)
     LookTo_InputDir(fDT);
     Finish_Grappling();
     Handle_Trail(fDT, WIDTH_TYPE::NONE);
+    Handle_BladeTrail(fDT, WIDTH_TYPE::NONE);
 }
 
 void CPlayerState_Resupply::Update(_float fDT)

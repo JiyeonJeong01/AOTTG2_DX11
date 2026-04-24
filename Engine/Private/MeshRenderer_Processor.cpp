@@ -1307,6 +1307,11 @@ _bool CMeshRenderer_Processor::Is_Culled_By_Frustum(const MESH_ENTRY* pMesh, COM
 
         const _float fBias = fabsf(w) * 0.15f;
 
+        // 화면 안이라면 아래 조건 충족
+        //  -w <= x <= w
+        //  -w <= y <= w
+        //  0 <= z <= w
+
         if (x >= -w - fBias) bAllLeft = false;
         if (x <= w + fBias) bAllRight = false;
 

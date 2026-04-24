@@ -73,6 +73,12 @@ typedef struct tagPlayerStats
 
 } PLAYER_STATS;
 
+typedef struct tagAttachTrail
+{
+    CTransform      tr{};
+    class CTrail*   pTrail{};
+} ATTACH_TRAIL;
+
 typedef struct tagPlayerRuntimeRef
 {
     class CGroundChecker*       pGroundChecker = nullptr;
@@ -81,6 +87,8 @@ typedef struct tagPlayerRuntimeRef
     class CPlayerStateMachine*  pFSM = nullptr;
     class CTargetSensor*        pSensor = nullptr;
     class CTrail*               pTrail = nullptr;
+    ATTACH_TRAIL                tLeftBladeTrail{};
+    ATTACH_TRAIL                tRightBladeTrail{};
     std::unordered_map<std::string, class CHitBox*>* pAllHitBoxes = nullptr;
 } PLAYER_RUNTIME_REF;
 

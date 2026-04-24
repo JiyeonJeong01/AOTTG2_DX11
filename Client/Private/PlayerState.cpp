@@ -219,7 +219,7 @@ void CPlayerState::GroundedMove(_float fDT)
 
 void CPlayerState::Handle_Trail(_float fDT, WIDTH_TYPE eWidth)
 {
-    if (m_pTrail == __nullptr)
+    if (m_pTrail == nullptr)
         return;
 
     m_pTrail->Update(fDT);
@@ -234,6 +234,40 @@ void CPlayerState::Handle_Trail(_float fDT, WIDTH_TYPE eWidth)
     XMStoreFloat3(&vRight, m_tComponents.transform.Get_StateXM(STATE::RIGHT));
 
     m_pTrail->Set_StartPoint(vPos, vRight, eWidth);
+}
+
+void CPlayerState::Handle_BladeTrail(_float fDT, WIDTH_TYPE eWidth)
+{
+    if (m_tLeftBladeTrail.pTrail)
+        m_tLeftBladeTrail.pTrail->Update(fDT);
+    if (m_tRightBladeTrail.pTrail)
+        m_tRightBladeTrail.pTrail->Update(fDT);
+
+    if (eWidth == WIDTH_TYPE::NONE)
+        return;
+
+    if (m_tLeftBladeTrail.pTrail)
+    {
+        _float3 vPos{};
+        _float3 vRight{};
+
+        XMStoreFloat3(&vPos, m_tLeftBladeTrail.tr.Get_StateXM(STATE::POSITION));
+        XMStoreFloat3(&vRight, m_tLeftBladeTrail.tr.Get_StateXM(STATE::RIGHT));
+
+        m_tLeftBladeTrail.pTrail->Set_StartPoint(vPos, vRight, eWidth);
+    }
+
+    if (m_tRightBladeTrail.pTrail)
+    {
+        _float3 vPos{};
+        _float3 vRight{};
+
+        XMStoreFloat3(&vPos, m_tRightBladeTrail.tr.Get_StateXM(STATE::POSITION));
+        XMStoreFloat3(&vRight, m_tRightBladeTrail.tr.Get_StateXM(STATE::RIGHT));
+
+        m_tRightBladeTrail.pTrail->Set_StartPoint(vPos, vRight, eWidth);
+        m_tRightBladeTrail.pTrail->Update(fDT);
+    }
 }
 
 void CPlayerState::Handle_SpeedLines(_float fDT)
@@ -346,6 +380,8 @@ void CPlayerState::Cache_PlayerContext(const PLAYER_CONTEXT& tContext)
     m_pSkillController = tContext.pSkillController;
     m_pBlade = tContext.pBlade;
     m_pTrail = tContext.tRef.pTrail;
+    m_tLeftBladeTrail = tContext.tRef.tLeftBladeTrail;
+    m_tRightBladeTrail = tContext.tRef.tRightBladeTrail;
 }
 
 PLAYER_STATE CPlayerState::Get_State() const
