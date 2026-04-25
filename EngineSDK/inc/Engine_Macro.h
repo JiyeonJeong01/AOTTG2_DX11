@@ -109,6 +109,7 @@ private:                                                    \
 #define SYS_RENDER		        GET_INSTANCE(Engine::CRender_System)
 #define SYS_EVENT		        GET_INSTANCE(Engine::CEvent_System)
 #define SYS_CINEMATIC           GET_INSTANCE(Engine::CCinematic_System)
+#define SYS_SOUND               GET_INSTANCE(Engine::CSound_System)
 
 #define SYS_EDITOR		        GET_INSTANCE(Engine::CEditor_System)
 

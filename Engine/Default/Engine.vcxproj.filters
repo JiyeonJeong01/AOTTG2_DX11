@@ -202,6 +202,9 @@
     <Filter Include="09. Cinematic">
       <UniqueIdentifier>{6f17b6d4-f53a-4949-8cb1-34bd395ebe35}</UniqueIdentifier>
     </Filter>
+    <Filter Include="08. Sound">
+      <UniqueIdentifier>{4c5ac6e5-70ce-4f42-a849-1c0b6c9ed09c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Typedef.h">
@@ -562,6 +565,9 @@
     <ClInclude Include="..\Public\Cinematic_Event.h">
       <Filter>00. System\11. Event\Events</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Sound_System.h">
+      <Filter>08. Sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -774,6 +780,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\CinematicSystem.cpp">
       <Filter>09. Cinematic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sound_System.cpp">
+      <Filter>08. Sound</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

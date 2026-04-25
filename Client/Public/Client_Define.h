@@ -7,6 +7,7 @@
 #include "GameInstance.h"
 #include "magic_enum.hpp"
 #include "Input_System.h"
+#include "Sound_System.h"
 
 extern HWND g_hWnd;
 extern HINSTANCE g_hInst;

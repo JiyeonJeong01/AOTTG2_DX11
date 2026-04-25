@@ -72,6 +72,8 @@ void COpening_Director::Start(void* pCtx)
     }
 
     Enter_State(OPENING_STATE::BOAT_APPROACH);
+
+    //SYS_SOUND.PlayBGM(L"")
 }
 
 void COpening_Director::Priority_Update(void* pCtx, _float fDT)

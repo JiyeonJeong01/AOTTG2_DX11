@@ -55,6 +55,11 @@ using namespace std;
 #include "Engine_Typedef.h"
 #include "Engine_Function.h"
 
+#include "FMOD/fmod.h"
+#include "FMOD/fmod.hpp"
+#include "FMOD/fmod_errors.h" 
+#include "FMOD/fmod_common.h"
+
 #include <type_traits>
 
 #define DIRECTINPUT_VERSION		0x0800

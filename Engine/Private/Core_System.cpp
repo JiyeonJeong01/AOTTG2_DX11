@@ -12,6 +12,7 @@
 #include "Editor_System.h"
 #include "GameInstance.h"
 #include "CinematicSystem.h"
+#include "Sound_System.h"
 
 /* --- sub --- */
 #include "Graphic_Device.h"
@@ -100,6 +101,9 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
 
     /* --- Cinematic System --- */
     IF_FAIL_RETURN_MSG_BREAK(SYS_CINEMATIC.Initialize(), E_FAIL, "SYS_CINEMATIC failed Initialize");
+
+    /* --- Sound System --- */
+    IF_FAIL_RETURN_MSG_BREAK(SYS_SOUND.Initialize(), E_FAIL, "SYS_SOUND failed Initialize");
 
     /* --- Register event --- */
     SYS_EVENT.Subscribe(EVENT_TYPE::On_Window_Resize, &CCore_System::On_Resize, this);
