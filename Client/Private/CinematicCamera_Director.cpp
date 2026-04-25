@@ -32,12 +32,12 @@ void CCinematicCamera_Director::Start(void* pCtx)
 
 void CCinematicCamera_Director::Priority_Update(void* pCtx, _float fDT)
 {
-    if (SYS_INPUT.Get_KeyDown('T') && m_camCinematic.Is_Valid())
-    {
-        SYS_CINEMATIC.Play("siva_clip", m_camCinematic);
-        m_bPlay = true;
+    //if (SYS_INPUT.Get_KeyDown('T') && m_camCinematic.Is_Valid())
+    //{
+    //    SYS_CINEMATIC.Play("siva_clip", m_camCinematic);
+    //    m_bPlay = true;
 
-    }
+    //}
     SYS_CINEMATIC.Update(fDT);
 }
 

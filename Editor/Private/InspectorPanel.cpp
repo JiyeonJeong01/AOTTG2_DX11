@@ -864,6 +864,38 @@ void CInspectorPanel::Draw_MeshRenderer()
 
     bool bChanged = false;
 
+    // --- Shadow ---
+    {
+        const char* szShadowTypes[] =
+        {
+            "None",
+            "Static",
+            "Dynamic"
+        };
+
+        int iShadowType = static_cast<int>(pData->eShadowType);
+
+        ImGui::TextUnformatted("Shadow Type");
+        ImGui::SameLine();
+
+        if (ImGui::Combo("##ShadowType", &iShadowType, szShadowTypes, IM_ARRAYSIZE(szShadowTypes)))
+        {
+            pData->eShadowType = static_cast<SHADOW_TYPE>(iShadowType);
+            bChanged = true;
+
+            if (m_pTarget)
+            {
+                auto children = m_pTarget->Get_Children();
+                for (auto child : children)
+                {
+                    auto mr = child->Get_Component<CMeshRenderer>();
+                    if (mr.Is_Valid())
+                        mr->eShadowType = pData->eShadowType;
+                }
+            }
+        }
+    }
+
     const bool bIsModel = SYS_RESOURCE.Is_ModelHandle(pData->hMesh);
 
     if (bIsModel)

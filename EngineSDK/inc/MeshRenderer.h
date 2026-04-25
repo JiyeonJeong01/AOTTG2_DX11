@@ -26,7 +26,7 @@ typedef struct ENGINE_DLL tagMeshRendererData final
 {
     OBJECT_HANDLE       hObject{};
     _bool               bEnable = false;
-
+    SHADOW_TYPE         eShadowType = SHADOW_TYPE::STATIC;
     COMPONENT_HANDLE    hTransform = INVALID_HANDLE;
     COMPONENT_HANDLE    hAnimator = INVALID_HANDLE;
     COMPONENT_HANDLE    hSkinningSourceAnimator = INVALID_HANDLE;

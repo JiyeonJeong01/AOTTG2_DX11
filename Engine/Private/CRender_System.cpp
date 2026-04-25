@@ -24,6 +24,8 @@
 #include "Animator.h"
 #include "Font.h"
 #include "UIText.h"
+
+#include "Input_System.h"
 #pragma endregion
 
 IMPLEMENT_SINGLETON(CRender_System)
@@ -97,6 +99,13 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
         m_pMeshRenderer_Processor = SYS_COMPONENT.Bind_Processor<CMeshRenderer_Processor>();
         IF_NULL_RETURN_MSG_BREAK(m_pMeshRenderer_Processor, E_FAIL, "Animator processor bind failed");
     }
+
+    m_iShadowWidth = 1920;
+    m_iShadowHeight = 1080;
+    IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Ready_ShadowRenderTargets(m_iShadowWidth, m_iShadowHeight),
+        E_FAIL, "Shadow render targets create failed");
+
+    Update_ShadowLightMatrix();
 
     m_upRenderContext = CRender_Context::Create(iWidth, iHeight);
     return S_OK;
@@ -349,6 +358,9 @@ void CRender_System::Execute_RenderQueue()
     Apply_Pass_State_Priority();
     Execute_Pass(RENDER_LAYER::PRIORITY);
 
+    Render_StaticShadow();
+    Render_DynamicShadow();
+
     Apply_Pass_State_NonBlend();
     Render_GBuffer();
 
@@ -531,14 +543,23 @@ void CRender_System::Render_CombinedPass()
     ID3D11ShaderResourceView* pDiffuseSRV = nullptr;
     ID3D11ShaderResourceView* pLightSRV = nullptr;
     ID3D11ShaderResourceView* pSpecularSRV = nullptr;
+    ID3D11ShaderResourceView* pDepthSRV = nullptr;
+    ID3D11ShaderResourceView* pStaticLightDepthSRV = nullptr;
+    ID3D11ShaderResourceView* pDynamicLightDepthSRV = nullptr;
 
     SYS_CORE.Share_DiffuseSRV(&pDiffuseSRV);
     SYS_CORE.Share_LightSRV(&pLightSRV);
     SYS_CORE.Share_SpecularSRV(&pSpecularSRV);
+    SYS_CORE.Share_DepthSRV(&pDepthSRV);
+    SYS_CORE.Share_StaticLightDepthSRV(&pStaticLightDepthSRV);
+    SYS_CORE.Share_DynamicLightDepthSRV(&pDynamicLightDepthSRV);
 
     if (!pDiffuseSRV) return;
     if (!pLightSRV) return;
     if (!pSpecularSRV) return;
+    if (!pDepthSRV) return;
+    if (!pStaticLightDepthSRV) return;
+    if (!pDynamicLightDepthSRV) return;
 
     auto* pVarWorld = pShader->Get_VarCached("g_WorldMatrix");
     auto* pVarView = pShader->Get_VarCached("g_ViewMatrix");
@@ -547,12 +568,35 @@ void CRender_System::Render_CombinedPass()
     auto* pVarShadeTex = pShader->Get_VarCached("g_ShadeTexture");
     auto* pVarSpecularTex = pShader->Get_VarCached("g_SpecularTexture");
 
+    auto* pVarViewInv = pShader->Get_VarCached("g_ViewMatrixInverse");
+    auto* pVarProjInv = pShader->Get_VarCached("g_ProjMatrixInverse");
+
+    auto* pVarLightView = pShader->Get_VarCached("g_LightViewMatrix");
+    auto* pVarLightProj = pShader->Get_VarCached("g_LightProjMatrix");
+
+    auto* pVarDepthTex = pShader->Get_VarCached("g_DepthTexture");
+    auto* pVarStaticLightDepthTex = pShader->Get_VarCached("g_StaticLightDepthTexture");
+    auto* pVarDynamicLightDepthTex = pShader->Get_VarCached("g_DynamicLightDepthTexture");
+
+    auto* pVarShadowFar = pShader->Get_VarCached("g_fShadowFar");
+    auto* pVarCamPosition = pShader->Get_VarCached("g_vCamPosition");
+
     IF_NULL_RETURN_MSG_BREAK(pVarWorld, , "g_WorldMatrix not found.");
     IF_NULL_RETURN_MSG_BREAK(pVarView, , "g_ViewMatrix not found.");
     IF_NULL_RETURN_MSG_BREAK(pVarProj, , "g_ProjMatrix not found.");
     IF_NULL_RETURN_MSG_BREAK(pVarDiffuseTex, , "g_DiffuseTexture not found.");
     IF_NULL_RETURN_MSG_BREAK(pVarShadeTex, , "g_ShadeTexture not found.");
     IF_NULL_RETURN_MSG_BREAK(pVarSpecularTex, , "g_SpecularTexture not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarViewInv, , "g_ViewMatrixInverse not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarProjInv, , "g_ProjMatrixInverse not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarLightView, , "g_LightViewMatrix not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarLightProj, , "g_LightProjMatrix not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarDepthTex, , "g_DepthTexture not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarStaticLightDepthTex, , "g_StaticLightDepthTexture not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarDynamicLightDepthTex, , "g_DynamicLightDepthTexture not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarShadowFar, , "g_fShadowFar not found.");
+    IF_NULL_RETURN_MSG_BREAK(pVarCamPosition, , "g_vCamPosition not found.");
+
 
     const UI_VIEWPORT_RECT& vp = m_upRenderContext->Get_UI_Global().tSceneView;
 
@@ -567,6 +611,25 @@ void CRender_System::Render_CombinedPass()
     pVarDiffuseTex->AsShaderResource()->SetResource(pDiffuseSRV);
     pVarShadeTex->AsShaderResource()->SetResource(pLightSRV);
     pVarSpecularTex->AsShaderResource()->SetResource(pSpecularSRV);
+
+    const _float4x4& matViewInv = m_upRenderContext->Get_ViewInv();
+    const _float4x4& matProjInv = m_upRenderContext->Get_ProjInv();
+
+    const _float3& vCamPos3 = m_upRenderContext->Get_CamPosition();
+    _float4 vCamPosition = { vCamPos3.x, vCamPos3.y, vCamPos3.z, 1.f };
+
+    pVarViewInv->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&matViewInv));
+    pVarProjInv->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&matProjInv));
+
+    pVarLightView->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&m_matLightView));
+    pVarLightProj->AsMatrix()->SetMatrix(reinterpret_cast<const float*>(&m_matLightProj));
+
+    pVarDepthTex->AsShaderResource()->SetResource(pDepthSRV);
+    pVarStaticLightDepthTex->AsShaderResource()->SetResource(pStaticLightDepthSRV);
+    pVarDynamicLightDepthTex->AsShaderResource()->SetResource(pDynamicLightDepthSRV);
+
+    pVarShadowFar->AsScalar()->SetFloat(m_fShadowFar);
+    pVarCamPosition->AsVector()->SetFloatVector(reinterpret_cast<const float*>(&vCamPosition));
 
     ID3D11InputLayout* pIL = pShader->pPasses[passIndex].pInputLayout.Get();
     m_pContext->IASetInputLayout(pIL);
@@ -885,8 +948,20 @@ void CRender_System::Execute_Draw_Mesh(const DRAW_CMD& cmd)
 
     if (!SYS_RESOURCE.Is_ModelHandle(cmd.mesh.hMesh))
     {
-        Execute_Draw_Mesh_Inner(cmd.mesh.hMesh, cmd.mesh.hMaterial, cmd.mesh.hTransform, cmd.mesh.hAnimator, cmd.mesh.hPerObjectParams,
-            cmd.mesh.firstIndex, cmd.mesh.indexCount, cmd.mesh.pSkinningMatrices, cmd.mesh.matAttach, cmd.mesh.eMode);
+
+        Execute_Draw_Mesh_Inner(
+            cmd.mesh.hMesh,
+            cmd.mesh.hMaterial,
+            cmd.mesh.hTransform,
+            cmd.mesh.hAnimator,
+            cmd.mesh.hPerObjectParams,
+            cmd.mesh.firstIndex,
+            cmd.mesh.indexCount,
+            cmd.mesh.pSkinningMatrices,
+            cmd.mesh.matAttach,
+            cmd.mesh.eMode,
+            cmd.mesh.iForcedPassIndex,
+            cmd.mesh.eShadowType);
         return;
     }
 
@@ -949,7 +1024,9 @@ void CRender_System::Execute_Draw_Mesh(const DRAW_CMD& cmd)
             part.iIndexCount,
             cmd.mesh.pSkinningMatrices,
             cmd.mesh.matAttach,
-            cmd.mesh.eMode);
+            cmd.mesh.eMode,
+            cmd.mesh.iForcedPassIndex,
+            cmd.mesh.eShadowType);
     }
 }
 
@@ -1344,11 +1421,32 @@ void CRender_System::Execute_Draw_SpriteEffect(const DRAW_CMD& tCmd)
     pMesh->Draw(m_pContext, 0, 6);
 }
 
-void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, COMPONENT_HANDLE hAnimator,
-                                             uint32_t hPerObjectParams, uint32_t iFirstIdx, uint32_t iNumIdx, const std::vector<_float4x4>* pSkinningMatrices, const _float4x4& matAttach, MESH_MODE eMode)
+void CRender_System::Execute_Draw_Mesh_Inner(
+    uint32_t hMesh,
+    uint32_t hMaterial,
+    COMPONENT_HANDLE hComponent,
+    COMPONENT_HANDLE hAnimator,
+    uint32_t hPerObjectParams,
+    uint32_t iFirstIdx,
+    uint32_t iNumIdx,
+    const std::vector<_float4x4>* pSkinningMatrices,
+    const _float4x4& matAttach,
+    MESH_MODE eMode,
+    uint16_t iForcedPassIndex,
+    SHADOW_TYPE eShadowType)
 {
     /* 메쉬 + 머테리얼 + 셰이더 리소스 가져오기 */
     const MESH_ENTRY* pMesh = SYS_RESOURCE.Get_Mesh(hMesh);
+
+    //if (!pMesh)
+    //{
+    //    CTransform tr =  m_pTransform_Processor->Get_Proxy(COMPONENT_TYPE::TRANSFORM, hComponent);
+    //    CGameObject* go = SYS_GAMEOBJECT.Get_Wrapper(tr->hObject);
+    //    if (!go)
+    //        return;
+    //}
+    if (!pMesh)
+        return;
     IF_NULL_RETURN_MSG_BREAK(pMesh, , "Mesh is nullptr.");
 
     MATERIAL_ENTRY* pMat = SYS_RESOURCE.Get_Material(hMaterial);
@@ -1358,7 +1456,10 @@ void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial,
     SHADER_ENTRY* pShader = SYS_RESOURCE.Get_Shader(pMat->hShader);
     IF_NULL_RETURN_MSG_BREAK(pShader, , "Shader is nullptr.");
 
-    const uint16_t passIndex = pMat->passIndex;
+    const uint16_t passIndex = (iForcedPassIndex != 0xffff) ? iForcedPassIndex : pMat->passIndex;
+    if (passIndex == 2)
+        DEBUG_POINT;
+
     if (passIndex >= pShader->pPasses.size())
         return;
 
@@ -1378,8 +1479,16 @@ void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial,
         matWorld = Engine::Math::Load(tr->matWorld);
 
     pMat->pWorld->SetMatrix(reinterpret_cast<const float*>(&matWorld));
-    pMat->pView->SetMatrix(reinterpret_cast<const float*>(&m_matView));     /* TODO : 렌더링 최적화 !! 프레임 당 한 번으로 수정 */
-    pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&m_matProj));     /* TODO : 렌더링 최적화 !! 프레임 당 한 번으로 수정 */
+    if (eShadowType != SHADOW_TYPE::NONE)
+    {
+        pMat->pView->SetMatrix(reinterpret_cast<const float*>(&m_matLightView));
+        pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&m_matLightProj));
+    }
+    else
+    {
+        pMat->pView->SetMatrix(reinterpret_cast<const float*>(&m_matView));
+        pMat->pProj->SetMatrix(reinterpret_cast<const float*>(&m_matProj));
+    }
 
     if (pMat->pBaseColor)
         pMat->pBaseColor->SetFloatVector(reinterpret_cast<const float*>(&pMat->baseColor));
@@ -1446,7 +1555,6 @@ void CRender_System::Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial,
         }
     }
 
-    /* 사용자가 정의한 셰이더 변수 적용 */
     if (hPerObjectParams != INVALID_HANDLE_UINT)
     {
         PER_OBJECT_PARAM_BLOCK* pBlk = SYS_RESOURCE.Get_PerObjectParamBlock(hPerObjectParams);
@@ -1568,6 +1676,68 @@ void CRender_System::Apply_Block_To_Shader(SHADER_ENTRY* pShader, const NAME_VAL
     }
 }
 
+void CRender_System::Update_ShadowLightMatrix()
+{
+    m_fShadowFar = 1000.f;
+
+    _float4 vEye = { 100.f, 200.f, -200.f, 1.f };
+    _float4 vAt = { 0.f, 0.f, 0.f, 1.f };
+
+    _matrix matView = XMMatrixLookAtLH(
+        XMLoadFloat4(&vEye),
+        XMLoadFloat4(&vAt),
+        XMVectorSet(0.f, 1.f, 0.f, 0.f));
+
+    _matrix matProj = XMMatrixPerspectiveFovLH(
+        XMConvertToRadians(60.f),
+        static_cast<_float>(m_iShadowWidth) / static_cast<_float>(m_iShadowHeight),
+        0.1f,
+        m_fShadowFar);
+
+    XMStoreFloat4x4(&m_matLightView, matView);
+    XMStoreFloat4x4(&m_matLightProj, matProj);
+}
+
+void CRender_System::Apply_Pass_State_Shadow()
+{
+    Bind_BlendState_None();
+    Bind_DepthState_Default();
+    Bind_RasterizerState_Default();
+}
+
+void CRender_System::Render_StaticShadow()
+{
+    if (m_bStaticShadowRendered)
+        return;
+
+    const _float4 vClear = { 1.f, 1.f, 1.f, 1.f };
+
+    Apply_Pass_State_Shadow();
+
+    SYS_CORE.Bind_StaticShadowRTV();
+    SYS_CORE.Clear_StaticLightDepth_RTV(&vClear);
+    SYS_CORE.Clear_Shadow_DSV();
+
+    Execute_Pass(RENDER_LAYER::SHADOW_STATIC);
+
+    Unbind_PS_SRVs();
+}
+
+void CRender_System::Render_DynamicShadow()
+{
+    const _float4 vClear = { 1.f, 1.f, 1.f, 1.f };
+
+    Apply_Pass_State_Shadow();
+
+    SYS_CORE.Bind_DynamicShadowRTV();
+    SYS_CORE.Clear_DynamicLightDepth_RTV(&vClear);
+    SYS_CORE.Clear_Shadow_DSV();
+
+    Execute_Pass(RENDER_LAYER::SHADOW_DYNAMIC);
+
+    Unbind_PS_SRVs();
+}
+
 void CRender_System::Apply_Pass_State_Skybox()
 {
     Bind_BlendState_None();
@@ -1624,6 +1794,16 @@ void CRender_System::Apply_Pass_State_UI()
     Bind_BlendState_Alpha();
     Bind_DepthState_Disabled();
     Bind_RasterizerState_Default();
+}
+
+void CRender_System::Rendered_StaticShadow()
+{
+    m_bStaticShadowRendered = true;
+}
+
+_bool CRender_System::Should_DrawStaticShadow() const
+{
+    return m_bStaticShadowDraw;
 }
 
 void CRender_System::Bind_BlendState_None()

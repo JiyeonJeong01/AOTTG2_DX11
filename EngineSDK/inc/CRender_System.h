@@ -2,6 +2,7 @@
 
 #pragma once
 #include "Engine_Define.h"
+#include "Engine_Math.h"
 #include "PostProcess.h"
 #include "Render_Struct.h"
 #include "Shader.h"
@@ -46,6 +47,9 @@ private:
     void    Render_SpeedLinePass();
     void    Render_PostProcess();
     void    Render_PostProcessComposite();
+    void    Render_StaticShadow();
+    void    Render_DynamicShadow();
+
 
     void    Execute_RenderQueue();
     void    Execute_Pass(RENDER_LAYER layer);
@@ -57,8 +61,19 @@ private:
     void    Execute_Draw_Particle(const DRAW_CMD& tCmd);
     void    Execute_Draw_SpriteEffect(const DRAW_CMD& tCmd);
 
-    void    Execute_Draw_Mesh_Inner(uint32_t hMesh, uint32_t hMaterial, COMPONENT_HANDLE hComponent, COMPONENT_HANDLE hAnimator, uint32_t hPerObjectParams,
-        uint32_t iFirstIdx, uint32_t iNumIdx, const std::vector<_float4x4>* pSkinningMatrices, const _float4x4& matAttach, MESH_MODE eMode);
+    void Execute_Draw_Mesh_Inner(
+        uint32_t hMesh,
+        uint32_t hMaterial,
+        COMPONENT_HANDLE hComponent,
+        COMPONENT_HANDLE hAnimator,
+        uint32_t hPerObjectParams,
+        uint32_t iFirstIdx,
+        uint32_t iNumIdx,
+        const std::vector<_float4x4>* pSkinningMatrices,
+        const _float4x4& matAttach,
+        MESH_MODE eMode,
+        uint16_t iForcedPassIndex = 0xffff,
+        SHADOW_TYPE eShadowType = SHADOW_TYPE::NONE);
 
 
     void    Apply_Pass_State_Skybox();
@@ -67,6 +82,7 @@ private:
     void    Apply_Pass_State_Light();
     void    Apply_Pass_State_Combined();
     void    Apply_Pass_State_PostProcess();
+    void    Apply_Pass_State_Shadow();
     void    Apply_Pass_State_Blend();
     void    Apply_Pass_State_UI();
 
@@ -83,6 +99,7 @@ private:
     void    Bind_RasterizerState_CullNone();
 
     void    Unbind_PS_SRVs();
+    void    Update_ShadowLightMatrix();
 
 private:
     /* COM 객체*/
@@ -140,9 +157,24 @@ private:
 private:
     POST_PROCESS_DESC                               m_tPostProcessDesc{};
     SPEED_LINE_DESC                                 m_tPendingSpeedLine{};
+
+    _float4x4   m_matLightView = Math::Identity();
+    _float4x4   m_matLightProj = Math::Identity();
+
+    _uint       m_iShadowWidth = 4096;
+    _uint       m_iShadowHeight = 4096;
+
+    _float      m_fShadowFar = 1000.f;
+
+    _bool m_bStaticShadowRendered = false;
+    _bool m_bStaticShadowDraw = true;
+    _uint m_iStaticShadowFrame = 0;
+
 public:
     void Set_PostProcessDesc(const POST_PROCESS_DESC& tPostProcessDesc);
     const POST_PROCESS_DESC& Get_PostProcessDesc() const;
+    void    Rendered_StaticShadow();
+    _bool   Should_DrawStaticShadow() const;
 };
 
 

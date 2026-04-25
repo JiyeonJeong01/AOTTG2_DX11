@@ -95,5 +95,18 @@ private:
 private :
     void        Update_RuntimeEngine(_float fDT, CScene* pScene);
 
+public :
+    HRESULT Ready_ShadowRenderTargets(_uint iWidth, _uint iHeight);
+
+    void Bind_StaticShadowRTV();
+    void Bind_DynamicShadowRTV();
+
+    HRESULT Clear_StaticLightDepth_RTV(const _float4* pClearColor);
+    HRESULT Clear_DynamicLightDepth_RTV(const _float4* pClearColor);
+    HRESULT Clear_Shadow_DSV();
+
+    void Share_StaticLightDepthSRV(ID3D11ShaderResourceView** ppSRV);
+    void Share_DynamicLightDepthSRV(ID3D11ShaderResourceView** ppSRV);
+
 };
 NS_END

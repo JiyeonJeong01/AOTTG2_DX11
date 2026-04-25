@@ -43,6 +43,17 @@ CGraphic_Device::~CGraphic_Device()
     Safe_Release(m_pPostProcessRTV);
     Safe_Release(m_pPostProcessTexture);
 
+    Safe_Release(m_pStaticLightDepthSRV);
+    Safe_Release(m_pStaticLightDepthRTV);
+    Safe_Release(m_pStaticLightDepthTexture);
+
+    Safe_Release(m_pDynamicLightDepthSRV);
+    Safe_Release(m_pDynamicLightDepthRTV);
+    Safe_Release(m_pDynamicLightDepthTexture);
+
+    Safe_Release(m_pShadowDSV);
+    Safe_Release(m_pShadowDepthStencilTexture);
+
 #if defined(DEBUG) || defined(_DEBUG)
     ID3D11Debug* d3dDebug;
     HRESULT hr = m_pDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3dDebug));
@@ -777,6 +788,160 @@ HRESULT CGraphic_Device::Clear_Specular_RTV(const _float4* pClearColor)
         return E_FAIL;
 
     m_pDeviceContext->ClearRenderTargetView(m_pSpecularRTV, reinterpret_cast<const _float*>(pClearColor));
+    return S_OK;
+}
+
+HRESULT CGraphic_Device::Ensure_ShadowRenderTargets(_uint iWidth, _uint iHeight)
+{
+    if (iWidth == 0 || iHeight == 0)
+        return E_FAIL;
+
+    if (m_iShadowW == iWidth && m_iShadowH == iHeight &&
+        m_pStaticLightDepthSRV && m_pDynamicLightDepthSRV && m_pShadowDSV)
+        return S_OK;
+
+    return Ready_ShadowRenderTargets(iWidth, iHeight);
+}
+
+HRESULT CGraphic_Device::Ready_ShadowRenderTargets(_uint iWidth, _uint iHeight)
+{
+    ID3D11Texture2D* pStaticTexture = nullptr;
+    ID3D11RenderTargetView* pStaticRTV = nullptr;
+    ID3D11ShaderResourceView* pStaticSRV = nullptr;
+
+    ID3D11Texture2D* pDynamicTexture = nullptr;
+    ID3D11RenderTargetView* pDynamicRTV = nullptr;
+    ID3D11ShaderResourceView* pDynamicSRV = nullptr;
+
+    ID3D11Texture2D* pShadowDSTexture = nullptr;
+    ID3D11DepthStencilView* pShadowDSV = nullptr;
+
+    if (FAILED(Create_RT_Texture(
+        m_pDevice,
+        iWidth,
+        iHeight,
+        DXGI_FORMAT_R32G32B32A32_FLOAT,
+        &pStaticTexture,
+        &pStaticRTV,
+        &pStaticSRV)))
+        return E_FAIL;
+
+    if (FAILED(Create_RT_Texture(
+        m_pDevice,
+        iWidth,
+        iHeight,
+        DXGI_FORMAT_R32G32B32A32_FLOAT,
+        &pDynamicTexture,
+        &pDynamicRTV,
+        &pDynamicSRV)))
+    {
+        Safe_Release(pStaticSRV);
+        Safe_Release(pStaticRTV);
+        Safe_Release(pStaticTexture);
+        return E_FAIL;
+    }
+
+    D3D11_TEXTURE2D_DESC dsDesc{};
+    dsDesc.Width = iWidth;
+    dsDesc.Height = iHeight;
+    dsDesc.MipLevels = 1;
+    dsDesc.ArraySize = 1;
+    dsDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    dsDesc.SampleDesc.Count = 1;
+    dsDesc.SampleDesc.Quality = 0;
+    dsDesc.Usage = D3D11_USAGE_DEFAULT;
+    dsDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+    if (FAILED(m_pDevice->CreateTexture2D(&dsDesc, nullptr, &pShadowDSTexture)))
+    {
+        Safe_Release(pDynamicSRV);
+        Safe_Release(pDynamicRTV);
+        Safe_Release(pDynamicTexture);
+
+        Safe_Release(pStaticSRV);
+        Safe_Release(pStaticRTV);
+        Safe_Release(pStaticTexture);
+        return E_FAIL;
+    }
+
+    if (FAILED(m_pDevice->CreateDepthStencilView(pShadowDSTexture, nullptr, &pShadowDSV)))
+    {
+        Safe_Release(pShadowDSTexture);
+
+        Safe_Release(pDynamicSRV);
+        Safe_Release(pDynamicRTV);
+        Safe_Release(pDynamicTexture);
+
+        Safe_Release(pStaticSRV);
+        Safe_Release(pStaticRTV);
+        Safe_Release(pStaticTexture);
+        return E_FAIL;
+    }
+
+    Safe_Release(m_pStaticLightDepthSRV);
+    Safe_Release(m_pStaticLightDepthRTV);
+    Safe_Release(m_pStaticLightDepthTexture);
+
+    Safe_Release(m_pDynamicLightDepthSRV);
+    Safe_Release(m_pDynamicLightDepthRTV);
+    Safe_Release(m_pDynamicLightDepthTexture);
+
+    Safe_Release(m_pShadowDSV);
+    Safe_Release(m_pShadowDepthStencilTexture);
+
+    m_pStaticLightDepthTexture = pStaticTexture;
+    m_pStaticLightDepthRTV = pStaticRTV;
+    m_pStaticLightDepthSRV = pStaticSRV;
+
+    m_pDynamicLightDepthTexture = pDynamicTexture;
+    m_pDynamicLightDepthRTV = pDynamicRTV;
+    m_pDynamicLightDepthSRV = pDynamicSRV;
+
+    m_pShadowDepthStencilTexture = pShadowDSTexture;
+    m_pShadowDSV = pShadowDSV;
+
+    m_iShadowW = iWidth;
+    m_iShadowH = iHeight;
+
+    return S_OK;
+}
+
+void CGraphic_Device::Bind_StaticShadowRTV()
+{
+    m_pDeviceContext->OMSetRenderTargets(1, &m_pStaticLightDepthRTV, m_pShadowDSV);
+    Set_Viewport(m_iShadowW, m_iShadowH);
+}
+
+void CGraphic_Device::Bind_DynamicShadowRTV()
+{
+    m_pDeviceContext->OMSetRenderTargets(1, &m_pDynamicLightDepthRTV, m_pShadowDSV);
+    Set_Viewport(m_iShadowW, m_iShadowH);
+}
+
+HRESULT CGraphic_Device::Clear_StaticLightDepth_RTV(const _float4* pClearColor)
+{
+    if (!m_pDeviceContext || !m_pStaticLightDepthRTV)
+        return E_FAIL;
+
+    m_pDeviceContext->ClearRenderTargetView(m_pStaticLightDepthRTV, reinterpret_cast<const _float*>(pClearColor));
+    return S_OK;
+}
+
+HRESULT CGraphic_Device::Clear_DynamicLightDepth_RTV(const _float4* pClearColor)
+{
+    if (!m_pDeviceContext || !m_pDynamicLightDepthRTV)
+        return E_FAIL;
+
+    m_pDeviceContext->ClearRenderTargetView(m_pDynamicLightDepthRTV, reinterpret_cast<const _float*>(pClearColor));
+    return S_OK;
+}
+
+HRESULT CGraphic_Device::Clear_Shadow_DSV()
+{
+    if (!m_pDeviceContext || !m_pShadowDSV)
+        return E_FAIL;
+
+    m_pDeviceContext->ClearDepthStencilView(m_pShadowDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
     return S_OK;
 }
 

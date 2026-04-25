@@ -29,6 +29,8 @@ public:
     void    Bind_GBufferRTV();
     void    Bind_LightRTV();
     void    Bind_PostProcessRTV();
+    void    Bind_StaticShadowRTV();
+    void    Bind_DynamicShadowRTV();
 
     void    Bind_SceneSRV(_uint iSlot);
     void    Unbind_PS_SRV(_uint iSlot);
@@ -39,7 +41,8 @@ public:
 
     HRESULT Ensure_SceneRenderTarget(_uint w, _uint h); // 새로
     void    Set_Viewport(_uint w, _uint h);            // 새로
-
+    HRESULT Ensure_ShadowRenderTargets(_uint iWidth, _uint iHeight);
+    HRESULT Ready_ShadowRenderTargets(_uint iWidth, _uint iHeight);
 public:
     HRESULT Ready_DeferredRenderTargets(_uint iWidth, _uint iHeight);
     HRESULT Ensure_DeferredRenderTargets(_uint iWidth, _uint iHeight);
@@ -51,6 +54,11 @@ public:
     HRESULT Clear_Specular_RTV(const _float4* pClearColor);
     HRESULT Clear_PostProcess_RTV(const _float4* pClearColor);
 
+
+    HRESULT Clear_StaticLightDepth_RTV(const _float4* pClearColor);
+    HRESULT Clear_DynamicLightDepth_RTV(const _float4* pClearColor);
+    HRESULT Clear_Shadow_DSV();
+
 public:
     ID3D11ShaderResourceView* Get_DiffuseSRV() const { return m_pDiffuseSRV; }
     ID3D11ShaderResourceView* Get_NormalSRV() const { return m_pNormalSRV; }
@@ -58,7 +66,8 @@ public:
     ID3D11ShaderResourceView* Get_LightSRV() const { return m_pLightSRV; }
     ID3D11ShaderResourceView* Get_SpecularSRV() const { return m_pSpecularSRV; }
     ID3D11ShaderResourceView* Get_PostProcessSRV() const { return m_pPostProcessSRV; }
-
+    ID3D11ShaderResourceView* Get_StaticLightDepthSRV() const { return m_pStaticLightDepthSRV; }
+    ID3D11ShaderResourceView* Get_DynamicLightDepthSRV() const { return m_pDynamicLightDepthSRV; }
 
 private:
 	HRESULT Ready_SwapChain(HWND hWnd, WINMODE isWindowed, _uint iWinCX, _uint iWinCY);
@@ -122,6 +131,20 @@ private:
     ID3D11Texture2D* m_pPostProcessTexture = nullptr;
     ID3D11RenderTargetView* m_pPostProcessRTV = nullptr;
     ID3D11ShaderResourceView* m_pPostProcessSRV = nullptr;
+
+    ID3D11Texture2D* m_pStaticLightDepthTexture = nullptr;
+    ID3D11RenderTargetView* m_pStaticLightDepthRTV = nullptr;
+    ID3D11ShaderResourceView* m_pStaticLightDepthSRV = nullptr;
+
+    ID3D11Texture2D* m_pDynamicLightDepthTexture = nullptr;
+    ID3D11RenderTargetView* m_pDynamicLightDepthRTV = nullptr;
+    ID3D11ShaderResourceView* m_pDynamicLightDepthSRV = nullptr;
+
+    ID3D11Texture2D* m_pShadowDepthStencilTexture = nullptr;
+    ID3D11DepthStencilView* m_pShadowDSV = nullptr;
+
+    _uint                       m_iShadowW = 0;
+    _uint                       m_iShadowH = 0;
 
 public:
 	static std::unique_ptr<CGraphic_Device> Create(_In_ HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY, _Out_ ID3D11Device** ppDevice, _Out_ ID3D11DeviceContext** ppDeviceContextOut);

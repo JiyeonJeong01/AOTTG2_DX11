@@ -31,7 +31,7 @@ namespace Engine
 
     /* --- Render --- */
     enum class DRAW_TYPE    : uint8_t           { MESH = 0, CANVAS, LINE, TEXT, SPRITE_EFFECT };
-    enum class RENDER_LAYER : uint8_t           { PRIORITY = 0, NONBLEND, BLEND, UI, SKY, END };
+    enum class RENDER_LAYER : uint8_t           { PRIORITY = 0, NONBLEND, BLEND, UI, SKY, SHADOW_STATIC, SHADOW_DYNAMIC, END };
     enum RENDER_FLAGS : uint32_t                { RF_NONE = 0, RF_CAST_SHADOW = 1 << 0, RF_RECEIVE_SHADOW = 1 << 1, RF_DISABLE_CULL = 1 << 2, };
     enum CANVAS_FLAGS : uint32_t                { CF_NONE = 0, CF_CLIP_RECT = 1u << 0, CF_PIXEL_SNAP = 1u << 1, };
     enum class VERTEX_DECL : uint8_t            { VTXCOL = 0, VTXTEX = 1, VTXNORTEX = 2, VTXMESH = 3, VTXANIMMESH = 4, VTXCUBE = 5, VTXPOS = 6, VTXPARTICLEPOINT = 7, VTXTRAIL = 8, END };
@@ -41,7 +41,7 @@ namespace Engine
     enum class DEBUG_DRAW : uint8_t             { NONE = 0, ALL, SELECT, ALL_GRID, SELECT_GRID, ALL_NAV, SELECT_NAV, NAV };
     enum class PARTICLE_SIMULATION : uint8_t    { NONE = 0, DROP, SPREAD, SLIDE, DRIFT, DUST, END };
     enum class LINE_TYPE : uint8_t              { NORMAL, TRAIL, END };
-
+    enum class SHADOW_TYPE : uint8_t            { NONE, STATIC, DYNAMIC };
 
     /* --- Physics --- */
 	enum class SHAPE : uint8_t                  { BOX, SPHERE, PLANE, CAPSULE, END };

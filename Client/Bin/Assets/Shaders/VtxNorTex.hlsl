@@ -120,6 +120,24 @@ PS_OUT PS_TEX(PS_TEXIN In)
     return Out;
 }
 
+struct PS_OUT_SHADOW
+{
+    vector vLightDepth : SV_TARGET0;
+};
+
+PS_OUT_SHADOW PS_Shadow(PS_IN In)
+{
+    PS_OUT_SHADOW Out;
+
+    Out.vLightDepth = vector(
+        In.vProjPos.z / In.vProjPos.w,
+        In.vProjPos.w / 1000.f,
+        0.f,
+        1.f);
+
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass
@@ -127,14 +145,16 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN();
     }
-    pass TerrainPass
-    {
-        VertexShader = compile vs_5_0 VS_MAIN();
-        PixelShader = compile ps_5_0 PS_MAIN();
-    }
+
     pass WaterPass
     {
         VertexShader = compile vs_5_0 VS_TEX();
         PixelShader = compile ps_5_0 PS_TEX();
+    }
+
+        pass TerrainPass
+    {
+        VertexShader = compile vs_5_0 VS_MAIN();
+        PixelShader = compile ps_5_0 PS_Shadow();
     }
 }

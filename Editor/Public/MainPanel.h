@@ -67,6 +67,8 @@ private:
     _bool m_bForceSceneView = false;
 
     EDITOR_PICK_MODE        m_ePickMode = EDITOR_PICK_MODE::NORMAL;
+
+    std::unordered_map<std::string, bool> m_umPanelActive{};
 private:
     std::string m_strCameraPreview = "";
 

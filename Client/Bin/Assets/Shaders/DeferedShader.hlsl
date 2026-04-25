@@ -1,5 +1,9 @@
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 float4x4 g_ViewMatrixInverse, g_ProjMatrixInverse;
+float4x4 g_LightViewMatrix;
+float4x4 g_LightProjMatrix;
+
+float g_fShadowFar = 1000.f;
 
 texture2D g_BaseMap;
 texture2D g_NormalTexture;
@@ -7,6 +11,8 @@ texture2D g_DiffuseTexture;
 texture2D g_ShadeTexture;
 texture2D g_SpecularTexture;
 Texture2D g_DepthTexture;
+Texture2D g_StaticLightDepthTexture;
+Texture2D g_DynamicLightDepthTexture;
 
 vector g_vLightDir = float4(1.f, -1.f, 1.f, 0.f);
 vector g_vLightPos = float4(0.f, 0.f, 0.f, 1.f);
@@ -33,6 +39,13 @@ sampler DefaultSampler = sampler_state
     Filter = MIN_MAG_MIP_LINEAR;
     AddressU = wrap;
     AddressV = wrap;
+};
+
+sampler ShadowSampler = sampler_state
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Clamp;
+    AddressV = Clamp;
 };
 
 struct VS_IN
@@ -109,6 +122,94 @@ float4 Reconstruct_WorldPos(float2 vTexcoord)
     return vPos;
 }
 
+float Sample_StaticShadowPCF(float2 vShadowUV, float fCurLightZ, float fBias)
+{
+    float2 vTexelSize = float2(1.f / 8192.f, 1.f / 4608.f);
+
+    float fResult = 0.f;
+
+    [unroll]
+    for (int y = -1; y <= 1; ++y)
+    {
+        [unroll]
+        for (int x = -1; x <= 1; ++x)
+        {
+            float2 vUV = vShadowUV + float2(x, y) * vTexelSize;
+
+            if (vUV.x < 0.f || vUV.x > 1.f ||
+                vUV.y < 0.f || vUV.y > 1.f)
+            {
+                fResult += 1.f;
+                continue;
+            }
+
+            float fOldStaticLightZ =
+                g_StaticLightDepthTexture.Sample(ShadowSampler, vUV).y * 1000.f;
+
+            fResult += (fOldStaticLightZ + fBias < fCurLightZ) ? 0.45f : 1.f;
+        }
+    }
+
+    return fResult / 9.f;
+}
+
+float Sample_DynamicShadowPCF(float2 vShadowUV, float fCurLightZ, float fBias)
+{
+    float2 vTexelSize = float2(1.f / 8192.f, 1.f / 4608.f);
+
+    float fResult = 0.f;
+
+    [unroll]
+    for (int y = -1; y <= 1; ++y)
+    {
+        [unroll]
+        for (int x = -1; x <= 1; ++x)
+        {
+            float2 vUV = vShadowUV + float2(x, y) * vTexelSize;
+
+            if (vUV.x < 0.f || vUV.x > 1.f ||
+                vUV.y < 0.f || vUV.y > 1.f)
+            {
+                fResult += 1.f;
+                continue;
+            }
+
+            float fOldDynamicLightZ =
+                g_DynamicLightDepthTexture.Sample(ShadowSampler, vUV).y * 1000.f;
+
+            fResult += (fOldDynamicLightZ + fBias < fCurLightZ) ? 0.55f : 1.f;
+        }
+    }
+
+    return fResult / 9.f;
+}
+
+void Calc_ShadowSplit(float4 vWorldPos, float2 vScreenUV, out float fStaticShadow, out float fDynamicShadow)
+{
+    fStaticShadow = 1.f;
+    fDynamicShadow = 1.f;
+
+    float4 vLightPos = mul(vWorldPos, g_LightViewMatrix);
+    vLightPos = mul(vLightPos, g_LightProjMatrix);
+
+    float2 vShadowUV;
+    vShadowUV.x = (vLightPos.x / vLightPos.w) * 0.5f + 0.5f;
+    vShadowUV.y = (vLightPos.y / vLightPos.w) * -0.5f + 0.5f;
+
+    if (vShadowUV.x < 0.f || vShadowUV.x > 1.f ||
+        vShadowUV.y < 0.f || vShadowUV.y > 1.f)
+        return;
+
+    float3 vNormal = Decode_Normal(vScreenUV);
+    float3 vLightDir = normalize(-g_vLightDir.xyz);
+    float fNdotL = saturate(dot(vNormal, vLightDir));
+
+    float fBias = lerp(0.3f, 0.1f, fNdotL);
+
+    fStaticShadow = Sample_StaticShadowPCF(vShadowUV, vLightPos.w, fBias);
+    fDynamicShadow = Sample_DynamicShadowPCF(vShadowUV, vLightPos.w, fBias);
+}
+
 PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 {
     PS_OUT_LIGHT Out;
@@ -181,34 +282,70 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
 
     float4 vColor = float4(vDiffuse.rgb * vShade.rgb + vSpecular.rgb, vDiffuse.a);
 
-    if (g_vFogParams.w > 0.5f) // x=start, y=end, z=density, w=enable
-    {
-        float4 vWorldPos = Reconstruct_WorldPos(In.vTexcoord);
+    float4 vWorldPos = Reconstruct_WorldPos(In.vTexcoord);
 
-        float fFogDist = length(g_vCamPosition.xyz - vWorldPos.xyz);
+    float fStaticShadow = 1.f;
+    float fDynamicShadow = 1.f;
 
-        /* start~end 구간 마스크 */
-        float fDistMask = smoothstep(g_vFogParams.x, g_vFogParams.y, fFogDist);
+    Calc_ShadowSplit(vWorldPos, In.vTexcoord, fStaticShadow, fDynamicShadow);
 
-        /* exp2 fog */
-        float fFogFactor = 1.f - exp2(-pow(fFogDist * g_vFogParams.z, 2.f));
+    /* Static shadow는 벽/건물/바닥 전부 받음 */
+    vColor.rgb *= fStaticShadow;
 
-        /* 낮은 높이에서만 안개, 너무 빡세지 않게 */
-        float fHeightMask = 1.f - smoothstep(5.f, 25.f, vWorldPos.y);
+    /* Dynamic shadow는 바닥 근처에서만 받음 */
+    float fGroundY = 1.f;
+    float fGroundMask = 1.f - smoothstep(2.f, 4.f, abs(vWorldPos.y - fGroundY));
 
-        fFogFactor *= fDistMask;
-        fFogFactor *= fHeightMask;
+    vColor.rgb *= lerp(1.f, fDynamicShadow, fGroundMask);
 
-        /* 너무 하얗게 덮이지 않게 최대치 제한 */
-        fFogFactor = saturate(fFogFactor);
-        fFogFactor = min(fFogFactor, 0.65f);
+    // if (g_vFogParams.w > 0.5f) // x=start, y=end, z=density, w=enable
+    // {
+    //     float fFogDist = length(g_vCamPosition.xyz - vWorldPos.xyz);
 
-        vColor.rgb = lerp(vColor.rgb, g_vFogColor.rgb, fFogFactor);
-    }
+    //     /* start~end 구간 마스크 */
+    //     float fDistMask = smoothstep(g_vFogParams.x, g_vFogParams.y, fFogDist);
+
+    //     /* exp2 fog */
+    //     float fFogFactor = 1.f - exp2(-pow(fFogDist * g_vFogParams.z, 2.f));
+
+    //     /* 낮은 높이에서만 안개, 너무 빡세지 않게 */
+    //     float fHeightMask = 1.f - smoothstep(5.f, 25.f, vWorldPos.y);
+
+    //     fFogFactor *= fDistMask;
+    //     fFogFactor *= fHeightMask;
+
+    //     /* 너무 하얗게 덮이지 않게 최대치 제한 */
+    //     fFogFactor = saturate(fFogFactor);
+    //     fFogFactor = min(fFogFactor, 0.65f);
+
+    //     vColor.rgb = lerp(vColor.rgb, g_vFogColor.rgb, fFogFactor);
+    // }
+
+    if (g_vFogParams.w > 0.5f)
+{
+    float3 vFogVec = g_vCamPosition.xyz - vWorldPos.xyz;
+    float fFogDistSq = dot(vFogVec, vFogVec);
+
+    float fStart = g_vFogParams.x;
+    float fEnd = g_vFogParams.y;
+
+    float fStartSq = fStart * fStart;
+    float fEndSq = fEnd * fEnd;
+
+    float fFogFactor = saturate((fFogDistSq - fStartSq) / max(fEndSq - fStartSq, 0.0001f));
+
+    float fHeightMask = saturate((25.f - vWorldPos.y) / 20.f);
+
+    fFogFactor *= fHeightMask;
+    fFogFactor = min(fFogFactor, 0.5f);
+
+    vColor.rgb = lerp(vColor.rgb, g_vFogColor.rgb, fFogFactor);
+}
 
     Out.vColor = vColor;
     return Out;
 }
+
 
 technique11 DefaultTechnique
 {

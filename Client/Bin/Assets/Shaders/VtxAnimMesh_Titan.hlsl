@@ -92,11 +92,39 @@ PS_OUT PS_MAIN(PS_IN In)
     return Out;
 }
 
+struct PS_OUT_SHADOW
+{
+    vector vLightDepth : SV_TARGET0;
+};
+
+PS_OUT_SHADOW PS_Shadow(PS_IN In)
+{
+    PS_OUT_SHADOW Out;
+
+    Out.vLightDepth = vector(
+        In.vProjPos.z / In.vProjPos.w,
+        In.vProjPos.w / 1000.f,
+        0.f,
+        1.f);
+
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass
     {
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN();
+    }
+    pass Dummy
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS_MAIN()));
+        SetPixelShader(CompileShader(ps_5_0, PS_Shadow()));
+    }
+    pass ShadowPass
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS_MAIN()));
+        SetPixelShader(CompileShader(ps_5_0, PS_Shadow()));
     }
 }

@@ -233,6 +233,8 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
 
     std::vector<uint32_t> vecOverrideMaterials;
 
+    SHADOW_TYPE     eShadowType = SHADOW_TYPE::STATIC;
+
     std::unique_ptr<COMPONENT_SPEC_BASE> Clone() const override
     {
         return std::make_unique<tagMeshRendererSpec>(*this);
@@ -262,6 +264,7 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
         }
 
         j["ExtraPassFlags"] = extraPassFlags;
+        j["Shadow"] = eShadowType;
     }
 
     _bool FromJson(const json& j) override
@@ -294,6 +297,11 @@ typedef struct ENGINE_DLL tagMeshRendererSpec final : public COMPONENT_SPEC_BASE
         uint32_t modeValue = To<uint32_t>(eMode);
         if (Read_UInt(j, "Mode", modeValue))
             eMode = SCAST(MESH_MODE, modeValue);
+
+        eShadowType = SHADOW_TYPE::STATIC;
+        uint32_t shadowValue = To<uint32_t>(eShadowType);
+        if (Read_UInt(j, "Shadow", shadowValue))
+            eShadowType = SCAST(SHADOW_TYPE, shadowValue);
 
         strAttachBoneName.clear();
         auto it = j.find("AttachBoneName");

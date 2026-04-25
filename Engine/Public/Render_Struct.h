@@ -193,8 +193,6 @@ typedef struct ENGINE_DLL tagDrawCmd final
 
     RENDER_LAYER eLayer = RENDER_LAYER::NONBLEND;
     DRAW_TYPE kind = DRAW_TYPE::MESH;
-    uint8_t   pad0[7] = {}; // 8바이트 정렬(선택)
-
     union
     {
         struct
@@ -217,6 +215,9 @@ typedef struct ENGINE_DLL tagDrawCmd final
             _float4x4                       matAttach{};
 
             const MESH_RENDERER_DATA* pMeshRendererData = nullptr;
+
+            uint16_t        iForcedPassIndex = 0xffff;
+            SHADOW_TYPE     eShadowType = SHADOW_TYPE::NONE;
         } mesh;
 
         struct

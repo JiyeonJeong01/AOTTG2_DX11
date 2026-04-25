@@ -1,4 +1,5 @@
-﻿#include "MainPanel.h"
+﻿#pragma region HEADER
+#include "MainPanel.h"
 #include "Engine_Log.h"
 
 #include "Core_System.h"
@@ -17,6 +18,8 @@
 #include "Event_System.h"
 #include "magic_enum.hpp"
 #include "Input_System.h"
+#include "CRender_System.h"
+#pragma endregion
 
 NS_BEGIN(Editor)
     CMainPanel::CMainPanel(const std::string& strPanelName)
@@ -87,8 +90,12 @@ void CMainPanel::Update()
             _DEBUG_ERROR_BREAK("CMainPanel Update failed : panel is nullptr");
             continue;
         }
-        //if (pPanel->GetTitle() == PANEL_PROFILE || pPanel->GetTitle() == PANEL_SCENE)
-            pPanel->Update();
+
+        const auto iter = m_umPanelActive.find(pPanel->GetTitle());
+        if (iter != m_umPanelActive.end() && !iter->second)
+            continue;
+
+        pPanel->Update();
     }
 }
 
@@ -99,6 +106,9 @@ void CMainPanel::Add_Panel(std::unique_ptr<Editor::CEditorPanel> pPanel)
         _DEBUG_WARN("Add_Panel failed : pPanel is nullptr");
         return;
     }
+
+    m_umPanelActive.emplace(pPanel->GetTitle(), true);
+
     m_panels.push_back(std::move(pPanel));
 }
 
@@ -508,6 +518,46 @@ void CMainPanel::Draw_Toolbar()
 
     ImGui::SameLine();
 
+    ImGui::SameLine();
+
+    ImGui::SetNextItemWidth(170.f);
+    if (ImGui::BeginCombo("##PanelActiveCombo", "Update / Render"))
+    {
+        for (const auto& upPanel : m_panels)
+        {
+            CEditorPanel* pPanel = upPanel.get();
+            if (!pPanel)
+                continue;
+
+            const std::string& strTitle = pPanel->GetTitle();
+
+            bool bActive = true;
+            auto iter = m_umPanelActive.find(strTitle);
+            if (iter != m_umPanelActive.end())
+                bActive = iter->second;
+            else
+                m_umPanelActive.emplace(strTitle, true);
+
+            ImGui::PushID(strTitle.c_str());
+
+            if (ImGui::Checkbox(strTitle.c_str(), &bActive))
+            {
+                m_umPanelActive[strTitle] = bActive;
+
+                if (!bActive)
+                    pPanel->SetOpen(false);
+                else
+                    pPanel->SetOpen(true);
+            }
+
+            ImGui::PopID();
+        }
+
+        ImGui::EndCombo();
+    }
+
+    ImGui::SameLine();
+
 
     /* Play / Pause / Step */
     {
@@ -518,6 +568,7 @@ void CMainPanel::Draw_Toolbar()
                 if (!m_bSceneStarted)
                 {
                     SYS_EDITOR.Play();
+                    SYS_RENDER.Rendered_StaticShadow();
                 }
                 m_bPlaying = true;
                 SYS_EDITOR.Toggle_DebugCamera(false);
@@ -674,10 +725,15 @@ void CMainPanel::Draw_Panels()
             _DEBUG_ERROR_BREAK("CMainPanel DrawPanels failed : panel is nullptr");
             continue;
         }
+
+        const auto iter = m_umPanelActive.find(pPanel->GetTitle());
+        if (iter != m_umPanelActive.end() && !iter->second)
+            continue;
+
         if (!pPanel->IsOpen())
             continue;
-        //if (pPanel->GetTitle() == PANEL_PROFILE || pPanel->GetTitle() == PANEL_SCENE)
-            pPanel->Render();
+
+        pPanel->Render();
     }
 }
 

@@ -80,6 +80,8 @@ private :
     std::vector<PARTICLE_RUNTIME>  m_vecParticleRuntime;
     std::vector<uint32_t>          m_vecFreeParticleRuntime;
 
+    _uint                           m_iCurFrame = 0;
+
 public:
     static std::unique_ptr<CMeshRenderer_Processor> Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 };

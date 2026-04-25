@@ -35,6 +35,8 @@ HRESULT CMeshRenderer_Processor::Initialize()
     m_hNonAnimOutlineMat = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::MATERIAL_OUTLINE);
     m_hAnimOutlineMat = SYS_RESOURCE.Load_Material(DEFAULT_ASSET_GUID::MATERIAL_OUTLINE_ANIM);
 
+    m_iCurFrame = 0;
+
     return S_OK;
 }
 
@@ -132,17 +134,6 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             if (pData->hMesh == INVALID_HANDLE_UINT)
                 continue;
 
-            if (bCanFrustumCull)
-            {
-                if (Is_Culled_Renderer_By_Frustum(pData))
-                {
-                    //++iCulledRendererCount;
-                    continue;
-                }
-            }
-
-            //++iDrawRendererCount;
-
             COMPONENT_HANDLE hReferenceAnimator = INVALID_HANDLE;
 
             if (pData->hAnimator.Is_Valid())
@@ -178,6 +169,40 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
                     tCmd.mesh.matAttach = pData->matFinalAttach;
             }
 
+            /*
+            * Shadow pass는 카메라 프러스텀 컬링보다 먼저 넣는다
+            * 카메라에는 안 보이는 오브젝트라도 라이트 기준에서는 그림자를 만들어야 할 수 있음.
+            */
+            if (pData->eShadowType != SHADOW_TYPE::NONE)
+            {
+                DRAW_CMD tShadowCmd = tCmd;
+
+                tShadowCmd.eLayer =
+                    (pData->eShadowType == SHADOW_TYPE::STATIC)
+                    ? RENDER_LAYER::SHADOW_STATIC
+                    : RENDER_LAYER::SHADOW_DYNAMIC;
+
+                tShadowCmd.mesh.eShadowType = pData->eShadowType;
+                tShadowCmd.mesh.iForcedPassIndex = 2; // DefaultPass=0, OutlinePass or dummy=1, ShadowPass=2
+
+                outCmds.push_back(tShadowCmd);
+            }
+
+            /*
+            * 여기부터는 일반 카메라 렌더링용 컬링
+            * 여기서 continue 되어도 위에서 shadow cmd는 이미 들어갔음.
+            */
+            if (bCanFrustumCull)
+            {
+                if (Is_Culled_Renderer_By_Frustum(pData))
+                {
+                    //++iCulledRendererCount;
+                    continue;
+                }
+            }
+
+            //++iDrawRendererCount;
+
             outCmds.push_back(tCmd);
 
             if ((pData->extraPassFlags & To<uint32_t>(EXTRA_RENDER_PASS::OUTLINE)) != 0)
@@ -212,6 +237,9 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             }
         }
     }
+
+    m_iCurFrame++;
+
     //LOG_INFO(
     //    "FrustumCull Total=%u, Draw=%u, Culled=%u, Particle=%u, Cmds=%u",
     //    iTotalRendererCount,
@@ -225,7 +253,6 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
 HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)
 {
     IF_TRUE_RETURN_MSG_BREAK(eComType != COMPONENT_TYPE::MESH_RENDERER, E_FAIL, "Wrong component type.");
-
     MESH_RENDERER_DATA* pData = m_Pool.Get_Data_By_Handle(handle);
     IF_NULL_RETURN_MSG_BREAK(pData, E_FAIL, "Invalid MeshRenderer handle in Initialize_From_Spec");
 
@@ -267,6 +294,7 @@ HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, C
     pData->vParticlePivot = pMeshSpec->vParticlePivot;
 
     pData->extraPassFlags = pMeshSpec->extraPassFlags;
+    pData->eShadowType = pMeshSpec->eShadowType;
 
     HRESULT hr = S_OK;
 
@@ -332,6 +360,7 @@ std::unique_ptr<COMPONENT_SPEC_BASE> CMeshRenderer_Processor::Build_Spec(COMPONE
 
     spec->vecOverrideMaterials = pData->vecOverrideMaterials;
     spec->extraPassFlags = pData->extraPassFlags;
+    spec->eShadowType = pData->eShadowType;
 
     return spec;
 }
@@ -1248,7 +1277,7 @@ _bool CMeshRenderer_Processor::Is_Culled_By_Frustum(const MESH_ENTRY* pMesh, COM
     /*
         일부 잘림/깜빡임 방지용 안전 패딩.
     */
-    const _float fPadding = 0.5f;
+    const _float fPadding = -0.1f;
 
     vExtent.x += fPadding;
     vExtent.y += fPadding;
@@ -1305,7 +1334,7 @@ _bool CMeshRenderer_Processor::Is_Culled_By_Frustum(const MESH_ENTRY* pMesh, COM
         if (fabsf(w) <= 0.0001f)
             return false;
 
-        const _float fBias = fabsf(w) * 0.15f;
+        const _float fBias = fabsf(w) * 0.02f;
 
         // 화면 안이라면 아래 조건 충족
         //  -w <= x <= w

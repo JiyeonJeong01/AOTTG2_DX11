@@ -456,4 +456,50 @@ void CCore_System::Update_RuntimeEngine(_float fDT, CScene* pScene)
     SYS_GAMEOBJECT.Flush_PendingDestroy();
 }
 
+HRESULT CCore_System::Ready_ShadowRenderTargets(_uint iWidth, _uint iHeight)
+{
+    return m_pGraphic_Device->Ensure_ShadowRenderTargets(iWidth, iHeight);
+}
+
+void CCore_System::Bind_StaticShadowRTV()
+{
+    m_pGraphic_Device->Bind_StaticShadowRTV();
+}
+
+void CCore_System::Bind_DynamicShadowRTV()
+{
+    m_pGraphic_Device->Bind_DynamicShadowRTV();
+}
+
+HRESULT CCore_System::Clear_StaticLightDepth_RTV(const _float4* pClearColor)
+{
+    return m_pGraphic_Device->Clear_StaticLightDepth_RTV(pClearColor);
+}
+
+HRESULT CCore_System::Clear_DynamicLightDepth_RTV(const _float4* pClearColor)
+{
+    return m_pGraphic_Device->Clear_DynamicLightDepth_RTV(pClearColor);
+}
+
+HRESULT CCore_System::Clear_Shadow_DSV()
+{
+    return m_pGraphic_Device->Clear_Shadow_DSV();
+}
+
+void CCore_System::Share_StaticLightDepthSRV(ID3D11ShaderResourceView** ppSRV)
+{
+    if (!ppSRV)
+        return;
+
+    *ppSRV = m_pGraphic_Device ? m_pGraphic_Device->Get_StaticLightDepthSRV() : nullptr;
+}
+
+void CCore_System::Share_DynamicLightDepthSRV(ID3D11ShaderResourceView** ppSRV)
+{
+    if (!ppSRV)
+        return;
+
+    *ppSRV = m_pGraphic_Device ? m_pGraphic_Device->Get_DynamicLightDepthSRV() : nullptr;
+}
+
 NS_END
