@@ -76,6 +76,259 @@ HRESULT CCollision_Detector::Initialize()
     return S_OK;
 }
 
+//void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_DATA>& allColliders, vector<COLLIDER_PAIR>& outPair)
+//{
+//    outPair.clear();
+//
+//    const uint32_t iTotalCnt = static_cast<uint32_t>(allColliders.size());
+//    if (iTotalCnt < 2)
+//        return;
+//
+//    CUniform_Grid* pGrid = m_pPhysics_Processor->Get_Uniform_Grid();
+//    if (!pGrid)
+//        return;
+//
+//    pGrid->Clear_Dynamic();
+//
+//    for (uint32_t i = 0; i < iTotalCnt; ++i)
+//    {
+//        const COLLIDER_PROXY_DATA* pCol = &allColliders[i];
+//
+//        if (!pCol || !pCol->pCol || !pCol->pCol->bEnable)
+//            continue;
+//
+//        if (pCol->pCol->bStatic)
+//            continue;
+//
+//        pGrid->Insert_Dynamic(pCol->pCol->hSelf, pCol->aabbWorld);
+//    }
+//
+//    std::vector<COMPONENT_HANDLE> vecStaticHandles;
+//    std::vector<COMPONENT_HANDLE> vecDynamicHandles;
+//    std::unordered_set<PAIR_KEY, PAIR_KEY_HASHER> setAddedPairs;
+//
+//    for (uint32_t i = 0; i < iTotalCnt; ++i)
+//    {
+//        const COLLIDER_PROXY_DATA* pColA = &allColliders[i];
+//        if (!pColA || !pColA->pCol || !pColA->pCol->bEnable)
+//            continue;
+//
+//        if (pColA->pCol->bStatic)
+//            continue;
+//
+//        const AABB& tAABB_A = pColA->aabbWorld;
+//
+//        // non-static <-> static
+//        vecStaticHandles.clear();
+//        pGrid->Query_StaticOverlap(tAABB_A, &vecStaticHandles);
+//
+//        for (COMPONENT_HANDLE hStatic : vecStaticHandles)
+//        {
+//            const COLLIDER_PROXY_DATA* pStatic = m_pPhysics_Processor->Find_ActivatedCollider_ByHandle(hStatic);
+//            if (!pStatic || !pStatic->pCol || !pStatic->pCol->bEnable)
+//                continue;
+//
+//            if (!pStatic->pCol->bStatic)
+//                continue;
+//
+//            const uint32_t iMaskA = pColA->pCol->iMask;
+//            const uint32_t iDiscardMaskA = pColA->pCol->iDiscardMask;
+//            const uint32_t iMaskB = pStatic->pCol->iMask;
+//            const uint32_t iDiscardMaskB = pStatic->pCol->iDiscardMask;
+//
+//            if ((iMaskA & iDiscardMaskB) != 0 || (iDiscardMaskA & iMaskB) != 0)
+//                continue;
+//
+//            const AABB& tAABB_B = pStatic->aabbWorld;
+//            if (!Check_AABB_Overlap(tAABB_A, tAABB_B))
+//                continue;
+//
+//            PAIR_KEY tPairKey(pColA->pCol->hSelf, pStatic->pCol->hSelf);
+//            if (!setAddedPairs.insert(tPairKey).second)
+//                continue;
+//
+//            outPair.emplace_back(const_cast<COLLIDER_PROXY_DATA*>(pColA), const_cast<COLLIDER_PROXY_DATA*>(pStatic));
+//        }
+//
+//        // non-static <-> non-static
+//        vecDynamicHandles.clear();
+//        pGrid->Query_DynamicOverlap(tAABB_A, &vecDynamicHandles);
+//
+//        for (COMPONENT_HANDLE hDynamic : vecDynamicHandles)
+//        {
+//            const COLLIDER_PROXY_DATA* pColB = m_pPhysics_Processor->Find_ActivatedCollider_ByHandle(hDynamic);
+//            if (!pColB || !pColB->pCol || !pColB->pCol->bEnable)
+//                continue;
+//
+//            if (pColB->pCol->bStatic)
+//                continue;
+//
+//            if (pColA->pCol->hSelf == pColB->pCol->hSelf)
+//                continue;
+//
+//            const uint32_t iMaskA = pColA->pCol->iMask;
+//            const uint32_t iDiscardMaskA = pColA->pCol->iDiscardMask;
+//            const uint32_t iMaskB = pColB->pCol->iMask;
+//            const uint32_t iDiscardMaskB = pColB->pCol->iDiscardMask;
+//
+//            if ((iMaskA & iDiscardMaskB) != 0 || (iDiscardMaskA & iMaskB) != 0)
+//                continue;
+//
+//            const AABB& tAABB_B = pColB->aabbWorld;
+//            if (!Check_AABB_Overlap(tAABB_A, tAABB_B))
+//                continue;
+//
+//            PAIR_KEY tPairKey(pColA->pCol->hSelf, pColB->pCol->hSelf);
+//            if (!setAddedPairs.insert(tPairKey).second)
+//                continue;
+//
+//            outPair.emplace_back(const_cast<COLLIDER_PROXY_DATA*>(pColA), const_cast<COLLIDER_PROXY_DATA*>(pColB));
+//        }
+//    }
+//}
+
+//void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_DATA>& allColliders, vector<COLLIDER_PAIR>& outPair)
+//{
+//    outPair.clear();
+//
+//    const uint32_t iTotalCnt = static_cast<uint32_t>(allColliders.size());
+//    if (iTotalCnt < 2)
+//        return;
+//
+//    CUniform_Grid* pGrid = m_pPhysics_Processor->Get_Uniform_Grid();
+//    if (!pGrid)
+//        return;
+//
+//    std::unordered_map<uint32_t, const COLLIDER_PROXY_DATA*> mapColliderByHandle;
+//    mapColliderByHandle.reserve(iTotalCnt);
+//
+//    for (uint32_t i = 0; i < iTotalCnt; ++i)
+//    {
+//        const COLLIDER_PROXY_DATA* pCol = &allColliders[i];
+//
+//        if (!pCol || !pCol->pCol || !pCol->pCol->bEnable)
+//            continue;
+//
+//        mapColliderByHandle.emplace(pCol->pCol->hSelf.iHandle, pCol);
+//    }
+//
+//    pGrid->Clear_Dynamic();
+//
+//    for (uint32_t i = 0; i < iTotalCnt; ++i)
+//    {
+//        const COLLIDER_PROXY_DATA* pCol = &allColliders[i];
+//
+//        if (!pCol || !pCol->pCol || !pCol->pCol->bEnable)
+//            continue;
+//
+//        if (pCol->pCol->bStatic)
+//            continue;
+//
+//        pGrid->Insert_Dynamic(pCol->pCol->hSelf, pCol->aabbWorld);
+//    }
+//
+//    std::vector<COMPONENT_HANDLE> vecStaticHandles;
+//    std::vector<COMPONENT_HANDLE> vecDynamicHandles;
+//    std::unordered_set<PAIR_KEY, PAIR_KEY_HASHER> setAddedPairs;
+//
+//    setAddedPairs.reserve(iTotalCnt * 4);
+//
+//    for (uint32_t i = 0; i < iTotalCnt; ++i)
+//    {
+//        const COLLIDER_PROXY_DATA* pColA = &allColliders[i];
+//
+//        if (!pColA || !pColA->pCol || !pColA->pCol->bEnable)
+//            continue;
+//
+//        if (pColA->pCol->bStatic)
+//            continue;
+//
+//        const AABB& tAABB_A = pColA->aabbWorld;
+//
+//        const uint32_t iMaskA = pColA->pCol->iMask;
+//        const uint32_t iDiscardMaskA = pColA->pCol->iDiscardMask;
+//
+//        /*
+//            non-static <-> static
+//        */
+//        vecStaticHandles.clear();
+//        pGrid->Query_StaticOverlap(tAABB_A, &vecStaticHandles);
+//
+//        for (COMPONENT_HANDLE hStatic : vecStaticHandles)
+//        {
+//            auto iterStatic = mapColliderByHandle.find(hStatic.iHandle);
+//            if (iterStatic == mapColliderByHandle.end())
+//                continue;
+//
+//            const COLLIDER_PROXY_DATA* pStatic = iterStatic->second;
+//            if (!pStatic || !pStatic->pCol || !pStatic->pCol->bEnable)
+//                continue;
+//
+//            if (!pStatic->pCol->bStatic)
+//                continue;
+//
+//            const uint32_t iMaskB = pStatic->pCol->iMask;
+//            const uint32_t iDiscardMaskB = pStatic->pCol->iDiscardMask;
+//
+//            if ((iMaskA & iDiscardMaskB) != 0 || (iDiscardMaskA & iMaskB) != 0)
+//                continue;
+//
+//            const AABB& tAABB_B = pStatic->aabbWorld;
+//            if (!Check_AABB_Overlap(tAABB_A, tAABB_B))
+//                continue;
+//
+//            PAIR_KEY tPairKey(pColA->pCol->hSelf, pStatic->pCol->hSelf);
+//            if (!setAddedPairs.insert(tPairKey).second)
+//                continue;
+//
+//            outPair.emplace_back(
+//                const_cast<COLLIDER_PROXY_DATA*>(pColA),
+//                const_cast<COLLIDER_PROXY_DATA*>(pStatic));
+//        }
+//
+//        /*
+//            non-static <-> non-static
+//        */
+//        vecDynamicHandles.clear();
+//        pGrid->Query_DynamicOverlap(tAABB_A, &vecDynamicHandles);
+//
+//        for (COMPONENT_HANDLE hDynamic : vecDynamicHandles)
+//        {
+//            auto iterDynamic = mapColliderByHandle.find(hDynamic.iHandle);
+//            if (iterDynamic == mapColliderByHandle.end())
+//                continue;
+//
+//            const COLLIDER_PROXY_DATA* pColB = iterDynamic->second;
+//            if (!pColB || !pColB->pCol || !pColB->pCol->bEnable)
+//                continue;
+//
+//            if (pColB->pCol->bStatic)
+//                continue;
+//
+//            if (pColA->pCol->hSelf == pColB->pCol->hSelf)
+//                continue;
+//
+//            const uint32_t iMaskB = pColB->pCol->iMask;
+//            const uint32_t iDiscardMaskB = pColB->pCol->iDiscardMask;
+//
+//            if ((iMaskA & iDiscardMaskB) != 0 || (iDiscardMaskA & iMaskB) != 0)
+//                continue;
+//
+//            const AABB& tAABB_B = pColB->aabbWorld;
+//            if (!Check_AABB_Overlap(tAABB_A, tAABB_B))
+//                continue;
+//
+//            PAIR_KEY tPairKey(pColA->pCol->hSelf, pColB->pCol->hSelf);
+//            if (!setAddedPairs.insert(tPairKey).second)
+//                continue;
+//
+//            outPair.emplace_back(
+//                const_cast<COLLIDER_PROXY_DATA*>(pColA),
+//                const_cast<COLLIDER_PROXY_DATA*>(pColB));
+//        }
+//    }
+//}
+
 void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_DATA>& allColliders, vector<COLLIDER_PAIR>& outPair)
 {
     outPair.clear();

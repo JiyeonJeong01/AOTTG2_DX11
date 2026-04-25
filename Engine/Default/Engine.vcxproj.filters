@@ -531,7 +531,6 @@
     <ClInclude Include="..\Public\RandomUtil.h">
       <Filter>98. Util</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Uniform_Grid.h" />
     <ClInclude Include="..\Public\Nav_Struct.h">
       <Filter>99. Defines\Engine_Struct</Filter>
     </ClInclude>
@@ -567,6 +566,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Sound_System.h">
       <Filter>08. Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Uniform_Grid.h">
+      <Filter>01. Utility\04. Component\02. Physics\UniformGrid</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -762,7 +764,6 @@
     <ClCompile Include="..\Private\UIText.cpp">
       <Filter>01. Utility\04. Component\9. UI_Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Uniform_Grid.cpp" />
     <ClCompile Include="..\Private\NavBuilder.cpp">
       <Filter>08. NavMesh</Filter>
     </ClCompile>
@@ -783,6 +784,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sound_System.cpp">
       <Filter>08. Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Uniform_Grid.cpp">
+      <Filter>01. Utility\04. Component\02. Physics\UniformGrid</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -52,6 +52,14 @@ private:
     void    Calc_RangeInCell(const AABB& tAABB, GRID_COORD* pOutMin, GRID_COORD* pOutMax) const;
     size_t  ToIndex(int iX, int iY, int iZ) const;
 
+public:
+    void    Clear_Dynamic();
+    void    Insert_Dynamic(COMPONENT_HANDLE hCollider, const AABB& tAABB);
+    void    Query_DynamicOverlap(const AABB& tAABB, _Out_ std::vector<COMPONENT_HANDLE>* pOutOverlaps);
+
+    _bool   Has_Any_DynamicCollider(int iX, int iY, int iZ) const;
+    _uint   Get_DynamicColliderCount(int iX, int iY, int iZ) const;
+
 private:
     _float3 m_vWorldMin{};
     _float3 m_vWorldMax{};
@@ -62,7 +70,7 @@ private:
     int     m_iGridDimZ = 1;
 
     std::vector<std::vector<COMPONENT_HANDLE>> m_StaticColliders;
-
+    std::vector<std::vector<COMPONENT_HANDLE>> m_DynamicColliders;
 private:
     _bool   m_bDebugDrawAllCells = false;
     _bool   m_bDebugDrawOccupiedCells = true;

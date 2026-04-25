@@ -358,8 +358,8 @@ void CRender_System::Execute_RenderQueue()
     Apply_Pass_State_Priority();
     Execute_Pass(RENDER_LAYER::PRIORITY);
 
-    //Render_StaticShadow();
-    //Render_DynamicShadow();
+    Render_StaticShadow();
+    Render_DynamicShadow();
 
     Apply_Pass_State_NonBlend();
     Render_GBuffer();
@@ -370,14 +370,14 @@ void CRender_System::Execute_RenderQueue()
     Apply_Pass_State_Combined();
     Render_CombinedPass();
 
-    //Apply_Pass_State_PostProcess();
-    //Render_PostProcess();
-    //Render_PostProcessComposite();
+    Apply_Pass_State_PostProcess();
+    Render_PostProcess();
+    Render_PostProcessComposite();
 
     Apply_Pass_State_Blend();
     Execute_Pass(RENDER_LAYER::BLEND);
 
-    //Render_SpeedLinePass();
+    Render_SpeedLinePass();
     Apply_Pass_State_UI();
     Execute_Pass(RENDER_LAYER::UI);
 
