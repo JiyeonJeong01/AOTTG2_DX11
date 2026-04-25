@@ -43,6 +43,9 @@ SCOUT_BEHAVIOR CScout_Scriptable_Object::Convert_Behavior() const
     if (0 == lstrcmpiA(m_szBehaviorName, "REQUEST_RESUPPLY"))
         return SCOUT_BEHAVIOR::REQUEST_RESUPPLY;
 
+    if (0 == lstrcmpiA(m_szBehaviorName, "RESCUE_DIALOGUE"))
+        return SCOUT_BEHAVIOR::RESCUE_DIALOGUE;
+
     if (0 == lstrcmpiA(m_szBehaviorName, "NONE"))
         return SCOUT_BEHAVIOR::NONE;
 

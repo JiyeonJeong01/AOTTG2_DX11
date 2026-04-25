@@ -35,6 +35,7 @@ private:
     CAnimator       m_animOwner{};
 
     CGameObject*    m_goOwner = nullptr;
+    CGameObject*    m_goPlayer = nullptr;
 
     SCOUT_STATS     m_tStats{};
     SCOUT_CONTEXT   m_tContext{};
@@ -49,6 +50,8 @@ private :
     SCRIPT_OBJECT_REF   m_refHUDController{};
     SCRIPT_OBJECT_REF   m_refVFXManager{};
 
+    SCRIPT_OBJECT_REF   m_refPlayer;
+
     SCRIPT_OBJECT_REF   m_refCinematicCamera;
     SCRIPT_OBJECT_REF   m_refStagingCamera;
     SCRIPT_OBJECT_REF   m_refFadeUI;
@@ -57,6 +60,8 @@ private :
     SCRIPT_FIELDS_BEGIN(CScout)
         SCRIPT_FIELD_OBJECT_REF(m_refHUDController)
         SCRIPT_FIELD_OBJECT_REF(m_refVFXManager)
+
+        SCRIPT_FIELD_OBJECT_REF(m_refPlayer)
 
         SCRIPT_FIELD_OBJECT_REF(m_refCinematicCamera)
         SCRIPT_FIELD_OBJECT_REF(m_refStagingCamera)

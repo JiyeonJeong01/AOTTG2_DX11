@@ -10,24 +10,14 @@ void CCinematicCamera_Director::Awake(void* pCtx)
     IF_NULL_RETURN_MSG_BREAK(goCinematic, , "goCinematic is nullptr");
 
     m_camCinematic = goCinematic->Get_Component<CCamera>();
-
-    _bool bSuccess = SYS_CINEMATIC.Load("siva_clip");
-    SYS_CINEMATIC.Subscribe_CinematicEvent(
-        "siva_clip",
-        CINEMATIC_EVENT_TYPE::FINISH,
-        &CCinematicCamera_Director::On_TestCinematicEvent,
-        this);
-    SYS_CINEMATIC.Subscribe_CinematicEvent(
-        "siva_clip",
-        CINEMATIC_EVENT_TYPE::CUSTOM,
-        &CCinematicCamera_Director::On_TestCinematicEvent,
-        this);
 }
 
 void CCinematicCamera_Director::Start(void* pCtx)
 {
     _bool bSuccess = SYS_CINEMATIC.Load("Scout_RequestResupply");
     IF_TRUE_RETURN_MSG_BREAK(!bSuccess, , "Scout_RequestResupply load failed");
+    bSuccess = SYS_CINEMATIC.Load("Scout_RescueDialogue");
+    IF_TRUE_RETURN_MSG_BREAK(!bSuccess, , "Scout_RescueDialogue load failed");
 }
 
 void CCinematicCamera_Director::Priority_Update(void* pCtx, _float fDT)

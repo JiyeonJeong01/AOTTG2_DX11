@@ -1,6 +1,7 @@
 ﻿#include "Opening_Director.h"
 #include "GameInstance.h"
 #include "Easing_Function.h"
+#include "CinematicSystem.h"
 
 NS_BEGIN(Client)
 

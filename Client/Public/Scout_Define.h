@@ -9,6 +9,7 @@ enum class SCOUT_BEHAVIOR : uint32_t
 {
     NONE,
     REQUEST_RESUPPLY,
+    RESCUE_DIALOGUE,
     END
 };
 

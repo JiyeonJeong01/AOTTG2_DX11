@@ -5,6 +5,7 @@
 #include "HUDController.h"
 #include "UI_NoticeController.h"
 #include "VFX_Manager.h"
+#include "ScoutBehaviour_RescueDialogue.h"
 
 NS_BEGIN(Client)
 
@@ -51,7 +52,10 @@ void CScout::Priority_Update(void* pCtx, _float fDT)
 
     if (SYS_INPUT.Get_KeyDown(VK_F1))
     {
-        To<CScoutBehavior_RequestResupply*>(m_pBehavior)->Process_Start();
+        //if(m_tContext.eBehaviour == SCOUT_BEHAVIOR::REQUEST_RESUPPLY)
+            //To<CScoutBehavior_RequestResupply*>(m_pBehavior)->Process_Start();
+        if (m_tContext.eBehaviour == SCOUT_BEHAVIOR::RESCUE_DIALOGUE)
+            To<CScoutBehavior_RescueDialogue*>(m_pBehavior)->Process_Start(m_goPlayer);
     }
 
     if (m_pBehavior)
@@ -88,6 +92,8 @@ void CScout::SetUp_Context()
     m_tContext.tComponents.collider = m_cldrOwner;
     m_tContext.tComponents.meshRenderer = m_mrOwner;
     m_tContext.pStat = &m_tStats;
+
+    m_goPlayer = GAME_INSTANCE.Find_GameObject(m_refPlayer.hObject);
 }
 
 void CScout::SetUp_Behavior()
@@ -110,7 +116,7 @@ void CScout::SetUp_Behavior()
 
     switch (eBehavior)
     {
-    case SCOUT_BEHAVIOR::REQUEST_RESUPPLY:
+    case SCOUT_BEHAVIOR::REQUEST_RESUPPLY: 
         m_pBehavior = new CScoutBehavior_RequestResupply(m_goOwner, this, eBehavior);
         pVFXMgr = GAME_INSTANCE.Find_GameObject(m_refVFXManager.hObject);
         if (pVFXMgr)    
@@ -128,7 +134,19 @@ void CScout::SetUp_Behavior()
 
         break;
 
-    case SCOUT_BEHAVIOR::NONE:
+    case SCOUT_BEHAVIOR::RESCUE_DIALOGUE:
+        m_pBehavior = new CScoutBehavior_RescueDialogue(m_goOwner, this, eBehavior);
+
+        pStaging = GAME_INSTANCE.Find_GameObject(m_refStagingCamera.hObject);
+        pCinematic = GAME_INSTANCE.Find_GameObject(m_refCinematicCamera.hObject);
+
+        pFade = GAME_INSTANCE.Find_GameObject(m_refFadeUI.hObject);
+        pDialogue = GAME_INSTANCE.Find_GameObject(m_refDialogueUI.hObject);
+
+        To< CScoutBehavior_RescueDialogue*>(m_pBehavior)->Set_Cameras(pStaging, pCinematic);
+        To< CScoutBehavior_RescueDialogue*>(m_pBehavior)->Set_UI(m_pNotice, pDialogue, pFade);
+
+        break;
     default:
         m_pBehavior = nullptr;
         break;

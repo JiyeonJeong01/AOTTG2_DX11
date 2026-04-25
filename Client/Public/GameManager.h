@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Client_Define.h"
 #include "Script.h"
 
@@ -6,6 +6,10 @@ NS_BEGIN(Client)
 
 class CGameManager : public IScript
 {
+
+
+
+
 public:
     void Awake(void* pCtx) override;
     void Start(void* pCtx) override;

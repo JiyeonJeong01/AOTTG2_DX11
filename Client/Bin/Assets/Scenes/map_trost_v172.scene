@@ -4759,10 +4759,10 @@
               -236.4753875732422
             ],
             "Rotation": [
-              0.4999999403953552,
-              0.5000000596046448,
-              -0.5,
-              0.4999999403953552
+              0.5,
+              0.5000001192092896,
+              -0.5000000596046448,
+              0.5
             ],
             "Scale": [
               1.2000001668930054,
@@ -10818,9 +10818,9 @@
             ],
             "Rotation": [
               0.0,
-              0.9154981970787048,
+              0.9154980778694153,
               0.0,
-              0.40232232213020325
+              0.40232226252555847
             ],
             "Scale": [
               0.009999774396419525,
@@ -11133,7 +11133,7 @@
             "Enabled": true,
             "LoopMap": [
               {
-                "Clip": 78,
+                "Clip": 22,
                 "Loop": true
               },
               {
@@ -11141,7 +11141,7 @@
                 "Loop": true
               },
               {
-                "Clip": 22,
+                "Clip": 78,
                 "Loop": true
               },
               {
@@ -12099,9 +12099,9 @@
             ],
             "Rotation": [
               0.0,
-              0.9154981970787048,
+              0.9154980778694153,
               0.0,
-              0.40232232213020325
+              0.40232226252555847
             ],
             "Scale": [
               0.009999774396419525,
@@ -13090,11 +13090,11 @@
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
@@ -13110,12 +13110,12 @@
                 "Loop": true
               },
               {
-                "Clip": 108,
-                "Loop": true
-              },
-              {
                 "Clip": 100,
                 "Loop": false
+              },
+              {
+                "Clip": 108,
+                "Loop": true
               },
               {
                 "Clip": 91,
@@ -16184,11 +16184,11 @@
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
@@ -16204,12 +16204,12 @@
                 "Loop": true
               },
               {
-                "Clip": 108,
-                "Loop": true
-              },
-              {
                 "Clip": 100,
                 "Loop": false
+              },
+              {
+                "Clip": 108,
+                "Loop": true
               },
               {
                 "Clip": 91,
@@ -20118,10 +20118,10 @@
               -16.494319915771484
             ],
             "Rotation": [
-              -0.3469356298446655,
+              -0.3469356596469879,
               0.0,
               -0.0,
-              0.9378889203071594
+              0.937889039516449
             ],
             "Scale": [
               0.9999999403953552,
@@ -20252,10 +20252,10 @@
               -42.7973518371582
             ],
             "Rotation": [
-              -0.3469356298446655,
+              -0.3469356596469879,
               0.0,
               -0.0,
-              0.9378889203071594
+              0.937889039516449
             ],
             "Scale": [
               0.9999999403953552,
@@ -22745,13 +22745,13 @@
               },
               {
                 "Duration": 0.4099999964237213,
-                "FromClip": 4,
-                "ToClip": 8
+                "FromClip": 8,
+                "ToClip": 3
               },
               {
                 "Duration": 0.4099999964237213,
-                "FromClip": 8,
-                "ToClip": 3
+                "FromClip": 4,
+                "ToClip": 8
               },
               {
                 "Duration": 0.4099999964237213,
@@ -22786,20 +22786,20 @@
                 "Loop": true
               },
               {
+                "Clip": 19,
+                "Loop": true
+              },
+              {
                 "Clip": 11,
                 "Loop": true
               },
               {
-                "Clip": 19,
+                "Clip": 20,
                 "Loop": true
               },
               {
                 "Clip": 12,
                 "Loop": false
-              },
-              {
-                "Clip": 20,
-                "Loop": true
               },
               {
                 "Clip": 18,
@@ -25307,11 +25307,11 @@
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
@@ -25327,12 +25327,12 @@
                 "Loop": true
               },
               {
-                "Clip": 100,
-                "Loop": false
-              },
-              {
                 "Clip": 108,
                 "Loop": true
+              },
+              {
+                "Clip": 100,
+                "Loop": false
               },
               {
                 "Clip": 91,
@@ -29132,11 +29132,11 @@
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
@@ -29152,12 +29152,12 @@
                 "Loop": true
               },
               {
-                "Clip": 100,
-                "Loop": false
-              },
-              {
                 "Clip": 108,
                 "Loop": true
+              },
+              {
+                "Clip": 100,
+                "Loop": false
               },
               {
                 "Clip": 91,
@@ -32957,11 +32957,11 @@
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
@@ -32977,12 +32977,12 @@
                 "Loop": true
               },
               {
-                "Clip": 100,
-                "Loop": false
-              },
-              {
                 "Clip": 108,
                 "Loop": true
+              },
+              {
+                "Clip": 100,
+                "Loop": false
               },
               {
                 "Clip": 91,
@@ -36782,11 +36782,11 @@
                 "Loop": true
               },
               {
-                "Clip": 97,
+                "Clip": 105,
                 "Loop": true
               },
               {
-                "Clip": 105,
+                "Clip": 97,
                 "Loop": true
               },
               {
@@ -36802,12 +36802,12 @@
                 "Loop": true
               },
               {
-                "Clip": 108,
-                "Loop": true
-              },
-              {
                 "Clip": 100,
                 "Loop": false
+              },
+              {
+                "Clip": 108,
+                "Loop": true
               },
               {
                 "Clip": 91,
@@ -41940,11 +41940,11 @@
             "Enabled": true,
             "LoopMap": [
               {
-                "Clip": 47,
+                "Clip": 39,
                 "Loop": true
               },
               {
-                "Clip": 39,
+                "Clip": 47,
                 "Loop": true
               },
               {
@@ -42224,15 +42224,11 @@
             "Enabled": true,
             "LoopMap": [
               {
-                "Clip": 72,
-                "Loop": true
-              },
-              {
                 "Clip": 56,
                 "Loop": false
               },
               {
-                "Clip": 71,
+                "Clip": 72,
                 "Loop": true
               },
               {
@@ -42240,11 +42236,15 @@
                 "Loop": false
               },
               {
-                "Clip": 78,
+                "Clip": 71,
                 "Loop": true
               },
               {
                 "Clip": 70,
+                "Loop": true
+              },
+              {
+                "Clip": 78,
                 "Loop": true
               },
               {
@@ -48661,7 +48661,7 @@
             "Enabled": true,
             "LoopMap": [
               {
-                "Clip": 22,
+                "Clip": 78,
                 "Loop": true
               },
               {
@@ -48669,7 +48669,7 @@
                 "Loop": true
               },
               {
-                "Clip": 78,
+                "Clip": 22,
                 "Loop": true
               },
               {
@@ -49727,7 +49727,7 @@
             "Enabled": true,
             "LoopMap": [
               {
-                "Clip": 78,
+                "Clip": 22,
                 "Loop": true
               },
               {
@@ -49735,7 +49735,7 @@
                 "Loop": true
               },
               {
-                "Clip": 22,
+                "Clip": 78,
                 "Loop": true
               },
               {
@@ -54724,6 +54724,1054 @@
       "parent": "78A78173-868B-4481-A931-4A1EC203328E",
       "protoGuid": "00000000-0000-0000-0000-000000000000",
       "uuid": "F9352FFA-9DC9-4483-A213-86319E56F24B"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Scout2",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              13.611923217773438,
+              15.686541213989258,
+              -8.768342018127441
+            ],
+            "Rotation": [
+              -0.0,
+              -0.6781597137451172,
+              -0.0,
+              0.7349145412445068
+            ],
+            "Scale": [
+              0.009999999776482582,
+              0.009999999776482582,
+              0.009999999776482582
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "DebugDraw": false,
+            "DiscardMask": 0,
+            "Enabled": false,
+            "HalfExtentsLocal": [
+              1000.0,
+              1000.0,
+              1000.0
+            ],
+            "Mask": 0,
+            "Offset": [
+              0.0,
+              9.149999618530273,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Static": false,
+            "Trigger": true,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CScout",
+              "Fields": [
+                {
+                  "Name": "m_refHUDController",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "D6232983-9023-44E3-8A3B-A72CE3F0CFBC"
+                  }
+                },
+                {
+                  "Name": "m_refVFXManager",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "F0F99AD8-2FC0-4C77-8870-74C44938B67E"
+                  }
+                },
+                {
+                  "Name": "m_refCinematicCamera",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "EAAB2CC6-E845-4BB1-85D0-50DBDA05BDBF"
+                  }
+                },
+                {
+                  "Name": "m_refStagingCamera",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "0F5FA58C-DEBE-4035-8CEA-0D95284A1AB1"
+                  }
+                },
+                {
+                  "Name": "m_refFadeUI",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "AF6010A4-6ACE-46EE-8667-F525B9B2E507"
+                  }
+                },
+                {
+                  "Name": "m_refDialogueUI",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "4E686FCE-B540-4597-ACDD-A3E57E2CFFE7"
+                  }
+                }
+              ]
+            },
+            "ScriptGuid": "1D337703-7A05-4B91-A8F1-2645AA9748F0",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "Enabled": true,
+            "ExposedFields": {
+              "ClassName": "CScout_Scriptable_Object",
+              "Fields": [
+                {
+                  "Name": "m_szBehaviorName",
+                  "Type": 7,
+                  "Value": {
+                    "Value": "RESCUE_DIALOGUE"
+                  }
+                }
+              ]
+            },
+            "ScriptGuid": "C5B4915B-EBB7-4CC2-A46D-0BB8CEBF42CC",
+            "Type": 4
+          },
+          "type": 4
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "043DDDE0-023B-4BE8-899B-DB190AF56E01",
+            "MeshGUID": "AF29D8EC-8A4F-4272-BBB8-7D927B5C226C",
+            "Mode": 0,
+            "OverrideMaterials": [
+              0,
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        },
+        {
+          "data": {
+            "AnimationClip": 69,
+            "BlendDuration": 0.0,
+            "BlendMap": [],
+            "Enabled": true,
+            "LoopMap": [
+              {
+                "Clip": 72,
+                "Loop": true
+              },
+              {
+                "Clip": 56,
+                "Loop": false
+              },
+              {
+                "Clip": 71,
+                "Loop": true
+              },
+              {
+                "Clip": 63,
+                "Loop": false
+              },
+              {
+                "Clip": 78,
+                "Loop": true
+              },
+              {
+                "Clip": 70,
+                "Loop": true
+              },
+              {
+                "Clip": 73,
+                "Loop": true
+              },
+              {
+                "Clip": 69,
+                "Loop": true
+              },
+              {
+                "Clip": 68,
+                "Loop": true
+              },
+              {
+                "Clip": 79,
+                "Loop": true
+              },
+              {
+                "Clip": 54,
+                "Loop": false
+              }
+            ],
+            "PlaySpeed": 1.0,
+            "Playing": true,
+            "Type": 6
+          },
+          "type": 6
+        }
+      ],
+      "parent": "",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "76119676-B843-4C5B-9D6E-D67215813B6B"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Arm_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "FC959732-24D1-4DF4-B3C0-13A039CFEC04",
+            "MeshGUID": "56877A8C-AA63-4A66-AFC7-0C55D79AC35A",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76119676-B843-4C5B-9D6E-D67215813B6B",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "1C531C66-1A9D-4846-9581-E69800BE8750"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Arm_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "45C18129-F0EB-4E69-BD9A-B69B71B97A3B",
+            "MeshGUID": "E68EF54D-AFC3-43E1-8125-C74C9CC2F3C3",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76119676-B843-4C5B-9D6E-D67215813B6B",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "936879C4-2F35-4FB2-AD12-0A496A347A60"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Uniform",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "D1B261CE-5FC0-4B03-97A3-4194D2E2EB22",
+            "MeshGUID": "9F7DFD06-2063-4CC4-814B-E3AA4AB811C1",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76119676-B843-4C5B-9D6E-D67215813B6B",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "6A144CA2-71D3-4080-BE49-B7950B82FFD5"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Hand_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "36F34DC4-EF65-482E-B108-D00B93192C24",
+            "MeshGUID": "A56AD4B8-E026-4045-AE33-78AB9A84374B",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76119676-B843-4C5B-9D6E-D67215813B6B",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "4871AE27-E568-44BC-B571-7604FC47AEF4"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Hand_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "D0706350-E818-474B-BBA3-46D57B297C68",
+            "MeshGUID": "A8641BB0-E462-4776-B27D-92558A7829A1",
+            "Mode": 1,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76119676-B843-4C5B-9D6E-D67215813B6B",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "C8F6758C-374E-4311-8120-CF133EEDAB84"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Head",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -1.1084050299814407e-07,
+              -0.4526940882205963,
+              0.004272959660738707
+            ],
+            "Rotation": [
+              8.429372400087232e-08,
+              -0.7071065902709961,
+              0.7071069478988647,
+              8.429371689544496e-08
+            ],
+            "Scale": [
+              9.99915599822998,
+              9.999156951904297,
+              9.999156951904297
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "ACF11179-CE93-4239-95F1-96AA5A9684FC",
+            "MeshGUID": "8949521E-D499-44AF-B239-B24840A11F0C",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76119676-B843-4C5B-9D6E-D67215813B6B",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "730E5B81-4370-433E-889C-15100A2A35C8"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Hair",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -6.704083510555847e-09,
+              -0.4533655047416687,
+              0.03313187137246132
+            ],
+            "Rotation": [
+              -8.226931669241822e-08,
+              -0.6901249289512634,
+              0.7236903309822083,
+              -8.627061021115878e-08
+            ],
+            "Scale": [
+              0.969985842704773,
+              0.9999388456344604,
+              0.9999400973320007
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "7EA1900C-0D5E-4F26-9010-BD01863C03F9",
+            "MeshGUID": "0E7A7D9C-F21A-4017-9C0D-AA1BB460A3F1",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76119676-B843-4C5B-9D6E-D67215813B6B",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "94E364F8-C316-4C3C-9D2F-79AD05EC3411"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Blade_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -0.002960225800052285,
+              0.004157936666160822,
+              0.39752599596977234
+            ],
+            "Rotation": [
+              -0.19522035121917725,
+              0.1940014511346817,
+              0.6404352784156799,
+              0.7170042395591736
+            ],
+            "Scale": [
+              0.9999536871910095,
+              0.999941349029541,
+              0.9999596476554871
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hand_L",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "3376B10E-974E-4124-AA37-654D0B02848B",
+            "MeshGUID": "A78F05A9-B3E6-4E93-AEE8-31B58F01C689",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76119676-B843-4C5B-9D6E-D67215813B6B",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "37861F85-9647-44C1-B1BB-4C322A9AF11E"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Blade_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -0.0635114386677742,
+              -0.051987070590257645,
+              0.39507463574409485
+            ],
+            "Rotation": [
+              0.14111727476119995,
+              0.17849302291870117,
+              0.7530937790870667,
+              -0.6173135042190552
+            ],
+            "Scale": [
+              0.9999496340751648,
+              0.9998422265052795,
+              0.9999592900276184
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hand_R",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "30A2F8D8-D82F-4652-91DB-0DA4E726129F",
+            "MeshGUID": "23C6D211-6848-438D-8049-7CDE32B49ADE",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 2,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76119676-B843-4C5B-9D6E-D67215813B6B",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "CA612B2E-2306-4733-BE6C-0CCC3E180685"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Eye",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -1.5428369692926935e-07,
+              -0.45544999837875366,
+              0.007602137513458729
+            ],
+            "Rotation": [
+              8.429864095660378e-08,
+              -0.7071065902709961,
+              0.7071069478988647,
+              8.42986196403217e-08
+            ],
+            "Scale": [
+              0.9999452233314514,
+              0.999945342540741,
+              0.999945342540741
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "head",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "9D69E97C-1544-428B-825C-63448150F072",
+            "MeshGUID": "58E87C6D-8062-4843-A9F1-010F95828E4D",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76119676-B843-4C5B-9D6E-D67215813B6B",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "FC9700B1-CAEF-4C45-8293-5CF45D1163DE"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "BladeKeeper",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -8.147254249024627e-08,
+              0.07697601616382599,
+              -0.3417205214500427
+            ],
+            "Rotation": [
+              0.0,
+              1.0,
+              0.0,
+              -1.1920930376163597e-07
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "701E9B21-40B1-4D46-BA4E-058DC2E442B9",
+            "MeshGUID": "78C089B3-C458-4D90-8C2F-266CE1053956",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76119676-B843-4C5B-9D6E-D67215813B6B",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "E5D3E386-1E9C-49F8-B2E3-7F927E428052"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "DMG",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              -0.012969084084033966,
+              0.18344935774803162
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "F3CE0944-B675-4D3C-8C95-2D093C73F590",
+            "MeshGUID": "6BF314FB-5574-4D72-99C6-D318485FC472",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76119676-B843-4C5B-9D6E-D67215813B6B",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "F2E2E71C-44C9-40D8-AD7F-08E830A3318D"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Scabbard_Left",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              -0.2082422971725464,
+              0.03324108570814133,
+              -0.12694098055362701
+            ],
+            "Rotation": [
+              1.0,
+              0.0,
+              0.0,
+              -1.1920930376163597e-07
+            ],
+            "Scale": [
+              0.9999998807907104,
+              0.9999993443489075,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "2694B57E-5771-4DD9-942D-1B9484DFDE0C",
+            "MeshGUID": "E815657E-FDD6-4E74-81CE-631163BB04B8",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76119676-B843-4C5B-9D6E-D67215813B6B",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "98E85AF8-30AC-4201-9AC2-9D8B6F353870"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Scabbard_Right",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.20741751790046692,
+              0.03742123395204544,
+              -0.13531380891799927
+            ],
+            "Rotation": [
+              0.9999996423721313,
+              -1.0402905620265912e-10,
+              -0.0008726637461222708,
+              -1.1920840847778891e-07
+            ],
+            "Scale": [
+              0.9999964237213135,
+              1.000007152557373,
+              1.000007152557373
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "AttachBoneName": "hip",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "926AE4BD-9C98-4332-877E-EF50EDB9AAA9",
+            "MeshGUID": "2CCB16A0-B81D-4CA4-B9FD-E8AC216D0E78",
+            "Mode": 2,
+            "OverrideMaterials": [
+              0
+            ],
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 0,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "76119676-B843-4C5B-9D6E-D67215813B6B",
+      "protoGuid": "F4A31225-830A-40AB-B9BD-0A7583554905",
+      "uuid": "400A0FBA-5A2C-4E76-80D4-A565D2BD1A02"
     }
   ],
   "version": 1
