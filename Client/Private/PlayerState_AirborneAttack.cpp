@@ -113,6 +113,8 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
         else
             m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::ATTACK_2);/* ATTACK2 = AIRBORNE_ATTACK::NORMAL 동작으로 사용 */
 
+        SYS_SOUND.PlayForceSFX(L"Blade_NormalAttack", CHANNEL_1, 0.5f);
+
         return;
     }
 
@@ -128,6 +130,8 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
         m_bAnimFinished = false;
         m_bKeepAttack = true;
 
+        SYS_SOUND.PlayForceSFX(L"Balde_Skill_HV", CHANNEL_1, 0.5f);
+
         return;
     }
 
@@ -139,6 +143,7 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::SPECIAL_PETRA);
         m_bAnimFinished = false;
         m_bKeepAttack = true;
+        SYS_SOUND.PlayForceSFX(L"Blade_Break", CHANNEL_1, 0.5f);
 
         return;
     }
@@ -151,6 +156,7 @@ void CPlayerState_AirborneAttack::Enter(_uint iDetailFlag)
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::SPECIAL_PETRA);
         m_bAnimFinished = false;
         m_bKeepAttack = true;
+        SYS_SOUND.PlayForceLoopSFX(L"Balde_Skill_HV", CHANNEL_1, 0.5f);
 
         return;
     }
@@ -215,6 +221,8 @@ void CPlayerState_AirborneAttack::On_AnimFinished(const Engine::ANIMATION_EVENT_
     _uint iIndex = tData.iAnimationClip;
     if (iIndex == INVALID_ANIM_CLIP_INDEX)
         return;
+
+    SYS_SOUND.StopSound(CHANNEL_1);
 
     if (iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::ATTACK_1_HOOK_L1]
         || iIndex == m_tComponents.animator->NameToClipIndex[ANIM_PLAYER::ATTACK_1_HOOK_R1]

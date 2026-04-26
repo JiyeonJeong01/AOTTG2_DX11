@@ -1080,78 +1080,6 @@
         "iObjMask": 0,
         "isUI": false,
         "name": "Cloak"
-      },
-      {
-        "components": [
-          [
-            {
-              "data": {
-                "Position": [
-                  0.0,
-                  0.05000000074505806,
-                  0.6499999761581421
-                ],
-                "Rotation": [
-                  0.0,
-                  0.0,
-                  0.0,
-                  1.0
-                ],
-                "Scale": [
-                  0.47999998927116394,
-                  0.5299999713897705,
-                  0.5
-                ],
-                "Type": 0
-              }
-            }
-          ],
-          [],
-          [],
-          [],
-          [],
-          [
-            {
-              "data": {
-                "AttachBoneName": "head",
-                "Enabled": true,
-                "ExtraPassFlags": 0,
-                "Flags": 0,
-                "Layer": 1,
-                "MaterialGUID": "A985A5E4-5DCD-40B1-9932-1A59C09E3F49",
-                "MeshGUID": "D1605DDF-E2DF-4468-A09D-70830293816F",
-                "Mode": 2,
-                "OverrideMaterials": [
-                  0
-                ],
-                "ParticleGUID": "00000000-0000-0000-0000-000000000000",
-                "ParticlePivot": [
-                  0.0,
-                  0.0,
-                  0.0
-                ],
-                "ParticlePlaying": false,
-                "Shadow": 1,
-                "SortZ": 0.0,
-                "Type": 5
-              }
-            }
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "iObjMask": 0,
-        "isUI": false,
-        "name": "Cloak2"
       }
     ],
     "components": [
@@ -1219,7 +1147,7 @@
             "Enabled": true,
             "LoopMap": [
               {
-                "Clip": 22,
+                "Clip": 78,
                 "Loop": true
               },
               {
@@ -1227,7 +1155,7 @@
                 "Loop": true
               },
               {
-                "Clip": 78,
+                "Clip": 22,
                 "Loop": true
               },
               {
@@ -1286,7 +1214,7 @@
     ],
     "iObjMask": 0,
     "isUI": false,
-    "name": "Opening_Eren"
+    "name": "StagingScout1"
   },
   "version": 1
 }

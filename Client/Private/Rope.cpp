@@ -123,21 +123,34 @@ void CRope::Set_Anchored(const _float3& vStartPoint, const _float3& vAnchorPoint
 
 void CRope::Start_Returning(const _float3& vReturnTarget)
 {
-    const _vector vCur = Math::Load(m_vCurDynamicPos);   /* 지금 줄 끝 */
-    const _vector vTarget = Math::Load(vReturnTarget);   /* 돌아갈 원래 시작점 */
+    if (m_State == ROPE_STATE::IDLE)
+        return;
+
+    /*
+        현재 로프 끝점 기준 확정.
+        ANCHORED 상태면 m_vEndPoint가 앵커.
+        EXTENDING 중이면 m_vCurDynamicPos가 현재 끝.
+    */
+    if (m_State == ROPE_STATE::ANCHORED)
+        m_vCurDynamicPos = m_vEndPoint;
+
+    const _vector vCur = Math::Load(m_vCurDynamicPos);
+    const _vector vTarget = Math::Load(vReturnTarget);
 
     m_vEndPoint = vReturnTarget;
 
     _vector vDir = vTarget - vCur;
     if (Math::Get_X(XMVector3LengthSq(vDir)) <= 1e-6f)
-        vDir = Math::Set_Vec(0.f, 0.f, 1.f, 0.f);
+    {
+        Stop();
+        m_OnChanged_RopeState.Invoke(ROPE_STATE::IDLE, m_eSide);
+        return;
+    }
 
     XMStoreFloat3(&m_vTrialDir, Math::Normalize(vDir));
 
-    /* 리턴 직전 보이던 로프의 옆 방향을 저장 */
     {
-        const _vector vTip = Math::Load(m_vStartPoint);
-        _vector vVisualDir = vCur - vTip;
+        _vector vVisualDir = vCur - Math::Load(m_vStartPoint);
 
         if (Math::Get_X(XMVector3LengthSq(vVisualDir)) <= 1e-6f)
             vVisualDir = Math::Load(m_vTrialDir);
@@ -156,16 +169,17 @@ void CRope::Start_Returning(const _float3& vReturnTarget)
         if (Math::Get_X(XMVector3LengthSq(vRight)) <= 1e-6f)
             vRight = Math::Set_Vec(1.f, 0.f, 0.f, 0.f);
 
-        vRight = Math::Normalize(vRight);
-
-        Math::Store(m_vReturnRight, vRight);
+        Math::Store(m_vReturnRight, Math::Normalize(vRight));
         m_bHasReturnRight = true;
     }
 
-    /* 리턴 시작 시 파형 상태는 유지 */
-    m_tDynamicValue.fTarget = m_tDynamicValue.fValue;
+    m_fReturnElapsed = 0.f;
+
+    m_tDynamicValue.fTarget = 0.f;
+    m_tDynamicValue.fVelocity = 0.f;
 
     m_State = ROPE_STATE::RETURNING;
+    m_OnChanged_RopeState.Invoke(ROPE_STATE::RETURNING, m_eSide);
 }
 
 void CRope::Stop()

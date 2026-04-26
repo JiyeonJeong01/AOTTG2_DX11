@@ -63,6 +63,7 @@
     <ClInclude Include="..\Public\ResupplyStation.h" />
     <ClInclude Include="..\Public\ScoutBehavior_RequestResupply.h" />
     <ClInclude Include="..\Public\ScoutBehaviour_RescueDialogue.h" />
+    <ClInclude Include="..\Public\Scout_Controller.h" />
     <ClInclude Include="..\Public\TargetSensor.h" />
     <ClInclude Include="..\Public\NormalTitanState_Chase.h" />
     <ClInclude Include="..\Public\Scout.h" />
@@ -158,6 +159,7 @@
     <ClCompile Include="..\Private\ResupplyStation.cpp" />
     <ClCompile Include="..\Private\ScoutBehavior_RequestResupply.cpp" />
     <ClCompile Include="..\Private\ScoutBehaviour_RescueDialogue.cpp" />
+    <ClCompile Include="..\Private\Scout_Controller.cpp" />
     <ClCompile Include="..\Private\TargetSensor.cpp" />
     <ClCompile Include="..\Private\NormalTitanState_Chase.cpp" />
     <ClCompile Include="..\Private\Scout.cpp" />

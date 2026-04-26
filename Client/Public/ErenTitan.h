@@ -77,6 +77,7 @@ private :
     /* ----- Born ----- */
     EREN_BORN                           m_eBorn = EREN_BORN::END;
     _bool                               m_bBornCompleted = false;
+    _bool                               m_bBornSFXPlayed = false;
 
     /* ----- Combat ------ */
     EREN_COMBAT                         m_eCombat = EREN_COMBAT::END;
@@ -123,6 +124,7 @@ private :
 
     /* ----- Etc ----- */
     CEvent<_float>                      m_OnDamaged;
+    _uint                               m_iBornAnimIndex = INVALID_ANIM_CLIP_INDEX;
     _uint                               m_iRunAnimIndex = INVALID_ANIM_CLIP_INDEX;
     _uint                               m_iWalkAnimIndex = INVALID_ANIM_CLIP_INDEX;
     _uint                               m_iLiftAnimIndex = INVALID_ANIM_CLIP_INDEX;

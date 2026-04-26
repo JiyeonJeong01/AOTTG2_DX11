@@ -54,6 +54,8 @@ void CPlayerState_GroundedAttack::Enter(_uint iDetailFlag)
 {
     CPlayerState::Enter(iDetailFlag);
 
+    SYS_SOUND.PlayForceSFX(L"Blade_NormalAttack", CHANNEL_1, 0.5f);
+
     if (iDetailFlag == To<_uint>(GROUNDED_ATTACK::ATK))
     {
         m_eGroundedAttackState = GROUNDED_ATTACK::ATK;

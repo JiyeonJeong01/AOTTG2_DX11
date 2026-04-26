@@ -97,11 +97,15 @@ void CPlayerState_GroundedMove::Enter(_uint iDetailFlag)
         cout << "[GROUNDED_MOVE] ENTER RUN\n";
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);
         CPlayerState::GroundedMove(m_fRunCorrectionDT); /* 바로 run으로 들어오는 경우 움직임 끊겨보인다. */
+
+        SYS_SOUND.PlayForceLoopSFX(L"Human_Footstep", CHANNEL_2, 0.5f);
     }
     else if (iDetailFlag == To<_uint>(GROUNDED_MOVE::DASH_LAND)) /* 착지 */
     {
         cout << "[GROUNDED_MOVE] ENTER DASH_LAND\n";
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::DASH_LAND);
+
+        SYS_SOUND.PlayForceSFX(L"Human_Land", CHANNEL_1, 0.5f);
     }
     else if (iDetailFlag == To<_uint>(GROUNDED_MOVE::SLIDE))
     {
@@ -130,6 +134,8 @@ void CPlayerState_GroundedMove::Enter(_uint iDetailFlag)
             m_pSparkle->meshRenderer.Set_ParticleForward(vForward3);
             m_pSparkle->meshRenderer.Reset_Particle();
         }
+
+        SYS_SOUND.PlayForceLoopSFX(L"Human_Slide", CHANNEL_1, 1.f);
     }
 }
 
@@ -142,6 +148,8 @@ void CPlayerState_GroundedMove::Exit()
     m_pSparkle = nullptr;
     //m_pVFX_Manager->Finish_Particle(m_pSparkle);
 
+    SYS_SOUND.StopSound(CHANNEL_1);
+    SYS_SOUND.StopSound(CHANNEL_2);
 }
 
 void CPlayerState_GroundedMove::Cache_PlayerContext(const PLAYER_CONTEXT& tContext)
@@ -230,15 +238,28 @@ void CPlayerState_GroundedMove::Decide_NextState()
 void CPlayerState_GroundedMove::Decide_NextAnim()
 {
     /* SLIDE -> RUN */
+    _bool bSlideOver = false;
+
+    if (m_eGroundedMoveState == GROUNDED_MOVE::SLIDE)
+    {
+        const _float3 vLinearVel = m_tComponents.rigidbody.Get_LinearVel();
+        _float fLinearVelSq = vLinearVel.x * vLinearVel.x + vLinearVel.z * vLinearVel.z;
+
+        if (fLinearVelSq < m_fSlideThreshold)
+            bSlideOver = true;
+    }
+
     _bool bInputMove = !XMVector3Equal(XMLoadFloat3(&m_tInputCmd.vMove), XMVectorZero());
+
     if (bInputMove)
     {
         if (m_eGroundedMoveState == GROUNDED_MOVE::SLIDE)
         {
-            const _float3 vLinearVel = m_tComponents.rigidbody.Get_LinearVel();
-            _float fLinearVelSq = vLinearVel.x * vLinearVel.x + vLinearVel.z * vLinearVel.z;
-            if (fLinearVelSq < m_fSlideThreshold)
+            if (bSlideOver)
             {
+                SYS_SOUND.StopSound(CHANNEL_1);
+                SYS_SOUND.PlayForceLoopSFX(L"Human_Footstep", CHANNEL_2, 0.5f);
+
                 m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);
                 m_eGroundedMoveState = GROUNDED_MOVE::RUN;
                 m_tComponents.rigidbody.Set_Drag(*m_pOriginDrag);
@@ -268,6 +289,7 @@ void CPlayerState_GroundedMove::On_AnimFinished(const Engine::ANIMATION_EVENT_DA
 void CPlayerState_GroundedMove::On_DashLandFinished(const Engine::ANIMATION_EVENT_DATA& tData)
 {
     cout << " => [GROUNDED_MOVE] On_DashLandFinished : ";
+    SYS_SOUND.StopSound( CHANNEL_1);
 
     /* 입력이 없는 경우 -> IDLE */
     if (XMVector3Equal(XMVectorZero(), XMLoadFloat3(&m_tInputCmd.vMove)))

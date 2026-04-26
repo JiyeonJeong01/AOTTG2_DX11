@@ -42,6 +42,7 @@ private :
     _float                  m_fSlideSparkAcc = 0.f;
 
     _bool                   m_bContactGround = false;
+    _bool                   m_bContactGroundSFXRequested = false;
 
 private:
     void    Decide_HookAnim();

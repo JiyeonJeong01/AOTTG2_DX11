@@ -1009,6 +1009,9 @@ _bool CCollision_Detector::Detect_Raycast(RAY& tRay, const vector<COLLIDER_PROXY
 
     _bool bAnyHit = false;
 
+    //const _vector vOrigin = XMLoadFloat3(&tRay.vOrigin);
+    //const _vector vDir = XMVector3Normalize(XMLoadFloat3(&tRay.vDir));
+
     for (const auto& collider : AllColliders)
     {
         _bool bCurHit = false;
@@ -1017,6 +1020,50 @@ _bool CCollision_Detector::Detect_Raycast(RAY& tRay, const vector<COLLIDER_PROXY
 
         if (collider.pCol->bTrigger)
             continue;
+
+        //if (collider.pCol->eShape != SHAPE::PLANE)
+        //{
+        //    const _vector vCenter = XMLoadFloat3(&collider.vCenterWorld);
+        //    const _vector vToCol = vCenter - vOrigin;
+
+        //    const _float fProjectedDist =
+        //        XMVectorGetX(XMVector3Dot(vToCol, vDir));
+
+        //    _float fBroadRadius = 0.f;
+
+        //    switch (collider.pCol->eShape)
+        //    {
+        //    case SHAPE::BOX:
+        //        fBroadRadius =
+        //            XMVectorGetX(
+        //                XMVector3Length(
+        //                    XMLoadFloat3(&collider.box.vHalfExtentsWorld)));
+        //        break;
+
+        //    case SHAPE::SPHERE:
+        //        fBroadRadius = collider.sphere.fRadiusWorld;
+        //        break;
+
+        //    default:
+        //        break;
+        //    }
+
+        //    if (fProjectedDist + fBroadRadius < tRay.fMinDist)
+        //        continue;
+
+        //    if (fProjectedDist - fBroadRadius > tRay.fMaxDist)
+        //        continue;
+
+        //    const _vector vClosest =
+        //        vOrigin + vDir * fProjectedDist;
+
+        //    const _float fSideDistSq =
+        //        XMVectorGetX(
+        //            XMVector3LengthSq(vCenter - vClosest));
+
+        //    if (fSideDistSq > fBroadRadius * fBroadRadius)
+        //        continue;
+        //}
 
         switch (collider.pCol->eShape)
         {
@@ -1048,6 +1095,7 @@ _bool CCollision_Detector::Detect_Raycast(RAY& tRay, const vector<COLLIDER_PROXY
 
     if (bAnyHit)
         outHits.primaryHit = primary;
+
     outHits.iNumHits = To<_uint>(outHits.allHits.size());
 
     return bAnyHit;

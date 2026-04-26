@@ -100,6 +100,7 @@ void CPlayerState_Reload::Enter(_uint iDetailFlag)
         if (m_pBlade && m_pBlade->Can_ReloadBlade())
             m_pBlade->Reload_Blade();
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::CHANGE_BLADE);
+        SYS_SOUND.PlayForceSFX(L"Blade_Reload", CHANNEL_1, 1.f);
         cout << "[RELOAD] ENTER GROUNDED\n";
         return;
     }
@@ -109,6 +110,8 @@ void CPlayerState_Reload::Enter(_uint iDetailFlag)
         if (m_pBlade && m_pBlade->Can_ReloadBlade())
             m_pBlade->Reload_Blade();
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::CHANGE_BLADE_AIR);
+
+        SYS_SOUND.PlayForceSFX(L"Blade_Reload_Air", CHANNEL_1, 1.f);
 
         cout << "[RELOAD] ENTER AIR\n";
         return;

@@ -28,8 +28,8 @@ private:
 
     _bool                m_bStarted = false;
 
-    _float               m_fRotPerSec = 540.f;
-    _float               m_fThrowSpeed = 40.f;
+    _float               m_fRotPerSec = 1080.f;
+    _float               m_fThrowSpeed = 60.f;
     const std::string    m_strBlade = "ThrownBlade";
 private:
     void On_TriggerEnter(const COLLISION_DESC& tDesc);

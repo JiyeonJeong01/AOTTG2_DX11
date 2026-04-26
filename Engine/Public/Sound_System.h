@@ -9,8 +9,11 @@ class ENGINE_DLL CSound_System final
 public:
     HRESULT     Initialize();
 
-    void        PlaySoundOnce(const wstring& wsSoundKey, CHANNELID eID, float fVolume);
-    void        PlaySoundFX(const wstring& wsSoundKey, CHANNELID eID, float fVolume);
+    void        PlaySFX(const wstring& wsSoundKey, CHANNELID eID, float fVolume);
+    void        PlayForceSFX(const wstring& wsSoundKey, CHANNELID eID, float fVolume);
+    void        PlayLoopSFX(const wstring& wsSoundKey, CHANNELID eID, float fVolume);
+    void        PlayForceLoopSFX(const wstring& wsSoundKey, CHANNELID eID, float fVolume);
+
     void        PlayBGM(const wstring& wsSoundKey, float fVolume);
     void        StopSound(CHANNELID eID);
     void        StopAll();

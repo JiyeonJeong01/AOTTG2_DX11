@@ -61,6 +61,8 @@ void CPlayerState_Resupply::Enter(_uint iDetailFlag)
     m_bFinished = false;
 
     m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RESUPPLY);
+
+    SYS_SOUND.PlayForceSFX(L"Human_Resupply", CHANNEL_1, 1.f);
 }
 
 void CPlayerState_Resupply::Exit()

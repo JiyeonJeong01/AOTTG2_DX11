@@ -10,26 +10,32 @@ NS_BEGIN(Client)
 
 void CODM_Gear::Handle_RopeState(CRope::ROPE_STATE eState, SIDE eSide)
 {
-    if (eState == CRope::ROPE_STATE::ANCHORED)
+    if (eState == CRope::ROPE_STATE::IDLE)
     {
+        if (m_flagUsingSide == 0)
+        {
+            SYS_SOUND.StopSound(CHANNEL_6);
+        }
+    }
+    else if (eState == CRope::ROPE_STATE::ANCHORED)
+    {
+        SYS_SOUND.PlayForceSFX(L"ODMGear_Anchored", CHANNEL_5, 0.8f);
+        SYS_SOUND.PlayLoopSFX(L"ODMGear_Gas_Loop", CHANNEL_6, 1.f);
+
         _vector vDiff = XMLoadFloat3(&m_vAnchor) - m_tr.Get_StateXM(STATE::POSITION);
         _float3 vDir;
         XMStoreFloat3(&vDir, XMVector3Normalize(vDiff));
 
-        /* attach 순간 1회만 outward 성분 절반 제거 */
         {
             _float3 vLinearVel = m_rb->vLinearVel;
             _vector vLinearVelXM = XMLoadFloat3(&vLinearVel);
 
             const _float fToward = XMVectorGetX(XMVector3Dot(vLinearVelXM, XMVector3Normalize(vDiff)));
 
-            if (fToward < 0.f) /* 현재 속도가 앵커가 아닌 반대를 향함 */
+            if (fToward < 0.f)
             {
                 _vector vAnchorDir = XMVector3Normalize(vDiff);
-
-                /* 앵커 반대 방향 성분(outward) 일부 제거 */
                 vLinearVelXM = vLinearVelXM - vAnchorDir * (fToward * 0.9f);
-
                 XMStoreFloat3(&m_rb->vLinearVel, vLinearVelXM);
             }
         }
@@ -52,11 +58,17 @@ void CODM_Gear::Handle_RopeState(CRope::ROPE_STATE eState, SIDE eSide)
         m_OnSuccessAnchored.Invoke(To<_uint>(PLAYER_STATE::AIRBORNE_MOVE), To<_uint>(AIRBORNE_MOVE::AIR_BEGIN));
     }
 
-    /* 사용 상태 갱신 */
     if (eState == CRope::ROPE_STATE::ANCHORED)
+    {
         m_flagUsingSide |= To<_uint>(eSide);
+    }
     else if (eState == CRope::ROPE_STATE::RETURNING)
+    {
         m_flagUsingSide &= ~To<_uint>(eSide);
+
+        if (m_flagUsingSide == 0)
+            SYS_SOUND.StopSound(CHANNEL_6);
+    }
 }
 
 Engine::CGameObject* CODM_Gear::Find_Owner()
@@ -86,6 +98,8 @@ void CODM_Gear::Try_Grappling(SIDE eSide)
     _vector vLook =  XMVector3Normalize(m_tr.Get_StateXM(STATE::LOOK));
     _vector vUp = XMVector3Normalize(m_tr.Get_StateXM(STATE::UP));
     _vector vRopeStart = XMLoadFloat3(&m_tr->vPosition) + vLook * m_vRopeOffset.z + vUp * m_vRopeOffset.y;
+
+    SYS_SOUND.PlayForceSFX(L"ODMGear_Rope_Start", CHANNEL_4, 0.6f);
 
     if (Detect_GrapplingPoint(tInfo))
     {
@@ -118,16 +132,22 @@ void CODM_Gear::Finish_Grappling(SIDE eSide)
 
     if ((m_flagUsingSide & iSideFlag) == 0)
         return;
+    _float3 vReturnPos{};
+
+    _vector vLook = XMVector3Normalize(m_tr.Get_StateXM(STATE::LOOK));
+    _vector vUp = XMVector3Normalize(m_tr.Get_StateXM(STATE::UP));
+    XMStoreFloat3(&vReturnPos, XMLoadFloat3(&m_tr->vPosition) + vLook * m_vRopeOffset.z + vUp * m_vRopeOffset.y);
+
 
     if (eSide == SIDE::LEFT)
     {
         if (m_upLeftRope)
-            m_upLeftRope->Stop();
+            m_upLeftRope->Start_Returning(vReturnPos);
     }
     else if (eSide == SIDE::RIGHT)
     {
         if (m_upRightRope)
-            m_upRightRope->Stop();
+            m_upRightRope->Start_Returning(vReturnPos);
     }
 
     m_flagUsingSide &= ~iSideFlag;
@@ -288,6 +308,8 @@ void CODM_Gear::Update(void* pCtx, _float fDT)
 
     if (!Can_UseGas() && flagUsingSide != 0)
     {
+        SYS_SOUND.PlayForceSFX(L"ODMGear_Gas_Empty", CHANNEL_7, 1.f);
+
         if (flagUsingSide & To<_uint>(SIDE::LEFT))
             Finish_Grappling(SIDE::LEFT);
 

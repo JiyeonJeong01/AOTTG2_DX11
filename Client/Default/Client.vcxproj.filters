@@ -406,6 +406,9 @@
     <ClInclude Include="..\Public\ScoutBehaviour_RescueDialogue.h">
       <Filter>Scout</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Scout_Controller.h">
+      <Filter>Scout</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -667,6 +670,9 @@
       <Filter>UI\HUD</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ScoutBehaviour_RescueDialogue.cpp">
+      <Filter>Scout</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Scout_Controller.cpp">
       <Filter>Scout</Filter>
     </ClCompile>
   </ItemGroup>

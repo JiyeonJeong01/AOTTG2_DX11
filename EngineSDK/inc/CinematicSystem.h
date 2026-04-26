@@ -97,6 +97,16 @@ public :
         auto& Event = m_umCinematicEvents[tKey];
         Event.Add_Listener(pFunc, pObj);
     }
+
+public:
+    void Force_Shake(_float fDuration, _float fPower);
+    void Stop_ForceShake();
+
+private:
+    _bool   m_bForceShake = false;
+    _float  m_fForceShakeTime = 0.f;
+    _float  m_fForceShakeDuration = 0.f;
+    _float  m_fForceShakePower = 0.f;
 };
 
 

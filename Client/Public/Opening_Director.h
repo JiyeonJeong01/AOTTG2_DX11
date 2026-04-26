@@ -1,8 +1,11 @@
 ﻿#pragma once
 #include "Client_Define.h"
 #include "Script.h"
+#include "CinematicSystem.h"
 
 NS_BEGIN(Client)
+
+class CScout_Controller;
 
 class COpening_Director : public IScript
 {
@@ -27,18 +30,21 @@ private:
 
 private:
     void Update_BoatApproach(_float fDT);
-
-
-private:
     void Update_WhiteOut(_float fDT);
+    void Update_TitanBorne(_float fDT);
     void Apply_WhiteOutColor(const _float4& vColor);
+
+    void On_CinematicEvent(const CINEMATIC_EVENT_DATA& tEventData);
+
 
 private:
     OPENING_STATE       m_eState = OPENING_STATE::NONE;
+    CGameObject*        m_pCinematicCam{};
+    CCamera             m_camCinematic{};
+
     _float              m_fStateTime = 0.f;
     _float              m_fOpeningTime = 0.f;
 
-private:
     /* ------------ BOAT_APPROACH ------------ */
     CGameObject*        m_pBoatObject = nullptr;
     CGameObject*        m_pErenObject = nullptr;
@@ -78,9 +84,9 @@ private:
     CGameObject*        m_pWhiteOutUIObject = nullptr;
     CCanvasRenderer     m_crWhiteOut{};
 
-    _float              m_fWhiteOutFastTime = 0.12f;
-    _float              m_fWhiteOutHoldTime = 0.04f;
-    _float              m_fWhiteOutFlashTime = 0.08f;
+    _float              m_fWhiteOutFastTime = 0.22f;
+    _float              m_fWhiteOutHoldTime = 0.1f;
+    _float              m_fWhiteOutFlashTime = 0.115f;
     _float              m_fWhiteOutReturnTime = 0.8f;
 
     _float4             m_vWhiteColor = { 1.f, 1.f, 1.f, 0.f };
@@ -93,10 +99,23 @@ private:
     CGameObject*        m_pErenTitan = nullptr;
 
     SCRIPT_OBJECT_REF   m_refErenTitan{};
+
+    _float              m_fElapsedBorn = 0.f;
+    _bool               m_bRequestedShake = false;
     /* ------------------------------------------ */
+
+    /* --------------- COMMON -------------- */
+    CScout_Controller*  m_scScoutController{};
+
+    SCRIPT_OBJECT_REF   m_refCinematicCam{};
+    SCRIPT_OBJECT_REF   m_refScoutController{};
+
 
 private :
 SCRIPT_FIELDS_BEGIN(COpening_Director)
+    SCRIPT_FIELD_OBJECT_REF(m_refCinematicCam);
+    SCRIPT_FIELD_OBJECT_REF(m_refScoutController);
+
     /* ------------ BOAT_APPROACH ------------ */
     SCRIPT_FIELD_OBJECT_REF(m_refBoat);
     SCRIPT_FIELD_OBJECT_REF(m_refEren);
@@ -117,6 +136,8 @@ SCRIPT_FIELDS_BEGIN(COpening_Director)
     /* -------------- TITAN_BORNE --------------- */
     SCRIPT_FIELD_OBJECT_REF(m_refErenTitan);
     /* ------------------------------------------ */
+
+
 
 SCRIPT_FIELDS_END(COpening_Director)
 };

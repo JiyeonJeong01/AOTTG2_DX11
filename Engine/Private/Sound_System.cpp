@@ -16,77 +16,136 @@ HRESULT CSound_System::Initialize()
     return S_OK;
 }
 
-void CSound_System::PlaySoundOnce(const wstring& wsSoundKey, CHANNELID eID, float fVolume)
+/**
+ * \brief 해당 채널에서 이미 재생 중이면 재생 안 함
+ */
+void CSound_System::PlaySFX(const wstring& wsSoundKey, CHANNELID eID, float fVolume)
 {
-    unordered_map<wstring, FMOD_SOUND*>::iterator iter;
-
-    iter = find_if(m_umapSound.begin(), m_umapSound.end(),
-        [&](auto& iter)->bool
-        {
-            return wsSoundKey == iter.first;
-        });
-
+    auto iter = m_umapSound.find(wsSoundKey);
     if (iter == m_umapSound.end())
         return;
 
     FMOD_BOOL bPlay = FALSE;
 
-    if (FMOD_Channel_IsPlaying(m_pChannelArr[eID], &bPlay))
-    {
-        FMOD_System_PlaySound(m_pSystem, iter->second, nullptr, FALSE, &m_pChannelArr[eID]);
-    }
+    if (m_pChannelArr[eID])
+        FMOD_Channel_IsPlaying(m_pChannelArr[eID], &bPlay);
 
-    FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume);
+    if (bPlay)
+        return;
+
+    FMOD_System_PlaySound(m_pSystem, iter->second, nullptr, FALSE, &m_pChannelArr[eID]);
+
+    if (m_pChannelArr[eID])
+        FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume);
 
     FMOD_System_Update(m_pSystem);
 }
 
-void CSound_System::PlaySoundFX(const wstring& wsSoundKey, CHANNELID eID, float fVolume)
+/**
+ * \brief 해당 채널에서 뭐가 재생 중이든 새로 재생
+ */
+void CSound_System::PlayForceSFX(const wstring& wsSoundKey, CHANNELID eID, float fVolume)
 {
-    unordered_map<wstring, FMOD_SOUND*>::iterator iter;
+    auto iter = m_umapSound.find(wsSoundKey);
+    if (iter == m_umapSound.end())
+        return;
 
-    iter = find_if(m_umapSound.begin(), m_umapSound.end(),
-        [&](auto& iter)->bool
-        {
-            return wsSoundKey == iter.first;
-        });
+    if (m_pChannelArr[eID])
+        FMOD_Channel_Stop(m_pChannelArr[eID]);
 
+    FMOD_System_PlaySound(m_pSystem, iter->second, nullptr, FALSE, &m_pChannelArr[eID]);
+
+    if (m_pChannelArr[eID])
+    {
+        FMOD_Channel_SetMode(m_pChannelArr[eID], FMOD_LOOP_OFF);
+        FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume);
+    }
+
+    FMOD_System_Update(m_pSystem);
+}
+
+/**
+ * \brief 해당 채널에서 이미 재생 중이면 루프 재생 안 함
+ */
+void CSound_System::PlayLoopSFX(const wstring& wsSoundKey, CHANNELID eID, float fVolume)
+{
+    auto iter = m_umapSound.find(wsSoundKey);
     if (iter == m_umapSound.end())
         return;
 
     FMOD_BOOL bPlay = FALSE;
 
-    FMOD_System_PlaySound(m_pSystem, iter->second, nullptr, FALSE, &m_pChannelArr[eID]);
+    if (m_pChannelArr[eID])
+        FMOD_Channel_IsPlaying(m_pChannelArr[eID], &bPlay);
 
+    if (bPlay)
+        return;
+
+    FMOD_System_PlaySound(m_pSystem, iter->second, nullptr, TRUE, &m_pChannelArr[eID]);
+
+    if (!m_pChannelArr[eID])
+        return;
+
+    FMOD_Channel_SetMode(m_pChannelArr[eID], FMOD_LOOP_NORMAL);
     FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume);
+    FMOD_Channel_SetPaused(m_pChannelArr[eID], FALSE);
+
+    FMOD_System_Update(m_pSystem);
+}
+
+/**
+ * \brief 해당 채널을 끊고 루프를 새로 시작
+ */
+void CSound_System::PlayForceLoopSFX(const wstring& wsSoundKey, CHANNELID eID, float fVolume)
+{
+    auto iter = m_umapSound.find(wsSoundKey);
+    if (iter == m_umapSound.end())
+        return;
+
+    if (m_pChannelArr[eID])
+        FMOD_Channel_Stop(m_pChannelArr[eID]);
+
+    FMOD_System_PlaySound(m_pSystem, iter->second, nullptr, TRUE, &m_pChannelArr[eID]);
+
+    if (!m_pChannelArr[eID])
+        return;
+
+    FMOD_Channel_SetMode(m_pChannelArr[eID], FMOD_LOOP_NORMAL);
+    FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume);
+    FMOD_Channel_SetPaused(m_pChannelArr[eID], FALSE);
 
     FMOD_System_Update(m_pSystem);
 }
 
 void CSound_System::PlayBGM(const wstring& wsSoundKey, float fVolume)
 {
-    unordered_map<wstring, FMOD_SOUND*>::iterator iter;
-
-    // iter = find_if(m_mapSound.begin(), m_mapSound.end(), CTag_Finder(pSoundKey));
-    iter = find_if(m_umapSound.begin(), m_umapSound.end(), [&](auto& iter)->bool
-        {
-            return wsSoundKey == iter.first;
-        });
-
+    auto iter = m_umapSound.find(wsSoundKey);
     if (iter == m_umapSound.end())
         return;
 
-    FMOD_System_PlaySound(m_pSystem, iter->second, nullptr, FALSE, &m_pChannelArr[CHANNEL_0]);
+    if (m_pChannelArr[CHANNEL_0])
+    {
+        FMOD_Channel_Stop(m_pChannelArr[CHANNEL_0]);
+        m_pChannelArr[CHANNEL_0] = nullptr;
+    }
+
+    FMOD_System_PlaySound(m_pSystem, iter->second, nullptr, TRUE, &m_pChannelArr[CHANNEL_0]);
+
     FMOD_Channel_SetMode(m_pChannelArr[CHANNEL_0], FMOD_LOOP_NORMAL);
     FMOD_Channel_SetVolume(m_pChannelArr[CHANNEL_0], fVolume);
+    FMOD_Channel_SetPaused(m_pChannelArr[CHANNEL_0], FALSE);
+
     FMOD_System_Update(m_pSystem);
 }
 
 void CSound_System::StopSound(CHANNELID eID)
 {
-    FMOD_Channel_Stop(m_pChannelArr[eID]);
-}
+    if (!m_pChannelArr[eID])
+        return;
 
+    FMOD_Channel_Stop(m_pChannelArr[eID]);
+    m_pChannelArr[eID] = nullptr;
+}
 void CSound_System::StopAll()
 {
     for (int i = 0; i < MAXCHANNEL; ++i)

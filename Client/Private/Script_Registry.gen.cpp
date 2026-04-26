@@ -26,6 +26,7 @@
 #include "Player.h"
 #include "ResupplyStation.h"
 #include "Scout.h"
+#include "Scout_Controller.h"
 #include "Scout_Scriptable_Object.h"
 #include "TargetSensor.h"
 #include "ThrownBlade.h"
@@ -130,6 +131,10 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Scout.script");
         handler.Register_VTable(guid, ScriptBinder<CScout>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Scout_Controller.script");
+        handler.Register_VTable(guid, ScriptBinder<CScout_Controller>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Scout_Scriptable_Object.script");

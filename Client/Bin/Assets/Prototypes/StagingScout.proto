@@ -511,150 +511,6 @@
             {
               "data": {
                 "Position": [
-                  -0.002960225800052285,
-                  0.004157936666160822,
-                  0.39752599596977234
-                ],
-                "Rotation": [
-                  -0.19522035121917725,
-                  0.1940014511346817,
-                  0.6404352784156799,
-                  0.7170042395591736
-                ],
-                "Scale": [
-                  0.9999536871910095,
-                  0.999941349029541,
-                  0.9999596476554871
-                ],
-                "Type": 0
-              }
-            }
-          ],
-          [],
-          [],
-          [],
-          [],
-          [
-            {
-              "data": {
-                "AttachBoneName": "hand_L",
-                "Enabled": true,
-                "ExtraPassFlags": 0,
-                "Flags": 0,
-                "Layer": 1,
-                "MaterialGUID": "3376B10E-974E-4124-AA37-654D0B02848B",
-                "MeshGUID": "A78F05A9-B3E6-4E93-AEE8-31B58F01C689",
-                "Mode": 2,
-                "OverrideMaterials": [
-                  0
-                ],
-                "ParticleGUID": "00000000-0000-0000-0000-000000000000",
-                "ParticlePivot": [
-                  0.0,
-                  0.0,
-                  0.0
-                ],
-                "ParticlePlaying": false,
-                "Shadow": 1,
-                "SortZ": 0.0,
-                "Type": 5
-              }
-            }
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "iObjMask": 0,
-        "isUI": false,
-        "name": "Blade_Left"
-      },
-      {
-        "components": [
-          [
-            {
-              "data": {
-                "Position": [
-                  -0.0635114386677742,
-                  -0.051987070590257645,
-                  0.39507463574409485
-                ],
-                "Rotation": [
-                  0.14111727476119995,
-                  0.17849302291870117,
-                  0.7530937790870667,
-                  -0.6173135042190552
-                ],
-                "Scale": [
-                  0.9999496340751648,
-                  0.9998422265052795,
-                  0.9999592900276184
-                ],
-                "Type": 0
-              }
-            }
-          ],
-          [],
-          [],
-          [],
-          [],
-          [
-            {
-              "data": {
-                "AttachBoneName": "hand_R",
-                "Enabled": true,
-                "ExtraPassFlags": 0,
-                "Flags": 0,
-                "Layer": 1,
-                "MaterialGUID": "30A2F8D8-D82F-4652-91DB-0DA4E726129F",
-                "MeshGUID": "23C6D211-6848-438D-8049-7CDE32B49ADE",
-                "Mode": 2,
-                "OverrideMaterials": [
-                  0
-                ],
-                "ParticleGUID": "00000000-0000-0000-0000-000000000000",
-                "ParticlePivot": [
-                  0.0,
-                  0.0,
-                  0.0
-                ],
-                "ParticlePlaying": false,
-                "Shadow": 1,
-                "SortZ": 0.0,
-                "Type": 5
-              }
-            }
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "iObjMask": 0,
-        "isUI": false,
-        "name": "Blade_Right"
-      },
-      {
-        "components": [
-          [
-            {
-              "data": {
-                "Position": [
                   -1.5428369692926935e-07,
                   -0.45544999837875366,
                   0.007602137513458729
@@ -1080,78 +936,6 @@
         "iObjMask": 0,
         "isUI": false,
         "name": "Cloak"
-      },
-      {
-        "components": [
-          [
-            {
-              "data": {
-                "Position": [
-                  0.0,
-                  0.05000000074505806,
-                  0.6499999761581421
-                ],
-                "Rotation": [
-                  0.0,
-                  0.0,
-                  0.0,
-                  1.0
-                ],
-                "Scale": [
-                  0.47999998927116394,
-                  0.5299999713897705,
-                  0.5
-                ],
-                "Type": 0
-              }
-            }
-          ],
-          [],
-          [],
-          [],
-          [],
-          [
-            {
-              "data": {
-                "AttachBoneName": "head",
-                "Enabled": true,
-                "ExtraPassFlags": 0,
-                "Flags": 0,
-                "Layer": 1,
-                "MaterialGUID": "A985A5E4-5DCD-40B1-9932-1A59C09E3F49",
-                "MeshGUID": "D1605DDF-E2DF-4468-A09D-70830293816F",
-                "Mode": 2,
-                "OverrideMaterials": [
-                  0
-                ],
-                "ParticleGUID": "00000000-0000-0000-0000-000000000000",
-                "ParticlePivot": [
-                  0.0,
-                  0.0,
-                  0.0
-                ],
-                "ParticlePlaying": false,
-                "Shadow": 1,
-                "SortZ": 0.0,
-                "Type": 5
-              }
-            }
-          ],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        "iObjMask": 0,
-        "isUI": false,
-        "name": "Cloak2"
       }
     ],
     "components": [
@@ -1159,9 +943,9 @@
         {
           "data": {
             "Position": [
-              -117.50108337402344,
-              6.379373073577881,
-              -168.64675903320313
+              -18.0,
+              28.59000015258789,
+              -104.0
             ],
             "Rotation": [
               0.0,
@@ -1286,7 +1070,7 @@
     ],
     "iObjMask": 0,
     "isUI": false,
-    "name": "Opening_Eren"
+    "name": "StagingScout"
   },
   "version": 1
 }

@@ -47,6 +47,7 @@ void CErenTitan::Awake(void* pCtx)
     m_animEren->OnAnimationFinished.Add_Listener(&CErenTitan::On_AnimFinished, this);
 
     {
+        m_iBornAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::BORN);
         m_iRunAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::RUN);
         m_iWalkAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::WALK);
         m_iLiftAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::ROCK_LIFT);
@@ -240,6 +241,12 @@ void CErenTitan::Process_Born(_float fDT)
             _float3 vDown = { 0.f, -30.f, 0.f };
             m_rbEren.Add_LinearImpulse(vDown);
         }
+    }
+
+    if (!m_bBornSFXPlayed && m_animEren->fTrackPosition >= 64.2f)
+    {
+        SYS_SOUND.PlayForceSFX(L"Eren_Roar", CHANNEL_11, 0.4f);
+        m_bBornSFXPlayed = true;
     }
 }
 

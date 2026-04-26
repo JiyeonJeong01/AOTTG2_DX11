@@ -62,6 +62,14 @@ void CPlayerState_AirborneMove::Update(_float fDT)
     if (m_eAirborneState != AIRBORNE_MOVE::AIR_FALL
         && bLeftHook == false && bRightHook == false)
     {
+        if (m_bContactGroundSFXRequested)
+        {
+            SYS_SOUND.StopSound(CHANNEL_2);
+            m_bContactGroundSFXRequested = false;
+        }
+
+        m_bContactGround = false;
+
         m_eAirborneState = AIRBORNE_MOVE::AIR_FALL;
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_FALL);
 
@@ -77,22 +85,16 @@ void CPlayerState_AirborneMove::Update(_float fDT)
 
     Update_AnchorAirOrSlide();
 
-    if (m_bContactGround && m_tRef.pGroundChecker->Get_OnWalkable())
+    const _bool bOnWalkable = m_tRef.pGroundChecker->Get_OnWalkable();
+
+    if (bOnWalkable)
     {
-        m_pSparkle = m_pVFX_Manager->Start_Particle(PARTICLE_VFX::SLIDE_SPARK, m_tComponents.transform->vPosition);
-        if (m_pSparkle)
+        if (!m_bContactGround)
         {
-            _vector vLook = XMVector3Normalize(m_tComponents.transform.Get_StateXM(STATE::LOOK)) * -1.f;
-            _vector vStartPos = XMLoadFloat3(&m_tComponents.transform->vPosition) + vLook * 0.05f;
+            m_bContactGround = true;
+            m_bContactGroundSFXRequested = true;
 
-            _float3 vStartPos3{};
-            _float3 vForward3{};
-            XMStoreFloat3(&vStartPos3, vStartPos);
-
-            XMStoreFloat3(&vForward3, vLook);
-            m_pSparkle->meshRenderer.Set_ParticleForward(vForward3);
-            m_pSparkle->meshRenderer.Reset_Particle();
-
+            SYS_SOUND.PlayForceLoopSFX(L"Human_Slide", CHANNEL_2, 0.5f);
         }
 
         if (m_pVFX_Manager)
@@ -120,18 +122,17 @@ void CPlayerState_AirborneMove::Update(_float fDT)
                 }
             }
         }
+
         return;
     }
 
-    if (!m_bContactGround && m_tRef.pGroundChecker->Get_OnWalkable())
+    if (m_bContactGroundSFXRequested)
     {
-        m_bContactGround = true;
-    }
-    else
-    {
-        m_bContactGround = false;
+        SYS_SOUND.StopSound(CHANNEL_2);
+        m_bContactGroundSFXRequested = false;
     }
 
+    m_bContactGround = false;
 }
 
 void CPlayerState_AirborneMove::Late_Update(_float fDT)
@@ -148,6 +149,7 @@ void CPlayerState_AirborneMove::Enter(_uint iDetailFlag)
     m_fAirStableTime = 0.f;
     m_fAirReleaseElapsedTime = m_fTotalAirReleaseTime; /* 바로 시작할 수 있도록 */
     m_bContactGround = false;
+    m_bContactGroundSFXRequested = false;
 
     if (iDetailFlag < To<_uint>(AIRBORNE_MOVE::END))
         m_eAirborneState = To<AIRBORNE_MOVE>(iDetailFlag);
@@ -159,7 +161,6 @@ void CPlayerState_AirborneMove::Enter(_uint iDetailFlag)
     {
         /* Grapple Action (Left, Right, or Both) */
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::DASH);
-
         cout << "[AIRBORNE_MOVE] ENTER BEGIN\n";
 
         return;
@@ -194,8 +195,15 @@ void CPlayerState_AirborneMove::Exit()
 
     m_fGroundStableTime = 0.f;
     m_fAirStableTime = 0.f;
-}
 
+    if (m_bContactGroundSFXRequested)
+    {
+        SYS_SOUND.StopSound(CHANNEL_2);
+        m_bContactGroundSFXRequested = false;
+    }
+
+    m_bContactGround = false;
+}
 void CPlayerState_AirborneMove::Cache_PlayerContext(const PLAYER_CONTEXT& tContext)
 {
     CPlayerState::Cache_PlayerContext(tContext);
@@ -403,6 +411,7 @@ _bool CPlayerState_AirborneMove::Try_AirReleaseMotion()
         && m_tComponents.rigidbody->vLinearVel.y >= 10.f)
     {
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::AIR_RELEASE);
+        SYS_SOUND.PlayForceSFX(L"Human_Jump", CHANNEL_3, 0.5f);
         m_fAirReleaseElapsedTime = 0.f;
         m_bAirReleasePlayed = true;
     }

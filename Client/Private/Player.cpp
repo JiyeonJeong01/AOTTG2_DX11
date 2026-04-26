@@ -292,6 +292,9 @@ void CPlayer::Set_ReferenceComponent()
 
     m_tComponents.meshRenderer = m_goPlayer->Get_Component<CMeshRenderer>();
     IF_TRUE_RETURN_MSG_BREAK(!m_tComponents.meshRenderer.Is_Valid(), , "meshRenderer is invalid");
+
+    m_tComponents.transform.Set_Position(XMLoadFloat3(&m_fStartPosition));
+    m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::IDLE_CASUAL_M);
 }
 
 void CPlayer::Set_ReferenceScript()

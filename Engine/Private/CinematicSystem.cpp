@@ -148,6 +148,14 @@ _bool CCinematic_System::Preview(CCamera camera, _float fTime)
 
 void CCinematic_System::Update(_float fDT)
 {
+    if (m_bForceShake)
+    {
+        m_fForceShakeTime += fDT;
+
+        if (m_fForceShakeTime >= m_fForceShakeDuration)
+            Stop_ForceShake();
+    }
+
     if (false == m_bPlaying)
         return;
 
@@ -172,6 +180,22 @@ void CCinematic_System::Update(_float fDT)
 
     Evaluate(m_fCurrentTime);
     Apply_Shake(m_fCurrentTime);
+    if (m_bForceShake)
+    {
+        _float fRatio = m_fForceShakeTime / std::fmaxf(m_fForceShakeDuration, 0.0001f);
+        fRatio = std::clamp(fRatio, 0.f, 1.f);
+
+        _float fPower = m_fForceShakePower * (1.f - fRatio);
+
+        _float fX = ((rand() % 2000) / 1000.f - 1.f) * fPower;
+        _float fY = ((rand() % 2000) / 1000.f - 1.f) * fPower;
+
+        _vector vPos = m_tr.Get_StateXM(STATE::POSITION);
+        vPos += XMVectorSet(fX, fY, 0.f, 0.f);
+
+        m_tr.Set_Position(vPos);
+    }
+
     Process_EventKeys(m_fPrevTime, m_fCurrentTime);
 
     if (m_fCurrentTime >= m_tCurClip.fDuration)
@@ -741,4 +765,20 @@ void CCinematic_System::Invoke_CinematicEvent_Channel(
         return;
 
     it->second.Invoke(tEventData);
+}
+
+void CCinematic_System::Force_Shake(_float fDuration, _float fPower)
+{
+    m_bForceShake = true;
+    m_fForceShakeTime = 0.f;
+    m_fForceShakeDuration = fDuration;
+    m_fForceShakePower = fPower;
+}
+
+void CCinematic_System::Stop_ForceShake()
+{
+    m_bForceShake = false;
+    m_fForceShakeTime = 0.f;
+    m_fForceShakeDuration = 0.f;
+    m_fForceShakePower = 0.f;
 }

@@ -61,7 +61,7 @@ typedef struct tagPlayerStats
     _float                      fCurSpeed = 10.f;
     _float                      fMaxSpeed = 13.f;
 
-    _float                      fJump = 5.f;
+    _float                      fJump = 7.f;
     _float                      fJumpDashH = 0.03f;
     _float                      fJumpDashV = 0.5f;
 

@@ -255,6 +255,7 @@ void CScoutBehavior_RequestResupply::Change_State(RESUPPLY_STATE eState)
     case RESUPPLY_STATE::RESUPPLY:
         m_bAnimFinished = false;
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RESUPPLY);
+        SYS_SOUND.PlayForceSFX(L"Human_Resupply", CHANNEL_27, 1.f);
         break;
 
     case RESUPPLY_STATE::SPECIAL:

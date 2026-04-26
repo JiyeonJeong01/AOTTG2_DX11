@@ -1,15 +1,32 @@
 ﻿#include "Opening_Director.h"
 #include "GameInstance.h"
 #include "Easing_Function.h"
-#include "CinematicSystem.h"
+#include "AnimationClip_Eren.h"
+#include "Scout_Controller.h"
 
 NS_BEGIN(Client)
 
 void COpening_Director::Awake(void* pCtx)
 {
-    CGameObject* pObject = GAME_INSTANCE.Find_GameObject(m_refBoat.hObject);
+    CGameObject* pObject = nullptr;
 
     {
+        pObject = GAME_INSTANCE.Find_GameObject(m_refCinematicCam.hObject);
+        if (pObject != nullptr)
+        {
+            m_pCinematicCam = pObject;
+            m_camCinematic = m_pCinematicCam->Get_Component<CCamera>();
+        }
+
+        pObject = GAME_INSTANCE.Find_GameObject(m_refScoutController.hObject);
+        if (pObject != nullptr)
+        {
+            m_scScoutController = pObject->Get_Script<CScout_Controller>();
+        }
+    }
+
+    {
+        pObject = GAME_INSTANCE.Find_GameObject(m_refBoat.hObject);
         if (pObject != nullptr)
         {
             m_pBoatObject = pObject;
@@ -30,7 +47,6 @@ void COpening_Director::Awake(void* pCtx)
             m_trBoatNPC = m_pBoatNPCObject->Get_Component<CTransform>();
         }
     }
-
 
     {
         pObject = GAME_INSTANCE.Find_GameObject(m_refWhiteOutUI.hObject);
@@ -55,6 +71,8 @@ void COpening_Director::Awake(void* pCtx)
 
 void COpening_Director::Start(void* pCtx)
 {
+    _bool bPlayOpening = false;
+    if (bPlayOpening)
     {
         if (m_trBoat.Is_Valid())
         {
@@ -65,16 +83,29 @@ void COpening_Director::Start(void* pCtx)
             m_vErenBaseEuler = m_trEren.Get_Rotation_Euler();
             m_vBoatNPCBaseEuler = m_trBoatNPC.Get_Rotation_Euler();
         }
-    }
+    
+        if (m_crWhiteOut.Is_Valid())
+        {
+            m_crWhiteOut.Set_Color(_float4(1.f, 1.f, 1.f, 0.f));
+        }
 
-    if (m_crWhiteOut.Is_Valid())
+        SYS_CINEMATIC.Subscribe_CinematicEvent(
+            "opening",
+            CINEMATIC_EVENT_TYPE::CUSTOM,
+            &COpening_Director::On_CinematicEvent,
+            this);
+
+
+        SYS_CINEMATIC.Play("opening", m_camCinematic);
+
+        Enter_State(OPENING_STATE::BOAT_APPROACH);
+        SYS_SOUND.PlayBGM(L"OpeningCutScene_TitanReveal", 0.1f);
+        SYS_SOUND.PlayForceSFX(L"OpeningCutScene_Boat", CHANNEL_26, 0.3f);
+    }
+    else
     {
-        m_crWhiteOut.Set_Color(_float4(1.f, 1.f, 1.f, 0.f));
+        Enter_State(OPENING_STATE::TITAN_BORNE);
     }
-
-    Enter_State(OPENING_STATE::BOAT_APPROACH);
-
-    //SYS_SOUND.PlayBGM(L"")
 }
 
 void COpening_Director::Priority_Update(void* pCtx, _float fDT)
@@ -96,7 +127,6 @@ void COpening_Director::Update(void* pCtx, _float fDT)
         break;
 
     case OPENING_STATE::BOAT_ARRIVED_WAIT:
-        if (m_fStateTime >= 1.0f)
             Enter_State(OPENING_STATE::WHITEOUT);
         break;
 
@@ -106,9 +136,7 @@ void COpening_Director::Update(void* pCtx, _float fDT)
         break;
 
     case OPENING_STATE::TITAN_BORNE:
-        /* 나중에 거인 등장 + 카메라 전환 */
-        static _int i = 1;
-        i++;
+        Update_TitanBorne(fDT);
         break;
     }
 }
@@ -136,6 +164,7 @@ void COpening_Director::Enter_State(OPENING_STATE eState)
         }
         break;
     case OPENING_STATE::TITAN_BORNE:
+        m_fElapsedBorn = 0.f;
         if (m_pErenTitan)
         {
             m_pErenTitan->Set_Enable(true);
@@ -282,12 +311,64 @@ void COpening_Director::Update_WhiteOut(_float fDT)
     Apply_WhiteOutColor(vColor);
 }
 
+void COpening_Director::Update_TitanBorne(_float fDT)
+{
+    if (m_bRequestedShake)
+        return;
+    m_fElapsedBorn += fDT;
+    if (!m_bRequestedShake && m_fElapsedBorn > 1.5f)
+    {
+        SYS_CINEMATIC.Force_Shake(1.2f, 0.15f);
+        m_bRequestedShake = true;
+    }
+}
+
 void COpening_Director::Apply_WhiteOutColor(const _float4& vColor)
 {
     if (!m_crWhiteOut.Is_Valid())
         return;
 
     m_crWhiteOut.Set_Color(vColor);
+}
+
+void COpening_Director::On_CinematicEvent(const CINEMATIC_EVENT_DATA& tEventData)
+{
+    if (tEventData.strEventName == "TOGATE")
+    {
+        SYS_SOUND.StopSound(CHANNEL_26);
+    }
+    else if (tEventData.strEventName == "SCOUTS")
+    {
+        SYS_SOUND.PlayBGM(L"InGameBGM", 0.4f);
+    }
+    else if (tEventData.strEventName == "ORBIT")
+    {
+        if (m_scScoutController)
+            m_scScoutController->Play_Salute_Animation();
+        else
+            LOG_ERROR("m_scScoutController is nullptr!");
+    }
+    else if (tEventData.strEventName == "WHITEOUT")
+    {
+        if (m_eState != OPENING_STATE::WHITEOUT &&
+            m_eState != OPENING_STATE::TITAN_BORNE &&
+            m_eState != OPENING_STATE::END)
+        {
+            Enter_State(OPENING_STATE::WHITEOUT);
+
+            if (m_scScoutController)
+                m_scScoutController->Enable_Object(false);
+            else
+                LOG_ERROR("m_scScoutController is nullptr!");
+
+            SYS_SOUND.PlayForceSFX(L"OpeningCutScene_Lighting", CHANNEL_27, 1.f);
+        }
+
+    }
+    else if (tEventData.strEventName == "FORCEEXIT")
+    {
+        m_camCinematic.Set_Priority(0);
+    }
 }
 
 NS_END

@@ -294,7 +294,7 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
 
     /* Dynamic shadow는 바닥 근처에서만 받음 */
     float fGroundY = 1.f;
-    float fGroundMask = 1.f - smoothstep(2.f, 4.f, abs(vWorldPos.y - fGroundY));
+    float fGroundMask = 1.f - smoothstep(0.5f, 1.5f, abs(vWorldPos.y - fGroundY));
 
     vColor.rgb *= lerp(1.f, fDynamicShadow, fGroundMask);
 

@@ -49,6 +49,9 @@ void CPlayerState_Jump::Enter(_uint iDetailFlag)
 {
     CPlayerState::Enter(iDetailFlag);
 
+    SYS_SOUND.PlayForceSFX(L"Human_Jump", CHANNEL_1, 0.5f);
+
+
     m_eJumpState = To<JUMP>(iDetailFlag);
     m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::JUMP);
 
