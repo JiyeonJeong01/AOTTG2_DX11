@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "PlayerStateMachine.h"
 #include "AnimationClip_Player.h"
+#include "GroundChecker.h"
 #include "ODM_Gear.h"
 #include "VFX_Manager.h"
 
@@ -83,6 +84,29 @@ void CPlayerState_GroundedMove::Late_Update(_float fDT)
     CPlayerState::Late_Update(fDT);
 
     Decide_NextAnim();
+
+    if (m_eGroundedMoveState != GROUNDED_MOVE::DASH_LAND &&
+        m_tRef.pGroundChecker && !m_tRef.pGroundChecker->Get_OnWalkable())
+    {
+        const _float fGroundLostGraceTime = 0.1f;
+
+        m_fGroundLostTime += fDT;
+        if (m_fGroundLostTime >= fGroundLostGraceTime)
+        {
+            cout << "[GROUNDED_MOVE] -> AIRBORNE_MOVE::AIR_BEGIN_BY_FALL\n";
+
+            m_tRef.pFSM->Change_State(
+                To<_uint>(PLAYER_STATE::AIRBORNE_MOVE),
+                To<_uint>(AIRBORNE_MOVE::AIR_BEGIN)
+            );
+            return;
+        }
+    }
+    else
+    {
+        m_fGroundLostTime = 0.f;
+    }
+
     Decide_NextState();
 }
 
@@ -169,6 +193,7 @@ void CPlayerState_GroundedMove::Setup_CachedPlayerContext()
 
 void CPlayerState_GroundedMove::Decide_NextState()
 {
+
     /* -> JUMP */
     if (m_tInputCmd.bBoostPressed)
     {

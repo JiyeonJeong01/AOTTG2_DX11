@@ -121,6 +121,14 @@ void CRope::Set_Anchored(const _float3& vStartPoint, const _float3& vAnchorPoint
     m_State = ROPE_STATE::ANCHORED;
 }
 
+void CRope::Set_EndPoint(const _float3& vEndPoint)
+{
+    m_vEndPoint = vEndPoint;
+
+    if (m_State == ROPE_STATE::ANCHORED)
+        m_vCurDynamicPos = vEndPoint;
+}
+
 void CRope::Start_Returning(const _float3& vReturnTarget)
 {
     if (m_State == ROPE_STATE::IDLE)

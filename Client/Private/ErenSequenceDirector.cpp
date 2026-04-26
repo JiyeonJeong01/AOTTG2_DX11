@@ -58,7 +58,7 @@ void CErenSequenceDirector::Start(void* pCtx)
     if (goRock)
     {
         trRock = goRock->Get_Component<CTransform>();
-        trRock.Set_Position(XMVectorSet(98.512f, 8.38f, -153.41f, 0.f));
+        trRock.Set_Position(XMVectorSet(98.948f, 8.38f, -151.41f, 1.f));
     }
     else
         __debugbreak();

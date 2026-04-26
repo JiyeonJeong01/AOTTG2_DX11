@@ -28,6 +28,7 @@ public:
 
     void Set_StartPoint(const _float3& vStartPoint);
     void Set_Anchored(const _float3& vStartPoint, const _float3& vAnchorPoint);
+    void Set_EndPoint(const _float3& vEndPoint);
     void Stop();
 
     ROPE_STATE Get_State() const { return m_State; }

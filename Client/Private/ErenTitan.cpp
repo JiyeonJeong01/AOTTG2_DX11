@@ -60,7 +60,7 @@ void CErenTitan::Awake(void* pCtx)
         m_iWalkAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::WALK);
         m_iLiftAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::ROCK_LIFT);
         m_iMoveRockAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::ROCK_WALK);
-        m_iHurtAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::HIT_ANNIE_1);
+        //m_iHurtAnimIndex = m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::HIT_ANNIE_1);
     }
 }
 
@@ -852,14 +852,14 @@ void CErenTitan::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
     if (iIndex == INVALID_ANIM_CLIP_INDEX)
         return;
 
-    if (iIndex == m_iHurtAnimIndex)
-    {
-        for (auto& hit : m_AllHitBoxes)
-            hit.second->Set_Active(false);
+    //if (iIndex == m_iHurtAnimIndex)
+    //{
+    //    for (auto& hit : m_AllHitBoxes)
+    //        hit.second->Set_Active(false);
 
-        m_eCombat = EREN_COMBAT::WAIT;
-        return;
-    }
+    //    m_eCombat = EREN_COMBAT::WAIT;
+    //    return;
+    //}
 
     if (m_eStepType == EREN_STEP_TYPE::BORNE)
     {
@@ -988,7 +988,7 @@ void CErenTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox
     if (!tHitInfo.goAttacker)
         return;
 
-    if (!tHitInfo.goAttacker->Has_Mask(O_ENEMY | O_HITBOX))
+    if (!tHitInfo.goAttacker->Is_ExactMask(O_ENEMY | O_HITBOX))
         return;
 
     /* 다쳤을 때 이벤트 */
@@ -998,7 +998,7 @@ void CErenTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox
 
 
     /* hurt 애니메이션은 특정 상황에서만 재생 */
-    if (m_eStepType == EREN_STEP_TYPE::COMBAT || m_eStepType == EREN_STEP_TYPE::MOVE_TO)
+ /*   if (m_eStepType == EREN_STEP_TYPE::COMBAT || m_eStepType == EREN_STEP_TYPE::MOVE_TO)
     {
         m_eCombat = EREN_COMBAT::HURT;
 
@@ -1008,7 +1008,7 @@ void CErenTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox
         if (m_animEren->iAnimationClip != m_iHurtAnimIndex
             && m_animEren->iNextAnimationClip != m_iHurtAnimIndex)
             m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::HIT_ANNIE_1);
-    }
+    }*/
 
     _vector vDiff = m_trPlayer.Get_StateXM(STATE::POSITION) - m_trEren.Get_StateXM(STATE::POSITION);
     _float fDist = XMVectorGetX(XMVector3Length(vDiff));

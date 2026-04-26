@@ -129,7 +129,7 @@ private :
     _uint                               m_iWalkAnimIndex = INVALID_ANIM_CLIP_INDEX;
     _uint                               m_iLiftAnimIndex = INVALID_ANIM_CLIP_INDEX;
     _uint                               m_iMoveRockAnimIndex = INVALID_ANIM_CLIP_INDEX;
-    _uint                               m_iHurtAnimIndex = INVALID_ANIM_CLIP_INDEX;
+    //_uint                               m_iHurtAnimIndex = INVALID_ANIM_CLIP_INDEX;
 
 private :
     void    Move_To(_fvector vDir, _float fDT, _float fSpeed);

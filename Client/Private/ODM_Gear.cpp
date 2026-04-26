@@ -105,6 +105,10 @@ void CODM_Gear::Try_Grappling(SIDE eSide)
     {
         m_vAnchor = tInfo.vPoint;
 
+        m_bDynamicAnchor = tInfo.bDynamicAnchor;
+        m_hAnchorObject = tInfo.hAnchorObject;
+        m_vLocalAnchorOffset = tInfo.vLocalAnchorOffset;
+
         if (m_upLeftRope && eSide == SIDE::LEFT)
             m_upLeftRope->Start_Extending_Success(vRopeStart, XMLoadFloat3(&m_vAnchor));
         else if (m_upRightRope && eSide == SIDE::RIGHT)
@@ -153,7 +157,13 @@ void CODM_Gear::Finish_Grappling(SIDE eSide)
     m_flagUsingSide &= ~iSideFlag;
 
     if (m_flagUsingSide == 0)
+    {
         m_sj.Set_UseSpring(false);
+
+        m_bDynamicAnchor = false;
+        m_hAnchorObject = {};
+        m_vLocalAnchorOffset = {};
+    }
 }
 
 _bool CODM_Gear::Detect_GrapplingPoint(TRY_GRAPPLING_INFO& tInfo)
@@ -176,7 +186,6 @@ _bool CODM_Gear::Detect_GrapplingPoint(TRY_GRAPPLING_INFO& tInfo)
                 return a.fDist < b.fDist;
             });
 
-
         for (const auto& hit : allHits.allHits)
         {
             _float3 vCamPos3 = GAME_INSTANCE.Cam_Position();
@@ -191,10 +200,38 @@ _bool CODM_Gear::Detect_GrapplingPoint(TRY_GRAPPLING_INFO& tInfo)
             {
                 tInfo.vPoint = hit.vHitPos;
                 tInfo.fDist = hit.fDist;
+
+                tInfo.bDynamicAnchor = false;
+                tInfo.hAnchorObject = {};
+                tInfo.vLocalAnchorOffset = {};
+
+                CGameObject* pObj = GAME_INSTANCE.Find_GameObject(hit.hObject);
+                if (pObj)
+                {
+                    if (pObj->Is_ExactMask(O_EREN) || pObj->Is_ExactMask(O_ENEMY))
+                    {
+                        CTransform trAnchor = pObj->Get_Component<CTransform>();
+                        if (trAnchor.Is_Valid())
+                        {
+                            _vector vHitPos = XMLoadFloat3(&hit.vHitPos);
+                            _vector vAnchorObjPos = trAnchor.Get_StateXM(STATE::POSITION);
+
+                            tInfo.bDynamicAnchor = true;
+                            tInfo.hAnchorObject = hit.hObject;
+
+                            XMStoreFloat3(
+                                &tInfo.vLocalAnchorOffset,
+                                vHitPos - vAnchorObjPos
+                            );
+                        }
+                    }
+                }
+
                 return true;
             }
         }
     }
+
     return false;
 }
 
@@ -317,17 +354,57 @@ void CODM_Gear::Update(void* pCtx, _float fDT)
             Finish_Grappling(SIDE::RIGHT);
     }
 
+    /* 동적 앵커 갱신 */
+    if (m_flagUsingSide != 0 && m_bDynamicAnchor)
+    {
+        CGameObject* pAnchorObj = GAME_INSTANCE.Find_GameObject(m_hAnchorObject);
+        if (pAnchorObj)
+        {
+            CTransform trAnchor = pAnchorObj->Get_Component<CTransform>();
+            if (trAnchor.Is_Valid())
+            {
+                _vector vAnchorObjPos = trAnchor.Get_StateXM(STATE::POSITION);
+                _vector vLocalOffset = XMLoadFloat3(&m_vLocalAnchorOffset);
+
+                XMStoreFloat3(&m_vAnchor, vAnchorObjPos + vLocalOffset);
+
+                m_sj.Set_Anchor(m_vAnchor);
+
+                if (m_upLeftRope)
+                    m_upLeftRope->Set_EndPoint(m_vAnchor);
+
+                if (m_upRightRope)
+                    m_upRightRope->Set_EndPoint(m_vAnchor);
+            }
+        }
+        else
+        {
+            if (m_flagUsingSide & To<_uint>(SIDE::LEFT))
+                Finish_Grappling(SIDE::LEFT);
+
+            if (m_flagUsingSide & To<_uint>(SIDE::RIGHT))
+                Finish_Grappling(SIDE::RIGHT);
+
+            return;
+        }
+    }
+
     /* 로프 시작 위치 갱신 */
     _vector vLook = XMVector3Normalize(m_tr.Get_StateXM(STATE::LOOK));
     _vector vUp = XMVector3Normalize(m_tr.Get_StateXM(STATE::UP));
-    _float3 vRopeStart;
-     XMStoreFloat3(&vRopeStart, XMLoadFloat3(&m_tr->vPosition) + vLook * m_vRopeOffset.z + vUp * m_vRopeOffset.y);
-     
+
+    _float3 vRopeStart{};
+    XMStoreFloat3(
+        &vRopeStart,
+        XMLoadFloat3(&m_tr->vPosition) + vLook * m_vRopeOffset.z + vUp * m_vRopeOffset.y
+    );
+
     if (m_upLeftRope)
     {
         m_upLeftRope->Set_StartPoint(vRopeStart);
         m_upLeftRope->Update(fDT);
     }
+
     if (m_upRightRope)
     {
         m_upRightRope->Set_StartPoint(vRopeStart);

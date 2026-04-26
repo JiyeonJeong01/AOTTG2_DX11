@@ -14,6 +14,10 @@ typedef struct tagTryGrapplingInfo
     _float3 vCamOrigin{};
     _float3 vRayDir{};
     _float  fDist{};
+
+    _bool           bDynamicAnchor = false;
+    OBJECT_HANDLE   hAnchorObject{};
+    _float3         vLocalAnchorOffset{};
 } TRY_GRAPPLING_INFO;
 
 typedef struct tagGasState
@@ -48,6 +52,10 @@ private :
     CTransform      m_tr;
     CSpringJoint    m_sj;
     CRigidbody      m_rb;
+
+    _bool           m_bDynamicAnchor = false;
+    OBJECT_HANDLE   m_hAnchorObject{};
+    _float3         m_vLocalAnchorOffset{};
 
     GAS_STATE               m_tGas{};
 
