@@ -18,6 +18,7 @@ public:
     void    Enter(_uint iDetailFlag) override;
     void    Exit() override;
 
+    void    Cache_TitanContext(const TITAN_CONTEXT& tContext) override;
     void    Setup_CachedTitanContext() override;
     _uint   Get_DetailState() const override;
 
@@ -30,6 +31,8 @@ private:
 private:
     TITAN_HURT  m_eHurtState = TITAN_HURT::END;
     _uint       m_iHurtAnimClip = INVALID_ANIM_CLIP_INDEX;
+
+    TP_SFX      m_tHurtFSX = {  };
 
 public:
     static std::shared_ptr<CCrawlerTitanState_Hurt> Create(

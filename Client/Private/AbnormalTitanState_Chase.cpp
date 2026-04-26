@@ -146,6 +146,12 @@ void CAbnormalTitanState_Chase::Enter(_uint iDetailFlag)
         m_tRef.pBoundCtlr->Set_GrabTriggerEnabled(true);
         m_tRef.pBoundCtlr->Enable_Colliders(true);
     }
+
+    if (!m_bSFXPlayed)
+    {
+        m_bSFXPlayed = true;
+        SYS_SOUND.PlaySFX(m_wstrSFX, CHANNEL_18, 0.6f);
+    }
 }
 
 void CAbnormalTitanState_Chase::Exit()
@@ -171,6 +177,8 @@ void CAbnormalTitanState_Chase::Cache_TitanContext(const TITAN_CONTEXT& tContext
     }
 
     m_fStayAttackErenDist = tContext.fStayAttackErenDist;
+
+    m_wstrSFX = L"Titan_Grunt" + std::to_wstring(tContext.pSO->iHurtSound);
 }
 
 void CAbnormalTitanState_Chase::Setup_CachedTitanContext()

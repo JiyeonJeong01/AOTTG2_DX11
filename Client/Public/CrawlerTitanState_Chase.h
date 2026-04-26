@@ -47,6 +47,8 @@ private:
 
     CHitBox*        m_pHitBoxL = nullptr;
     CHitBox*        m_pHitBoxR = nullptr;
+
+    _bool           m_bSFXPlayed = false;
 private:
 
     void    Try_CacheHitBox();

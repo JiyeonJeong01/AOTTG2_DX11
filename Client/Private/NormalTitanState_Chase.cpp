@@ -103,6 +103,12 @@ void CNormalTitanState_Chase::Enter(_uint iDetailFlag)
     }
 
     m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::RUN_WALK);
+
+    if (!m_bSFXPlayed)
+    {
+        m_bSFXPlayed = true;
+        SYS_SOUND.PlaySFX(m_wstrSFX, CHANNEL_18, 0.6f);
+    }
 }
 
 void CNormalTitanState_Chase::Exit()
@@ -115,6 +121,13 @@ void CNormalTitanState_Chase::Exit()
     }
 
     CTitanState::Exit();
+}
+
+void CNormalTitanState_Chase::Cache_TitanContext(const TITAN_CONTEXT& tContext)
+{
+    CTitanState::Cache_TitanContext(tContext);
+
+    m_wstrSFX = L"Titan_Grunt" + std::to_wstring(tContext.pSO->iHurtSound);
 }
 
 void CNormalTitanState_Chase::Setup_CachedTitanContext()

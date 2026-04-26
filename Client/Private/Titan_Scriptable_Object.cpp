@@ -65,6 +65,7 @@ void CTitan_Scriptable_Object::Sync_To_SO()
     m_tSO.fMaxMoveTime = m_fMaxMoveTime;
 
     m_tSO.iHitEffect = m_iHitEffect;
+    m_tSO.iHurtSound = m_iHurtSound;
 }
 
 NS_END

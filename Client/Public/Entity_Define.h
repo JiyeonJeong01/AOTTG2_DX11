@@ -36,8 +36,13 @@ public :
     }
 
     virtual _bool   Is_Moving() = 0;
-private :
+    _bool   Is_FootStep() const
+    {
+        return m_bFootStep;
+    }
+protected :
     _bool   m_bAlive = true;
+    _bool   m_bFootStep = false;
 };
 
 

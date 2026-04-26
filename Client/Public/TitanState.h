@@ -52,6 +52,7 @@ protected:
     TITAN_RUNTIME_REF       m_tRef{};
     TITAN_STATS*            m_pStats{};
     PATROL_INFO*            m_pPatrol{};
+    wstring                 m_wstrSFX = L"";
 
 protected:
     _bool                   m_bAcivated = false;

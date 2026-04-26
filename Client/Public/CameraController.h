@@ -56,8 +56,6 @@ private:
     _float      m_fPitchInputAccum = 0.f;       /* 아직 처리되지 않은 상하 입력 누적값 */
     _float      m_fInputResponseSharpness = 25.f;   /* 마우스 입력이 얼마나 빨리 반영될지. 높을수록 손에 더 붙음 */
 
-
-
 private:
     void Follow_Target(_float fDT);
     _float WrapAngleDeg(_float fAngle);
@@ -87,6 +85,7 @@ private:
     _float  Get_TitanShakeStrength();
     _float  Get_TitanRatioByTitan() const;
     void    Apply_TitanShake(_float3& vCamPos, _float3& vLookTargetPos, _float fDT);
+    void    Update_TitanStepSound(_float fDT, _float fTitanShakeStrength);
 
 public:
     void Awake(void* pCtx) override;

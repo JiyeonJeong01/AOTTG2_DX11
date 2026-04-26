@@ -76,16 +76,6 @@ void CCrawlerTitan::Start(void* pCtx)
             CGameObject* goHitBox = hit->Get_HitBoxObject();
             IF_NULL_RETURN_MSG_BREAK(goHitBox, , "goHitBox is nullptr");
 
-            ///* ERASE_마스크_설정 */
-            //{
-            //    if (!goHitBox)
-            //        __debugbreak();
-
-            //    auto col = goHitBox->Get_Component<CCollider>();
-            //    col->iMask = (O_HITBOX | O_ENEMY);
-            //    col->iDiscardMask = (O_HITBOX | O_ENEMY | O_WALKABLE);
-            //}
-
             auto [iter, bInserted] = m_AllHitBoxes.emplace(std::string(goHitBox->Get_Label()), hit);
             IF_TRUE_RETURN_MSG_BREAK(!bInserted, , "duplicated hitbox label");
         }
@@ -98,18 +88,20 @@ void CCrawlerTitan::Start(void* pCtx)
                 continue;
 
             hurt->Subscribe_OnHurt(&CCrawlerTitan::On_Hurt, this);
+            {
+                auto* goHurt = hurt->Get_HurtBoxObject();
+                if (!goHurt)
+                    __debugbreak();
+                auto col = goHurt->Get_Component<CCollider>();
 
-            ///* ERASE_마스크_설정 */
-            //{
-            //    auto* goHurt = hurt->Get_HurtBoxObject();
-            //    if (!goHurt)
-            //        __debugbreak();
-
-            //    auto col = goHurt->Get_Component<CCollider>();
-            //    col->iMask = (O_HURTBOX | O_ENEMY);
-            //    col->iDiscardMask = (O_HURTBOX | O_ENEMY | O_WALKABLE);
-            //}
+                if (goHurt && goHurt->Get_Label() == TITAN_WEAK_POINT)
+                {
+                    m_goWeakPoint = goHurt;
+                }
+            }
         }
+        if (!m_goWeakPoint)
+            __debugbreak();
 
         m_tRef.m_pStunnedAcc = &m_iStunnedAcc;
         m_tRef.pAllHitBoxes = &m_AllHitBoxes;
@@ -250,6 +242,9 @@ void CCrawlerTitan::On_Dead(const _float fAccuracy)
 
     m_pUIHitController->On_PlayerKillTitan(fAccuracy);
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
+
+    SYS_SOUND.PlayForceSFX(L"Titan_Hurt2", CHANNEL_17, 0.82f);
+    SYS_SOUND.PlayForceSFX(L"Titan_Dead", CHANNEL_19, 0.8f);
 }
 
 void CCrawlerTitan::On_Stunned(const HIT_INFO& tHitInfo)
@@ -377,6 +372,8 @@ void CCrawlerTitan::Update_FootDust()
     if (!m_spCurState)
         return;
 
+    m_bFootStep = false;
+
     auto eState = m_spCurState->Get_State();
     _bool bCanPlayDust = eState == TITAN_STATE::MOVE || eState == TITAN_STATE::CHASE;
     if (!bCanPlayDust)
@@ -385,6 +382,7 @@ void CCrawlerTitan::Update_FootDust()
     _float3 vWorldPos{};
     if (m_tDustRuntime.Try_PlayDust(m_tComponents.animator, m_tComponents.transform, vWorldPos))
     {
+        m_bFootStep = true;
         m_pVFX_Manager->Play_ParticleBurst(PARTICLE_VFX::FOOT_DUST, vWorldPos);
     }
 }

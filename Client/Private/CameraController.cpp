@@ -288,6 +288,8 @@ void CCameraController::Apply_TitanShake(_float3& vCamPos, _float3& vLookTargetP
     vLookTargetPos.x += fShakeX * 1.5f;
     vLookTargetPos.y += fShakeY * 1.5f;
     vLookTargetPos.z += fShakeZ * 1.5f;
+
+    Update_TitanStepSound(fDT, fStrength);
 }
 
 void CCameraController::On_Change_DetectedTitan(CGameObject* goTitan, CTitan* scTitan)
@@ -295,6 +297,28 @@ void CCameraController::On_Change_DetectedTitan(CGameObject* goTitan, CTitan* sc
     m_goDetectedTitan = goTitan;
     m_scTitan = scTitan;
     m_fShakeRatioByTitan = Get_TitanRatioByTitan();
+}
+
+void CCameraController::Update_TitanStepSound(_float fDT, _float fTitanShakeStrength)
+{
+    if (!m_scTitan)
+        return;
+
+    if (!m_scTitan->Is_FootStep())
+        return;
+
+    const _float fRatio = fTitanShakeStrength / m_fTitanShakeMaxStrength;
+    /* 최소 최대 */
+    const _float fMinVolume = 0.1f;
+    const _float fMaxVolume = 0.6f;
+    _float fVolume = fMinVolume + (fMaxVolume - fMinVolume) * fRatio; 
+
+    if (fVolume < fMinVolume)
+        fVolume = fMinVolume;
+    else if (fVolume > fMaxVolume)
+        fVolume = fMaxVolume;
+
+    SYS_SOUND.PlayForceSFX(L"Titan_Step", CHANNEL_16, fVolume);
 }
 
 NS_END;

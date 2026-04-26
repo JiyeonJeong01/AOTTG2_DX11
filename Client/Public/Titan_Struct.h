@@ -28,8 +28,8 @@ typedef struct tagTitanScriptablebject
     _float      fMaxIdleTime{};
     _float      fMaxMoveTime{};
 
-    _int       iHitEffect = 0;
-
+    _int        iHitEffect = 0;
+    _int        iHurtSound = 1;
     CGameObject*    goEren = nullptr;
 }TITAN_SCRIPTABLE_OBJECT;
 

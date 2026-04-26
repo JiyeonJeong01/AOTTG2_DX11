@@ -260,6 +260,9 @@ void CAbnormalTitan::On_Dead(const _float fAccuracy)
 
     m_pUIHitController->On_PlayerKillTitan(fAccuracy);
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
+
+    SYS_SOUND.PlayForceSFX(L"Titan_Hurt2", CHANNEL_17, 0.82f);
+    SYS_SOUND.PlayForceSFX(L"Titan_Dead", CHANNEL_19, 0.8f);
 }
 
 void CAbnormalTitan::On_Stunned(const HIT_INFO& tHitInfo)
@@ -415,6 +418,8 @@ void CAbnormalTitan::Update_FootDust()
     if (!m_spCurState)
         return;
 
+    m_bFootStep = false;
+
     auto eState = m_spCurState->Get_State();
     _bool bCanPlayDust = eState == TITAN_STATE::MOVE || eState == TITAN_STATE::CHASE;
     if (!bCanPlayDust)
@@ -423,6 +428,7 @@ void CAbnormalTitan::Update_FootDust()
     _float3 vWorldPos{};
     if (m_tDustRuntime.Try_PlayDust(m_tComponents.animator, m_tComponents.transform, vWorldPos))
     {
+        m_bFootStep = true;
         m_pVFX_Manager->Play_ParticleBurst(PARTICLE_VFX::FOOT_DUST, vWorldPos);
     }
 }

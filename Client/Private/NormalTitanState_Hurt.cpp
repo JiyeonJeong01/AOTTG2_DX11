@@ -51,6 +51,14 @@ void CNormalTitanState_Hurt::Update(_float fDT)
         }
     }
 
+    if (m_tComponents.animator->iAnimationClip == m_iHurtAnimClip
+        && !m_tHurtFSX.bPlayed
+        && m_tComponents.animator.Get_TrackPosition() >= m_tHurtFSX.fTrackPosition)
+    {
+        SYS_SOUND.PlaySFX(m_wstrSFX, CHANNEL_17, 0.72f);
+        m_tHurtFSX.bPlayed = true;
+    }
+
     Decide_NextAnim();
 }
 
@@ -74,6 +82,7 @@ void CNormalTitanState_Hurt::Enter(_uint iDetailFlag)
     m_bWaitRecovery = false;
     m_fRecoveryElapsed = 0.f;
     m_bLegDownFinished = false;
+    m_tHurtFSX.bPlayed = false;
 
     /* fallback은 모두 IDLE로 */
     if (iDetailFlag >= To<_uint>(TITAN_HURT::END))
@@ -116,6 +125,15 @@ void CNormalTitanState_Hurt::Exit()
     m_bLegDownFinished = false;
 
     CTitanState::Exit();
+}
+
+void CNormalTitanState_Hurt::Cache_TitanContext(const TITAN_CONTEXT& tContext)
+{
+    CTitanState::Cache_TitanContext(tContext);
+
+    m_tHurtFSX.iAnimIndex = m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_TITAN::SIT_HIT_EYE);
+    m_wstrSFX = L"Titan_Hurt" + std::to_wstring(tContext.pSO->iHurtSound);
+    m_tHurtFSX.fTrackPosition = 30.f;
 }
 
 void CNormalTitanState_Hurt::Setup_CachedTitanContext()

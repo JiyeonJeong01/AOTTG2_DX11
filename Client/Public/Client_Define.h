@@ -116,6 +116,13 @@ namespace Client
 
     } VFX_OBJECT;
 
+    typedef struct tagTrackPositionSFX
+    {
+        _uint   iAnimIndex = 0;
+        _float  fTrackPosition = 0.f;
+        _bool   bPlayed = false;
+    } TP_SFX;
+
 }
 
 

@@ -105,6 +105,8 @@ void COpening_Director::Start(void* pCtx)
     else
     {
         Enter_State(OPENING_STATE::TITAN_BORNE);
+        SYS_SOUND.PlayBGM(L"InGameBGM", m_fIngameVolume);
+
     }
 }
 
@@ -156,13 +158,15 @@ void COpening_Director::Enter_State(OPENING_STATE eState)
         break;
 
     case OPENING_STATE::WHITEOUT:
-        {
+    {
+        m_bErenTitanSpawned = false;
+
         if (m_pErenObject)
             m_pErenObject->Set_Enable(false);
         if (m_pBoatNPCObject)
             m_pBoatNPCObject->Set_Enable(false);
-        }
-        break;
+    }
+    break;
     case OPENING_STATE::TITAN_BORNE:
         m_fElapsedBorn = 0.f;
         if (m_pErenTitan)
@@ -267,6 +271,16 @@ void COpening_Director::Update_WhiteOut(_float fDT)
     const _float fFlashEnd = fHoldEnd + m_fWhiteOutFlashTime;
     const _float fReturnEnd = fFlashEnd + m_fWhiteOutReturnTime;
 
+    if (!m_bErenTitanSpawned && fTime >= fFastEnd * 0.98f)
+    {
+        m_bErenTitanSpawned = true;
+
+        if (m_pErenTitan)
+            m_pErenTitan->Set_Enable(true);
+
+        m_fElapsedBorn = 0.f;
+    }
+
     _float4 vColor = { 1.f, 1.f, 1.f, 0.f };
 
     if (fTime <= fFastEnd)
@@ -316,7 +330,7 @@ void COpening_Director::Update_TitanBorne(_float fDT)
     if (m_bRequestedShake)
         return;
     m_fElapsedBorn += fDT;
-    if (!m_bRequestedShake && m_fElapsedBorn > 1.5f)
+    if (!m_bRequestedShake && m_fElapsedBorn > 0.4f)
     {
         SYS_CINEMATIC.Force_Shake(1.2f, 0.15f);
         m_bRequestedShake = true;
@@ -339,7 +353,7 @@ void COpening_Director::On_CinematicEvent(const CINEMATIC_EVENT_DATA& tEventData
     }
     else if (tEventData.strEventName == "SCOUTS")
     {
-        SYS_SOUND.PlayBGM(L"InGameBGM", 0.4f);
+        SYS_SOUND.PlayBGM(L"InGameBGM", 0.3f);
     }
     else if (tEventData.strEventName == "ORBIT")
     {
@@ -347,6 +361,10 @@ void COpening_Director::On_CinematicEvent(const CINEMATIC_EVENT_DATA& tEventData
             m_scScoutController->Play_Salute_Animation();
         else
             LOG_ERROR("m_scScoutController is nullptr!");
+    }
+    else if (tEventData.strEventName == "GRUNT")
+    {
+        SYS_SOUND.PlayForceSFX(L"Titan_Grunt3", CHANNEL_27, 0.8f);
     }
     else if (tEventData.strEventName == "WHITEOUT")
     {
@@ -361,7 +379,8 @@ void COpening_Director::On_CinematicEvent(const CINEMATIC_EVENT_DATA& tEventData
             else
                 LOG_ERROR("m_scScoutController is nullptr!");
 
-            SYS_SOUND.PlayForceSFX(L"OpeningCutScene_Lighting", CHANNEL_27, 1.f);
+            SYS_SOUND.SetChannelVolume(CHANNEL_0, m_fIngameVolume);
+            SYS_SOUND.PlayForceSFX(L"OpeningCutScene_Lighting", CHANNEL_27, 0.8f);
         }
 
     }

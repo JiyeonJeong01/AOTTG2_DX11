@@ -40,6 +40,14 @@ void CCrawlerTitanState_Hurt::Update(_float fDT)
     if (!m_bAcivated)
         return;
 
+    if (m_tComponents.animator->iAnimationClip == m_iHurtAnimClip
+        && !m_tHurtFSX.bPlayed
+        && m_tComponents.animator.Get_TrackPosition() >= m_tHurtFSX.fTrackPosition)
+    {
+        SYS_SOUND.PlaySFX(m_wstrSFX, CHANNEL_17, 0.72f);
+        m_tHurtFSX.bPlayed = true;
+    }
+
     Decide_NextAnim();
 }
 
@@ -60,6 +68,7 @@ void CCrawlerTitanState_Hurt::Enter(_uint iDetailFlag)
     cout << "[CRAWLER_HURT] ENTER\n";
 
     m_iHurtAnimClip = INVALID_ANIM_CLIP_INDEX;
+    m_tHurtFSX.bPlayed = false;
 
     if (iDetailFlag >= To<_uint>(TITAN_HURT::END))
     {
@@ -90,6 +99,15 @@ void CCrawlerTitanState_Hurt::Exit()
     m_iHurtAnimClip = INVALID_ANIM_CLIP_INDEX;
 
     CTitanState::Exit();
+}
+
+void CCrawlerTitanState_Hurt::Cache_TitanContext(const TITAN_CONTEXT& tContext)
+{
+    CTitanState::Cache_TitanContext(tContext);
+
+    m_wstrSFX = L"Titan_Hurt" + std::to_wstring(tContext.pSO->iHurtSound);
+    m_tHurtFSX.iAnimIndex = m_tComponents.animator.Get_AnimationClipIdx_By_Name(ANIM_TITAN::CRAWLER_HITEYES);
+    m_tHurtFSX.fTrackPosition = 34.f;
 }
 
 void CCrawlerTitanState_Hurt::Setup_CachedTitanContext()

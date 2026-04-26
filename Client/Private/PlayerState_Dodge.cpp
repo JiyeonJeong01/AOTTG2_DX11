@@ -87,6 +87,7 @@ void CPlayerState_Dodge::Enter(_uint iDetailFlag)
     m_tComponents.rigidbody.Add_LinearImpulse(vImpulse);
 
     m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::DODGE);
+    SYS_SOUND.PlayForceSFX(L"Human_Jump", CHANNEL_1, 0.5f);
 }
 
 void CPlayerState_Dodge::Exit()

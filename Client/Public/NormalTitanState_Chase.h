@@ -21,6 +21,7 @@ public:
     void    Enter(_uint iDetailFlag) override;
     void    Exit() override;
 
+    void    Cache_TitanContext(const TITAN_CONTEXT& tContext);
     void    Setup_CachedTitanContext() override;
     _uint   Get_DetailState() const override;
 
@@ -38,8 +39,11 @@ private:
     _float          m_fGrabAnimCooldown = 0.f;
     _uint           m_iGrabAnimClip = INVALID_ANIM_CLIP_INDEX;
 
-
     TITAN_CHASE     m_eChaseState = TITAN_CHASE::END;
+
+    _bool           m_bSFXPlayed = false;
+
+
 private:
     _float  Get_ChaseDist();
     void    Move(_float fDT);

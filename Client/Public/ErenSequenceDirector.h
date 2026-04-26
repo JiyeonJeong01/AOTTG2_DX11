@@ -68,9 +68,11 @@ private :
 
 private :
     SCRIPT_OBJECT_REF           m_refHUDController{};
+    SCRIPT_OBJECT_REF           m_refRock{};
 
     SCRIPT_FIELDS_BEGIN(CErenSequenceDirector)
     SCRIPT_FIELD_OBJECT_REF(m_refHUDController)
+    SCRIPT_FIELD_OBJECT_REF(m_refRock)
     SCRIPT_FIELDS_END(CErenSequenceDirector)
     
 };

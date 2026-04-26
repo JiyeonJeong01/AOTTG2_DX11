@@ -18,6 +18,7 @@ public:
     void    Enter(_uint iDetailFlag) override;
     void    Exit() override;
 
+    void    Cache_TitanContext(const TITAN_CONTEXT& tContext) override;
     void    Setup_CachedTitanContext() override;
     _uint   Get_DetailState() const override;
 
@@ -36,6 +37,8 @@ private:
     _float      m_fRecoveryElapsed = 0.f;
 
     _bool       m_bLegDownFinished = false;
+
+    TP_SFX      m_tHurtFSX = {  };
 
 private:
     _bool   Is_LegHurt(TITAN_HURT eHurt) const;

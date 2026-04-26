@@ -42,20 +42,20 @@ private :
     CHurtBox*                           m_scHurtBox = nullptr;
     CAttacher*                          m_scAttach{};
 
-    TITAN_DUST_RUNTIME        m_tDustRun{};
-    TITAN_DUST_RUNTIME        m_tDustWalk{};
-    TITAN_DUST_RUNTIME        m_tDustRockWalk{};
+    TITAN_DUST_RUNTIME                  m_tDustRun{};
+    TITAN_DUST_RUNTIME                  m_tDustWalk{};
+    TITAN_DUST_RUNTIME                  m_tDustRockWalk{};
 
+
+    _float3                             m_fStartPosition = { -98.f, 20.13f, -68.0f };
+
+    CTransform                          m_trPlayer{};
 
     /* ----- Eren Stats ----- */
-    /* TODO : 에렌_거인_테스트 */
-    //const _float                        m_fMaxSpeed = 30.f;     /* rigidbody 기반 이동에 대한 제한 */
-    //_float                              m_fWalkSpeed = 30.f;     
-    //_float                              m_fRunSpeed = 30.f;
 
-    const _float                        m_fMaxSpeed = 14.f;     /* rigidbody 기반 이동에 대한 제한 */
+    const _float                        m_fMaxSpeed = 13.5f;     /* rigidbody 기반 이동에 대한 제한 */
     _float                              m_fWalkSpeed = 11.f;     
-    _float                              m_fRunSpeed = 14.f;
+    _float                              m_fRunSpeed = 16.5f;
 
     const _float                        m_fTotalLife = 100.f;
     _float                              m_fCurLife = m_fTotalLife;
@@ -189,9 +189,11 @@ private :
 
 public:
     SCRIPT_OBJECT_REF   m_refVFXManager{};
+    SCRIPT_OBJECT_REF   m_refPlayer{};
 
     SCRIPT_FIELDS_BEGIN(CErenTitan)
         SCRIPT_FIELD_OBJECT_REF(m_refVFXManager);
+        SCRIPT_FIELD_OBJECT_REF(m_refPlayer);
     SCRIPT_FIELDS_END(CErenTitan)
 };
 

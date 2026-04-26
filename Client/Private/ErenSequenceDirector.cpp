@@ -51,6 +51,17 @@ void CErenSequenceDirector::Start(void* pCtx)
 
     if (m_bSequenceEnd == false)
         Enter_CurrentStep();
+
+
+    CGameObject* goRock = GAME_INSTANCE.Find_GameObject(m_refRock.hObject);
+    CTransform trRock{};
+    if (goRock)
+    {
+        trRock = goRock->Get_Component<CTransform>();
+        trRock.Set_Position(XMVectorSet(98.512f, 8.38f, -153.41f, 0.f));
+    }
+    else
+        __debugbreak();
 }
 
 void CErenSequenceDirector::Priority_Update(void* pCtx, _float fDT)

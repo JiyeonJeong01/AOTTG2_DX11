@@ -30,6 +30,14 @@ void CErenTitan::Awake(void* pCtx)
     m_rbEren = m_goEren->Get_Component<CRigidbody>();
     m_animEren = m_goEren->Get_Component<CAnimator>();
 
+    m_trEren->vPosition = m_fStartPosition; /* 시작 위치 세팅 */
+
+    CGameObject* goPlayer = GAME_INSTANCE.Find_GameObject(m_refPlayer.hObject);
+    if (goPlayer)
+        m_trPlayer = goPlayer->Get_Component<CTransform>();
+    else
+        __debugbreak();
+
     /* null 검사 한 번에 */
     if (m_pGroundChecker == nullptr || m_pSensor == nullptr)
     {
@@ -115,6 +123,8 @@ void CErenTitan::Priority_Update(void* pCtx, _float fDT)
 
 void CErenTitan::Update(void* pCtx, _float fDT)
 {
+    Update_FootDust();
+
     switch (m_eStepType)
     {
     case EREN_STEP_TYPE::BORNE :
@@ -135,17 +145,17 @@ void CErenTitan::Update(void* pCtx, _float fDT)
 
     case EREN_STEP_TYPE::MOVE_ROCK :
         Process_MoveRock(fDT);
-        return;
+        break;
 
     case EREN_STEP_TYPE::FIX_ROCK :
         Process_FixRock(fDT);
-        return;
+        break;
 
     case EREN_STEP_TYPE::END :
-        return;
+        break;
     }
 
-    Update_FootDust();
+
 }
 
 void CErenTitan::Late_Update(void* pCtx, _float fDT)
@@ -243,9 +253,9 @@ void CErenTitan::Process_Born(_float fDT)
         }
     }
 
-    if (!m_bBornSFXPlayed && m_animEren->fTrackPosition >= 64.2f)
+    if (!m_bBornSFXPlayed && m_animEren->fTrackPosition >= 59.9f)
     {
-        SYS_SOUND.PlayForceSFX(L"Eren_Roar", CHANNEL_11, 0.4f);
+        SYS_SOUND.PlaySFX(L"Eren_Roar", CHANNEL_11, 0.4f);
         m_bBornSFXPlayed = true;
     }
 }
@@ -864,8 +874,6 @@ void CErenTitan::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
     {
         On_AnimLiftFinished(iIndex);
     }
-
-
 }
 
 void CErenTitan::On_AnimBornFinished(const _uint iIndex)
@@ -1002,6 +1010,19 @@ void CErenTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox
             m_animEren.Set_NextAnimationClip(ANIM_EREN_TITAN::HIT_ANNIE_1);
     }
 
+    _vector vDiff = m_trPlayer.Get_StateXM(STATE::POSITION) - m_trEren.Get_StateXM(STATE::POSITION);
+    _float fDist = XMVectorGetX(XMVector3Length(vDiff));
+
+    const _float fMinDist = 5.f; 
+    const _float fMaxDist = 40.f; 
+
+    _float t = (fDist - fMinDist) / (fMaxDist - fMinDist);
+    t = std::clamp(t, 0.f, 1.f);
+
+    _float fVolume = std::lerp(0.4f, 0.2f, t);
+
+    SYS_SOUND.PlaySFX(L"Titan_Attack1", CHANNEL_15, fVolume);
+
     m_OnDamaged.Invoke(m_fCurLife);
 }
 
@@ -1033,24 +1054,37 @@ void CErenTitan::On_SuccessAttack(CGameObject* goTitan, const HIT_INFO& tHitInfo
     XMStoreFloat3(&vAttack, Get_AttackPower());
     rbTitan.Set_Restitution(1.f);
     rbTitan.Add_LinearImpulse(vAttack);
+
+    _vector vDiff = m_trPlayer.Get_StateXM(STATE::POSITION) - m_trEren.Get_StateXM(STATE::POSITION);
+    _float fDist = XMVectorGetX(XMVector3Length(vDiff));
+
+    const _float fMinDist = 5.f;
+    const _float fMaxDist = 40.f;
+
+    _float t = (fDist - fMinDist) / (fMaxDist - fMinDist);
+    t = std::clamp(t, 0.f, 1.f);
+
+    _float fVolume = std::lerp(0.4f, 0.2f, t);
+
+    SYS_SOUND.PlayForceSFX(L"Eren_Hit1", CHANNEL_14, fVolume);
 }
 
 void CErenTitan::Set_FootDust()
 {
-    TITAN_DUST_DESC tLeftRun{ false, 15.f, { 3.f, 0.6f, 1.f } };
-    TITAN_DUST_DESC tRightRun{ false, 41.f, { -3.f, 0.6f, 1.f } };
+    TITAN_DUST_DESC tLeftRun{ false, 10.f, { 3.f, 0.6f, 1.f } };
+    TITAN_DUST_DESC tRightRun{ false, 35.f, { -3.f, 0.6f, 1.f } };
 
     m_tDustRun.tLeft = tLeftRun;
     m_tDustRun.tRight = tRightRun;
 
-    TITAN_DUST_DESC tLeftWalk{ false, 44.f, { 3.f, 0.6f, 1.f } };
-    TITAN_DUST_DESC tRightWalk{ false, 105.f, { -3.f, 0.6f, 1.f } };
+    TITAN_DUST_DESC tLeftWalk{ false, 44.f, { 3.f, 0.6f, 2.f } };
+    TITAN_DUST_DESC tRightWalk{ false, 105.f, { -3.f, 0.6f, 2.f } };
 
     m_tDustWalk.tLeft = tLeftWalk;
     m_tDustWalk.tRight = tRightWalk;
 
-    TITAN_DUST_DESC tLeftRock{ false, 44.f, { 3.f, 0.6f, 1.f } };
-    TITAN_DUST_DESC tRightRock{ false, 105.f, { -3.f, 0.6f, 1.f } };
+    TITAN_DUST_DESC tLeftRock{ false, 60.f, { 4.f, 1.5f, 2.f } };
+    TITAN_DUST_DESC tRightRock{ false, 17.f, { -4.f, 1.5f, 2.f } };
 
     m_tDustRockWalk.tLeft = tLeftRock;
     m_tDustRockWalk.tRight = tRightRock;
@@ -1089,6 +1123,20 @@ void CErenTitan::Update_FootDust()
         m_pVFX_Manager->Play_ParticleBurst(
             PARTICLE_VFX::FOOT_DUST,
             vWorldPos);
+
+        _vector vDiff = m_trPlayer.Get_StateXM(STATE::POSITION) - XMLoadFloat3(&vWorldPos);
+        _float fDist = XMVectorGetX(XMVector3Length(vDiff));
+
+        const _float fMinDist = 5.f;
+        const _float fMaxDist = 40.f;
+
+        _float t = (fDist - fMinDist) / (fMaxDist - fMinDist);
+        t = std::clamp(t, 0.f, 1.f);
+
+        // 가까우면 0.5, 멀면 0.2
+        _float fVolume = std::lerp(0.5f, 0.2f, t);
+
+        SYS_SOUND.PlayForceSFX(L"Titan_Step", CHANNEL_13, fVolume);
     }
 }
 

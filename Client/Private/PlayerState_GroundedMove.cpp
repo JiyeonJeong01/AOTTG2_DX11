@@ -98,7 +98,7 @@ void CPlayerState_GroundedMove::Enter(_uint iDetailFlag)
         m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);
         CPlayerState::GroundedMove(m_fRunCorrectionDT); /* 바로 run으로 들어오는 경우 움직임 끊겨보인다. */
 
-        SYS_SOUND.PlayForceLoopSFX(L"Human_Footstep", CHANNEL_2, 0.5f);
+        SYS_SOUND.PlayForceLoopSFX(L"Human_Footstep", CHANNEL_2, 0.2f);
     }
     else if (iDetailFlag == To<_uint>(GROUNDED_MOVE::DASH_LAND)) /* 착지 */
     {
@@ -258,7 +258,7 @@ void CPlayerState_GroundedMove::Decide_NextAnim()
             if (bSlideOver)
             {
                 SYS_SOUND.StopSound(CHANNEL_1);
-                SYS_SOUND.PlayForceLoopSFX(L"Human_Footstep", CHANNEL_2, 0.5f);
+                SYS_SOUND.PlayForceLoopSFX(L"Human_Footstep", CHANNEL_2, 0.2f);
 
                 m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::RUN);
                 m_eGroundedMoveState = GROUNDED_MOVE::RUN;

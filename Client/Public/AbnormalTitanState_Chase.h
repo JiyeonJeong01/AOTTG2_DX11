@@ -54,6 +54,7 @@ private:
 
     TITAN_CHASE     m_eChaseState = TITAN_CHASE::END;
     _char           m_szChaseAnimName[32];
+    _bool           m_bSFXPlayed = false;
 
 private:
     void    Move(_float fDT);

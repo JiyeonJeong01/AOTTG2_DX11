@@ -84,9 +84,9 @@ private:
     CGameObject*        m_pWhiteOutUIObject = nullptr;
     CCanvasRenderer     m_crWhiteOut{};
 
-    _float              m_fWhiteOutFastTime = 0.22f;
+    _float              m_fWhiteOutFastTime = 0.18f;
     _float              m_fWhiteOutHoldTime = 0.1f;
-    _float              m_fWhiteOutFlashTime = 0.115f;
+    _float              m_fWhiteOutFlashTime = 0.12f;
     _float              m_fWhiteOutReturnTime = 0.8f;
 
     _float4             m_vWhiteColor = { 1.f, 1.f, 1.f, 0.f };
@@ -102,6 +102,7 @@ private:
 
     _float              m_fElapsedBorn = 0.f;
     _bool               m_bRequestedShake = false;
+    _bool               m_bErenTitanSpawned = false;
     /* ------------------------------------------ */
 
     /* --------------- COMMON -------------- */
@@ -109,6 +110,7 @@ private:
 
     SCRIPT_OBJECT_REF   m_refCinematicCam{};
     SCRIPT_OBJECT_REF   m_refScoutController{};
+    _float              m_fIngameVolume = 0.12f;
 
 
 private :
