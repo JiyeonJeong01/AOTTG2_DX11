@@ -17,6 +17,8 @@ void CCinematicCamera_Director::Awake(void* pCtx)
     IF_TRUE_RETURN_MSG_BREAK(!bSuccess, , "Scout_RescueDialogue load failed");
     bSuccess = SYS_CINEMATIC.Load("opening");
     IF_TRUE_RETURN_MSG_BREAK(!bSuccess, , "opening load failed");
+    bSuccess = SYS_CINEMATIC.Load("LiftUp");
+    IF_TRUE_RETURN_MSG_BREAK(!bSuccess, , "LiftUp load failed");
 }
 
 void CCinematicCamera_Director::Start(void* pCtx)

@@ -2,18 +2,32 @@
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
 Texture2D g_BaseMap;
-vector g_BaseColor;
+vector g_BaseColor = vector(1.f, 1.f, 1.f, 1.f);
+
 
 float g_OutlineWidth = 0.05f;
 vector g_OutlineColor = (1.f, 1.f, 1.f, 1.f);
 
 float g_fFar = 1000.f;
 
+Texture2D   g_DissolveNoiseMap;
+
+float       g_DissolveAmount = 0.f;
+float       g_DissolveEdgeWidth = 0.05f;
+vector      g_DissolveEdgeColor = vector(1.f, 0.35f, 0.05f, 1.f);
+
 SamplerState DefaultSampler
 {
     Filter = MIN_MAG_MIP_LINEAR;
     AddressU = Clamp;
     AddressV = Clamp;
+};
+
+SamplerState DissolveSampler
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
 };
 
 struct VS_IN
@@ -129,6 +143,44 @@ PS_OUT_SHADOW PS_Shadow(PS_IN In)
     return Out;
 }
 
+// PS_OUT PS_Dissolve(PS_IN In)
+// {
+//     PS_OUT Out;
+
+//     vector vMtrlDiffuse = g_BaseMap.Sample(DefaultSampler, In.vTexcoord);
+
+//     if (vMtrlDiffuse.a < 0.3f)
+//         discard;
+
+//     float fNoise = g_DissolveNoiseMap.Sample(DessolveSampler, In.vTexcoord).r;
+
+//     clip(fNoise - g_DissolveAmount);
+
+//     float fEdge = 1.f - saturate((fNoise - g_DissolveAmount) / max(g_DissolveEdgeWidth, 0.0001f));
+
+//     vector vColor = vMtrlDiffuse * g_BaseColor;
+//     vColor.rgb = lerp(vColor.rgb, g_DissolveEdgeColor.rgb, fEdge);
+
+//     Out.vColor = vColor;
+//     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+//     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / g_fFar, 0.f, 1.f);
+
+//     return Out;
+// }
+
+PS_OUT PS_Dissolve(PS_IN In)
+{
+    PS_OUT Out;
+
+    clip(-1);
+
+    Out.vColor = vector(1.f, 0.f, 1.f, 1.f);
+    Out.vNormal = vector(0.5f, 0.5f, 1.f, 0.f);
+    Out.vDepth = vector(1.f, 1.f, 0.f, 1.f);
+
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass
@@ -147,5 +199,10 @@ technique11 DefaultTechnique
     {
         SetVertexShader(CompileShader(vs_5_0, VS_Default()));
         SetPixelShader(CompileShader(ps_5_0, PS_Shadow()));
+    }
+        pass Dissolve
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS_Default()));
+        SetPixelShader(CompileShader(ps_5_0, PS_Dissolve()));
     }
 }

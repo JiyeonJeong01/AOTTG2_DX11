@@ -22534,6 +22534,20 @@
                   "Value": {
                     "UUID": "D6232983-9023-44E3-8A3B-A72CE3F0CFBC"
                   }
+                },
+                {
+                  "Name": "m_refRock",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "9F36DBDB-3954-4E0E-BFEE-3DB3C3699616"
+                  }
+                },
+                {
+                  "Name": "m_refCamCinematic",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "EAAB2CC6-E845-4BB1-85D0-50DBDA05BDBF"
+                  }
                 }
               ]
             },
@@ -41996,7 +42010,7 @@
               },
               {
                 "Clip": 39,
-                "Loop": true
+                "Loop": false
               },
               {
                 "Clip": 44,
@@ -43703,9 +43717,9 @@
             "DiscardMask": 247,
             "Enabled": true,
             "HalfExtentsLocal": [
-              14.0,
+              17.0,
               10.0,
-              14.0
+              17.0
             ],
             "Mask": 128,
             "Offset": [

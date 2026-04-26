@@ -55,6 +55,7 @@ private :
     std::unique_ptr<CNavMesh>                   m_upNav{};
 
     std::unordered_map<std::string, CHitBox*>   m_AllHitBoxes;
+    vector<CMeshRenderer>   m_MrChildren;
 
     Engine::CEvent<Engine::CGameObject*>        m_OnChanged_Target;
 
@@ -89,6 +90,8 @@ private:
 
     void Set_FootDust();
     void Update_FootDust();
+    void Start_Dissolve();
+    void Update_Dissolve(_float fDT);
 
 private :
     char        m_szState[32] = {};

@@ -22534,6 +22534,13 @@
                   "Value": {
                     "UUID": "D6232983-9023-44E3-8A3B-A72CE3F0CFBC"
                   }
+                },
+                {
+                  "Name": "m_refRock",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "9F36DBDB-3954-4E0E-BFEE-3DB3C3699616"
+                  }
                 }
               ]
             },
@@ -41992,7 +41999,7 @@
             "LoopMap": [
               {
                 "Clip": 39,
-                "Loop": true
+                "Loop": false
               },
               {
                 "Clip": 47,

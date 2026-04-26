@@ -55,6 +55,8 @@ typedef struct ENGINE_DLL tagMeshRendererData final
 
     /* -------- EXTRA PASS -------- */
     uint32_t            extraPassFlags = 0;
+    /* -------- DISSOLVE -------- */
+    _bool               bUseDissolvePass = false;
 
     /* -------- 파트별 머터리얼 오버라이드 -------- */
     std::vector<uint32_t>   vecOverrideMaterials;

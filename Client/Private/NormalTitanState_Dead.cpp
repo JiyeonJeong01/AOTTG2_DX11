@@ -47,7 +47,7 @@ void CNormalTitanState_Dead::Enter(_uint iDetailFlag)
 
     m_scTitan->Set_Dead();
 
-    m_tComponents.collider.Set_Enable(false);
+    //m_tComponents.collider.Set_Enable(false);
 }
 
 void CNormalTitanState_Dead::Exit()

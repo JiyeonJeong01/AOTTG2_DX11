@@ -3,6 +3,7 @@
 #include "ErenTitan.h"
 #include "HUDController.h"
 #include "UI_NoticeController.h"
+#include "CinematicSystem.h"
 
 NS_BEGIN(Client)
 
@@ -62,6 +63,18 @@ void CErenSequenceDirector::Start(void* pCtx)
     }
     else
         __debugbreak();
+
+    CGameObject* goCinematic = GAME_INSTANCE.Find_GameObject(m_refCamCinematic.hObject);
+    if (goCinematic)
+    {
+        m_camCinematic = goCinematic->Get_Component<CCamera>();
+        if (m_camCinematic.Is_Valid() == false)
+            __debugbreak();
+    }
+    else
+        __debugbreak();
+
+
 }
 
 void CErenSequenceDirector::Priority_Update(void* pCtx, _float fDT)
@@ -284,6 +297,7 @@ _bool CErenSequenceDirector::Check_AnimFinished() const
 void CErenSequenceDirector::Command_LiftRock()
 {
     m_scEren->Start_LiftUp();
+    SYS_CINEMATIC.Play("LiftUp", m_camCinematic);
 }
 
 void CErenSequenceDirector::Command_MoveRock()

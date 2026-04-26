@@ -57,6 +57,8 @@ private:
     std::unordered_map<std::string, CHitBox*>   m_AllHitBoxes;
     CGameObject* m_goWeakPoint = nullptr;
 
+    vector<CMeshRenderer>   m_MrChildren;
+
     Engine::CEvent<Engine::CGameObject*>        m_OnChanged_Target;
 
 public:
@@ -90,6 +92,8 @@ private:
 
     void Set_FootDust();
     void Update_FootDust();
+    void Start_Dissolve();
+    void Update_Dissolve(_float fDT);
 
 private:
     SCRIPT_OBJECT_REF   m_refVFXManager{};

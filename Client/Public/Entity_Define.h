@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "Client_Define.h"
+#include "Identity.h"
+#include "BuiltIn_GUID.h"
 
 NS_BEGIN(Client)
 
@@ -40,9 +42,18 @@ public :
     {
         return m_bFootStep;
     }
+
 protected :
     _bool   m_bAlive = true;
     _bool   m_bFootStep = false;
+
+    _bool   m_bDissolveStarted = false;
+    _float  m_fDissolveAmount = -0.15f;
+    _float  m_fDissolveSpeed = 0.16f;
+    uint32_t m_hDissolveNoiseMap = INVALID_HANDLE_UINT;
+    uint32_t m_hDissolveNoiseMeshMap = INVALID_HANDLE_UINT;
+    ASSET_GUID  m_tDissolveGUID = ASSET_GUID("D489136C-2D80-4807-BFB8-3E0629218123");
+    ASSET_GUID  m_tDissolveMeshGUID = Engine::DefaultAssetGuid::MATERIAL_OUTLINE;
 };
 
 

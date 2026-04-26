@@ -63,16 +63,20 @@ private:
 
 private :
     /* TODO : 에렌_거인_테스트 */
-    // const _int                  m_iNumTotalCombatTitans = 3;
-    const _int                  m_iNumTotalCombatTitans = 2;
+    // const _int                  m_iNumTotalCombatTitans = 2;
+    const _int                  m_iNumTotalCombatTitans = 0;
+
+    CCamera                     m_camCinematic{};
 
 private :
     SCRIPT_OBJECT_REF           m_refHUDController{};
     SCRIPT_OBJECT_REF           m_refRock{};
+    SCRIPT_OBJECT_REF           m_refCamCinematic{};
 
     SCRIPT_FIELDS_BEGIN(CErenSequenceDirector)
     SCRIPT_FIELD_OBJECT_REF(m_refHUDController)
     SCRIPT_FIELD_OBJECT_REF(m_refRock)
+    SCRIPT_FIELD_OBJECT_REF(m_refCamCinematic)
     SCRIPT_FIELDS_END(CErenSequenceDirector)
     
 };

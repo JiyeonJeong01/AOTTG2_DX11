@@ -27,6 +27,8 @@ void CAbnormalTitanState_Dead::Priority_Update(_float fDT)
 void CAbnormalTitanState_Dead::Update(_float fDT)
 {
     CTitanState::Update(fDT);
+
+
 }
 
 void CAbnormalTitanState_Dead::Late_Update(_float fDT)
@@ -47,7 +49,7 @@ void CAbnormalTitanState_Dead::Enter(_uint iDetailFlag)
 
     m_scTitan->Set_Dead();
 
-    m_tComponents.collider.Set_Enable(false);
+    //m_tComponents.collider.Set_Enable(false);
 }
 
 void CAbnormalTitanState_Dead::Exit()

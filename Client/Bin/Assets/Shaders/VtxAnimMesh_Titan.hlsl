@@ -6,6 +6,12 @@ vector      g_BaseColor = (1.f, 1.f, 1.f, 1.f);
 matrix g_BoneMatrices[512];
 float       g_fFar = 1000.f;
 
+texture2D   g_DissolveNoiseMap;
+
+float       g_DissolveAmount = 0.f;
+float       g_DissolveEdgeWidth = 0.05f;
+vector      g_DissolveEdgeColor = vector(1.f, 0.35f, 0.05f, 1.f);
+
 sampler DefaultSampler = sampler_state
 {
     Filter = MIN_MAG_MIP_LINEAR;
@@ -92,6 +98,31 @@ PS_OUT PS_MAIN(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_Dissolve(PS_IN In)
+{
+    PS_OUT Out;
+
+    vector vMtrlDiffuse = g_BaseMap.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+
+    float fNoise = g_DissolveNoiseMap.Sample(DefaultSampler, In.vTexcoord).r;
+
+    clip(fNoise - g_DissolveAmount);
+
+    float fEdge = 1.f - saturate((fNoise - g_DissolveAmount) / max(g_DissolveEdgeWidth, 0.0001f));
+
+    vector vColor = vMtrlDiffuse * g_BaseColor;
+    vColor.rgb = lerp(vColor.rgb, g_DissolveEdgeColor.rgb, fEdge);
+
+    Out.vColor = vColor;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / g_fFar, 0.f, 1.f);
+
+    return Out;
+}
+
 struct PS_OUT_SHADOW
 {
     vector vLightDepth : SV_TARGET0;
@@ -120,11 +151,16 @@ technique11 DefaultTechnique
     pass Dummy
     {
         SetVertexShader(CompileShader(vs_5_0, VS_MAIN()));
-        SetPixelShader(CompileShader(ps_5_0, PS_Shadow()));
+        SetPixelShader(CompileShader(ps_5_0, PS_Dissolve()));
     }
     pass ShadowPass
     {
         SetVertexShader(CompileShader(vs_5_0, VS_MAIN()));
         SetPixelShader(CompileShader(ps_5_0, PS_Shadow()));
+    }
+    pass Dissolve
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS_MAIN()));
+        SetPixelShader(CompileShader(ps_5_0, PS_Dissolve()));
     }
 }

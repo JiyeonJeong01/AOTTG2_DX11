@@ -41,6 +41,8 @@ private:
     CGameObject*    m_goTarget = nullptr;
     CGameObject*    m_goEren = nullptr;
 
+    vector<CMeshRenderer>   m_MrChildren;
+
     TITAN_COMPONENTS        m_tComponents{};
     TITAN_RUNTIME_REF       m_tRef{};
     TITAN_STATS             m_tStats{};
@@ -94,6 +96,8 @@ private:
 
     void Set_FootDust();
     void Update_FootDust();
+    void Start_Dissolve();
+    void Update_Dissolve(_float fDT);
 
 public:
     char        m_szState[32] = {};

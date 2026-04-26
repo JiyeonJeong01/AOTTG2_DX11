@@ -158,6 +158,8 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             tCmd.eLayer = pData->layer;
             tCmd.mesh.pMeshRendererData = pData;
 
+            if (pData->bUseDissolvePass)
+                tCmd.mesh.iForcedPassIndex = 1; // DefaultPass=0, DissolvePass=1, ShadowPass=2
             if (pData->hSkinningSourceAnimator.Is_Valid())
             {
                 if (Build_SkinnedPart_BoneMatrices(pData))

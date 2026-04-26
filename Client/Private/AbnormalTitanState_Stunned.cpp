@@ -55,7 +55,7 @@ void CAbnormalTitanState_Stunned::Enter(_uint iDetailFlag)
 
     if (*m_tRef.m_pStunnedAcc > m_pStats->iMaxStunned)
     {
-        m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
+        m_scTitan->On_Dead(0.f);
         return;
     }
 

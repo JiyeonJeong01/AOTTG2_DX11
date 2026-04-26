@@ -140,6 +140,19 @@ void CCrawlerTitan::Start(void* pCtx)
     for (auto& hit : m_AllHitBoxes)
         hit.second->Set_Active(false);
 
+    /* ----- 디졸브 ----- */
+    m_hDissolveNoiseMap = GAME_INSTANCE.Get_ResourceHandle(ASSET_TYPE::TEXTURE, m_tDissolveGUID);
+
+    auto vecChildren = m_goTitan->Get_Children();
+    for (CGameObject* pChild : vecChildren)
+    {
+        if (!pChild) continue;
+        auto mr = pChild->Get_Component<CMeshRenderer>();
+        if (!mr.Is_Valid()) continue;
+
+        m_MrChildren.push_back(mr);
+    }
+
     Set_FootDust();
 }
 
@@ -153,6 +166,7 @@ void CCrawlerTitan::Update(void* pCtx, _float fDT)
 {
     m_upStateMachine->Update(fDT);
     Update_FootDust();
+    Update_Dissolve(fDT);
 }
 
 void CCrawlerTitan::Late_Update(void* pCtx, _float fDT)
@@ -242,6 +256,8 @@ void CCrawlerTitan::On_Dead(const _float fAccuracy)
 
     m_pUIHitController->On_PlayerKillTitan(fAccuracy);
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
+
+    Start_Dissolve();
 
     SYS_SOUND.PlayForceSFX(L"Titan_Hurt2", CHANNEL_17, 0.82f);
     SYS_SOUND.PlayForceSFX(L"Titan_Dead", CHANNEL_19, 0.8f);
@@ -384,6 +400,94 @@ void CCrawlerTitan::Update_FootDust()
     {
         m_bFootStep = true;
         m_pVFX_Manager->Play_ParticleBurst(PARTICLE_VFX::FOOT_DUST, vWorldPos);
+    }
+}
+
+
+void CCrawlerTitan::Start_Dissolve()
+{
+    if (m_bDissolveStarted)
+        return;
+
+    m_bDissolveStarted = true;
+    auto ApplyDissolve = [&](CMeshRenderer& mr)
+        {
+            if (!mr.Is_Valid())
+                return;
+
+            if (mr->hPerObjectParams == INVALID_HANDLE_UINT)
+                mr->hPerObjectParams = GAME_INSTANCE.Alloc_PerObjectParamBlock();
+
+            PER_OBJECT_PARAM_BLOCK* pBlock = GAME_INSTANCE.Get_PerObjectParamBlock(mr->hPerObjectParams);
+            if (!pBlock)
+                return;
+
+            mr->bUseDissolvePass = true;
+
+            pBlock->block.Set_Float("g_DissolveAmount", m_fDissolveAmount);
+            pBlock->block.Set_Float("g_DissolveEdgeWidth", 0.05f);
+            pBlock->block.Set_Float4("g_DissolveEdgeColor", { 1.f, 0.35f, 0.05f, 1.f });
+
+            if (m_hDissolveNoiseMap != INVALID_HANDLE_UINT)
+                pBlock->block.Set_Texture("g_DissolveNoiseMap", m_hDissolveNoiseMap);
+        };
+
+    ApplyDissolve(m_tComponents.meshRenderer);
+
+    for (auto& tMeshRenderer : m_MrChildren)
+    {
+        auto& mr = tMeshRenderer;
+
+        for (auto& mr : mr->vecOverrideMaterials)
+            mr = 6;
+
+        ApplyDissolve(mr);
+    }
+}
+
+void CCrawlerTitan::Update_Dissolve(_float fDT)
+{
+    if (!m_bDissolveStarted)
+        return;
+
+    _float fSpeedScale = 1.f;
+
+    if (m_fDissolveAmount > 0.55f)
+        fSpeedScale = 2.2f;
+
+    m_fDissolveAmount += fDT * m_fDissolveSpeed * fSpeedScale;
+
+    if (m_fDissolveAmount > 1.f)
+        m_fDissolveAmount = 1.f;
+
+    auto ApplyDissolveAmount = [&](CMeshRenderer& mr)
+        {
+            if (!mr.Is_Valid())
+                return;
+
+            if (mr->hPerObjectParams == INVALID_HANDLE_UINT)
+                return;
+
+            PER_OBJECT_PARAM_BLOCK* pBlock = GAME_INSTANCE.Get_PerObjectParamBlock(mr->hPerObjectParams);
+            if (!pBlock)
+                return;
+
+            pBlock->block.Set_Float("g_DissolveAmount", m_fDissolveAmount);
+        };
+
+    ApplyDissolveAmount(m_tComponents.meshRenderer);
+
+    for (auto& tMeshRenderer : m_MrChildren)
+    {
+        auto& mr = tMeshRenderer;
+
+        ApplyDissolveAmount(mr);
+    }
+
+    if (m_fDissolveAmount >= 1.f)
+    {
+        if (m_goTitan)
+            m_goTitan->Set_Enable(false);
     }
 }
 
