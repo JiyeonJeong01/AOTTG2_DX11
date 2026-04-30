@@ -80,6 +80,7 @@ public:
 
     CGameObject* Get_CurTarget() const;
     _bool           Is_Moving() override;
+    CGameObject* Get_TitanObject() override;
 
 private:
     void On_Grab(SIDE eSide, CHuman* pHuman) override;

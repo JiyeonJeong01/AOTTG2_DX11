@@ -6,6 +6,7 @@ NS_BEGIN(Client)
 class CUI_BladeController;
 class CUI_GasController;
 class CUI_SkillController;
+class CUI_ErenController;
 class CODM_Gear;
 NS_END
 
@@ -18,6 +19,7 @@ private :
     CUI_BladeController*    m_pBladeCtrl = nullptr;
     CUI_GasController*      m_pGasCtrl = nullptr;
     CUI_SkillController*    m_pSkill = nullptr;
+    CUI_ErenController*     m_pErenUI = nullptr;
 
 public:
     void Awake(void* pCtx) override;
@@ -27,9 +29,13 @@ public:
     void Update(void* pCtx, _float fDT) override;
     void Late_Update(void* pCtx, _float fDT) override;
 
+    void Enable_HUD(_bool bEnable);
+
 private :
     CGameObject*            m_goCursor{};
+    CGameObject*            m_goErenUI{};
     CUIText                 m_txtCursor{};
+    CUIImage                m_imgCursor{};
 
     CODM_Gear*              m_pGear{};
     const _float4           m_vValidTargetColor = { 1.f, 1.f, 1.f, 1.f };

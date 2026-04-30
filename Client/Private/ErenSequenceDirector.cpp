@@ -31,11 +31,11 @@ void CErenSequenceDirector::Awake(void* pCtx)
     m_animEren = m_goEren->Get_Component<CAnimator>();
     IF_TRUE_RETURN_MSG_BREAK(m_animEren.Is_Valid() == false, , "m_animEren is invalid.");
 
-    CGameObject* goHUD = GAME_INSTANCE.Find_GameObject(m_refHUDController.hObject);
-    IF_NULL_RETURN_MSG_BREAK(goHUD, , "goHUD is nullptr.");
+    m_goHUD = GAME_INSTANCE.Find_GameObject(m_refHUDController.hObject);
+    IF_NULL_RETURN_MSG_BREAK(m_goHUD, , "goHUD is nullptr.");
 
-    m_pHUD = goHUD->Get_Script<CHUDController>();
-    m_pNotice = goHUD->Get_Script_InChildren<CUI_NoticeController>();
+    m_pHUD = m_goHUD->Get_Script<CHUDController>();
+    m_pNotice = m_goHUD->Get_Script_InChildren<CUI_NoticeController>();
     IF_NULL_RETURN_MSG_BREAK(m_pHUD, , "m_pHUD is nullptr.");
     IF_NULL_RETURN_MSG_BREAK(m_pNotice, , "m_pNotice is nullptr.");
 }
@@ -73,8 +73,6 @@ void CErenSequenceDirector::Start(void* pCtx)
     }
     else
         __debugbreak();
-
-
 }
 
 void CErenSequenceDirector::Priority_Update(void* pCtx, _float fDT)
@@ -85,6 +83,8 @@ void CErenSequenceDirector::Priority_Update(void* pCtx, _float fDT)
 void CErenSequenceDirector::Late_Update(void* pCtx, _float fDT)
 {
     IScript::Late_Update(pCtx, fDT);
+
+
 }
 
 void CErenSequenceDirector::Update(void* pCtx, _float fDT)
@@ -272,13 +272,17 @@ void CErenSequenceDirector::Command_PlayAnim(const _char* pAnimName)
 void CErenSequenceDirector::Command_Combat()
 {
     m_scEren->Start_Combat();
+    m_pHUD->Enable_HUD(true);
 
     if (!m_pNotice)
     {
         __debugbreak();        return;
     }
-
-    m_pNotice->Show_Notice(NOTICE_TYPE::SAVE_EREN, 3.f);
+    if (!m_bRequested)
+    {
+        m_pNotice->Show_Notice(NOTICE_TYPE::SAVE_EREN, 3.f);
+        m_bRequested = true;
+    }
 }
 
 

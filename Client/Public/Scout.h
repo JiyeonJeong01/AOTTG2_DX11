@@ -18,6 +18,8 @@ public:
     void Update(void* pCtx, _float fDT) override;
     void Late_Update(void* pCtx, _float fDT) override;
 
+    void Process_Start();
+
 private:
     void            Move(_fvector vDir, _float fDT);
     void            SetUp_Context();
@@ -70,5 +72,6 @@ private :
         SCRIPT_FIELD_OBJECT_REF(m_refDialogueUI)
     SCRIPT_FIELDS_END(CScout)
 };
+
 
 NS_END

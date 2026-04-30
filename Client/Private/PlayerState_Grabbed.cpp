@@ -1,6 +1,11 @@
 ﻿#include "PlayerState_Grabbed.h"
 
 #include "AnimationClip_Player.h"
+#include "Player.h"
+#include "Entity_Define.h"
+
+#include "PlayerStateMachine.h"
+#include "CinematicSystem.h"
 
 CPlayerState_Grabbed::CPlayerState_Grabbed(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
     : CPlayerState(goPlayer, scPlayer, eState)
@@ -36,6 +41,23 @@ void CPlayerState_Grabbed::Priority_Update(_float fDT)
 void CPlayerState_Grabbed::Update(_float fDT)
 {
     CPlayerState::Update(fDT);
+
+    m_fElapsedGrabTime += fDT;
+    if (m_fElapsedGrabTime > 3.f)
+    {
+        CTitan* pTitan = m_scPlayer->Get_GrabbTitan();
+        if (!pTitan)
+            return;
+        CGameObject* goTitan = pTitan->Get_TitanObject();
+        if (!goTitan)
+            return;
+
+        goTitan->Set_Enable(false);
+
+        const _float3 vPos = { 12.2f, 15.68f, 1.41f };
+        m_tComponents.transform.Set_Position(XMLoadFloat3(&vPos));
+        m_tRef.pFSM->Change_State(To<_uint>(PLAYER_STATE::IDLE));
+    }
 }
 
 void CPlayerState_Grabbed::Late_Update(_float fDT)

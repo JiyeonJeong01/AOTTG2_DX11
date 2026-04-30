@@ -306,6 +306,8 @@ void CCameraController::Update_TitanStepSound(_float fDT, _float fTitanShakeStre
 
     if (!m_scTitan->Is_FootStep())
         return;
+    if (!m_scTitan->Is_Alive())
+        return;
 
     const _float fRatio = fTitanShakeStrength / m_fTitanShakeMaxStrength;
     /* 최소 최대 */

@@ -3,7 +3,7 @@
 #include "Client_Define.h"
 
 NS_BEGIN(Client)
-
+class CScout;
 class CScout_Controller : public IScript
 {
 private:
@@ -36,6 +36,16 @@ private:
 private:
     static constexpr size_t NUM_SCOUT = 10;
 
+    SCRIPT_OBJECT_REF       m_refScout1{};
+    SCRIPT_OBJECT_REF       m_refScout2{};
+
+    CGameObject*            m_goScout1{};
+    CGameObject*            m_goScout2{};
+
+    CScout* m_scScout1{};
+    CScout* m_scScout2{};
+    
+
     SCRIPT_OBJECT_REF       m_refScouts[NUM_SCOUT]{};
     std::vector<STAGING_SCOUT>   m_vecStagingScouts{};
 
@@ -50,6 +60,9 @@ private:
         SCRIPT_FIELD_OBJECT_REF(m_refScouts[7])
         SCRIPT_FIELD_OBJECT_REF(m_refScouts[8])
         SCRIPT_FIELD_OBJECT_REF(m_refScouts[9])
+
+        SCRIPT_FIELD_OBJECT_REF(m_refScout1)
+        SCRIPT_FIELD_OBJECT_REF(m_refScout2)
         SCRIPT_FIELDS_END(CScout_Controller)
 };
 

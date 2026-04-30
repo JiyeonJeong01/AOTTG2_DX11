@@ -25,6 +25,9 @@ void CTitanStateMachine::Change_State(_uint iStateKey, _uint iDetailFlag)
     if (iStateKey >= m_States.size())
         return;
 
+    if (!m_spCurState && m_spCurState->Get_State() == TITAN_STATE::DEAD)
+        return;
+
     if (m_spCurState)
         m_spCurState->Exit();
 

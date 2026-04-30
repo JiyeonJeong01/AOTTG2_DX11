@@ -29,6 +29,7 @@ private:
     TITAN_IDLE  m_eIdleState = TITAN_IDLE::DEFAULT;
     _float      m_fElapsedIdleTime = 0.f;
     _float      m_fMaxIdleTime = 5.f;
+    _bool       m_bAlreadyDead = false;
 
 public:
     static std::shared_ptr<CAbnormalTitanState_Dead> Create(

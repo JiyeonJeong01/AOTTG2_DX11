@@ -42,6 +42,7 @@ public :
     {
         return m_bFootStep;
     }
+    virtual CGameObject* Get_TitanObject() = 0;
 
 protected :
     _bool   m_bAlive = true;

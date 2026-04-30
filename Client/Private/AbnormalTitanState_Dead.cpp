@@ -40,6 +40,9 @@ void CAbnormalTitanState_Dead::Enter(_uint iDetailFlag)
 {
     CTitanState::Enter(iDetailFlag);
 
+    if (m_bAlreadyDead)
+        return;
+
     if (*m_tRef.pPose == TITAN_POSE::STAND)
         m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::DIE_FRONT);
     else if (*m_tRef.pPose == TITAN_POSE::SIT)
@@ -48,6 +51,7 @@ void CAbnormalTitanState_Dead::Enter(_uint iDetailFlag)
         m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::CRAWLER_DIE);
 
     m_scTitan->Set_Dead();
+    m_bAlreadyDead = true;
 
     //m_tComponents.collider.Set_Enable(false);
 }

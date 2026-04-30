@@ -137,7 +137,7 @@ void CPlayer::On_Grabbed(SIDE eSide, CTitan* pTitan)
         eGrabbed = GRABBED::LEFT;
     else if (eSide == SIDE::RIGHT)
         eGrabbed = GRABBED::RIGHT;
-
+    m_pGrabTitan = pTitan;
     m_upStateMachine->Change_State(To<_uint>(PLAYER_STATE::GRABBED), To<_uint>(eGrabbed));
 }
 
@@ -169,6 +169,8 @@ void CPlayer::On_BladeHit(CGameObject* goCounter, const HIT_INFO& tHitInfo)
 
     m_tBlade.Consume_Blade();
     m_pUIHitController->On_PlayerHitTitan();
+
+    SYS_SOUND.PlaySFX(L"Blade_Attack_Success", CHANNEL_21, 0.5f);
 }
 
 void CPlayer::On_DetectedTitan(CGameObject* goTitan)
@@ -244,6 +246,11 @@ void CPlayer::Ready_Deliver_Supplies()
 void CPlayer::Complete_Deliver_Supplies()
 {
     Display_GasResupply(false);
+}
+
+CTitan* CPlayer::Get_GrabbTitan() const
+{
+    return m_pGrabTitan;
 }
 
 void CPlayer::Display_GasResupply(_bool bDisplay)

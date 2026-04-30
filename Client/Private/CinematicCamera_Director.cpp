@@ -19,6 +19,8 @@ void CCinematicCamera_Director::Awake(void* pCtx)
     IF_TRUE_RETURN_MSG_BREAK(!bSuccess, , "opening load failed");
     bSuccess = SYS_CINEMATIC.Load("LiftUp");
     IF_TRUE_RETURN_MSG_BREAK(!bSuccess, , "LiftUp load failed");
+    bSuccess = SYS_CINEMATIC.Load("ending");
+    IF_TRUE_RETURN_MSG_BREAK(!bSuccess, , "LiftUp load failed");
 }
 
 void CCinematicCamera_Director::Start(void* pCtx)
@@ -33,6 +35,10 @@ void CCinematicCamera_Director::Priority_Update(void* pCtx, _float fDT)
 
 void CCinematicCamera_Director::Update(void* pCtx, _float fDT)
 {
+    if (SYS_INPUT.Get_KeyDown(VK_F3))
+    {
+        SYS_CINEMATIC.Play("ending", m_camCinematic);
+    }
 }
 
 void CCinematicCamera_Director::Late_Update(void* pCtx, _float fDT)

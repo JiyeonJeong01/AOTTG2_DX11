@@ -72,6 +72,7 @@ private:
     CCameraController*                          m_pCameraController{};
     CODM_Gear*                                  m_pGear{};
     CGameObject*                                m_goGasResupply{};
+    CTitan*                                     m_pGrabTitan{};
 
     std::unordered_map<std::string, class CHitBox*> m_AllHitBoxes;
 
@@ -88,6 +89,7 @@ public :
     void Resupply();
     void Ready_Deliver_Supplies();
     void Complete_Deliver_Supplies();
+    CTitan* Get_GrabbTitan() const;
 
 private :
     void Display_GasResupply(_bool bDisplay);

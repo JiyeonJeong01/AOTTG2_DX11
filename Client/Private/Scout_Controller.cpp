@@ -1,6 +1,9 @@
 ﻿#include "Scout_Controller.h"
 
 #include "AnimationClip_Player.h"
+#include "Scout.h"
+#include "ScoutBehavior_RequestResupply.h"
+#include "ScoutBehaviour_RescueDialogue.h"
 
 NS_BEGIN(Client)
 
@@ -22,6 +25,14 @@ void CScout_Controller::Priority_Update(void* pCtx, _float fDT)
 
 void CScout_Controller::Update(void* pCtx, _float fDT)
 {
+    if (SYS_INPUT.Get_KeyDown(VK_F1))
+    {
+        m_scScout1->Process_Start();
+    }
+    else if (SYS_INPUT.Get_KeyDown(VK_F2))
+    {
+        m_scScout2->Process_Start();
+    }
 }
 
 void CScout_Controller::Late_Update(void* pCtx, _float fDT)
@@ -62,6 +73,12 @@ void CScout_Controller::Play_Salute_Animation()
 
 void CScout_Controller::Cache_Scouts()
 {
+    m_goScout1 = GAME_INSTANCE.Find_GameObject(m_refScout1.hObject);
+    m_goScout2 = GAME_INSTANCE.Find_GameObject(m_refScout2.hObject);
+
+    m_scScout1 = m_goScout1->Get_Script<CScout>();
+    m_scScout2 = m_goScout2->Get_Script<CScout>();
+
     m_vecStagingScouts.clear();
     m_vecStagingScouts.reserve(NUM_SCOUT);
 

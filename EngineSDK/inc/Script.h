@@ -85,6 +85,10 @@ public :
     {
         m_hObject = hObject;
     }
+    OBJECT_HANDLE Get_Owner() const
+    {
+        return m_hObject;
+    }
 
 public  :
     void Save_Exposed_Fields(json& j) const;

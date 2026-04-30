@@ -36,7 +36,7 @@ void CAbnormalTitanState_Idle::Update(_float fDT)
 }
 
 void CAbnormalTitanState_Idle::Late_Update(_float fDT)
-{
+{  
     CTitanState::Late_Update(fDT);
 
     m_fElapsedIdleTime += fDT;

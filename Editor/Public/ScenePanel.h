@@ -54,7 +54,7 @@ private:
     // cached SRV ptr for ImGui::Image
     ID3D11ShaderResourceView*   m_pSceneSRV = nullptr;
     std::unique_ptr<CGizmo>     m_pGizmo;
-    _bool                       m_ShowSceneGizmo = true;
+    _bool                       m_ShowSceneGizmo = false;
 
     CMainPanel*                 m_pMainPanel = nullptr;
 

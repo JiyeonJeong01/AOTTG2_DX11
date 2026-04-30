@@ -252,6 +252,11 @@ _bool CAbnormalTitan::Is_Moving()
     return eState == TITAN_STATE::MOVE || (eState == TITAN_STATE::CHASE && fLenSq >= 6.f);
 }
 
+CGameObject* CAbnormalTitan::Get_TitanObject()
+{
+    return m_goTitan;
+}
+
 void CAbnormalTitan::On_Grab(SIDE eSide, CHuman* pHuman)
 {
     TITAN_STATE eState = m_spCurState->Get_State();
@@ -269,16 +274,18 @@ void CAbnormalTitan::On_Grab(SIDE eSide, CHuman* pHuman)
 
 void CAbnormalTitan::On_Dead(const _float fAccuracy)
 {
-    TITAN_STATE eState = m_spCurState->Get_State();
-    if (eState == TITAN_STATE::DEAD)
+    if (!m_bAlive)
         return;
+
     if (fAccuracy >= 0.0001f)
        m_pUIHitController->On_PlayerKillTitan(fAccuracy);
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
 
+    m_bAlive = false;
+
     Start_Dissolve();
 
-    SYS_SOUND.PlayForceSFX(L"Titan_Hurt2", CHANNEL_17, 0.82f);
+    SYS_SOUND.PlaySFX(L"Titan_Hurt2", CHANNEL_17, 0.82f);
     SYS_SOUND.PlayForceSFX(L"Titan_Dead", CHANNEL_19, 0.8f);
 }
 
@@ -300,11 +307,15 @@ void CAbnormalTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHur
 {
     UNREFERENCED_PARAMETER(tHitInfo);
 
+    if (!m_bAlive)
+        return;
+
     const _int iPlayerAtkMask = O_PLAYER | O_HITBOX;
     const _int iCropsAtkMask = O_SCOUT | O_HITBOX;
     const _int iAttackerMask = tHitInfo.goAttacker->Get_Mask();
     if (!((iPlayerAtkMask == iAttackerMask) || (iCropsAtkMask == iAttackerMask)))
         return;
+
 
     TITAN_HURT eHurt = TITAN_HURT::END;
 

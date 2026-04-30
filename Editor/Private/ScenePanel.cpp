@@ -78,14 +78,14 @@ void CScenePanel::Draw_Toolbar()
     {
         if (m_pTarget)
         {
-            if (ImGui::RadioButton("Translate", m_pGizmo->Get_Mode() == GIZMO_MODE::TRANSLATE))
-                m_pGizmo->Set_Mode(GIZMO_MODE::TRANSLATE);
-            ImGui::SameLine();
-            if (ImGui::RadioButton("Rotate", m_pGizmo->Get_Mode() == GIZMO_MODE::ROTATE))
-                m_pGizmo->Set_Mode(GIZMO_MODE::ROTATE);
-            ImGui::SameLine();
-            if (ImGui::RadioButton("Scale", m_pGizmo->Get_Mode() == GIZMO_MODE::SCALE))
-                m_pGizmo->Set_Mode(GIZMO_MODE::SCALE);
+            //if (ImGui::RadioButton("Translate", m_pGizmo->Get_Mode() == GIZMO_MODE::TRANSLATE))
+            //    m_pGizmo->Set_Mode(GIZMO_MODE::TRANSLATE);
+            //ImGui::SameLine();
+            //if (ImGui::RadioButton("Rotate", m_pGizmo->Get_Mode() == GIZMO_MODE::ROTATE))
+            //    m_pGizmo->Set_Mode(GIZMO_MODE::ROTATE);
+            //ImGui::SameLine();
+            //if (ImGui::RadioButton("Scale", m_pGizmo->Get_Mode() == GIZMO_MODE::SCALE))
+            //    m_pGizmo->Set_Mode(GIZMO_MODE::SCALE);
         }
     }
     ImGui::End();
@@ -199,9 +199,9 @@ void CScenePanel::Draw_Viewport()
 
     /* ----------------------- 마우스 피킹 ----------------------- */
     ImVec2 mouse = ImGui::GetMousePos();
-    const bool inside =
+    const bool inside = false;/*
         (mouse.x >= vpPos.x) && (mouse.y >= vpPos.y) &&
-        (mouse.x < vpPos.x + vpSize.x) && (mouse.y < vpPos.y + vpSize.y);
+        (mouse.x < vpPos.x + vpSize.x) && (mouse.y < vpPos.y + vpSize.y);*/
 
     const bool bGizmoOver = ImGuizmo::IsOver();
     const bool bGizmoUsing = ImGuizmo::IsUsing();

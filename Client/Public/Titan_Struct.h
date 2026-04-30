@@ -52,7 +52,7 @@ typedef struct tagTitanStats
 
     _float          fRotateSharpness = 3.f;
 
-    const _uint     iMaxStunned = 5;
+    const _uint     iMaxStunned = 6;
 
 } TITAN_STATS;
 

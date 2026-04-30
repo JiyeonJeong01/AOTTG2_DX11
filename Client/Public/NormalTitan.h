@@ -32,6 +32,8 @@ public:
     void Update(void* pCtx, _float fDT) override;
     void Late_Update(void* pCtx, _float fDT) override;
 
+    CGameObject* Get_TitanObject() override;
+
 private :
     CVFX_Manager*       m_pVFX_Manager = nullptr;
     CUI_HitController*  m_pUIHitController = nullptr;

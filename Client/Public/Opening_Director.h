@@ -111,12 +111,14 @@ private:
     SCRIPT_OBJECT_REF   m_refCinematicCam{};
     SCRIPT_OBJECT_REF   m_refScoutController{};
     _float              m_fIngameVolume = 0.12f;
+    _int                m_iPlayOpening = 0;
 
 
 private :
 SCRIPT_FIELDS_BEGIN(COpening_Director)
     SCRIPT_FIELD_OBJECT_REF(m_refCinematicCam);
     SCRIPT_FIELD_OBJECT_REF(m_refScoutController);
+    SCRIPT_FIELD_INT(m_iPlayOpening);
 
     /* ------------ BOAT_APPROACH ------------ */
     SCRIPT_FIELD_OBJECT_REF(m_refBoat);

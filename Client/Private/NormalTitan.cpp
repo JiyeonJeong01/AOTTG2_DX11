@@ -187,6 +187,11 @@ void CNormalTitan::Late_Update(void* pCtx, _float fDT)
     m_upStateMachine->Late_Update(fDT);
 }
 
+CGameObject* CNormalTitan::Get_TitanObject()
+{
+    return m_goTitan;
+}
+
 TITAN_CONTEXT CNormalTitan::Get_TitanContext()
 {
     /* 플레이어 상태에게 전달 */
@@ -276,16 +281,21 @@ void CNormalTitan::On_Grab(SIDE eSide, CHuman* pHuman)
 
 void CNormalTitan::On_Dead(const _float fAccuracy)
 {
+    if (!m_bAlive)
+        return;
+
     TITAN_STATE eState = m_spCurState->Get_State();
     if (eState == TITAN_STATE::DEAD)
         return;
 
     Start_Dissolve();
 
+    m_bAlive = false;
+
     m_pUIHitController->On_PlayerKillTitan(fAccuracy);
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
 
-    SYS_SOUND.PlayForceSFX(L"Titan_Hurt2", CHANNEL_17, 0.82f);
+    SYS_SOUND.PlaySFX(L"Titan_Hurt2", CHANNEL_17, 0.82f);
     SYS_SOUND.PlayForceSFX(L"Titan_Dead", CHANNEL_19, 0.8f);
 }
 
@@ -300,6 +310,9 @@ void CNormalTitan::On_Stunned(const HIT_INFO& tHitInfo)
 
 void CNormalTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox)
 {
+    if (!m_bAlive)
+        return;
+
     UNREFERENCED_PARAMETER(tHitInfo);
 
     TITAN_HURT eHurt = TITAN_HURT::END;

@@ -71,8 +71,11 @@ void COpening_Director::Awake(void* pCtx)
 
 void COpening_Director::Start(void* pCtx)
 {
-    _bool bPlayOpening = false;
-    if (bPlayOpening)
+    Enter_State(OPENING_STATE::TITAN_BORNE);
+    SYS_SOUND.PlayBGM(L"InGameBGM", m_fIngameVolume);
+    return;
+
+    if (m_iPlayOpening)
     {
         if (m_trBoat.Is_Valid())
         {
@@ -104,8 +107,7 @@ void COpening_Director::Start(void* pCtx)
     }
     else
     {
-        Enter_State(OPENING_STATE::TITAN_BORNE);
-        SYS_SOUND.PlayBGM(L"InGameBGM", m_fIngameVolume);
+
 
     }
 }

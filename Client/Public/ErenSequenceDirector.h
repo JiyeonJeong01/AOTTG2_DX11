@@ -47,6 +47,7 @@ private:
     _bool Check_FixRockFinished() const;
 
 private:
+    CGameObject*                m_goHUD = nullptr;
     class CHUDController*       m_pHUD = nullptr;
     class CUI_NoticeController* m_pNotice = nullptr;
 
@@ -62,11 +63,9 @@ private:
     _bool                       m_bSequenceEnd = false;
 
 private :
-    /* TODO : 에렌_거인_테스트 */
-    // const _int                  m_iNumTotalCombatTitans = 2;
-    const _int                  m_iNumTotalCombatTitans = 0;
-
+    const _int                  m_iNumTotalCombatTitans = 2;
     CCamera                     m_camCinematic{};
+    _bool                       m_bRequested = false;
 
 private :
     SCRIPT_OBJECT_REF           m_refHUDController{};

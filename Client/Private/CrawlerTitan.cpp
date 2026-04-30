@@ -238,6 +238,11 @@ _bool CCrawlerTitan::Is_Moving()
     return eState == TITAN_STATE::MOVE || eState == TITAN_STATE::CHASE;
 }
 
+CGameObject* CCrawlerTitan::Get_TitanObject()
+{
+    return m_goTitan;
+}
+
 void CCrawlerTitan::On_Grab(SIDE eSide, CHuman* pHuman)
 {
     UNREFERENCED_PARAMETER(eSide);
@@ -250,6 +255,9 @@ void CCrawlerTitan::On_Dead(const _float fAccuracy)
 {
     UNREFERENCED_PARAMETER(fAccuracy);
 
+    if (!m_bAlive)
+        return;
+
     TITAN_STATE eState = m_spCurState->Get_State();
     if (eState == TITAN_STATE::DEAD)
         return;
@@ -257,9 +265,11 @@ void CCrawlerTitan::On_Dead(const _float fAccuracy)
     m_pUIHitController->On_PlayerKillTitan(fAccuracy);
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::DEAD), 0);
 
+    m_bAlive = false;
+
     Start_Dissolve();
 
-    SYS_SOUND.PlayForceSFX(L"Titan_Hurt2", CHANNEL_17, 0.82f);
+    SYS_SOUND.PlaySFX(L"Titan_Hurt2", CHANNEL_17, 0.82f);
     SYS_SOUND.PlayForceSFX(L"Titan_Dead", CHANNEL_19, 0.8f);
 }
 
@@ -277,6 +287,9 @@ void CCrawlerTitan::On_Stunned(const HIT_INFO& tHitInfo)
 
 void CCrawlerTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox)
 {
+    if (!m_bAlive)
+        return;
+
     const _int iPlayerAtkMask = O_PLAYER | O_HITBOX;
     const _int iCropsAtkMask = O_SCOUT | O_HITBOX;
     const _int iAttackerMask = tHitInfo.goAttacker->Get_Mask();

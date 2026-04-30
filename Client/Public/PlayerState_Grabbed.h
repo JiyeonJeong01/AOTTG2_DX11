@@ -22,6 +22,8 @@ public:
 private:
     void Decide_NextState();
 
+    _float m_fElapsedGrabTime = 0.f;
+
 public:
     static std::shared_ptr<CPlayerState_Grabbed> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);
 };

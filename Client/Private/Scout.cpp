@@ -46,17 +46,17 @@ void CScout::Start(void* pCtx)
     SetUp_Behavior();
 }
 
+void CScout::Process_Start()
+{
+    if (m_tContext.eBehaviour == SCOUT_BEHAVIOR::REQUEST_RESUPPLY)
+        To<CScoutBehavior_RequestResupply*>(m_pBehavior)->Process_Start();
+    else if (m_tContext.eBehaviour == SCOUT_BEHAVIOR::RESCUE_DIALOGUE)
+        To<CScoutBehavior_RescueDialogue*>(m_pBehavior)->Process_Start(m_goPlayer);
+}
+
 void CScout::Priority_Update(void* pCtx, _float fDT)
 {
     UNREFERENCED_PARAMETER(pCtx);
-
-    if (SYS_INPUT.Get_KeyDown(VK_F1))
-    {
-        //if(m_tContext.eBehaviour == SCOUT_BEHAVIOR::REQUEST_RESUPPLY)
-            //To<CScoutBehavior_RequestResupply*>(m_pBehavior)->Process_Start();
-        if (m_tContext.eBehaviour == SCOUT_BEHAVIOR::RESCUE_DIALOGUE)
-            To<CScoutBehavior_RescueDialogue*>(m_pBehavior)->Process_Start(m_goPlayer);
-    }
 
     if (m_pBehavior)
         m_pBehavior->Priority_Update(fDT);
