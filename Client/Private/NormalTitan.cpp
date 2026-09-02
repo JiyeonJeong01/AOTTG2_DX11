@@ -171,12 +171,18 @@ void CNormalTitan::Start(void* pCtx)
 
 void CNormalTitan::Priority_Update(void* pCtx, _float fDT)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     Validate_Target();
     m_upStateMachine->Priority_Update(fDT);
 }
 
 void CNormalTitan::Update(void* pCtx, _float fDT)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     m_upStateMachine->Update(fDT);
     Update_FootDust();
     Update_Dissolve(fDT);
@@ -184,6 +190,9 @@ void CNormalTitan::Update(void* pCtx, _float fDT)
 
 void CNormalTitan::Late_Update(void* pCtx, _float fDT)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     m_upStateMachine->Late_Update(fDT);
 }
 
@@ -277,6 +286,12 @@ void CNormalTitan::On_Grab(SIDE eSide, CHuman* pHuman)
 
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::GRAB), To<_uint>(eGrabbed));
     pHuman->On_Grabbed(eSide, this);
+}
+
+void CNormalTitan::Force_Idle()
+{
+    if (m_upStateMachine)
+        m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::IDLE), To<_uint>(TITAN_IDLE::DEFAULT));
 }
 
 void CNormalTitan::On_Dead(const _float fAccuracy)
@@ -384,6 +399,9 @@ void CNormalTitan::Validate_Target()
 
 void CNormalTitan::On_DetectedHumanSide(CGameObject* goHuman)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     if (!Is_ValidTarget(goHuman))
         return;
 

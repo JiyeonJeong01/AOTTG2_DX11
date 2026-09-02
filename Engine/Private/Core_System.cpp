@@ -419,6 +419,11 @@ HRESULT CCore_System::Change_Scene(const ASSET_GUID& tGUID)
     return m_pScene_Handler->Change_Scene(tGUID);
 }
 
+void CCore_System::Request_RestartScene()
+{
+    m_bRestartSceneRequested = true;
+}
+
 HRESULT CCore_System::Save_CurrentScene(const std::filesystem::path& path)
 {
     return m_pScene_Handler->Save_CurrentScene(path);
@@ -458,6 +463,30 @@ void CCore_System::Update_RuntimeEngine(_float fDT, CScene* pScene)
 
     /* 게임 오브젝트 Pending 로직 */
     SYS_GAMEOBJECT.Flush_PendingDestroy();
+
+    Process_RestartSceneRequest();
+}
+
+void CCore_System::Process_RestartSceneRequest()
+{
+    if (!m_bRestartSceneRequested)
+        return;
+
+    m_bRestartSceneRequested = false;
+
+    if (!m_pScene_Handler)
+        return;
+
+    CScene* pCurrentScene = m_pScene_Handler->Get_CurrentScene();
+    if (!pCurrentScene)
+        return;
+
+    const ASSET_GUID tCurSceneGUID = pCurrentScene->Get_GUID();
+    if (!tCurSceneGUID.Is_Valid())
+        return;
+
+    if (SUCCEEDED(m_pScene_Handler->Change_Scene(tCurSceneGUID)))
+        SYS_GAMEOBJECT.Flush_PendingDestroy();
 }
 
 HRESULT CCore_System::Ready_ShadowRenderTargets(_uint iWidth, _uint iHeight)

@@ -4,6 +4,7 @@
 NS_BEGIN(Client)
 
 class CErenTitan;
+class CScout_Controller;
 
 class CErenSequenceDirector final : public IScript
 {
@@ -20,6 +21,7 @@ public:
 
 private:
     void Build_DefaultSequence();
+    void Update_RequestResupply(_float fDT);
 
     void Enter_CurrentStep();
     _bool Is_CurrentStepFinished();
@@ -52,6 +54,7 @@ private:
     class CUI_NoticeController* m_pNotice = nullptr;
 
     CErenTitan*                 m_scEren = nullptr;
+    CScout_Controller*          m_scScoutController = nullptr;
     CGameObject*                m_goEren = nullptr;
     CTransform                  m_trEren{};
     CAnimator                   m_animEren{};
@@ -66,6 +69,10 @@ private :
     const _int                  m_iNumTotalCombatTitans = 2;
     CCamera                     m_camCinematic{};
     _bool                       m_bRequested = false;
+    _bool                       m_bWaitRequestResupply = false;
+    _bool                       m_bRequestResupplyStarted = false;
+    _float                      m_fRequestResupplyDelay = 0.f;
+    const _float                m_fRequestResupplyDelayTime = 15.f;
 
 private :
     SCRIPT_OBJECT_REF           m_refHUDController{};

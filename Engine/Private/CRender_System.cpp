@@ -100,8 +100,8 @@ HRESULT CRender_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* p
         IF_NULL_RETURN_MSG_BREAK(m_pMeshRenderer_Processor, E_FAIL, "Animator processor bind failed");
     }
 
-    m_iShadowWidth = 1920;
-    m_iShadowHeight = 1080;
+    m_iShadowWidth = 3840;
+    m_iShadowHeight = 2160;
     IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Ready_ShadowRenderTargets(m_iShadowWidth, m_iShadowHeight),
         E_FAIL, "Shadow render targets create failed");
 

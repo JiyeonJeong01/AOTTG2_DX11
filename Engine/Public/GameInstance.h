@@ -31,6 +31,7 @@ public:
 
 public: /* ----------- Scene ----------- */
     HRESULT Change_Scene(const std::string& strScene);
+    void    Request_RestartScene();
 
 public: /* -------- GameObject --------- */
     CGameObject* Find_GameObject(OBJECT_HANDLE hObj);

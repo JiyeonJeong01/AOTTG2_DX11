@@ -72,6 +72,7 @@ public: /* For.Scene_Handler */
     HRESULT Open_EditScene(const ASSET_GUID& tGUID);
     HRESULT Change_Scene(const std::string& sceneName);
     HRESULT Change_Scene(const ASSET_GUID& tGUID);
+    void    Request_RestartScene();
     HRESULT Save_CurrentScene(const std::filesystem::path& path);
     CScene* Get_CurrentScene();
     void    Set_CurrentScene(std::unique_ptr<CScene> pScene);
@@ -91,9 +92,11 @@ private:
 
     _float                      m_fTimeAcc = 0.f;
     const _float                m_FIXED_DT = 0.02f;
+    _bool                       m_bRestartSceneRequested = false;
 
 private :
     void        Update_RuntimeEngine(_float fDT, CScene* pScene);
+    void        Process_RestartSceneRequest();
 
 public :
     HRESULT Ready_ShadowRenderTargets(_uint iWidth, _uint iHeight);

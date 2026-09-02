@@ -27,11 +27,11 @@ void CScout_Controller::Update(void* pCtx, _float fDT)
 {
     if (SYS_INPUT.Get_KeyDown(VK_F1))
     {
-        m_scScout1->Process_Start();
+        Start_RequestResupply();
     }
     else if (SYS_INPUT.Get_KeyDown(VK_F2))
     {
-        m_scScout2->Process_Start();
+        Start_RescueDialogue();
     }
 }
 
@@ -47,6 +47,20 @@ void CScout_Controller::Ready_Opening()
 void CScout_Controller::Finish_Opening()
 {
     Enable_Object(false);
+}
+
+void CScout_Controller::Start_RequestResupply()
+{
+    g_bRequestResupplyPerformed = true;
+
+    if (m_scScout1)
+        m_scScout1->Process_Start();
+}
+
+void CScout_Controller::Start_RescueDialogue()
+{
+    if (m_scScout2)
+        m_scScout2->Process_Start();
 }
 
 void CScout_Controller::Enable_Object(_bool bEnable)

@@ -20,7 +20,7 @@ void CCinematicCamera_Director::Awake(void* pCtx)
     bSuccess = SYS_CINEMATIC.Load("LiftUp");
     IF_TRUE_RETURN_MSG_BREAK(!bSuccess, , "LiftUp load failed");
     bSuccess = SYS_CINEMATIC.Load("ending");
-    IF_TRUE_RETURN_MSG_BREAK(!bSuccess, , "LiftUp load failed");
+    IF_TRUE_RETURN_MSG_BREAK(!bSuccess, , "ending load failed");
 }
 
 void CCinematicCamera_Director::Start(void* pCtx)

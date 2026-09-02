@@ -3,6 +3,7 @@
 #include "ErenTitan.h"
 #include "HUDController.h"
 #include "UI_NoticeController.h"
+#include "Scout_Controller.h"
 #include "CinematicSystem.h"
 
 NS_BEGIN(Client)
@@ -38,6 +39,12 @@ void CErenSequenceDirector::Awake(void* pCtx)
     m_pNotice = m_goHUD->Get_Script_InChildren<CUI_NoticeController>();
     IF_NULL_RETURN_MSG_BREAK(m_pHUD, , "m_pHUD is nullptr.");
     IF_NULL_RETURN_MSG_BREAK(m_pNotice, , "m_pNotice is nullptr.");
+
+    CGameObject* goScouts = GAME_INSTANCE.Find_GameObject("Scouts");
+    IF_NULL_RETURN_MSG_BREAK(goScouts, , "goScouts is nullptr.");
+
+    m_scScoutController = goScouts->Get_Script<CScout_Controller>();
+    IF_NULL_RETURN_MSG_BREAK(m_scScoutController, , "m_scScoutController is nullptr.");
 }
 
 void CErenSequenceDirector::Start(void* pCtx)
@@ -49,6 +56,10 @@ void CErenSequenceDirector::Start(void* pCtx)
     m_iCurStep = 0;
     m_fStepElapsed = 0.f;
     m_bSequenceEnd = m_vecSteps.empty();
+    m_bWaitRequestResupply = false;
+    m_bRequestResupplyStarted = false;
+    m_fRequestResupplyDelay = 0.f;
+    g_bPauseTitanUpdate = false;
 
     if (m_bSequenceEnd == false)
         Enter_CurrentStep();
@@ -94,6 +105,8 @@ void CErenSequenceDirector::Update(void* pCtx, _float fDT)
     if (m_bSequenceEnd)
         return;
 
+    Update_RequestResupply(fDT);
+
     if (m_iCurStep >= m_vecSteps.size())
     {
         m_bSequenceEnd = true;
@@ -104,6 +117,29 @@ void CErenSequenceDirector::Update(void* pCtx, _float fDT)
 
     if (Is_CurrentStepFinished())
         Next_Step();
+}
+
+void CErenSequenceDirector::Update_RequestResupply(_float fDT)
+{
+    if (!m_bWaitRequestResupply)
+        return;
+
+    if (m_bRequestResupplyStarted)
+        return;
+
+    if (SYS_CINEMATIC.Is_Playing())
+        return;
+
+    m_fRequestResupplyDelay += fDT;
+    if (m_fRequestResupplyDelay < m_fRequestResupplyDelayTime)
+        return;
+
+    if (m_scScoutController)
+        m_scScoutController->Start_RequestResupply();
+
+    m_bRequestResupplyStarted = true;
+    m_bWaitRequestResupply = false;
+    g_bPauseTitanUpdate = false;
 }
 
 void CErenSequenceDirector::Build_DefaultSequence()
@@ -307,15 +343,21 @@ void CErenSequenceDirector::Command_LiftRock()
 void CErenSequenceDirector::Command_MoveRock()
 {
     m_scEren->Start_MoveRock();
+    m_bWaitRequestResupply = true;
+    m_bRequestResupplyStarted = false;
+    m_fRequestResupplyDelay = 0.f;
+    g_bPauseTitanUpdate = true;
 }
 
 void CErenSequenceDirector::Command_FixRock()
 {
     m_scEren->Start_FixRock();
+    SYS_CINEMATIC.Play("ending", m_camCinematic);
 }
 
 void CErenSequenceDirector::Command_Ending()
 {
+    g_bPauseTitanUpdate = false;
 }
 
 _bool CErenSequenceDirector::Check_BornFinished() const

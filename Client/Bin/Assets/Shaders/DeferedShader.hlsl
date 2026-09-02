@@ -124,7 +124,7 @@ float4 Reconstruct_WorldPos(float2 vTexcoord)
 
 float Sample_StaticShadowPCF(float2 vShadowUV, float fCurLightZ, float fBias)
 {
-    float2 vTexelSize = float2(1.f / 8192.f, 1.f / 4608.f);
+    float2 vTexelSize = float2(1.f / 3840.f, 1.f / 2160.f);
 
     float fResult = 0.f;
 
@@ -155,7 +155,7 @@ float Sample_StaticShadowPCF(float2 vShadowUV, float fCurLightZ, float fBias)
 
 float Sample_DynamicShadowPCF(float2 vShadowUV, float fCurLightZ, float fBias)
 {
-    float2 vTexelSize = float2(1.f / 8192.f, 1.f / 4608.f);
+    float2 vTexelSize = float2(1.f / 3840.f, 1.f / 2160.f);
 
     float fResult = 0.f;
 
@@ -204,7 +204,9 @@ void Calc_ShadowSplit(float4 vWorldPos, float2 vScreenUV, out float fStaticShado
     float3 vLightDir = normalize(-g_vLightDir.xyz);
     float fNdotL = saturate(dot(vNormal, vLightDir));
 
-    float fBias = lerp(0.3f, 0.1f, fNdotL);
+    float fBaseBias = lerp(0.75f, 0.2f, fNdotL);
+    float fReceiverSlope = max(abs(ddx(vLightPos.w)), abs(ddy(vLightPos.w)));
+    float fBias = max(fBaseBias, min(fReceiverSlope * 2.f, 2.f));
 
     fStaticShadow = Sample_StaticShadowPCF(vShadowUV, vLightPos.w, fBias);
     fDynamicShadow = Sample_DynamicShadowPCF(vShadowUV, vLightPos.w, fBias);

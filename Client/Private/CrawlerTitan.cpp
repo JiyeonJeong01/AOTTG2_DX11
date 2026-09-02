@@ -158,12 +158,18 @@ void CCrawlerTitan::Start(void* pCtx)
 
 void CCrawlerTitan::Priority_Update(void* pCtx, _float fDT)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     Validate_Target();
     m_upStateMachine->Priority_Update(fDT);
 }
 
 void CCrawlerTitan::Update(void* pCtx, _float fDT)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     m_upStateMachine->Update(fDT);
     Update_FootDust();
     Update_Dissolve(fDT);
@@ -171,6 +177,9 @@ void CCrawlerTitan::Update(void* pCtx, _float fDT)
 
 void CCrawlerTitan::Late_Update(void* pCtx, _float fDT)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     m_upStateMachine->Late_Update(fDT);
 }
 
@@ -339,6 +348,9 @@ void CCrawlerTitan::Validate_Target()
 
 void CCrawlerTitan::On_DetectedHumanSide(CGameObject* goHuman)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     if (!Is_ValidTarget(goHuman))
         return;
 
@@ -357,16 +369,6 @@ void CCrawlerTitan::On_DetectedHumanSide(CGameObject* goHuman)
     Set_Target(goHuman);
 
     TITAN_STATE eCur = m_spCurState ? m_spCurState->Get_State() : TITAN_STATE::IDLE;
-
-    if (iNewMask == O_EREN)
-    {
-        _bool CantAtkEren = eCur == TITAN_STATE::ATTACK_EREN || eCur == TITAN_STATE::DEAD;
-        if (!CantAtkEren)
-        {
-            m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::ATTACK_EREN));
-            return;
-        }
-    }
 
     _bool bToChase = eCur == TITAN_STATE::IDLE || eCur == TITAN_STATE::MOVE || eCur == TITAN_STATE::ATTACK_EREN;
     if (bToChase)

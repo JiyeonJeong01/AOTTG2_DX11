@@ -62,10 +62,18 @@ void CCrawlerTitanState_AttackEren::Update(_float fDT)
 
     if (!m_bAttackAnimPlaying)
     {
-        if (m_fDistToEren <= m_fJumpAttackRange)
-            Play_JumpStart();
-        else
+        if (m_fDistToEren > m_fStayAttackErenDist)
+        {
             Finish_Attack();
+            return;
+        }
+
+        m_fElapsedAttackCoolTime += fDT;
+        if (m_fElapsedAttackCoolTime >= m_fAttackCoolTime)
+        {
+            m_fElapsedAttackCoolTime = 0.f;
+            Play_JumpStart();
+        }
 
         return;
     }
@@ -106,6 +114,7 @@ void CCrawlerTitanState_AttackEren::Enter(_uint iDetailFlag)
     m_bJumpStarted = false;
     m_bJumpAir = false;
     m_bJumpLanded = false;
+    m_fElapsedAttackCoolTime = m_fAttackCoolTime;
 
     Try_CacheHitBox();
     Set_BodyHitBoxActive(false);
@@ -122,7 +131,7 @@ void CCrawlerTitanState_AttackEren::Enter(_uint iDetailFlag)
     if (!XMVector3Equal(XMLoadFloat3(&tInfo.vDirXZ), XMVectorZero()))
         Look_To(XMLoadFloat3(&tInfo.vDirXZ), 0.f);
 
-    if (m_fDistToEren <= m_fJumpAttackRange)
+    if (m_fDistToEren <= m_fStayAttackErenDist)
         Play_JumpStart();
     else
         Finish_Attack();
@@ -140,6 +149,7 @@ void CCrawlerTitanState_AttackEren::Exit()
     m_bJumpStarted = false;
     m_bJumpAir = false;
     m_bJumpLanded = false;
+    m_fElapsedAttackCoolTime = 0.f;
 
     CTitanState::Exit();
 }
@@ -262,10 +272,20 @@ void CCrawlerTitanState_AttackEren::Finish_Attack()
     if (m_tRef.pFSM == nullptr)
         return;
 
-    if (Has_Target())
-        m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::CHASE));
-    else
+    if (!Has_Target())
+    {
         m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::IDLE));
+        return;
+    }
+
+    if (m_fDistToEren > m_fStayAttackErenDist)
+    {
+        m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::CHASE));
+        return;
+    }
+
+    m_fElapsedAttackCoolTime = 0.f;
+    m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::CRAWLER_IDLE_NEW);
 }
 
 _bool CCrawlerTitanState_AttackEren::Has_Target() const

@@ -26,6 +26,8 @@ public:
 public:
     void Ready_Opening();
     void Finish_Opening();
+    void Start_RequestResupply();
+    void Start_RescueDialogue();
 
     void Enable_Object(_bool bEnable);
     void Play_Salute_Animation();

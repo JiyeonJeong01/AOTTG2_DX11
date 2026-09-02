@@ -71,9 +71,13 @@ void COpening_Director::Awake(void* pCtx)
 
 void COpening_Director::Start(void* pCtx)
 {
-    Enter_State(OPENING_STATE::TITAN_BORNE);
-    SYS_SOUND.PlayBGM(L"InGameBGM", m_fIngameVolume);
-    return;
+    if (g_bSkipOpeningOnce)
+    {
+        g_bSkipOpeningOnce = false;
+        Enter_State(OPENING_STATE::TITAN_BORNE);
+        SYS_SOUND.PlayBGM(L"InGameBGM", m_fIngameVolume);
+        return;
+    }
 
     if (m_iPlayOpening)
     {
@@ -107,8 +111,8 @@ void COpening_Director::Start(void* pCtx)
     }
     else
     {
-
-
+        Enter_State(OPENING_STATE::TITAN_BORNE);
+        SYS_SOUND.PlayBGM(L"InGameBGM", m_fIngameVolume);
     }
 }
 

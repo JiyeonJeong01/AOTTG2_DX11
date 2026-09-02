@@ -77,6 +77,11 @@ HRESULT CGameInstance::Change_Scene(const std::string& strScene)
     return SYS_CORE.Change_Scene(strScene);
 }
 
+void CGameInstance::Request_RestartScene()
+{
+    SYS_CORE.Request_RestartScene();
+}
+
 CGameObject* CGameInstance::Find_GameObject(OBJECT_HANDLE hObj)
 {
     return SYS_GAMEOBJECT.Get_Wrapper(hObj);

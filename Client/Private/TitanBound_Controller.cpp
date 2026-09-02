@@ -283,6 +283,9 @@ void CTitanBound_Controller::Bind_Trigger(
 
 void CTitanBound_Controller::Try_QueueGrabAnim(const char* pAnimName, const COLLISION_DESC& tDesc)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     if (!m_bGrabTriggerEnabled)
         return;
 
@@ -366,6 +369,9 @@ void CTitanBound_Controller::Handle_GrabState(SIDE eSide, CGameObject* pTarget, 
 
 void CTitanBound_Controller::OnTriggerEnter_HandL(const COLLISION_DESC& tDesc)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     CGameObject* pTarget = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
     if (!pTarget)
         return;
@@ -379,6 +385,9 @@ void CTitanBound_Controller::OnTriggerEnter_HandL(const COLLISION_DESC& tDesc)
 
 void CTitanBound_Controller::OnTriggerEnter_HandR(const COLLISION_DESC& tDesc)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     CGameObject* pTarget = GAME_INSTANCE.Find_GameObject(tDesc.hObject);
     if (!pTarget)
         return;

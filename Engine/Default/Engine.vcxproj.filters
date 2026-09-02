@@ -570,6 +570,9 @@
     <ClInclude Include="..\Public\Uniform_Grid.h">
       <Filter>01. Utility\04. Component\02. Physics\UniformGrid</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SIVA.h">
+      <Filter>00. System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">

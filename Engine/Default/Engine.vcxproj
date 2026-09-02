@@ -207,6 +207,7 @@ xcopy /Y /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Co
     <ClInclude Include="..\Public\Script_Handler.h" />
     <ClInclude Include="..\Public\Script_Processor.h" />
     <ClInclude Include="..\Public\Script_Register.h" />
+    <ClInclude Include="..\Public\SIVA.h" />
     <ClInclude Include="..\Public\Skeleton.h" />
     <ClInclude Include="..\Public\Solver.h" />
     <ClInclude Include="..\Public\Sound_System.h" />

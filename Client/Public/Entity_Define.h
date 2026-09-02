@@ -28,6 +28,7 @@ public :
     virtual void On_Grab(SIDE eSide, CHuman* pHuman) = 0;
     virtual void On_Dead(const _float fAccuracy) {};
     virtual void On_Stunned(const HIT_INFO& tHitInfo) {};
+    virtual void Force_Idle() {};
     virtual TITAN_TYPE Get_TitanType() const = 0;
 
     _bool           Is_Alive() const {

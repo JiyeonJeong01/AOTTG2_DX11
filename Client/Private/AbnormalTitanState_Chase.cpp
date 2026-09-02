@@ -200,7 +200,10 @@ void CAbnormalTitanState_Chase::Decide_NextState()
 
     CGameObject* goTarget = m_tRef.pSensor->Get_Target();
     if (!goTarget)
+    {
+        m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::IDLE), To<_uint>(TITAN_IDLE::DEFAULT));
         return;
+    }
 
     if (goTarget->Is_ExactMask(O_EREN))             /* 타겟이 에렌이고 */
     {
@@ -250,6 +253,7 @@ void CAbnormalTitanState_Chase::Try_PlayTriggeredGrabAnim()
     m_bGrabAnimPlaying = true;
 
     m_tRef.pBoundCtlr->Set_GrabTriggerEnabled(false);
+    m_tComponents.animator.Set_Loop(false, m_iGrabAnimClip);
     m_tComponents.animator.Set_NextAnimationClip(m_iGrabAnimClip);
 
     cout << "[TITAN_CHASE] Grab Triggered : " << strAnimName << "\n";
@@ -304,6 +308,7 @@ void CAbnormalTitanState_Chase::Try_PlayProximityGrabAnim()
     m_bGrabAnimPlaying = true;
     m_fProximityGrabAnimCooldownElapsed = 0.f;
 
+    m_tComponents.animator.Set_Loop(false, m_iGrabAnimClip);
     m_tComponents.animator.Set_NextAnimationClip(m_iGrabAnimClip);
 }
 

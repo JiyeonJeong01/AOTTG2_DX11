@@ -147,6 +147,7 @@ private :
     void    On_AnimBornFinished(const _uint iIndex);
     void    On_AnimCombatFinished(const _uint iIndex);
     void    On_AnimLiftFinished(const _uint iIndex);
+    void    On_AnimFixRockFinished(const _uint iIndex);
 
     void    On_DetectedCombatTargets(CGameObject* goTitan);
     void    On_Hurt(const HIT_INFO& tHitBox, const std::string& strHurtBox);

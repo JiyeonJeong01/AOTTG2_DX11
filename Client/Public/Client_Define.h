@@ -14,6 +14,10 @@ extern HINSTANCE g_hInst;
 
 namespace Client
 {
+    inline _bool        g_bPauseTitanUpdate = false;
+    inline _bool        g_bRequestResupplyPerformed = false;
+    inline _bool        g_bSkipOpeningOnce = false;
+
     static unsigned int		g_iWinSizeX = 1920;
     static unsigned int		g_iWinSizeY = 1080;
 

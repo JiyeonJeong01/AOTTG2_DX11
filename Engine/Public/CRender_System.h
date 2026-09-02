@@ -161,8 +161,8 @@ private:
     _float4x4   m_matLightView = Math::Identity();
     _float4x4   m_matLightProj = Math::Identity();
 
-    _uint       m_iShadowWidth = 4096;
-    _uint       m_iShadowHeight = 4096;
+    _uint       m_iShadowWidth = 3840;
+    _uint       m_iShadowHeight = 2160;
 
     _float      m_fShadowFar = 1000.f;
 

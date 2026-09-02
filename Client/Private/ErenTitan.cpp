@@ -524,7 +524,7 @@ void CErenTitan::Process_FixRock(_float fDT)
 
     if (m_bFixAnimStarted)
     {
-        if (m_animEren->fTrackPosition >= 75.f && !m_bReleaseRock)
+        if (m_animEren->fTrackPosition >= 72.f && !m_bReleaseRock)
         {
             m_bReleaseRock = true;
             auto scripts = m_goEren->Get_AllScripts<CAttacher>();
@@ -539,9 +539,12 @@ void CErenTitan::Process_FixRock(_float fDT)
                     m_scAttach = script;
                     script->Stop_Attach();
                     CTransform tr = goAttach->Get_Component<CTransform>();
-                    tr->vPosition = _float3(100.f, 0.f, -148.f);
+                    tr.Set_Position(XMVectorSet(0.f, 10.f, 151.f, 1.f));
                 }
             }
+
+            m_animEren.Pause();
+            m_bFixCompleted = true;
         }
         return;
 
@@ -709,6 +712,7 @@ void CErenTitan::Start_FixRock()
     m_eStepType = EREN_STEP_TYPE::FIX_ROCK;
     m_bFixAnimStarted = false;
     m_bFixCompleted = false;
+    m_bReleaseRock = false;
 
     m_fElapsedDelayToFix = 0.f;
 }
@@ -874,6 +878,10 @@ void CErenTitan::On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData)
     {
         On_AnimLiftFinished(iIndex);
     }
+    else if (m_eStepType == EREN_STEP_TYPE::FIX_ROCK)
+    {
+        On_AnimFixRockFinished(iIndex);
+    }
 }
 
 void CErenTitan::On_AnimBornFinished(const _uint iIndex)
@@ -959,6 +967,15 @@ void CErenTitan::On_AnimLiftFinished(const _uint iIndex)
     }
 }
 
+void CErenTitan::On_AnimFixRockFinished(const _uint iIndex)
+{
+    if (iIndex == m_animEren->NameToClipIndex[ANIM_EREN_TITAN::ROCK_FIX_HOLE])
+    {
+        m_animEren.Pause();
+        m_bFixCompleted = true;
+    }
+}
+
 void CErenTitan::On_DetectedCombatTargets(CGameObject* goTitan)
 {
     if (goTitan->Get_Mask() != O_ENEMY)
@@ -988,7 +1005,7 @@ void CErenTitan::On_Hurt(const HIT_INFO& tHitInfo, const std::string& strHurtBox
     if (!tHitInfo.goAttacker)
         return;
 
-    if (!tHitInfo.goAttacker->Is_ExactMask(O_ENEMY | O_HITBOX))
+    if (!tHitInfo.goAttacker->Is_ExactMask(O_ENEMY))
         return;
 
     /* 다쳤을 때 이벤트 */

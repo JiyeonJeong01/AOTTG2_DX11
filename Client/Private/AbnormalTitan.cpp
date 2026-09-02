@@ -168,12 +168,18 @@ void CAbnormalTitan::Start(void* pCtx)
 
 void CAbnormalTitan::Priority_Update(void* pCtx, _float fDT)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     Validate_Target();
     m_upStateMachine->Priority_Update(fDT);
 }
 
 void CAbnormalTitan::Update(void* pCtx, _float fDT)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     m_upStateMachine->Update(fDT);
     Update_FootDust();
     Update_Dissolve(fDT);
@@ -181,6 +187,9 @@ void CAbnormalTitan::Update(void* pCtx, _float fDT)
 
 void CAbnormalTitan::Late_Update(void* pCtx, _float fDT)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     m_upStateMachine->Late_Update(fDT);
 }
 
@@ -270,6 +279,12 @@ void CAbnormalTitan::On_Grab(SIDE eSide, CHuman* pHuman)
         eGrabbed = TITAN_GRAB::RIGHT;
 
     m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::GRAB), To<_uint>(eGrabbed));
+}
+
+void CAbnormalTitan::Force_Idle()
+{
+    if (m_upStateMachine)
+        m_upStateMachine->Change_State(To<_uint>(TITAN_STATE::IDLE), To<_uint>(TITAN_IDLE::DEFAULT));
 }
 
 void CAbnormalTitan::On_Dead(const _float fAccuracy)
@@ -384,6 +399,9 @@ void CAbnormalTitan::Validate_Target()
 
 void CAbnormalTitan::On_DetectedHumanSide(CGameObject* goHuman)
 {
+    if (g_bPauseTitanUpdate)
+        return;
+
     if (!Is_ValidTarget(goHuman))
         return;
 
@@ -401,16 +419,6 @@ void CAbnormalTitan::On_DetectedHumanSide(CGameObject* goHuman)
 
     Set_Target(goHuman);
     TITAN_STATE eCur = m_spCurState ? m_spCurState->Get_State() : TITAN_STATE::IDLE;
-
-    if (iNewMask == O_EREN)
-    {
-        _bool CantAtkEren = eCur == TITAN_STATE::ATTACK_EREN || eCur == TITAN_STATE::DEAD;
-        if (!CantAtkEren)
-        {
-            m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::ATTACK_EREN));
-            return;
-        }
-    }
 
     _bool bToChase = eCur == TITAN_STATE::IDLE || eCur == TITAN_STATE::MOVE || eCur == TITAN_STATE::ATTACK_EREN;
     if (bToChase)

@@ -144,6 +144,8 @@ _uint CNormalTitanState_Chase::Get_DetailState() const
 
 void CNormalTitanState_Chase::Decide_NextState()
 {
+    if (!m_tRef.pSensor || !m_tRef.pSensor->Get_Target())
+        m_tRef.pFSM->Change_State(To<_uint>(TITAN_STATE::IDLE), To<_uint>(TITAN_IDLE::DEFAULT));
 }
 
 void CNormalTitanState_Chase::Decide_NextAnim()
@@ -178,6 +180,7 @@ void CNormalTitanState_Chase::Try_PlayTriggeredGrabAnim()
     m_bGrabAnimPlaying = true;
 
     m_tRef.pBoundCtlr->Set_GrabTriggerEnabled(false);
+    m_tComponents.animator.Set_Loop(false, m_iGrabAnimClip);
     m_tComponents.animator.Set_NextAnimationClip(m_iGrabAnimClip);
 
     cout << "[TITAN_CHASE] Grab Triggered : " << strAnimName << "\n";

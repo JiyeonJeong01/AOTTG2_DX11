@@ -51,6 +51,8 @@ private:
     _float              m_fAttackRotateSharpness = 7.f;
 
     _float              m_fStayAttackErenDist = 0.f;
+    _float              m_fAttackCoolTime = 0.5f;
+    _float              m_fElapsedAttackCoolTime = 0.f;
 
     _uint               m_iAttackAnimClip = INVALID_ANIM_CLIP_INDEX;
     _bool               m_bAttackAnimPlaying = false;
