@@ -147,6 +147,8 @@ void CTitanBound_Controller::Late_Update(void* pCtx, _float fDT)
     for (auto& tAttach : m_vecAttachBones)
         Sync_AttchBone(tAttach);
 
+    Sync_GrabbedHuman();
+
     for (auto& tBound : m_vecBounds)
         Sync_Bound(tBound, vOwnerPos, vOwnerRot);
 }
@@ -330,6 +332,13 @@ void CTitanBound_Controller::Set_GrabTriggerEnabled(_bool bEnable)
         Clear_PendingGrabAnim();
 }
 
+void CTitanBound_Controller::Clear_GrabbedState()
+{
+    m_pGrabbedPoint = nullptr;
+    m_goGrabbed = nullptr;
+    m_pHuman = nullptr;
+}
+
 CGameObject* CTitanBound_Controller::Get_GrabbedObject()
 {
     return m_goGrabbed;
@@ -343,6 +352,18 @@ CHuman* CTitanBound_Controller::Get_GrabbedHuman()
 _float3* CTitanBound_Controller::Get_GrabbedPoint()
 {
     return m_pGrabbedPoint;
+}
+
+void CTitanBound_Controller::Sync_GrabbedHuman()
+{
+    if (!m_goGrabbed || !m_pGrabbedPoint)
+        return;
+
+    CTransform trHuman = m_goGrabbed->Get_Component<CTransform>();
+    if (!trHuman.Is_Valid())
+        return;
+
+    trHuman.Set_Position(XMLoadFloat3(m_pGrabbedPoint) + XMVectorSet(0.f, 0.3f, 0.f, 0.f));
 }
 
 void CTitanBound_Controller::Handle_GrabState(SIDE eSide, CGameObject* pTarget, CGameObject* pHand)

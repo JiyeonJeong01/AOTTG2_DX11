@@ -503,9 +503,6 @@ void CAbnormalTitan::Start_Dissolve()
     {
         auto& mr = tMeshRenderer;
 
-        for (auto& mr : mr->vecOverrideMaterials)
-            mr = 6;
-
         ApplyDissolve(mr);
     }
 }

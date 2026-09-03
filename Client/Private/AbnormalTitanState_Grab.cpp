@@ -32,9 +32,6 @@ void CAbnormalTitanState_Grab::Priority_Update(_float fDT)
 void CAbnormalTitanState_Grab::Update(_float fDT)
 {
     CTitanState::Update(fDT);
-
-    const _vector vOffset = { -0.f, 0.3f, 0.f };
-    m_trHuman.Set_Position(XMLoadFloat3(m_pGrabbedPoint) + vOffset);
 }
 
 void CAbnormalTitanState_Grab::Late_Update(_float fDT)
@@ -43,11 +40,14 @@ void CAbnormalTitanState_Grab::Late_Update(_float fDT)
 
     cout << "[TITAN_GRAB] ENTER\n";
 
-    if (m_tComponents.animator->fTrackPosition >= 600)
+    if (!m_bHumanDead && m_tComponents.animator->fTrackPosition >= 600)
     {
         CHuman* pHuman = m_tRef.pBoundCtlr->Get_GrabbedHuman();
         if (pHuman)
+        {
             pHuman->On_Dead();
+            m_bHumanDead = true;
+        }
     }
 
     Decide_NextState();
@@ -62,11 +62,13 @@ void CAbnormalTitanState_Grab::Enter(_uint iDetailFlag)
 
     if (eSide == TITAN_GRAB::LEFT)
     {
+        m_tComponents.animator.Set_Loop(false, ANIM_TITAN::EAT_SLOW_L);
         m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::EAT_SLOW_L);
         m_eGrabState = TITAN_GRAB::LEFT;
     }
     else if (eSide == TITAN_GRAB::RIGHT)
     {
+        m_tComponents.animator.Set_Loop(false, ANIM_TITAN::EAT_SLOW_R);
         m_tComponents.animator.Set_NextAnimationClip(ANIM_TITAN::EAT_SLOW_R);
         m_eGrabState = TITAN_GRAB::RIGHT;
     }
@@ -85,16 +87,22 @@ void CAbnormalTitanState_Grab::Enter(_uint iDetailFlag)
 
     m_trHuman = pObj->Get_Component<CTransform>();
     m_pGrabbedPoint = m_tRef.pBoundCtlr->Get_GrabbedPoint();
+    m_bHumanDead = false;
 }
 
 void CAbnormalTitanState_Grab::Exit()
 {
+    if (m_tRef.pBoundCtlr)
+        m_tRef.pBoundCtlr->Clear_GrabbedState();
+
     CTitanState::Exit();
 }
 
 void CAbnormalTitanState_Grab::Setup_CachedTitanContext()
 {
     CTitanState::Setup_CachedTitanContext();
+
+    m_tComponents.animator->OnAnimationFinished.Add_Listener(&CAbnormalTitanState_Grab::On_AnimFinished, this);
 }
 
 _uint CAbnormalTitanState_Grab::Get_DetailState() const

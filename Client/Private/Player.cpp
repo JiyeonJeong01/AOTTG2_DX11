@@ -253,6 +253,15 @@ CTitan* CPlayer::Get_GrabbTitan() const
     return m_pGrabTitan;
 }
 
+CGameObject* CPlayer::Get_FadeUI() const
+{
+    CGameObject* goFadeUI = GAME_INSTANCE.Find_GameObject(m_refFadeUI.hObject);
+    if (goFadeUI)
+        return goFadeUI;
+
+    return GAME_INSTANCE.Find_GameObject("FadeUI");
+}
+
 void CPlayer::Display_GasResupply(_bool bDisplay)
 {
     if (!m_goGasResupply)

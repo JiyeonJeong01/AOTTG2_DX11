@@ -7,6 +7,7 @@
 #include "UI_ErenController.h"
 
 #include "Player.h"
+#include "CinematicSystem.h"
 
 NS_BEGIN(Client)
 
@@ -56,12 +57,15 @@ void CHUDController::Priority_Update(void* pCtx, _float fDT)
 
         const auto& tContext = scPlayer->Get_PlayerContext();
 
+        /* Player::Start의 Build_Context 완료 전에는 다음 프레임에서 다시 시도한다. */
+        if (!tContext.tRef.pGear || !tContext.pBlade)
+            return;
+
         m_pGasCtrl->Bind_PlayerContext(tContext);
         m_pBladeCtrl->Bind_PlayerContext(tContext);
         // m_pSkill->Bind_PlayerContext(tContext);
 
         m_pGear = tContext.tRef.pGear;
-        IF_NULL_RETURN_MSG_BREAK(m_pGear, , "m_pGear is nullptr");
 
         m_bInitialized = true;
     }
@@ -73,6 +77,21 @@ void CHUDController::Update(void* pCtx, _float fDT)
 
 void CHUDController::Late_Update(void* pCtx, _float fDT)
 {
+    const _bool bCinematicPlaying = SYS_CINEMATIC.Is_Playing();
+    if (m_bCursorHiddenByCinematic != bCinematicPlaying)
+    {
+        m_bCursorHiddenByCinematic = bCinematicPlaying;
+
+        if (m_txtCursor.Is_Valid())
+            m_txtCursor.Set_Enable(!bCinematicPlaying);
+
+        if (m_imgCursor.Is_Valid())
+            m_imgCursor.Set_Enable(!bCinematicPlaying);
+    }
+
+    if (bCinematicPlaying)
+        return;
+
     if (!m_txtCursor.Is_Valid())  return;
     if (!m_pGear) return;
 

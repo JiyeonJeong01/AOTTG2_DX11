@@ -33,6 +33,7 @@ private:
     TITAN_GRAB      m_eGrabState = TITAN_GRAB::END;
     CTransform      m_trHuman;
     _float3* m_pGrabbedPoint{};
+    _bool           m_bHumanDead = false;
 
 public:
     static std::shared_ptr<CAbnormalTitanState_Grab> Create(Engine::CGameObject* goTitan, CTitan* scTitan, TITAN_STATE eState);

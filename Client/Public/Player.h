@@ -26,6 +26,7 @@ public:
 
     SCRIPT_OBJECT_REF   m_refVFXManager{};
     SCRIPT_OBJECT_REF   m_refUIHit{};
+    SCRIPT_OBJECT_REF   m_refFadeUI{};
 
 public:
     SCRIPT_FIELDS_BEGIN(CPlayer)
@@ -35,6 +36,7 @@ public:
         SCRIPT_FIELD_FLOAT3(m_fStartPosition)
         SCRIPT_FIELD_OBJECT_REF(m_refVFXManager);
         SCRIPT_FIELD_OBJECT_REF(m_refUIHit);
+        SCRIPT_FIELD_OBJECT_REF(m_refFadeUI);
     SCRIPT_FIELDS_END(CPlayer)
 
 public :
@@ -90,6 +92,7 @@ public :
     void Ready_Deliver_Supplies();
     void Complete_Deliver_Supplies();
     CTitan* Get_GrabbTitan() const;
+    CGameObject* Get_FadeUI() const;
 
 private :
     void Display_GasResupply(_bool bDisplay);

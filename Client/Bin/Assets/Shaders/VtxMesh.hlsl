@@ -172,11 +172,23 @@ PS_OUT PS_Dissolve(PS_IN In)
 {
     PS_OUT Out;
 
-    clip(-1);
+    vector vMtrlDiffuse = g_BaseMap.Sample(DefaultSampler, In.vTexcoord);
 
-    Out.vColor = vector(1.f, 0.f, 1.f, 1.f);
-    Out.vNormal = vector(0.5f, 0.5f, 1.f, 0.f);
-    Out.vDepth = vector(1.f, 1.f, 0.f, 1.f);
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+
+    float fNoise = g_DissolveNoiseMap.Sample(DissolveSampler, In.vTexcoord).r;
+
+    clip(fNoise - g_DissolveAmount);
+
+    float fEdge = 1.f - saturate((fNoise - g_DissolveAmount) / max(g_DissolveEdgeWidth, 0.0001f));
+
+    vector vColor = vMtrlDiffuse * g_BaseColor;
+    vColor.rgb = lerp(vColor.rgb, g_DissolveEdgeColor.rgb, fEdge);
+
+    Out.vColor = vColor;
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / g_fFar, 0.f, 1.f);
 
     return Out;
 }

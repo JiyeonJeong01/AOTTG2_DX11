@@ -21,8 +21,16 @@ public:
 
 private:
     void Decide_NextState();
+    void Start_DeathFade();
+    void Update_DeathFade(_float fDT);
 
     _float m_fElapsedGrabTime = 0.f;
+    _float m_fFadeTime = 0.f;
+    _float m_fFadeDuration = 3.f;
+    _bool m_bFadeOut = false;
+
+    Engine::CGameObject* m_goFadeUI = nullptr;
+    Engine::CCanvasRenderer m_crFadeUI{};
 
 public:
     static std::shared_ptr<CPlayerState_Grabbed> Create(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState);

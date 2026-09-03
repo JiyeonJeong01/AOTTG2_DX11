@@ -10979,6 +10979,13 @@
                   "Value": {
                     "UUID": "3DBD5D7D-82B0-4C43-9687-3851B244A987"
                   }
+                },
+                {
+                  "Name": "m_refFadeUI",
+                  "Type": 5,
+                  "Value": {
+                    "UUID": "AF6010A4-6ACE-46EE-8667-F525B9B2E507"
+                  }
                 }
               ]
             },

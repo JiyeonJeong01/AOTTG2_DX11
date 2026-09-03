@@ -7,6 +7,7 @@
 
 #include "PlayerStateMachine.h"
 #include "CinematicSystem.h"
+#include "Easing_Function.h"
 
 CPlayerState_Grabbed::CPlayerState_Grabbed(Engine::CGameObject* goPlayer, CPlayer* scPlayer, PLAYER_STATE eState)
     : CPlayerState(goPlayer, scPlayer, eState)
@@ -66,10 +67,10 @@ void CPlayerState_Grabbed::Update(_float fDT)
         }
         else
         {
-            g_bPauseTitanUpdate = false;
-            g_bSkipOpeningOnce = true;
-            SYS_CINEMATIC.Reset_Cinematic();
-            GAME_INSTANCE.Request_RestartScene();
+            if (!m_bFadeOut)
+                Start_DeathFade();
+
+            Update_DeathFade(fDT);
         }
     }
 }
@@ -84,6 +85,19 @@ void CPlayerState_Grabbed::Enter(_uint iDetailFlag)
     CPlayerState::Enter(iDetailFlag);
 
     m_fElapsedGrabTime = 0.f;
+    m_fFadeTime = 0.f;
+    m_bFadeOut = false;
+
+    m_goFadeUI = m_scPlayer->Get_FadeUI();
+    m_crFadeUI = {};
+    if (m_goFadeUI)
+    {
+        m_crFadeUI = m_goFadeUI->Get_Component<CCanvasRenderer>();
+        if (m_crFadeUI.Is_Valid())
+            m_crFadeUI.Set_Color({ 0.f, 0.f, 0.f, 0.f });
+
+        m_goFadeUI->Set_Enable(false);
+    }
 
     m_tComponents.animator.Set_NextAnimationClip(ANIM_PLAYER::GRABBED);
 
@@ -99,6 +113,34 @@ void CPlayerState_Grabbed::Exit()
     m_tComponents.collider.Set_Enable(true);
     m_tComponents.rigidbody.Set_Enable(true);
     m_tComponents.springJoint.Set_Enable(true);
+}
+
+void CPlayerState_Grabbed::Start_DeathFade()
+{
+    m_bFadeOut = true;
+    m_fFadeTime = 0.f;
+
+    if (m_goFadeUI)
+        m_goFadeUI->Set_Enable(true);
+}
+
+void CPlayerState_Grabbed::Update_DeathFade(_float fDT)
+{
+    m_fFadeTime += fDT;
+
+    const _float fRatio = CEasingFunction::EaseOutCubic(
+        CEasingFunction::Clamp01(m_fFadeTime / m_fFadeDuration));
+
+    if (m_crFadeUI.Is_Valid())
+        m_crFadeUI.Set_Color({ 0.f, 0.f, 0.f, fRatio });
+
+    if (m_fFadeTime < m_fFadeDuration)
+        return;
+
+    g_bPauseTitanUpdate = false;
+    g_bSkipOpeningOnce = true;
+    SYS_CINEMATIC.Reset_Cinematic();
+    GAME_INSTANCE.Request_RestartScene();
 }
 
 void CPlayerState_Grabbed::Decide_NextState()

@@ -1,0 +1,261 @@
+{
+  "objects": [
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Box",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "DebugDraw": false,
+            "DiscardMask": 0,
+            "Enabled": true,
+            "HalfExtentsLocal": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "Mask": 0,
+            "Offset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 0,
+            "Static": false,
+            "Trigger": false,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "6219040E-D9F5-456F-9138-858670CCEC58",
+            "MeshGUID": "11111111-1111-1111-1111-111111111111",
+            "Mode": 0,
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 1,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "C6970294-0054-40C5-BAC5-B204DAAD0892"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Sphere",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              0.0,
+              0.0,
+              -1.6343035697937012
+            ],
+            "Rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "Scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "DebugDraw": false,
+            "DiscardMask": 0,
+            "Enabled": true,
+            "Mask": 0,
+            "Offset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnCol": false,
+            "RadiusLocal": 0.5,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 1,
+            "Static": false,
+            "Trigger": false,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "MeshGUID": "33333333-3333-3333-3333-333333333333",
+            "Mode": 0,
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 1,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "F046147D-F38C-4216-8601-F95DF063CFCC"
+    },
+    {
+      "iObjMask": 0,
+      "isUI": false,
+      "layer": 0,
+      "name": "Plane",
+      "overrides": [
+        {
+          "data": {
+            "Position": [
+              1.4146233695555566e-07,
+              -0.6649646759033203,
+              1.810356616973877
+            ],
+            "Rotation": [
+              0.5008717775344849,
+              0.4991265833377838,
+              -0.4991265833377838,
+              0.500872015953064
+            ],
+            "Scale": [
+              99.99999237060547,
+              99.99999237060547,
+              9.999999046325684
+            ],
+            "Type": 0
+          },
+          "type": 0
+        },
+        {
+          "data": {
+            "DebugDraw": true,
+            "Dimension": [
+              100.0,
+              100.0
+            ],
+            "DiscardMask": 0,
+            "Enabled": true,
+            "Infinite": false,
+            "Mask": 0,
+            "NormalLocal": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Offset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "OnCol": false,
+            "RotationOffset": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Shape": 2,
+            "Static": true,
+            "Trigger": false,
+            "Type": 1
+          },
+          "type": 1
+        },
+        {
+          "data": {
+            "AttachBoneName": "",
+            "Enabled": true,
+            "ExtraPassFlags": 0,
+            "Flags": 0,
+            "Layer": 1,
+            "MaterialGUID": "55555555-5555-5555-5555-555555555555",
+            "MeshGUID": "22222222-2222-2222-2222-222222222222",
+            "Mode": 0,
+            "ParticleGUID": "00000000-0000-0000-0000-000000000000",
+            "ParticlePivot": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "ParticlePlaying": false,
+            "Shadow": 1,
+            "SortZ": 0.0,
+            "Type": 5
+          },
+          "type": 5
+        }
+      ],
+      "parent": "",
+      "protoGuid": "00000000-0000-0000-0000-000000000000",
+      "uuid": "87409F16-C5C3-4963-BC97-5706C83511E4"
+    }
+  ],
+  "version": 1
+}

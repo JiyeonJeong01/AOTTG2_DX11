@@ -524,7 +524,8 @@ void CErenTitan::Process_FixRock(_float fDT)
 
     if (m_bFixAnimStarted)
     {
-        if (m_animEren->fTrackPosition >= 72.f && !m_bReleaseRock)
+        if (m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::ROCK_FIX_HOLE) == m_animEren.Get_CurAnimaionClipIdx()
+            && m_animEren->fTrackPosition >= 55.f && !m_bReleaseRock)
         {
             m_bReleaseRock = true;
             auto scripts = m_goEren->Get_AllScripts<CAttacher>();
@@ -542,7 +543,11 @@ void CErenTitan::Process_FixRock(_float fDT)
                     tr.Set_Position(XMVectorSet(0.f, 10.f, 151.f, 1.f));
                 }
             }
+        }
 
+        if (m_animEren.Get_AnimationClipIdx_By_Name(ANIM_EREN_TITAN::ROCK_FIX_HOLE) == m_animEren.Get_CurAnimaionClipIdx()
+            && m_animEren->fTrackPosition >= 72.f && !m_bFixCompleted)
+        {
             m_animEren.Pause();
             m_bFixCompleted = true;
         }

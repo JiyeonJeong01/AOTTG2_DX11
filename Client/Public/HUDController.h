@@ -42,6 +42,7 @@ private :
     const _float4           m_vInvalidTargetColor = { 1.f, 0.f, 0.f, 1.f };
 
     _bool                   m_bInitialized = false;
+    _bool                   m_bCursorHiddenByCinematic = false;
 
 public :
     SCRIPT_OBJECT_REF       m_refPlayer;

@@ -87,6 +87,7 @@ public:
     _bool           Consume_PendingGrabAnim(std::string& strOutAnim);
     void            Clear_PendingGrabAnim();
     void            Set_GrabTriggerEnabled(_bool bEnable);
+    void            Clear_GrabbedState();
     CGameObject*    Get_GrabbedObject();
     CHuman*         Get_GrabbedHuman();
     _float3*        Get_GrabbedPoint();
@@ -107,6 +108,7 @@ private:
     std::vector<TITAN_ATTACH_BONE>  m_vecAttachBones;
 
 private :
+    void Sync_GrabbedHuman();
     void Handle_GrabState(SIDE eSide, CGameObject* pTarget, CGameObject* pHand);
 
 public:

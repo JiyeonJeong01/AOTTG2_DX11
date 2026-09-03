@@ -71,11 +71,12 @@ void COpening_Director::Awake(void* pCtx)
 
 void COpening_Director::Start(void* pCtx)
 {
+    SYS_SOUND.StopSound(CHANNEL_0);
+
     if (g_bSkipOpeningOnce)
     {
         g_bSkipOpeningOnce = false;
         Enter_State(OPENING_STATE::TITAN_BORNE);
-        SYS_SOUND.PlayBGM(L"InGameBGM", m_fIngameVolume);
         return;
     }
 
@@ -106,13 +107,11 @@ void COpening_Director::Start(void* pCtx)
         SYS_CINEMATIC.Play("opening", m_camCinematic);
 
         Enter_State(OPENING_STATE::BOAT_APPROACH);
-        SYS_SOUND.PlayBGM(L"OpeningCutScene_TitanReveal", 0.1f);
         SYS_SOUND.PlayForceSFX(L"OpeningCutScene_Boat", CHANNEL_26, 0.3f);
     }
     else
     {
         Enter_State(OPENING_STATE::TITAN_BORNE);
-        SYS_SOUND.PlayBGM(L"InGameBGM", m_fIngameVolume);
     }
 }
 
@@ -357,10 +356,6 @@ void COpening_Director::On_CinematicEvent(const CINEMATIC_EVENT_DATA& tEventData
     {
         SYS_SOUND.StopSound(CHANNEL_26);
     }
-    else if (tEventData.strEventName == "SCOUTS")
-    {
-        SYS_SOUND.PlayBGM(L"InGameBGM", 0.3f);
-    }
     else if (tEventData.strEventName == "ORBIT")
     {
         if (m_scScoutController)
@@ -385,7 +380,6 @@ void COpening_Director::On_CinematicEvent(const CINEMATIC_EVENT_DATA& tEventData
             else
                 LOG_ERROR("m_scScoutController is nullptr!");
 
-            SYS_SOUND.SetChannelVolume(CHANNEL_0, m_fIngameVolume);
             SYS_SOUND.PlayForceSFX(L"OpeningCutScene_Lighting", CHANNEL_27, 0.8f);
         }
 
