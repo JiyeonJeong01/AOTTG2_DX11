@@ -43,11 +43,6 @@ HRESULT CPhysics_Processor::Initialize(ID3D11Device* pDevice, ID3D11DeviceContex
     return S_OK;
 }
 
-void CPhysics_Processor::LateUpdate(_float fDT)
-{
-
-}
-
 void CPhysics_Processor::Fixed_Update(_float fDT)
 {
     m_ActivatedColliders.clear();
@@ -185,7 +180,7 @@ void CPhysics_Processor::Process_SpringJoints(_float fDT)
         if (!pPage)
             continue;
 
-        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        for (uint32_t i = 0; i < decltype(m_SpringJointPool)::PageSize_Value; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;
@@ -263,7 +258,7 @@ void CPhysics_Processor::Accumulate_Forces()
         auto* pPage = upPage.get();
         if (!pPage) continue;
 
-        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        for (uint32_t i = 0; i < decltype(m_RigidbodyPool)::PageSize_Value; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;
@@ -297,7 +292,7 @@ void CPhysics_Processor::Integrate_Forces(_float fDT)
         if (!pPage)
             continue;
 
-        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        for (uint32_t i = 0; i < decltype(m_RigidbodyPool)::PageSize_Value; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;
@@ -356,7 +351,7 @@ void CPhysics_Processor::Apply_Damping(_float fDT)
         if (!pPage)
             continue;
 
-        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        for (uint32_t i = 0; i < decltype(m_RigidbodyPool)::PageSize_Value; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;
@@ -431,7 +426,7 @@ void CPhysics_Processor::Integrate_Velocities(_float fDT)
         if (!pPage)
             continue;
 
-        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        for (uint32_t i = 0; i < decltype(m_RigidbodyPool)::PageSize_Value; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;
@@ -481,7 +476,7 @@ void CPhysics_Processor::Process_Collision(vector<CONTACT_DESC>& outContacts)
         if (!pPage)
             continue;
 
-        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        for (uint32_t i = 0; i < decltype(m_ColliderPool)::PageSize_Value; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;
@@ -620,7 +615,7 @@ void CPhysics_Processor::Reset_Kinematic_Velocities()
         if (!pPage)
             continue;
 
-        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        for (uint32_t i = 0; i < decltype(m_RigidbodyPool)::PageSize_Value; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;
@@ -685,7 +680,7 @@ void CPhysics_Processor::Rebuild_Static_Grid()
         if (!pPage)
             continue;
 
-        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        for (uint32_t i = 0; i < decltype(m_ColliderPool)::PageSize_Value; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;

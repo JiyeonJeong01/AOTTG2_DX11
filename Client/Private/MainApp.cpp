@@ -11,6 +11,7 @@
 #include "Script_Handler.h"
 #include "Script_Registry.h"
 #include "CinematicSystem.h"
+#include "Input_System.h"
 
 NS_BEGIN(Client)
 
@@ -39,6 +40,9 @@ HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)
 
 void CMainApp::Update(_float fDT, Engine::APP_MODE eMode)
 {
+    if (SYS_INPUT.Get_KeyDown(VK_F9))
+        Tester::Run_ComponentPoolPageTest();
+
     switch (eMode)
     {
     case Engine::APP_MODE::EDITOR_EDIT :

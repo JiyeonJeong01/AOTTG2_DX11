@@ -50,8 +50,8 @@ public:
     }
 
 private:
-    template <typename TProxy>
-    COMPONENT_HANDLE Create_Component_Data_Inner(CComponent_Pool<TProxy>& pool, OBJECT_HANDLE hObject)
+    template <typename TProxy, uint32_t PageSize>
+    COMPONENT_HANDLE Create_Component_Data_Inner(CComponent_Pool<TProxy, PageSize>& pool, OBJECT_HANDLE hObject)
     {
         COMPONENT_HANDLE hComponent = pool.Allocate();
         auto pData = pool.Get_Data_By_Handle(hComponent);
@@ -63,20 +63,20 @@ private:
         return hComponent;
     }
 
-    template <typename TProxy>
-    void Remove_Component_Inner(CComponent_Pool<TProxy>& pool, COMPONENT_HANDLE hComponent)
+    template <typename TProxy, uint32_t PageSize>
+    void Remove_Component_Inner(CComponent_Pool<TProxy, PageSize>& pool, COMPONENT_HANDLE hComponent)
     {
         pool.Deallocate(hComponent);
     }
 
-    template <typename TProxy>
-    void Set_Enable_Inner(CComponent_Pool<TProxy>& pool, COMPONENT_HANDLE hComponent, _bool bEnable)
+    template <typename TProxy, uint32_t PageSize>
+    void Set_Enable_Inner(CComponent_Pool<TProxy, PageSize>& pool, COMPONENT_HANDLE hComponent, _bool bEnable)
     {
         pool.Get_Data_By_Handle(hComponent)->bEnable = bEnable;
     }
 
 private:
-    CComponent_Pool<CCamera>    m_CameraPool;
+    CComponent_Pool<CCamera, 64>    m_CameraPool;
     CComponent_Pool<CLight>     m_LightPool;
 
     CTransform_Processor*       m_pTransformProcessor{};

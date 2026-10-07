@@ -60,7 +60,7 @@ void CMeshRenderer_Processor::Update(_float fDT)
         auto* pPage = upPage.get();
         if (!pPage) continue;
 
-        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        for (uint32_t i = 0; i < decltype(m_Pool)::PageSize_Value; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;
@@ -98,7 +98,7 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
         if (!pPage)
             continue;
 
-        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        for (uint32_t i = 0; i < decltype(m_Pool)::PageSize_Value; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;

@@ -96,7 +96,7 @@ void CEnvironment_Processor::Update(_float)
         auto* pPage = upPage.get();
         if (!pPage)
             continue;
-        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        for (uint32_t i = 0; i < decltype(m_CameraPool)::PageSize_Value; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;

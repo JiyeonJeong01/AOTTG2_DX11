@@ -7,6 +7,7 @@ class Tester : public CBase
 {
 public:
     void Initialize_Tester(class CMainApp* pMainapp);
+    static void Run_ComponentPoolPageTest();
 
 public :
     void Test_Public_Func_void();

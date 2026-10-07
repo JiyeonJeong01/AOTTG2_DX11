@@ -108,7 +108,7 @@ void CUI_Processor::Build_RenderQueue(std::vector<DRAW_CMD>& outCmds)
         auto* pPage = upPage.get();
         if (!pPage) continue;
 
-        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        for (uint32_t i = 0; i < decltype(m_TextPool)::PageSize_Value; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;
@@ -318,7 +318,7 @@ void CUI_Processor::Sync_Images_To_Canvas()
         auto* pPage = upPage.get();
         if (!pPage) continue;
 
-        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        for (uint32_t i = 0; i < decltype(m_ImagePool)::PageSize_Value; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;
@@ -382,7 +382,7 @@ void CUI_Processor::Update_Buttons(_float fDT)
         auto* pPage = upPage.get();
         if (!pPage) continue;
 
-        for (uint32_t i = 0; i < PAGE_SIZE; ++i)
+        for (uint32_t i = 0; i < decltype(m_ButtonPool)::PageSize_Value; ++i)
         {
             if (!pPage->Is_Allocated(i))
                 continue;

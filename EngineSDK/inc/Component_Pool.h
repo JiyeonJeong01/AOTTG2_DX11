@@ -3,17 +3,32 @@
 #include "CComponent_Proxy_Base.h"
 #include "Event.h"
 
-/* Memory Layout Constants for Paging System */
-static constexpr uint32_t PAGE_SIZE = 1024;
-static constexpr uint32_t PAGE_OFFSET_MASK = PAGE_SIZE - 1; /* % */
-static constexpr uint32_t PAGE_SHIFT = 10;
-static constexpr uint32_t BITSET_WIDTH = 64;
-static constexpr uint32_t BITSET_COUNT = PAGE_SIZE / BITSET_WIDTH; // 1024 / 64 = 16
-
-template<typename TProxy>
+template<typename TProxy, uint32_t PageSize = 1024>
 class CComponent_Pool final
 {
 public:
+    static_assert(PageSize >= 64, "PageSize must be at least 64.");
+    static_assert((PageSize & (PageSize - 1)) == 0, "PageSize must be a power of two.");
+
+    /* Memory Layout Constants for Paging System */
+    static constexpr uint32_t PageSize_Value = PageSize;
+    static constexpr uint32_t PAGE_SIZE = PageSize_Value;
+    static constexpr uint32_t PAGE_OFFSET_MASK = PAGE_SIZE - 1; /* % */
+    static constexpr uint32_t BITSET_WIDTH = 64;
+    static constexpr uint32_t BITSET_COUNT = PAGE_SIZE / BITSET_WIDTH;
+
+private:
+    static constexpr uint32_t Calculate_PageShift(uint32_t value)
+    {
+        uint32_t shift = 0;
+        while ((1u << shift) < value)
+            ++shift;
+        return shift;
+    }
+
+public:
+    static constexpr uint32_t PAGE_SHIFT = Calculate_PageShift(PAGE_SIZE);
+
     /* Ensure that the TProxy type is derived from CComponent_Proxy_Base at compile-time */
     static_assert(
         std::is_base_of_v<CComponent_Proxy_Base<typename TProxy::DataType, TProxy, TProxy::ComponentType>, TProxy>,
@@ -121,13 +136,10 @@ public:
         pPage->Set_Allocated(iOffset);
         pPage->Get_Ptr(iOffset)->bEnable = true;
 
-        /* TODO ================= TEST ===============================*/
-        COMPONENT_HANDLE hTest = COMPONENT_HANDLE::Create(iGlobalIndex, pPage->iVersion[iOffset]);
-        _DEBUG_INFO("Add Component with handle { %d }", hTest.iHandle);
-        /* TODO =======================================================*/
+        COMPONENT_HANDLE hComponent = COMPONENT_HANDLE::Create(iGlobalIndex, pPage->iVersion[iOffset]);
+        // _DEBUG_INFO("Add Component with handle { %d }", hTest.iHandle);
 
-
-        return COMPONENT_HANDLE::Create(iGlobalIndex, pPage->iVersion[iOffset]);
+        return hComponent;
     }
 
     void Deallocate(COMPONENT_HANDLE handle)
@@ -188,6 +200,11 @@ public:
     const std::vector<std::unique_ptr<PAGE>>& GetPages() const
     {
         return m_pages;
+    }
+
+    static constexpr uint32_t Get_PageSize()
+    {
+        return PageSize_Value;
     }
 
 public :
