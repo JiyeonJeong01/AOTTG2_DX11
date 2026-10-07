@@ -141,8 +141,8 @@ void CSolver::Solve_Impulse(CONTACT_DESC* pInfo)
 
     if (!Math::Is_Zero(vResolveN * fJ))
     {
-        Add_ImpulseAtPoint(transformA, pBodyA, _float3{ -vImpulse.x, -vImpulse.y, -vImpulse.z }, vPoint);
-        Add_ImpulseAtPoint(transformB, pBodyB, vImpulse, vPoint);
+        Add_ImpulseAtPoint(pBodyA, _float3{ -vImpulse.x, -vImpulse.y, -vImpulse.z }, vPoint);
+        Add_ImpulseAtPoint(pBodyB, vImpulse, vPoint);
     }
 
     /* -------------------------- Solve Friction -------------------------- */
@@ -202,8 +202,8 @@ void CSolver::Solve_Impulse(CONTACT_DESC* pInfo)
 
     if (!Math::Is_NearlyZero(vJFriction))
     {
-        Add_ImpulseAtPoint(transformA, pBodyA, _float3{ -vJFriction.x, -vJFriction.y, -vJFriction.z }, vPoint);
-        Add_ImpulseAtPoint(transformB, pBodyB, vJFriction, vPoint);
+        Add_ImpulseAtPoint(pBodyA, _float3{ -vJFriction.x, -vJFriction.y, -vJFriction.z }, vPoint);
+        Add_ImpulseAtPoint(pBodyB, vJFriction, vPoint);
     }
 }
 
@@ -270,7 +270,7 @@ void CSolver::Solve_Penetration(CONTACT_DESC* pInfo)
     }
 }
 
-void CSolver::Add_ImpulseAtPoint(CTransform transform, RIGIDBODY_DATA* pBody, const _float3& vImpulse, const _float3& vPoint)
+void CSolver::Add_ImpulseAtPoint(RIGIDBODY_DATA* pBody, const _float3& vImpulse, const _float3& vPoint)
 {
     if (pBody == nullptr)
         return;

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "ScoutBehavior.h"
 #include "Cinematic_Event.h"
+#include "Event.h"
 
 NS_BEGIN(Client)
 
@@ -66,6 +67,7 @@ private:
 
 private:
     void On_CinematicEvent(const CINEMATIC_EVENT_DATA& tEventData);
+    ListenerID m_iCinematicListener = 0;
 
 private:
     void Begin_StagingCamera_FromCurrentRender();

@@ -18,6 +18,8 @@ CScoutBehavior_RescueDialogue::CScoutBehavior_RescueDialogue(
 
 CScoutBehavior_RescueDialogue::~CScoutBehavior_RescueDialogue()
 {
+    SYS_CINEMATIC.Unsubscribe_CinematicEvent("Scout_RescueDialogue", CINEMATIC_EVENT_TYPE::CUSTOM, m_iCinematicListener);
+
     if (m_scStagingCamera.Is_Valid())
         m_scStagingCamera.Set_Priority(0);
 
@@ -96,7 +98,9 @@ void CScoutBehavior_RescueDialogue::Process_Start(CGameObject* pPlayer)
 
     Change_State(RESCUE_DIALOGUE_STATE::NONE);
 
-    SYS_CINEMATIC.Subscribe_CinematicEvent(
+    /* 다시 시작해도 리스너가 중복되지 않게 이전 구독을 해제한다. */
+    SYS_CINEMATIC.Unsubscribe_CinematicEvent("Scout_RescueDialogue", CINEMATIC_EVENT_TYPE::CUSTOM, m_iCinematicListener);
+    m_iCinematicListener = SYS_CINEMATIC.Subscribe_CinematicEvent(
         "Scout_RescueDialogue",
         CINEMATIC_EVENT_TYPE::CUSTOM,
         &CScoutBehavior_RescueDialogue::On_CinematicEvent,

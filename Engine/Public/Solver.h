@@ -22,7 +22,7 @@ private:
     void    Solve_Impulse(CONTACT_DESC* pInfo);
     void    Solve_Penetration(CONTACT_DESC* pInfo);
 
-    void    Add_ImpulseAtPoint(CTransform transform, RIGIDBODY_DATA* pBody, const _float3& vImpulse, const _float3& vPoint);
+    void    Add_ImpulseAtPoint(RIGIDBODY_DATA* pBody, const _float3& vImpulse, const _float3& vPoint);
 
     _bool   Is_Separating(CONTACT_DESC* pInfo);
     _float3 Calc_PointVelocity(RIGIDBODY_DATA* pBody, const _float3& vPoint);

@@ -10,6 +10,8 @@ class CScout_Controller;
 class COpening_Director : public IScript
 {
 public:
+    ~COpening_Director();
+
     void Awake(void* pCtx) override;
     void Start(void* pCtx) override;
     void Priority_Update(void* pCtx, _float fDT) override;
@@ -35,7 +37,7 @@ private:
     void Apply_WhiteOutColor(const _float4& vColor);
 
     void On_CinematicEvent(const CINEMATIC_EVENT_DATA& tEventData);
-
+    ListenerID m_iCinematicListener = 0;
 
 private:
     OPENING_STATE       m_eState = OPENING_STATE::NONE;

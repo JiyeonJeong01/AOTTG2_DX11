@@ -464,6 +464,13 @@ Processor의 DRAW_CMD 생성 → Render_System의 레이어 분배·일부 정�
 - IScript의 Awake/Start/Priority_Update/Update/Late_Update 기본 구현은 모두 비어 있다. Tick을 등록하지 않아도 빠지는 동작은 없다.
 - IScript::Get_Field_Ptr는 non-const와 const 버전이 모두 있다. 포트폴리오 코드 블록에는 non-const만 보여서 const 함수인 Save_Exposed_Fields와 어긋나 보이므로, 노션에는 const 버전을 함께 싣는다.
 
+**이미 수정한 항목**
+- (커밋 d76953b, 53c64c6) Component_Pool: 페이지 크기 템플릿 인자화(카메라 풀 64), 해제 직전 `m_OnDeallocate` 콜백 추가. Script/MeshRenderer Processor가 구독해 외부 자원을 정리하고, `CScript_Processor` 소멸자가 남은 pState를 지운다. 아래 표의 "Script 관련 메모리 누수" 항목은 이 수정으로 해결됐다(삭제·씬 전환·종료 경로 재검증은 남음).
+
+**이미 수정한 항목 (2026-10-08, 빌드 확인, 클립 데이터에 0초·START 이벤트 없음 확인)**
+- CinematicSystem: `Play`에서 START 채널을 호출하도록 추가(FINISH만 자동 호출되던 비대칭 해소). 0초 이벤트 키가 `(prev, cur]` 검사 때문에 영영 호출되지 않던 문제를 `Play`에서 `Process_EventKeys(-1, 0)`으로 처리.
+- CinematicSystem: 구독 해제 API가 없어 씬 재로드·행동 재시작 시 리스너가 쌓이고, 파괴된 객체(`this`)를 호출할 수 있었다. `Subscribe_CinematicEvent`가 ListenerID를 반환하고 `Unsubscribe_CinematicEvent`를 추가했다. 구독하는 3곳(RequestResupply, RescueDialogue, Opening_Director)이 재구독 전과 소멸자에서 해제한다. 남은 위험: 콜백 안에서 해제하면 `CEvent::Invoke` 순회 중 삭제가 된다(A19).
+
 **확인·수정할 항목**
 
 | 관련 | 관찰 | 확인할 것 | 수정 방향 후보 |

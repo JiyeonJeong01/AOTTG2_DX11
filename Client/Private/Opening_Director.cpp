@@ -6,6 +6,11 @@
 
 NS_BEGIN(Client)
 
+COpening_Director::~COpening_Director()
+{
+    SYS_CINEMATIC.Unsubscribe_CinematicEvent("opening", CINEMATIC_EVENT_TYPE::CUSTOM, m_iCinematicListener);
+}
+
 void COpening_Director::Awake(void* pCtx)
 {
     CGameObject* pObject = nullptr;
@@ -97,7 +102,8 @@ void COpening_Director::Start(void* pCtx)
             m_crWhiteOut.Set_Color(_float4(1.f, 1.f, 1.f, 0.f));
         }
 
-        SYS_CINEMATIC.Subscribe_CinematicEvent(
+        SYS_CINEMATIC.Unsubscribe_CinematicEvent("opening", CINEMATIC_EVENT_TYPE::CUSTOM, m_iCinematicListener);
+        m_iCinematicListener = SYS_CINEMATIC.Subscribe_CinematicEvent(
             "opening",
             CINEMATIC_EVENT_TYPE::CUSTOM,
             &COpening_Director::On_CinematicEvent,

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "ScoutBehavior.h"
 #include "Cinematic_Event.h"
+#include "Event.h"
 
 NS_BEGIN(Client)
 
@@ -105,6 +106,7 @@ private:
     void OnTriggerExit(const COLLISION_DESC& tCollisionDesc);
     void On_AnimFinished(const Engine::ANIMATION_EVENT_DATA& tData);
     void On_CinematicEvent(const CINEMATIC_EVENT_DATA& tEventData);
+    ListenerID m_iCinematicListener = 0;
 
     void Place_RequestNoticeCamera();
     void Handle_SignalFlare(_float fDT);

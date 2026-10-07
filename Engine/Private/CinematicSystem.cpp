@@ -77,6 +77,12 @@ bool CCinematic_System::Play(CCamera camera)
     Evaluate(0.f);
     Apply_Shake(0.f);
 
+    CINEMATIC_EVENT_DATA tStartData{ "START" };
+    Invoke_CinematicEvent_Channel(m_strCurrentClipName, CINEMATIC_EVENT_TYPE::START, tStartData);
+
+    /* Update는 (prev, cur] 구간만 처리하므로 0초 이벤트 키는 여기서 처리한다. */
+    Process_EventKeys(-1.f, 0.f);
+
     return true;
 }
 
@@ -765,6 +771,25 @@ void CCinematic_System::Invoke_CinematicEvent_Channel(
         return;
 
     it->second.Invoke(tEventData);
+}
+
+void CCinematic_System::Unsubscribe_CinematicEvent(
+    const std::string& strClipName,
+    CINEMATIC_EVENT_TYPE eType,
+    ListenerID iID)
+{
+    if (iID == 0)
+        return;
+
+    CINEMATIC_EVENT_CHANNEL_KEY tKey{};
+    tKey.strClipName = strClipName;
+    tKey.eType = eType;
+
+    auto it = m_umCinematicEvents.find(tKey);
+    if (it == m_umCinematicEvents.end())
+        return;
+
+    it->second.Remove_Listener(iID);
 }
 
 void CCinematic_System::Force_Shake(_float fDuration, _float fPower)

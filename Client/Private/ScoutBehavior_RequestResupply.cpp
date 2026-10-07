@@ -18,6 +18,8 @@ NS_BEGIN(Client)
 
 CScoutBehavior_RequestResupply::~CScoutBehavior_RequestResupply()
 {
+    SYS_CINEMATIC.Unsubscribe_CinematicEvent("Scout_RequestResupply", CINEMATIC_EVENT_TYPE::CUSTOM, m_iCinematicListener);
+
     if (m_scSpecialCamera.Is_Valid())
     {
         m_scSpecialCamera.Set_Priority(0);
@@ -136,7 +138,9 @@ void CScoutBehavior_RequestResupply::Process_Start()
 {
     Change_State(RESUPPLY_STATE::NONE);
 
-    SYS_CINEMATIC.Subscribe_CinematicEvent(
+    /* 다시 시작해도 리스너가 중복되지 않게 이전 구독을 해제한다. */
+    SYS_CINEMATIC.Unsubscribe_CinematicEvent("Scout_RequestResupply", CINEMATIC_EVENT_TYPE::CUSTOM, m_iCinematicListener);
+    m_iCinematicListener = SYS_CINEMATIC.Subscribe_CinematicEvent(
         "Scout_RequestResupply",
         CINEMATIC_EVENT_TYPE::CUSTOM,
         &CScoutBehavior_RequestResupply::On_CinematicEvent,

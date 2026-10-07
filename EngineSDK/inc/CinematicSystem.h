@@ -83,8 +83,9 @@ private:
     std::string                              m_strCurrentClipName{};
 
 public :
+    /* 반환된 ID로 Unsubscribe_CinematicEvent를 호출해야 한다. pObj가 먼저 파괴되면 해제 필수. */
     template <typename T>
-    void Subscribe_CinematicEvent(
+    ListenerID Subscribe_CinematicEvent(
         const std::string& strClipName,
         CINEMATIC_EVENT_TYPE eType,
         void (T::* pFunc)(const CINEMATIC_EVENT_DATA&),
@@ -95,8 +96,11 @@ public :
         tKey.eType = eType;
 
         auto& Event = m_umCinematicEvents[tKey];
-        Event.Add_Listener(pFunc, pObj);
+        return Event.Add_Listener(pFunc, pObj);
     }
+
+    /* 이벤트 콜백 안에서 호출하지 않는다. (Invoke 순회 중 삭제) */
+    void Unsubscribe_CinematicEvent(const std::string& strClipName, CINEMATIC_EVENT_TYPE eType, ListenerID iID);
 
 public:
     void Force_Shake(_float fDuration, _float fPower);
