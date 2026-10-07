@@ -85,8 +85,8 @@ inline static _bool Create_Mesh_Buffers(
         return false;
     }
 
-    outEntry.pVB = pVB;
-    outEntry.pIB = pIB;
+    outEntry.pVB.Attach(pVB); /* '=' 대입은 AddRef 를 한 번 더 해서 누수 */
+    outEntry.pIB.Attach(pIB);
     outEntry.iVertexCount = static_cast<uint32_t>(vertices.size());
     outEntry.iIndexCount = static_cast<uint32_t>(indices.size());
     outEntry.iVertexStride = iVertexStride;

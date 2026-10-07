@@ -15,6 +15,8 @@ class ENGINE_DLL CScript_Processor : public CComponent_Processor_Impl<CScript, C
     DEF_PROCESSOR_ID(PROCESSOR_ID::SCRIPT)
 
 public:
+    ~CScript_Processor() override;
+
     HRESULT Initialize() override;
     void Update(_float fDT) override;
     void LateUpdate(_float fDT) override;

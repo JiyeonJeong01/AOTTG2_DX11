@@ -31,7 +31,18 @@
 IMPLEMENT_SINGLETON(CRender_System)
 
 CRender_System::CRender_System() = default;
-CRender_System::~CRender_System() = default;
+CRender_System::~CRender_System()
+{
+    Safe_Release(m_pBlendState_None);
+    Safe_Release(m_pBlendState_Alpha);
+    Safe_Release(m_pBlendState_Add);
+    Safe_Release(m_pDepthState_Default);
+    Safe_Release(m_pDepthState_ReadOnly);
+    Safe_Release(m_pDepthState_Disabled);
+    Safe_Release(m_pRasterizerState_Default);
+    Safe_Release(m_pRasterizerState_CullCw);
+    Safe_Release(m_pRasterizerState_CullNone);
+}
 
 static inline int LAYER_TO_IDX(RENDER_LAYER e)
 {

@@ -12,6 +12,7 @@
 #include "Script_Registry.h"
 #include "CinematicSystem.h"
 #include "Input_System.h"
+#include "GameObject_System.h"
 
 NS_BEGIN(Client)
 
@@ -22,7 +23,19 @@ CMainApp::CMainApp()
 
 CMainApp::~CMainApp()
 {
-    SYS_CORE.DestroyInstance();
+    /* 시스템이 모두 살아 있을 때 씬 객체(스크립트 포함)를 씬 전환과 같은 경로로 정리한다.
+       시스템 파괴 도중 스크립트 소멸자가 SYS_XXX 를 부르면 빈 싱글톤이 되살아난다. */
+    if (CGameObject_System::GetInstancePtr())
+    {
+        SYS_GAMEOBJECT.Destroy_All_SceneObjects();
+        SYS_GAMEOBJECT.Flush_PendingDestroy();
+    }
+
+    /* Initialize_Engine 이 AddRef 해서 넘겨준 참조 */
+    Safe_Release(m_pDevice);
+    Safe_Release(m_pContext);
+
+    CCore_System::DestroyInstance();
 }
 
 HRESULT CMainApp::Initialize(const ENGINE_DESC& EngineDesc)

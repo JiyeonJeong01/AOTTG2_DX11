@@ -4,6 +4,24 @@
 #include "Asset_Registry.h"
 #include "Script_Handler.h"
 
+CScript_Processor::~CScript_Processor()
+{
+    /* pState 는 vt.Create 로 new 한 스크립트(void*)라 풀이 파괴될 때 같이 지워지지 않는다. */
+    for (auto& upPage : m_Pool.GetPages())
+    {
+        for (uint32_t i = 0; i < m_Pool.Get_PageSize(); ++i)
+        {
+            if (!upPage->Is_Allocated(i))
+                continue;
+
+            SCRIPT_DATA* pData = upPage->Get_Ptr(i);
+            if (pData->pState && pData->iTypeID < m_Types.size() && m_Types[pData->iTypeID].vt.Destroy)
+                m_Types[pData->iTypeID].vt.Destroy(pData->pState);
+            pData->pState = nullptr;
+        }
+    }
+}
+
 HRESULT CScript_Processor::Initialize()
 {
     /* 팩토리 등록 */

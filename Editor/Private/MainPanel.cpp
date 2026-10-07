@@ -213,17 +213,19 @@ void CMainPanel::Draw_MenuBar()
             ImGui::Separator();
 
             /* YES : Save and Exit */
-            if (ImGui::Button("Yes", ImVec2(120, 0)))
+            /* NOTE: 여기서 Draw_MenuBar 를 return 하면 EndPopup/EndMenuBar 가 빠져 ImGui::End assert(abort) 가 난다.
+                     실패 시 return 은 람다 안에서만 끝나게 한다. */
+            auto SaveScene = [&]() -> bool
             {
                 CScene* pScene = SYS_CORE.Get_CurrentScene();
-                IF_NULL_RETURN_MSG_BREAK(pScene, , "Exit failed: current scene is null.");
+                IF_NULL_RETURN_MSG_BREAK(pScene, false, "Exit failed: current scene is null.");
 
                 const ASSET_GUID& tGUID = pScene->Get_GUID();
                 const ASSET_RECORD* pRec = tGUID.Is_Valid() ? SYS_ASSET.Find(tGUID) : nullptr;
 
                 if (pRec && !pRec->path.empty())
                 {
-                    IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Save_CurrentScene(pRec->path), , "Save before exit failed.");
+                    IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Save_CurrentScene(pRec->path), false, "Save before exit failed.");
                 }
                 else
                 {
@@ -233,10 +235,14 @@ void CMainPanel::Draw_MenuBar()
                         Editor_Util::Get_SceneRoot().wstring().c_str()
                     );
 
-                    IF_TRUE_RETURN_MSG_BREAK(pathW.empty(), , "Exit cancelled: Save As aborted.");
-                    IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Save_CurrentScene(pathW), , "Save As before exit failed.");
+                    IF_TRUE_RETURN_MSG_BREAK(pathW.empty(), false, "Exit cancelled: Save As aborted.");
+                    IF_FAIL_RETURN_MSG_BREAK(SYS_CORE.Save_CurrentScene(pathW), false, "Save As before exit failed.");
                 }
+                return true;
+            };
 
+            if (ImGui::Button("Yes", ImVec2(120, 0)) && SaveScene())
+            {
                 m_bShowExitPopup = false;
                 m_bSceneDirty = false;
                 ImGui::CloseCurrentPopup();

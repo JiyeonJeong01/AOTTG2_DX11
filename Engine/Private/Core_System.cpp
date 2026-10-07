@@ -37,15 +37,19 @@ CCore_System::CCore_System()
 
 CCore_System::~CCore_System()
 {
-    SYS_COMPONENT.DestroyInstance();
-    SYS_GAMEOBJECT.DestroyInstance();
-    SYS_ASSET.DestroyInstance();
-    SYS_INPUT.DestroyInstance();
-    SYS_LOG.DestroyInstance();
-    SYS_EVENT.DestroyInstance();
-    SYS_RENDER.DestroyInstance();
-    SYS_RESOURCE.DestroyInstance();
-    SYS_CINEMATIC.DestroyInstance();
+    /* NOTE: SYS_XXX 매크로는 GetInstance()라 이미 파괴된 싱글톤을 다시 생성한다. 정적 호출로 파괴할 것. */
+    CGameInstance::DestroyInstance();
+    CEditor_System::DestroyInstance();
+    CSound_System::DestroyInstance();
+    CComponent_System::DestroyInstance();
+    CGameObject_System::DestroyInstance();
+    CAsset_Registry::DestroyInstance();
+    CInput_System::DestroyInstance();
+    CLogger::DestroyInstance();
+    CEvent_System::DestroyInstance();
+    CRender_System::DestroyInstance();
+    CResource_System::DestroyInstance();
+    CCinematic_System::DestroyInstance();
 }
 
 HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice,

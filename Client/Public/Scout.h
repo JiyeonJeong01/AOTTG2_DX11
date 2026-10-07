@@ -11,6 +11,8 @@ class CScout_Scriptable_Object;
 class CScout : public IScript, public CHuman
 {
 public:
+    ~CScout() { Clear_Behavior(); }
+
     void Awake(void* pCtx) override;
     void Start(void* pCtx) override;
 

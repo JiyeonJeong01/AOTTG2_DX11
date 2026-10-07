@@ -39,7 +39,6 @@ CGameInstance::CGameInstance()
 {
 }
 
-unique_ptr<CLine> s_Line;
 
 HRESULT CGameInstance::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

@@ -117,6 +117,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
         }
 
+        /* WM_CLOSE 로 창이 파괴된 뒤 WM_QUIT 을 받기 전, 죽은 창에 프레임을 그리지 않는다 */
+        if (!IsWindow(g_hWnd))
+            continue;
+
         const _float fDT = SYS_CORE.Compute_SystemDT();
         fTimeAcc += fDT * g_fPlaySpeed;
 
@@ -184,8 +188,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     if (upMainPanel)
         upMainPanel.reset();
 
-    SYS_GUI.DestroyInstance();
-    SYS_CORE.DestroyInstance();
+    Editor::CGUI_System::DestroyInstance();
+    pMainApp.reset(); /* 디바이스 참조 해제 + Core 파괴 */
 
     return (int)msg.wParam;
 }
