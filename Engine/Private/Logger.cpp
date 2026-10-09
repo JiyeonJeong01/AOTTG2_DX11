@@ -29,17 +29,33 @@ HRESULT CLogger::Initialize()
 
 ISink* CLogger::Set_Sink(LOG_TYPE eType)
 {
-    switch (eType)
+    if (eType >= LOG_TYPE::END)
+        return nullptr;
+
+    std::lock_guard<std::mutex> lock(m_mtx);
+
+    /* 타입별로 한 번만 생성하고 재사용한다.
+     * 교체 시 이전 sink를 파괴하지 않아 외부가 들고 있는 포인터가 유효하다. */
+    auto& pSink = m_pSinks[static_cast<size_t>(eType)];
+    if (!pSink)
     {
-    case LOG_TYPE::CLI:
-        m_pSink = CCLI_Sink::Create();
-        break;
-    case LOG_TYPE::GUI:
-        m_pSink = CGUI_Sink::Create();
-        break;
+        switch (eType)
+        {
+        case LOG_TYPE::CLI: pSink = CCLI_Sink::Create(); break;
+        case LOG_TYPE::GUI: pSink = CGUI_Sink::Create(); break;
+        }
     }
 
-    return m_pSink.get();
+    m_pSink = pSink.get();
+    return pSink.get();
+}
+
+void CLogger::Write(const RECORD& tRecord)
+{
+    /* 포맷은 lock 밖에서 끝내고, 출력(sink 접근)만 직렬화한다. */
+    std::lock_guard<std::mutex> lock(m_mtx);
+    if (ISink* pSink = m_pSink.load())
+        pSink->Write(tRecord);
 }
 
 void CLogger::Log(SEVERITY_TYPE eSeverity, DOMAIN_TYPE eDomain, const char* szFile, const char* szFunc,
@@ -63,14 +79,15 @@ void CLogger::Log(SEVERITY_TYPE eSeverity, DOMAIN_TYPE eDomain, const char* szFi
     std::string_view svSeverity = magic_enum::enum_name(tRecord.eSeverity);
 
     tRecord.strMsg = FormatV(
-        "[%s][%s]\t %s \t\t\t\t\t\t\t\t\t\t\t(%s, Line: %d)",
+        "[%s][%s][%s]\t %s \t\t\t\t\t\t\t\t\t\t\t(%s, Line: %d)",
         Get_TimeStamp().c_str(),
         svSeverity.data(),
+        magic_enum::enum_name(tRecord.eDomain).data(),
         msg.c_str(),
         tRecord.szFunc,
         tRecord.iLine);
 
-	m_pSink->Write(tRecord);
+	Write(tRecord);
 }
 
 void CLogger::Assert(DOMAIN_TYPE eDomain, const char* szFile, const char* szFunc,
@@ -104,14 +121,15 @@ void CLogger::Assert(DOMAIN_TYPE eDomain, const char* szFile, const char* szFunc
     std::string_view svSeverity = magic_enum::enum_name(tRecord.eSeverity);
 
     tRecord.strMsg = FormatV(
-        "[%s][%s]\t %s \t\t\t\t\t\t\t\t\t(%s, Line: %d)",
+        "[%s][%s][%s]\t %s \t\t\t\t\t\t\t\t\t(%s, Line: %d)",
         Get_TimeStamp().c_str(),
         svSeverity.data(),
+        magic_enum::enum_name(tRecord.eDomain).data(),
         msg.c_str(),
         tRecord.szFunc,
         tRecord.iLine);
 
-	m_pSink->Write(tRecord);
+	Write(tRecord);
 }
 
 /**
@@ -167,7 +185,7 @@ std::string CLogger::Get_TimeStamp() const
     std::tm bt;
     localtime_s(&bt, &timer); 
 
-    return std::format("{:02}:{:02}:{:02}.{:02} ",
+    return std::format("{:02}:{:02}:{:02}.{:03} ",
         bt.tm_hour, bt.tm_min, bt.tm_sec, ms.count());
 }
 

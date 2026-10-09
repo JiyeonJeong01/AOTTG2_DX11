@@ -45,11 +45,12 @@ CCore_System::~CCore_System()
     CGameObject_System::DestroyInstance();
     CAsset_Registry::DestroyInstance();
     CInput_System::DestroyInstance();
-    CLogger::DestroyInstance();
     CEvent_System::DestroyInstance();
     CRender_System::DestroyInstance();
     CResource_System::DestroyInstance();
     CCinematic_System::DestroyInstance();
+    /* 다른 시스템 소멸 중 로그가 Logger를 재생성하지 않도록 마지막에 파괴 */
+    CLogger::DestroyInstance();
 }
 
 HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Device** ppDevice,
