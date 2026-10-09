@@ -35,6 +35,10 @@ public:
     void    Clear_AttachReference(MESH_RENDERER_DATA* pData);
     void    Clear_SkinningReference(MESH_RENDERER_DATA* pData);
 
+    /* 측정용 스위치: 끄면 프러스텀 컬링 없이 전부 그린다 */
+    void    Set_FrustumCull(_bool bEnable) { m_bFrustumCull = bEnable; }
+    _bool   Is_FrustumCull() const { return m_bFrustumCull; }
+
 private :
     void        Initialize_Component_Data(COMPONENT_HANDLE hComponent) override;
     uint64_t    Make_SortKey(const MESH_RENDERER_DATA& d) const;
@@ -81,6 +85,7 @@ private :
     std::vector<uint32_t>          m_vecFreeParticleRuntime;
 
     _uint                           m_iCurFrame = 0;
+    _bool                           m_bFrustumCull = true;
 
 public:
     static std::unique_ptr<CMeshRenderer_Processor> Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

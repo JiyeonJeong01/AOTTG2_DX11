@@ -92,6 +92,14 @@ public :
     void                        Rebuild_Static_Grid();
     void                        Set_DrawMode(DEBUG_DRAW eDraw);
 
+    /* 측정용 스위치: 끄면 동적-정적 후보를 Uniform Grid 없이 전수 비교 */
+    void                        Set_StaticGrid(_bool bEnable) { m_bStaticGrid = bEnable; }
+    _bool                       Is_StaticGrid() const { return m_bStaticGrid; }
+
+    /* 측정용 스위치: 끄면 예전 조회 방식(핸들 선형 탐색 + 조회마다 set 할당 + 디버그 셀 항상 기록) */
+    void                        Set_FastQuery(_bool bEnable) { m_bFastQuery = bEnable; }
+    _bool                       Is_FastQuery() const { return m_bFastQuery; }
+
 private:
     CComponent_Pool<CCollider>          m_ColliderPool;
     CComponent_Pool<CRigidbody>         m_RigidbodyPool;
@@ -114,6 +122,12 @@ private:
     const _float3   m_vGravity = { 0.f, m_fGravity, 0.f };
 
     DEBUG_DRAW      m_eDebugDraw = DEBUG_DRAW::ALL_GRID;
+    _bool           m_bStaticGrid = true;
+    _bool           m_bFastQuery = true;
+
+    /* 핸들 인덱스 → m_ActivatedColliders 위치. 프레임마다 다시 채운다 */
+    std::vector<_uint>  m_ActivatedIndexByHandle;
+    static constexpr _uint INVALID_ACTIVATED = ~0u;
 
 private :
     void    Process_SpringJoints(_float fDT);

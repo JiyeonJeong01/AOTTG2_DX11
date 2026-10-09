@@ -1,11 +1,17 @@
 ﻿#include "ProfilerPanel.h"
 #include <Engine_Log.h>
+#include <Profiler.h>
+#include <Component_System.h>
+#include <CRender_System.h>
+#include <MeshRenderer_Processor.h>
+#include <Physics_Processor.h>
 
 #include <psapi.h>
 
 NS_BEGIN(Editor)
 
 CProfilerPanel* CProfilerPanel::s_pActive = nullptr;
+bool            CProfilerPanel::s_bUncapFPS = true; /* 측정 기본: GPU 클럭이 출렁이지 않도록 제한 해제 */
 
 struct CProfilerPanel::ProfilerRuntime
 {
@@ -148,15 +154,37 @@ void CProfilerPanel::End_Scope()
 
     const double ms = std::chrono::duration<double, std::milli>(t1 - a.t0).count();
 
-    auto& entry = rt.scopes[a.name]; // creates if not exists
-    auto& s = entry;
+    Add_Sample(a.name, ms);
+}
+
+void CProfilerPanel::Feed_Engine_Samples()
+{
+    if (!s_pActive || !s_pActive->m_pRuntime->capture) return;
+
+    for (const auto& tSample : SYS_PROFILER.Get_CPU_Samples())
+        Add_Sample(tSample.szName, tSample.dMS);
+
+    for (const auto& tSample : SYS_PROFILER.Get_GPU_Samples())
+        Add_Sample(std::string("GPU/") + tSample.szName, tSample.dMS);
+
+    /* '#' 항목은 ms가 아니라 개수 */
+    for (const auto& tCount : SYS_PROFILER.Get_Counts())
+        Add_Sample(std::string("#") + tCount.szName, tCount.dMS);
+}
+
+void CProfilerPanel::Add_Sample(const std::string& strName, double ms)
+{
+    if (!s_pActive) return;
+    auto& rt = *s_pActive->m_pRuntime;
+
+    auto& s = rt.scopes[strName]; // creates if not exists
 
     if (!s.ui.bEnabled)
         return;
 
     if (s.ui.samples == 0)
     {
-        s.ui.name = a.name;
+        s.ui.name = strName;
         s.ui.min_ms = ms;
         s.ui.max_ms = ms;
         s.ui.bEnabled = true;
@@ -267,6 +295,56 @@ void CProfilerPanel::Reset_Stats()
     }
 }
 
+/* 측정 조건 + 비용순 표를 텍스트로 복사 (결과 공유용) */
+void CProfilerPanel::Copy_To_Clipboard()
+{
+    auto& rt = *m_pRuntime;
+
+    std::vector<const SCOPE_STATS*> rows;
+    for (auto& kv : rt.scopes)
+        rows.push_back(&kv.second.ui);
+    std::sort(rows.begin(), rows.end(),
+        [](const SCOPE_STATS* a, const SCOPE_STATS* b) { return a->avg_ms > b->avg_ms; });
+
+#ifdef _DEBUG
+    const char* pszConfig = "Debug";
+#else
+    const char* pszConfig = "Release";
+#endif
+    const auto mem = Get_Process_Memory();
+
+    std::string out;
+    char line[256];
+
+    const ImVec2 vDisplay = ImGui::GetIO().DisplaySize;
+    snprintf(line, sizeof(line), "GPU: %s | %s | Window %.0fx%.0f | FPS cap: %s | AvgWindow: %d\n",
+        SYS_PROFILER.Get_Adapter_Name().c_str(), pszConfig,
+        vDisplay.x, vDisplay.y, s_bUncapFPS ? "off" : "60", m_iAvgWindow);
+    out += line;
+    snprintf(line, sizeof(line), "FPS avg %.0f | Frame avg %.2f ms | Memory %zu MB\n",
+        m_fps_avg, m_frameMS_avg, mem.privateBytesMB);
+    out += line;
+
+    auto* pMesh = SYS_COMPONENT.Bind_Processor<CMeshRenderer_Processor>();
+    auto* pPhysics = SYS_COMPONENT.Bind_Processor<CPhysics_Processor>();
+    snprintf(line, sizeof(line), "Switches: FrustumCull %s | StaticShadowCache %s | PhysicsStaticGrid %s | PhysicsFastQuery %s  ('#' rows are counts, not ms)\n",
+        (pMesh && pMesh->Is_FrustumCull()) ? "on" : "off",
+        SYS_RENDER.Is_StaticShadowCache() ? "on" : "off",
+        (pPhysics && pPhysics->Is_StaticGrid()) ? "on" : "off",
+        (pPhysics && pPhysics->Is_FastQuery()) ? "on" : "off");
+    out += line;
+    snprintf(line, sizeof(line), "%-28s %9s %9s %9s\n", "Scope", "Avg(ms)", "Min(ms)", "Max(ms)");
+    out += line;
+
+    for (const SCOPE_STATS* s : rows)
+    {
+        snprintf(line, sizeof(line), "%-28s %9.3f %9.3f %9.3f\n", s->name.c_str(), s->avg_ms, s->min_ms, s->max_ms);
+        out += line;
+    }
+
+    ImGui::SetClipboardText(out.c_str());
+}
+
 CProfilerPanel::PROGRESS_MEMORY CProfilerPanel::Get_Process_Memory()
 {
     PROCESS_MEMORY_COUNTERS_EX pmc{};
@@ -288,10 +366,46 @@ void CProfilerPanel::Draw_Toolbar()
         Reset_Stats();
 
     ImGui::SameLine();
+    if (ImGui::Button("Copy"))
+        Copy_To_Clipboard();
+
+    ImGui::SameLine();
     ImGui::Checkbox("Sort by cost", &m_bSortByCost);
 
     ImGui::SameLine();
     ImGui::Checkbox("Show disabled", &m_bShowDisabled);
+
+    ImGui::SameLine();
+    ImGui::Checkbox("Uncap FPS", &s_bUncapFPS);
+
+    /* 측정용 최적화 스위치: 끈 상태와 켠 상태를 같은 장면에서 비교 */
+    ImGui::TextUnformatted("Optimizations:");
+
+    if (auto* pMesh = SYS_COMPONENT.Bind_Processor<CMeshRenderer_Processor>())
+    {
+        _bool bOn = pMesh->Is_FrustumCull();
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Frustum Cull", &bOn))
+            pMesh->Set_FrustumCull(bOn);
+    }
+    {
+        _bool bOn = SYS_RENDER.Is_StaticShadowCache();
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Static Shadow Cache", &bOn))
+            SYS_RENDER.Set_StaticShadowCache(bOn);
+    }
+    if (auto* pPhysics = SYS_COMPONENT.Bind_Processor<CPhysics_Processor>())
+    {
+        _bool bOn = pPhysics->Is_StaticGrid();
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Physics Static Grid", &bOn))
+            pPhysics->Set_StaticGrid(bOn);
+
+        _bool bFast = pPhysics->Is_FastQuery();
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Physics Fast Query", &bFast))
+            pPhysics->Set_FastQuery(bFast);
+    }
 
     ImGui::SameLine();
     ImGui::SetNextItemWidth(140.f);

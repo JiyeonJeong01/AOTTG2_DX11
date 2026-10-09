@@ -9,6 +9,7 @@
 #include "Core_System.h"
 #include "Event_System.h"
 #include "Input_System.h"
+#include "Profiler.h"
 
 #include "WindowResize_Event.h"
 
@@ -124,8 +125,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         const _float fDT = SYS_CORE.Compute_SystemDT();
         fTimeAcc += fDT * g_fPlaySpeed;
 
-        if (fTimeAcc >= FRAME_DT)
+        if (fTimeAcc >= (Editor::CProfilerPanel::Is_FPS_Uncapped() ? 0.f : FRAME_DT))
         {
+            SYS_PROFILER.Begin_Frame();
+
             static auto s_prev = Editor::CProfilerPanel::clock::now();
 
             if (SYS_INPUT.Get_KeyDown('M'))
@@ -152,6 +155,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
             {   /* 월드 렌더(SceneRTV) */
                 Editor::CProfilerPanel::CScope _world("World::Render");
+                PROFILE_GPU("World");
                 SYS_CORE.Bind_SceneRTV();
                 _float4 g_vClearColor = { 0.1f, 0.8f, 0.8f, 1.0f };
                 SYS_CORE.Clear_Scene_Buffers(&g_vClearColor);
@@ -160,6 +164,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
             {   /* 에디터 렌더 */
                 Editor::CProfilerPanel::CScope _editor("Editor::Render");
+                PROFILE_GPU("Editor ImGui");
                 SYS_CORE.Bind_DefaultRTV();
                 _float4 k_vClearColor = { 0.18f, 0.18f, 0.18f, 1.0f };
                 SYS_CORE.Clear_Default_Buffers(&k_vClearColor);
@@ -168,6 +173,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 upMainPanel->Render();
                 SYS_GUI.End_Render();
             }
+
+            SYS_PROFILER.End_Frame();
+            Editor::CProfilerPanel::Feed_Engine_Samples();
 
             {   /* Present */
                 Editor::CProfilerPanel::CScope _present("Engine::Present");

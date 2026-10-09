@@ -23,6 +23,7 @@
 #include "Texture.h"
 #include "Animator.h"
 #include "Font.h"
+#include "Profiler.h"
 #include "UIText.h"
 
 #include "Input_System.h"
@@ -343,6 +344,10 @@ void CRender_System::Build_RenderQueue()
         m_LayerCmds[idx].push_back(&cmd);
     }
 
+    SYS_PROFILER.Set_Count("Draw/GBuffer", (_double)m_LayerCmds[LAYER_TO_IDX(RENDER_LAYER::NONBLEND)].size());
+    SYS_PROFILER.Set_Count("Draw/ShadowStatic", (_double)m_LayerCmds[LAYER_TO_IDX(RENDER_LAYER::SHADOW_STATIC)].size());
+    SYS_PROFILER.Set_Count("Draw/ShadowDynamic", (_double)m_LayerCmds[LAYER_TO_IDX(RENDER_LAYER::SHADOW_DYNAMIC)].size());
+
     /* 패스별 정렬 */
     {
         auto& q = m_LayerCmds[LAYER_TO_IDX(RENDER_LAYER::BLEND)];
@@ -363,34 +368,56 @@ void CRender_System::Build_RenderQueue()
 
 void CRender_System::Execute_RenderQueue()
 {
-    Apply_Pass_State_Skybox();
-    Execute_Pass(RENDER_LAYER::SKY);
+    {
+        PROFILE_GPU("Sky+Priority");
+        Apply_Pass_State_Skybox();
+        Execute_Pass(RENDER_LAYER::SKY);
 
-    Apply_Pass_State_Priority();
-    Execute_Pass(RENDER_LAYER::PRIORITY);
+        Apply_Pass_State_Priority();
+        Execute_Pass(RENDER_LAYER::PRIORITY);
+    }
 
-    Render_StaticShadow();
-    Render_DynamicShadow();
+    { PROFILE_GPU("Shadow::Static");  Render_StaticShadow(); }
+    { PROFILE_GPU("Shadow::Dynamic"); Render_DynamicShadow(); }
 
-    Apply_Pass_State_NonBlend();
-    Render_GBuffer();
+    {
+        PROFILE_GPU("GBuffer");
+        Apply_Pass_State_NonBlend();
+        Render_GBuffer();
+    }
 
-    Apply_Pass_State_Light();
-    Render_LightPass();
+    {
+        PROFILE_GPU("Light");
+        Apply_Pass_State_Light();
+        Render_LightPass();
+    }
 
-    Apply_Pass_State_Combined();
-    Render_CombinedPass();
+    {
+        PROFILE_GPU("Combined");
+        Apply_Pass_State_Combined();
+        Render_CombinedPass();
+    }
 
-    Apply_Pass_State_PostProcess();
-    Render_PostProcess();
-    Render_PostProcessComposite();
+    {
+        PROFILE_GPU("PostProcess");
+        Apply_Pass_State_PostProcess();
+        Render_PostProcess();
+        Render_PostProcessComposite();
+    }
 
-    Apply_Pass_State_Blend();
-    Execute_Pass(RENDER_LAYER::BLEND);
+    {
+        PROFILE_GPU("Blend");
+        Apply_Pass_State_Blend();
+        Execute_Pass(RENDER_LAYER::BLEND);
+    }
 
-    Render_SpeedLinePass();
-    Apply_Pass_State_UI();
-    Execute_Pass(RENDER_LAYER::UI);
+    { PROFILE_GPU("SpeedLine"); Render_SpeedLinePass(); }
+
+    {
+        PROFILE_GPU("UI");
+        Apply_Pass_State_UI();
+        Execute_Pass(RENDER_LAYER::UI);
+    }
 
     m_PendingDrawCmds.clear();
 }
@@ -1250,10 +1277,14 @@ void CRender_System::Execute_Draw_Text(const DRAW_CMD& tCmd)
 void CRender_System::Render()
 {
     m_pContext->RSSetState(m_rsNoScissor.Get());
-    Build_RenderQueue();
+    {
+        PROFILE_CPU("Render::BuildQueue");
+        Build_RenderQueue();
+    }
 
     m_bBeginThisFrame = false;
 
+    PROFILE_CPU("Render::Submit");
     Execute_RenderQueue();
 }
 
@@ -1718,7 +1749,7 @@ void CRender_System::Apply_Pass_State_Shadow()
 
 void CRender_System::Render_StaticShadow()
 {
-    if (m_bStaticShadowRendered)
+    if (m_bStaticShadowRendered && m_bStaticShadowCache)
         return;
 
     const _float4 vClear = { 1.f, 1.f, 1.f, 1.f };

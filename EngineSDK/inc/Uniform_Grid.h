@@ -32,6 +32,9 @@ public:
     _bool   Get_DebugDraw_QueryAABB() const { return m_bDebugDrawQueryAABB; }
 
     void    Begin_Debug_Frame();
+
+    /* bFast: 조회 중복 제거를 재사용 버퍼로. bRecordDebug: 조회한 셀을 디버그용으로 기록 (Grid를 그릴 때만 필요) */
+    void    Set_FastQuery(_bool bFast, _bool bRecordDebug) { m_bFastQuery = bFast; m_bRecordDebug = bRecordDebug; }
     const   std::vector<UNIFORM_GRID_DEBUG_CELL>& Get_DebugFrameQueriedCells() const { return m_vecDebugFrameQueriedCells; }
 
 public:
@@ -79,6 +82,12 @@ private:
 
     std::vector<UNIFORM_GRID_DEBUG_CELL>    m_vecDebugFrameQueriedCells;
     std::unordered_set<size_t>              m_setDebugFrameQueriedCellIndices;
+
+    _bool                                   m_bFastQuery = true;
+    _bool                                   m_bRecordDebug = true;
+    /* 핸들 인덱스별 마지막 조회 번호. 같은 조회에서 이미 넣었는지 O(1)로 확인 */
+    std::vector<uint32_t>                   m_QueryStamp;
+    uint32_t                                m_iQueryStamp = 0;
 
 public :
     static std::unique_ptr<CUniform_Grid> Create(const _float3& vWorldMin, const _float3& vWorldMax, _float fCellSize);

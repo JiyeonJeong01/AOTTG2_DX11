@@ -68,11 +68,59 @@ void CUniform_Grid::Query_StaticOverlap(const AABB& tAABB, _Out_ std::vector<COM
 
     pOutOverlaps->clear();
 
-    std::unordered_set<uint32_t> setAddedHandles;
-
     GRID_COORD coordMin{};
     GRID_COORD coordMax{};
     Calc_RangeInCell(tAABB, &coordMin, &coordMax);
+
+    if (m_bFastQuery)
+    {
+        /* 여러 셀에 걸친 콜라이더는 한 번만. 넣은 순서는 예전과 같다 (Solver 순서 유지) */
+        if (++m_iQueryStamp == 0) /* 한 바퀴 돌면 초기화 */
+        {
+            std::fill(m_QueryStamp.begin(), m_QueryStamp.end(), 0u);
+            m_iQueryStamp = 1;
+        }
+
+        for (int iZ = coordMin.iZ; iZ <= coordMax.iZ; ++iZ)
+        {
+            for (int iY = coordMin.iY; iY <= coordMax.iY; ++iY)
+            {
+                for (int iX = coordMin.iX; iX <= coordMax.iX; ++iX)
+                {
+                    const size_t iCellIndex = ToIndex(iX, iY, iZ);
+                    const auto& vecCols = m_StaticColliders[iCellIndex];
+
+                    if (m_bRecordDebug && m_setDebugFrameQueriedCellIndices.insert(iCellIndex).second)
+                    {
+                        UNIFORM_GRID_DEBUG_CELL tCell{};
+                        tCell.iX = iX;
+                        tCell.iY = iY;
+                        tCell.iZ = iZ;
+                        tCell.iCellIndex = iCellIndex;
+                        tCell.iNumColliders = static_cast<_uint>(vecCols.size());
+                        m_vecDebugFrameQueriedCells.push_back(tCell);
+                    }
+
+                    for (COMPONENT_HANDLE hCollider : vecCols)
+                    {
+                        const uint32_t iIndex = hCollider.Get_Index();
+                        if (iIndex >= m_QueryStamp.size())
+                            m_QueryStamp.resize(iIndex + 1, 0u);
+
+                        if (m_QueryStamp[iIndex] == m_iQueryStamp)
+                            continue;
+
+                        m_QueryStamp[iIndex] = m_iQueryStamp;
+                        pOutOverlaps->push_back(hCollider);
+                    }
+                }
+            }
+        }
+        return;
+    }
+
+    /* 예전 방식 (측정 비교용) */
+    std::unordered_set<uint32_t> setAddedHandles;
 
     for (int iZ = coordMin.iZ; iZ <= coordMax.iZ; ++iZ)
     {

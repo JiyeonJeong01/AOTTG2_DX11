@@ -14,6 +14,7 @@
 #include "SpriteEffect_Processor.h"
 
 #include "Render_Struct.h"
+#include "Profiler.h"
 
 IMPLEMENT_SINGLETON(CComponent_System)
 
@@ -66,16 +67,16 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
 
 void CComponent_System::Update(_float fDT)
 {
-    To<CScript_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::SCRIPT)].get())->Update(fDT);
-    To<CTransform_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::TRANSFORM)].get())->Update(fDT);
-    To<CEnvironment_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::ENVIRONMENT)].get())->Update(fDT);
-    To<CRectTransform_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::RECT_TRANSFORM)].get())->Update(fDT);
-    To<CUI_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::UI)].get())->Update(fDT);
-    To<CPhysics_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::PHYSICS)].get())->Update(fDT);
-    To<CAnimator_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::ANIMATION)].get())->Update(fDT);
-    To<CMeshRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::MESH_RENDERER)].get())->Update(fDT);
-    To<CCanvasRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::CANVAS_RENDERER)].get())->Update(fDT);
-    To<CSpriteEffect_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::SPRITE_EFFECT)].get())->Update(fDT);
+    { PROFILE_CPU("Update::Script");         To<CScript_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::SCRIPT)].get())->Update(fDT); }
+    { PROFILE_CPU("Update::Transform");      To<CTransform_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::TRANSFORM)].get())->Update(fDT); }
+    { PROFILE_CPU("Update::Environment");    To<CEnvironment_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::ENVIRONMENT)].get())->Update(fDT); }
+    { PROFILE_CPU("Update::RectTransform");  To<CRectTransform_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::RECT_TRANSFORM)].get())->Update(fDT); }
+    { PROFILE_CPU("Update::UI");             To<CUI_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::UI)].get())->Update(fDT); }
+    { PROFILE_CPU("Update::Physics");        To<CPhysics_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::PHYSICS)].get())->Update(fDT); }
+    { PROFILE_CPU("Update::Animator");       To<CAnimator_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::ANIMATION)].get())->Update(fDT); }
+    { PROFILE_CPU("Update::MeshRenderer");   To<CMeshRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::MESH_RENDERER)].get())->Update(fDT); }
+    { PROFILE_CPU("Update::CanvasRenderer"); To<CCanvasRenderer_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::CANVAS_RENDERER)].get())->Update(fDT); }
+    { PROFILE_CPU("Update::SpriteEffect");   To<CSpriteEffect_Processor*>(m_pComProcessors[To<_int>(PROCESSOR_ID::SPRITE_EFFECT)].get())->Update(fDT); }
 }
 
 void CComponent_System::LateUpdate(_float fDT)
@@ -116,6 +117,7 @@ void CComponent_System::Render()
 {
     IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::PHYSICS)], , "m_pComProcessor is nullptr");
 
+    PROFILE_CPU("Physics::DebugRender");
     To< CPhysics_Processor*>(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::PHYSICS)].get())->Render();
 }
 

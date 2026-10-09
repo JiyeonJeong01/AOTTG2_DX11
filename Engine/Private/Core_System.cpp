@@ -13,6 +13,7 @@
 #include "GameInstance.h"
 #include "CinematicSystem.h"
 #include "Sound_System.h"
+#include "Profiler.h"
 
 /* --- sub --- */
 #include "Graphic_Device.h"
@@ -49,6 +50,7 @@ CCore_System::~CCore_System()
     CRender_System::DestroyInstance();
     CResource_System::DestroyInstance();
     CCinematic_System::DestroyInstance();
+    CProfiler::DestroyInstance();
     /* 다른 시스템 소멸 중 로그가 Logger를 재생성하지 않도록 마지막에 파괴 */
     CLogger::DestroyInstance();
 }
@@ -65,6 +67,9 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
 
     m_pDevice = *ppDevice;
     m_pContext = *ppContext;
+
+    /* --- Profiler --- */
+    IF_FAIL_RETURN_MSG_BREAK(SYS_PROFILER.Initialize(m_pDevice, m_pContext), E_FAIL, "Profiler failed Initialize");
 
     /* --- Timer ---*/
     m_pTimer_Handler = CTimer_Handler::Create();
@@ -156,6 +161,7 @@ void CCore_System::Update_Game_Engine(_float fDT)
 
 void CCore_System::Fixed_Update(_float fDT)
 {
+    PROFILE_CPU("Physics::FixedUpdate");
     SYS_COMPONENT.FixedUpdate(fDT);
 }
 
@@ -450,7 +456,10 @@ void CCore_System::Update_RuntimeEngine(_float fDT, CScene* pScene)
     // pScene->Update(fDT);
 
     /* 컴포넌트 업데이트 */
-    SYS_COMPONENT.Update(fDT);
+    {
+        PROFILE_CPU("Component::Update");
+        SYS_COMPONENT.Update(fDT);
+    }
 
     /* 게임 오브젝트 Pending 로직 */
     SYS_GAMEOBJECT.Flush_PendingDestroy();

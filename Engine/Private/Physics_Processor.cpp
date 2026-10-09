@@ -12,6 +12,7 @@
 #include "Solver.h"
 #include "Uniform_Grid.h"
 #include "Editor_System.h"
+#include "Profiler.h"
 
 HRESULT CPhysics_Processor::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
@@ -48,20 +49,30 @@ void CPhysics_Processor::Fixed_Update(_float fDT)
     m_ActivatedColliders.clear();
 
     /* spring joint */
-    Process_SpringJoints(fDT);
+    {
+        PROFILE_CPU("Physics::SpringJoint");
+        Process_SpringJoints(fDT);
+    }
 
-    Accumulate_Forces();
-    Integrate_Forces(fDT);
-    Apply_Damping(fDT);
+    {
+        PROFILE_CPU("Physics::Integrate");
+        Accumulate_Forces();
+        Integrate_Forces(fDT);
+        Apply_Damping(fDT);
 
-    /* 적분 적용하기 */
-    Integrate_Velocities(fDT);
+        /* 적분 적용하기 */
+        Integrate_Velocities(fDT);
+    }
 
     /* 충돌 감지하기 */
     vector<CONTACT_DESC> outContacts;
-    Process_Collision(outContacts);
+    {
+        PROFILE_CPU("Physics::Collision");
+        Process_Collision(outContacts);
+    }
 
     /* 충돌 해결하기 */
+    PROFILE_CPU("Physics::Solve");
     for (_uint i = 0; i < 1; ++i)
     {
         for (auto& contact : outContacts)
@@ -493,8 +504,26 @@ void CPhysics_Processor::Process_Collision(vector<CONTACT_DESC>& outContacts)
         }
     }
 
+    if (m_bFastQuery)
+    {
+        std::fill(m_ActivatedIndexByHandle.begin(), m_ActivatedIndexByHandle.end(), INVALID_ACTIVATED);
+        for (_uint i = 0; i < (_uint)m_ActivatedColliders.size(); ++i)
+        {
+            const COLLIDER_DATA* pCol = m_ActivatedColliders[i].pCol;
+            if (!pCol)
+                continue;
+
+            const _uint iIndex = pCol->hSelf.Get_Index();
+            if (iIndex >= m_ActivatedIndexByHandle.size())
+                m_ActivatedIndexByHandle.resize(iIndex + 1, INVALID_ACTIVATED);
+            m_ActivatedIndexByHandle[iIndex] = i;
+        }
+    }
+
     if (m_upUniform_Grid)
     {
+        const _bool bDrawGrid = (m_eDebugDraw == DEBUG_DRAW::ALL_GRID || m_eDebugDraw == DEBUG_DRAW::SELECT_GRID);
+        m_upUniform_Grid->Set_FastQuery(m_bFastQuery, bDrawGrid);
         m_upUniform_Grid->Begin_Debug_Frame();
     }
 
@@ -654,6 +683,20 @@ _bool CPhysics_Processor::Detect_Raycast(RAY& tRay, RAYCAST_HITS& outHits)
 
 const COLLIDER_PROXY_DATA* CPhysics_Processor::Find_ActivatedCollider_ByHandle(COMPONENT_HANDLE hCollider) const
 {
+    if (m_bFastQuery)
+    {
+        const _uint iIndex = hCollider.Get_Index();
+        if (iIndex >= m_ActivatedIndexByHandle.size())
+            return nullptr;
+
+        const _uint iSlot = m_ActivatedIndexByHandle[iIndex];
+        if (iSlot == INVALID_ACTIVATED)
+            return nullptr;
+
+        const COLLIDER_PROXY_DATA& tProxy = m_ActivatedColliders[iSlot];
+        return (tProxy.pCol && tProxy.pCol->hSelf == hCollider) ? &tProxy : nullptr; /* 버전까지 같아야 같은 콜라이더 */
+    }
+
     for (const auto& tProxy : m_ActivatedColliders)
     {
         if (!tProxy.pCol)

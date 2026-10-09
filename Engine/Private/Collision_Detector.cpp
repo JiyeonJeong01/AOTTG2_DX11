@@ -5,6 +5,7 @@
 #include "Engine_Math.h"
 #include "Raycast.h"
 #include "Uniform_Grid.h"
+#include "Profiler.h"
 
 namespace
 {
@@ -344,6 +345,27 @@ void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_
     std::vector<COMPONENT_HANDLE> vecStaticHandles;
     std::unordered_set<PAIR_KEY, PAIR_KEY_HASHER> setAddedPairs;
 
+    _uint iStaticChecked = 0;
+    _uint iDynamicChecked = 0;
+
+    /* 마스크 → AABB → 중복 순으로 걸러 후보쌍 추가 */
+    auto Try_Add_Pair = [&](const COLLIDER_PROXY_DATA* pColA, const COLLIDER_PROXY_DATA* pColB)
+    {
+        if ((pColA->pCol->iMask & pColB->pCol->iDiscardMask) != 0 || (pColA->pCol->iDiscardMask & pColB->pCol->iMask) != 0)
+            return;
+
+        if (!Check_AABB_Overlap(pColA->aabbWorld, pColB->aabbWorld))
+            return;
+
+        PAIR_KEY tPairKey(pColA->pCol->hSelf, pColB->pCol->hSelf);
+        if (!setAddedPairs.insert(tPairKey).second)
+            return;
+
+        outPair.emplace_back(const_cast<COLLIDER_PROXY_DATA*>(pColA), const_cast<COLLIDER_PROXY_DATA*>(pColB));
+    };
+
+    const _bool bUseGrid = m_pPhysics_Processor->Is_StaticGrid();
+
     for (uint32_t i = 0; i < iTotalCnt; ++i)
     {
         const COLLIDER_PROXY_DATA* pColA = &allColliders[i];
@@ -353,39 +375,32 @@ void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_
         if (pColA->pCol->bStatic)
             continue;
 
-        const AABB& tAABB_A = pColA->aabbWorld;
-
         /* non-static <-> static */
-        vecStaticHandles.clear();
-        pGrid->Query_StaticOverlap(tAABB_A, &vecStaticHandles);
-
-        for (COMPONENT_HANDLE hStatic : vecStaticHandles)
+        if (bUseGrid)
         {
-            const COLLIDER_PROXY_DATA* pStatic = m_pPhysics_Processor->Find_ActivatedCollider_ByHandle(hStatic);
-            if (!pStatic || !pStatic->pCol || !pStatic->pCol->bEnable)
-                continue;
+            vecStaticHandles.clear();
+            pGrid->Query_StaticOverlap(pColA->aabbWorld, &vecStaticHandles);
 
-            if (!pStatic->pCol->bStatic)
-                continue;
+            for (COMPONENT_HANDLE hStatic : vecStaticHandles)
+            {
+                const COLLIDER_PROXY_DATA* pStatic = m_pPhysics_Processor->Find_ActivatedCollider_ByHandle(hStatic);
+                if (!pStatic || !pStatic->pCol || !pStatic->pCol->bEnable || !pStatic->pCol->bStatic)
+                    continue;
 
-            /* 마스크 처리 */
-            const uint32_t iMaskA = pColA->pCol->iMask;
-            const uint32_t iDiscardMaskA = pColA->pCol->iDiscardMask;
-            const uint32_t iMaskB = pStatic->pCol->iMask;
-            const uint32_t iDiscardMaskB = pStatic->pCol->iDiscardMask;
+                ++iStaticChecked;
+                Try_Add_Pair(pColA, pStatic);
+            }
+        }
+        else /* 측정용: Grid 없이 모든 정적 Collider와 비교 */
+        {
+            for (const COLLIDER_PROXY_DATA& tStatic : allColliders)
+            {
+                if (!tStatic.pCol || !tStatic.pCol->bEnable || !tStatic.pCol->bStatic)
+                    continue;
 
-            if ((iMaskA & iDiscardMaskB) != 0 || (iDiscardMaskA & iMaskB) != 0)
-                continue;
-
-            const AABB& tAABB_B = pStatic->aabbWorld;
-            if (!Check_AABB_Overlap(tAABB_A, tAABB_B))
-                continue;
-
-            PAIR_KEY tPairKey(pColA->pCol->hSelf, pStatic->pCol->hSelf);
-            if (!setAddedPairs.insert(tPairKey).second)
-                continue;
-
-            outPair.emplace_back(const_cast<COLLIDER_PROXY_DATA*>(pColA), const_cast<COLLIDER_PROXY_DATA*>(pStatic));
+                ++iStaticChecked;
+                Try_Add_Pair(pColA, &tStatic);
+            }
         }
 
         /* non-static <-> non-static */
@@ -398,26 +413,14 @@ void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_
             if (pColB->pCol->bStatic)
                 continue;
 
-            /* 마스크 처리 */
-            const uint32_t iMaskA = pColA->pCol->iMask;
-            const uint32_t iDiscardMaskA = pColA->pCol->iDiscardMask;
-            const uint32_t iMaskB = pColB->pCol->iMask;
-            const uint32_t iDiscardMaskB = pColB->pCol->iDiscardMask;
-
-            if ((iMaskA & iDiscardMaskB) != 0 || (iDiscardMaskA & iMaskB) != 0)
-                continue;
-
-            const AABB& tAABB_B = pColB->aabbWorld;
-            if (!Check_AABB_Overlap(tAABB_A, tAABB_B))
-                continue;
-
-            PAIR_KEY tPairKey(pColA->pCol->hSelf, pColB->pCol->hSelf);
-            if (!setAddedPairs.insert(tPairKey).second)
-                continue;
-
-            outPair.emplace_back(const_cast<COLLIDER_PROXY_DATA*>(pColA), const_cast<COLLIDER_PROXY_DATA*>(pColB));
+            ++iDynamicChecked;
+            Try_Add_Pair(pColA, pColB);
         }
     }
+
+    SYS_PROFILER.Set_Count("Physics/StaticChecked", iStaticChecked);
+    SYS_PROFILER.Set_Count("Physics/DynamicChecked", iDynamicChecked);
+    SYS_PROFILER.Set_Count("Physics/Pairs", (_double)outPair.size());
 }
 
 void CCollision_Detector::Process_NarrowPhase(

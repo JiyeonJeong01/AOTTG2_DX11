@@ -48594,7 +48594,7 @@
                 {
                   "Name": "m_iPlayOpening",
                   "Type": 0,
-                  "Value": 1
+                  "Value": 0
                 },
                 {
                   "Name": "m_refBoat",

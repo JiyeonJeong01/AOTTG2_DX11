@@ -41,6 +41,11 @@ public:
 
     static void Set_Frame_Time_External(double frame_ms);
 
+    /* 엔진 프로파일러(CPU 구간 + GPU 패스)를 표에 넣는다. 프레임 끝에 한 번 호출. */
+    static void Feed_Engine_Samples();
+    /* 측정용: 60fps 제한을 풀었는지 */
+    static bool Is_FPS_Uncapped() { return s_bUncapFPS; }
+
     typedef struct tagProcessMemory
     {
         size_t workingSetMB = 0;
@@ -60,6 +65,9 @@ private:
 
     void Reset_Stats();
     void Prune_Dead_Scopes();
+    void Copy_To_Clipboard();
+
+    static void Add_Sample(const std::string& strName, double ms);
 
 private:
     std::string m_strFilter;
@@ -89,6 +97,7 @@ public:
     std::unique_ptr<ProfilerRuntime> m_pRuntime;
 
     static CProfilerPanel* s_pActive;
+    static bool            s_bUncapFPS;
 };
 
 NS_END

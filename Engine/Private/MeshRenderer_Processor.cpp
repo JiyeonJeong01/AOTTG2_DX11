@@ -11,6 +11,7 @@
 #include "RandomUtil.h"
 #include "CRender_System.h"
 #include "Render_Context.h"
+#include "Profiler.h"
 
 CMeshRenderer_Processor::CMeshRenderer_Processor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : m_pDevice(pDevice), m_pContext(pContext)
@@ -84,12 +85,11 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
     if (!m_pTransformProcessor)
         return;
 
-    //_uint iTotalRendererCount = 0;
-    //_uint iCulledRendererCount = 0;
-    //_uint iDrawRendererCount = 0;
-    //_uint iParticleCount = 0;
+    _uint iTotalRendererCount = 0;
+    _uint iCulledRendererCount = 0;
+    _uint iDrawRendererCount = 0;
 
-    const _bool bCanFrustumCull = Update_Frustum();
+    const _bool bCanFrustumCull = m_bFrustumCull && Update_Frustum();
 
     const auto& Pages = m_Pool.GetPages();
     for (const auto& upPage : Pages)
@@ -107,8 +107,6 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             if (!pData || !pData->bEnable)
                 continue;
 
-            //iTotalRendererCount++;
-
             /* 파티클은 컬링하지 않음 */
             if (pData->eMode == MESH_MODE::PARTICLE)
             {
@@ -117,8 +115,6 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
 
                 if (!Ensure_ParticleRuntime(pData))
                     continue;
-
-                //++iParticleCount;
 
                 DRAW_CMD cmd{};
                 cmd.mesh.eMode = MESH_MODE::PARTICLE;
@@ -133,6 +129,8 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
 
             if (pData->hMesh == INVALID_HANDLE_UINT)
                 continue;
+
+            ++iTotalRendererCount;
 
             COMPONENT_HANDLE hReferenceAnimator = INVALID_HANDLE;
 
@@ -198,12 +196,12 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
             {
                 if (Is_Culled_Renderer_By_Frustum(pData))
                 {
-                    //++iCulledRendererCount;
+                    ++iCulledRendererCount;
                     continue;
                 }
             }
 
-            //++iDrawRendererCount;
+            ++iDrawRendererCount;
 
             outCmds.push_back(tCmd);
 
@@ -242,14 +240,9 @@ void CMeshRenderer_Processor::Build_RenderQueue(vector<DRAW_CMD>& outCmds)
 
     m_iCurFrame++;
 
-    //LOG_INFO(
-    //    "FrustumCull Total=%u, Draw=%u, Culled=%u, Particle=%u, Cmds=%u",
-    //    iTotalRendererCount,
-    //    iDrawRendererCount,
-    //    iCulledRendererCount,
-    //    iParticleCount,
-    //    static_cast<_uint>(outCmds.size())
-    //);
+    SYS_PROFILER.Set_Count("Mesh/Total", iTotalRendererCount);
+    SYS_PROFILER.Set_Count("Mesh/Culled", iCulledRendererCount);
+    SYS_PROFILER.Set_Count("Mesh/Drawn", iDrawRendererCount);
 }
 
 HRESULT CMeshRenderer_Processor::Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec)

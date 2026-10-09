@@ -175,6 +175,13 @@ public:
     const POST_PROCESS_DESC& Get_PostProcessDesc() const;
     void    Rendered_StaticShadow();
     _bool   Should_DrawStaticShadow() const;
+
+    /* 측정용 스위치: 끄면 정적 그림자를 매 프레임 다시 그린다 */
+    void    Set_StaticShadowCache(_bool bEnable) { m_bStaticShadowCache = bEnable; }
+    _bool   Is_StaticShadowCache() const { return m_bStaticShadowCache; }
+
+private:
+    _bool   m_bStaticShadowCache = true;
 };
 
 

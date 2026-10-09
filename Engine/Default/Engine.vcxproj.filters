@@ -234,6 +234,9 @@
     <ClInclude Include="..\Public\Logger.h">
       <Filter>00. System\06. Log</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Profiler.h">
+      <Filter>00. System\06. Log</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\Transform.h">
       <Filter>01. Utility\04. Component\01. Transform</Filter>
     </ClInclude>
@@ -585,6 +588,9 @@
       <Filter>01. Utility\00. Core_System</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Logger.cpp">
+      <Filter>00. System\06. Log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Profiler.cpp">
       <Filter>00. System\06. Log</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Transform.cpp">

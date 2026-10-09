@@ -110,6 +110,7 @@ private:                                                    \
 #define SYS_EVENT		        GET_INSTANCE(Engine::CEvent_System)
 #define SYS_CINEMATIC           GET_INSTANCE(Engine::CCinematic_System)
 #define SYS_SOUND               GET_INSTANCE(Engine::CSound_System)
+#define SYS_PROFILER            GET_INSTANCE(Engine::CProfiler)
 
 #define SYS_EDITOR		        GET_INSTANCE(Engine::CEditor_System)
 
