@@ -51,6 +51,11 @@ void CUniform_Grid::Insert_Static(COMPONENT_HANDLE hCollider, const AABB& tAABB)
     if (hCollider == INVALID_HANDLE)
         return;
 
+    /* 조회 중복 제거용 칸. 정적 콜라이더는 여기로만 들어오므로 조회 루프에서는 크기 확인이 필요 없다 */
+    const uint32_t iIndex = hCollider.Get_Index();
+    if (iIndex >= m_QueryStamp.size())
+        m_QueryStamp.resize(iIndex + 1, 0u);
+
     GRID_COORD coordMin{};
     GRID_COORD coordMax{};
     Calc_RangeInCell(tAABB, &coordMin, &coordMax);
@@ -72,55 +77,17 @@ void CUniform_Grid::Query_StaticOverlap(const AABB& tAABB, _Out_ std::vector<COM
     GRID_COORD coordMax{};
     Calc_RangeInCell(tAABB, &coordMin, &coordMax);
 
-    if (m_bFastQuery)
+    /*
+        여러 셀에 걸친 콜라이더를 한 번만 넣기 위한 중복 제거.
+        조회마다 새 번호(m_iQueryStamp)를 받고, 넣은 콜라이더 칸에 그 번호를 적는다.
+        칸의 번호가 지금 번호와 같으면 "이번 조회에서 이미 넣음". 지난 조회의 번호는 저절로 무효라 지울 필요가 없다.
+        uint32가 끝까지 차서 0으로 돌아오면(약 43억 번째 조회) 옛 번호와 겹칠 수 있으므로 전부 0으로 지우고 1부터 다시 쓴다.
+    */
+    if (++m_iQueryStamp == 0)
     {
-        /* 여러 셀에 걸친 콜라이더는 한 번만. 넣은 순서는 예전과 같다 (Solver 순서 유지) */
-        if (++m_iQueryStamp == 0) /* 한 바퀴 돌면 초기화 */
-        {
-            std::fill(m_QueryStamp.begin(), m_QueryStamp.end(), 0u);
-            m_iQueryStamp = 1;
-        }
-
-        for (int iZ = coordMin.iZ; iZ <= coordMax.iZ; ++iZ)
-        {
-            for (int iY = coordMin.iY; iY <= coordMax.iY; ++iY)
-            {
-                for (int iX = coordMin.iX; iX <= coordMax.iX; ++iX)
-                {
-                    const size_t iCellIndex = ToIndex(iX, iY, iZ);
-                    const auto& vecCols = m_StaticColliders[iCellIndex];
-
-                    if (m_bRecordDebug && m_setDebugFrameQueriedCellIndices.insert(iCellIndex).second)
-                    {
-                        UNIFORM_GRID_DEBUG_CELL tCell{};
-                        tCell.iX = iX;
-                        tCell.iY = iY;
-                        tCell.iZ = iZ;
-                        tCell.iCellIndex = iCellIndex;
-                        tCell.iNumColliders = static_cast<_uint>(vecCols.size());
-                        m_vecDebugFrameQueriedCells.push_back(tCell);
-                    }
-
-                    for (COMPONENT_HANDLE hCollider : vecCols)
-                    {
-                        const uint32_t iIndex = hCollider.Get_Index();
-                        if (iIndex >= m_QueryStamp.size())
-                            m_QueryStamp.resize(iIndex + 1, 0u);
-
-                        if (m_QueryStamp[iIndex] == m_iQueryStamp)
-                            continue;
-
-                        m_QueryStamp[iIndex] = m_iQueryStamp;
-                        pOutOverlaps->push_back(hCollider);
-                    }
-                }
-            }
-        }
-        return;
+        std::fill(m_QueryStamp.begin(), m_QueryStamp.end(), 0u);
+        m_iQueryStamp = 1;
     }
-
-    /* 예전 방식 (측정 비교용) */
-    std::unordered_set<uint32_t> setAddedHandles;
 
     for (int iZ = coordMin.iZ; iZ <= coordMax.iZ; ++iZ)
     {
@@ -131,7 +98,7 @@ void CUniform_Grid::Query_StaticOverlap(const AABB& tAABB, _Out_ std::vector<COM
                 const size_t iCellIndex = ToIndex(iX, iY, iZ);
                 const auto& vecCols = m_StaticColliders[iCellIndex];
 
-                if (m_setDebugFrameQueriedCellIndices.insert(iCellIndex).second)
+                if (m_bRecordDebug && m_setDebugFrameQueriedCellIndices.insert(iCellIndex).second)
                 {
                     UNIFORM_GRID_DEBUG_CELL tCell{};
                     tCell.iX = iX;
@@ -144,9 +111,11 @@ void CUniform_Grid::Query_StaticOverlap(const AABB& tAABB, _Out_ std::vector<COM
 
                 for (COMPONENT_HANDLE hCollider : vecCols)
                 {
-                    if (!setAddedHandles.insert(hCollider.iHandle).second)
+                    uint32_t& iStamp = m_QueryStamp[hCollider.Get_Index()]; /* Insert_Static에서 크기를 맞춰 둠 */
+                    if (iStamp == m_iQueryStamp)
                         continue;
 
+                    iStamp = m_iQueryStamp;
                     pOutOverlaps->push_back(hCollider);
                 }
             }

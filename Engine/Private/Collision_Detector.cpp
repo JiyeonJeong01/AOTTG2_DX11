@@ -364,8 +364,6 @@ void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_
         outPair.emplace_back(const_cast<COLLIDER_PROXY_DATA*>(pColA), const_cast<COLLIDER_PROXY_DATA*>(pColB));
     };
 
-    const _bool bUseGrid = m_pPhysics_Processor->Is_StaticGrid();
-
     for (uint32_t i = 0; i < iTotalCnt; ++i)
     {
         const COLLIDER_PROXY_DATA* pColA = &allColliders[i];
@@ -375,32 +373,17 @@ void CCollision_Detector::Generate_BroadPhase_Pairs(const vector<COLLIDER_PROXY_
         if (pColA->pCol->bStatic)
             continue;
 
-        /* non-static <-> static */
-        if (bUseGrid)
+        /* non-static <-> static : Grid에서 AABB가 걸치는 셀의 정적 콜라이더만 */
+        pGrid->Query_StaticOverlap(pColA->aabbWorld, &vecStaticHandles);
+
+        for (COMPONENT_HANDLE hStatic : vecStaticHandles)
         {
-            vecStaticHandles.clear();
-            pGrid->Query_StaticOverlap(pColA->aabbWorld, &vecStaticHandles);
+            const COLLIDER_PROXY_DATA* pStatic = m_pPhysics_Processor->Find_ActivatedCollider_ByHandle(hStatic);
+            if (!pStatic || !pStatic->pCol || !pStatic->pCol->bEnable || !pStatic->pCol->bStatic)
+                continue;
 
-            for (COMPONENT_HANDLE hStatic : vecStaticHandles)
-            {
-                const COLLIDER_PROXY_DATA* pStatic = m_pPhysics_Processor->Find_ActivatedCollider_ByHandle(hStatic);
-                if (!pStatic || !pStatic->pCol || !pStatic->pCol->bEnable || !pStatic->pCol->bStatic)
-                    continue;
-
-                ++iStaticChecked;
-                Try_Add_Pair(pColA, pStatic);
-            }
-        }
-        else /* 측정용: Grid 없이 모든 정적 Collider와 비교 */
-        {
-            for (const COLLIDER_PROXY_DATA& tStatic : allColliders)
-            {
-                if (!tStatic.pCol || !tStatic.pCol->bEnable || !tStatic.pCol->bStatic)
-                    continue;
-
-                ++iStaticChecked;
-                Try_Add_Pair(pColA, &tStatic);
-            }
+            ++iStaticChecked;
+            Try_Add_Pair(pColA, pStatic);
         }
 
         /* non-static <-> non-static */

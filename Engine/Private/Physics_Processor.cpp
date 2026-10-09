@@ -504,26 +504,24 @@ void CPhysics_Processor::Process_Collision(vector<CONTACT_DESC>& outContacts)
         }
     }
 
-    if (m_bFastQuery)
+    /* Grid가 돌려준 핸들로 활성 콜라이더를 바로 찾기 위한 표 (선형 탐색 제거) */
+    std::fill(m_ActivatedIndexByHandle.begin(), m_ActivatedIndexByHandle.end(), INVALID_ACTIVATED);
+    for (_uint i = 0; i < (_uint)m_ActivatedColliders.size(); ++i)
     {
-        std::fill(m_ActivatedIndexByHandle.begin(), m_ActivatedIndexByHandle.end(), INVALID_ACTIVATED);
-        for (_uint i = 0; i < (_uint)m_ActivatedColliders.size(); ++i)
-        {
-            const COLLIDER_DATA* pCol = m_ActivatedColliders[i].pCol;
-            if (!pCol)
-                continue;
+        const COLLIDER_DATA* pCol = m_ActivatedColliders[i].pCol;
+        if (!pCol)
+            continue;
 
-            const _uint iIndex = pCol->hSelf.Get_Index();
-            if (iIndex >= m_ActivatedIndexByHandle.size())
-                m_ActivatedIndexByHandle.resize(iIndex + 1, INVALID_ACTIVATED);
-            m_ActivatedIndexByHandle[iIndex] = i;
-        }
+        const _uint iIndex = pCol->hSelf.Get_Index();
+        if (iIndex >= m_ActivatedIndexByHandle.size())
+            m_ActivatedIndexByHandle.resize(iIndex + 1, INVALID_ACTIVATED);
+        m_ActivatedIndexByHandle[iIndex] = i;
     }
 
     if (m_upUniform_Grid)
     {
         const _bool bDrawGrid = (m_eDebugDraw == DEBUG_DRAW::ALL_GRID || m_eDebugDraw == DEBUG_DRAW::SELECT_GRID);
-        m_upUniform_Grid->Set_FastQuery(m_bFastQuery, bDrawGrid);
+        m_upUniform_Grid->Set_RecordDebug(bDrawGrid);
         m_upUniform_Grid->Begin_Debug_Frame();
     }
 
@@ -683,30 +681,17 @@ _bool CPhysics_Processor::Detect_Raycast(RAY& tRay, RAYCAST_HITS& outHits)
 
 const COLLIDER_PROXY_DATA* CPhysics_Processor::Find_ActivatedCollider_ByHandle(COMPONENT_HANDLE hCollider) const
 {
-    if (m_bFastQuery)
-    {
-        const _uint iIndex = hCollider.Get_Index();
-        if (iIndex >= m_ActivatedIndexByHandle.size())
-            return nullptr;
+    const _uint iIndex = hCollider.Get_Index();
+    if (iIndex >= m_ActivatedIndexByHandle.size())
+        return nullptr;
 
-        const _uint iSlot = m_ActivatedIndexByHandle[iIndex];
-        if (iSlot == INVALID_ACTIVATED)
-            return nullptr;
+    /* 표는 Process_Collision에서 채운다. 그 전에 불리면 지난 프레임 값일 수 있어 범위도 확인 (INVALID_ACTIVATED 포함) */
+    const _uint iSlot = m_ActivatedIndexByHandle[iIndex];
+    if (iSlot >= m_ActivatedColliders.size())
+        return nullptr;
 
-        const COLLIDER_PROXY_DATA& tProxy = m_ActivatedColliders[iSlot];
-        return (tProxy.pCol && tProxy.pCol->hSelf == hCollider) ? &tProxy : nullptr; /* 버전까지 같아야 같은 콜라이더 */
-    }
-
-    for (const auto& tProxy : m_ActivatedColliders)
-    {
-        if (!tProxy.pCol)
-            continue;
-
-        if (tProxy.pCol->hSelf == hCollider)
-            return &tProxy;
-    }
-
-    return nullptr;
+    const COLLIDER_PROXY_DATA& tProxy = m_ActivatedColliders[iSlot];
+    return (tProxy.pCol && tProxy.pCol->hSelf == hCollider) ? &tProxy : nullptr; /* 버전까지 같아야 같은 콜라이더 */
 }
 
 void CPhysics_Processor::Rebuild_Static_Grid()

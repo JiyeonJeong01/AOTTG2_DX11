@@ -4,7 +4,6 @@
 #include <Component_System.h>
 #include <CRender_System.h>
 #include <MeshRenderer_Processor.h>
-#include <Physics_Processor.h>
 
 #include <psapi.h>
 
@@ -326,12 +325,9 @@ void CProfilerPanel::Copy_To_Clipboard()
     out += line;
 
     auto* pMesh = SYS_COMPONENT.Bind_Processor<CMeshRenderer_Processor>();
-    auto* pPhysics = SYS_COMPONENT.Bind_Processor<CPhysics_Processor>();
-    snprintf(line, sizeof(line), "Switches: FrustumCull %s | StaticShadowCache %s | PhysicsStaticGrid %s | PhysicsFastQuery %s  ('#' rows are counts, not ms)\n",
+    snprintf(line, sizeof(line), "Switches: FrustumCull %s | StaticShadowCache %s  ('#' rows are counts, not ms)\n",
         (pMesh && pMesh->Is_FrustumCull()) ? "on" : "off",
-        SYS_RENDER.Is_StaticShadowCache() ? "on" : "off",
-        (pPhysics && pPhysics->Is_StaticGrid()) ? "on" : "off",
-        (pPhysics && pPhysics->Is_FastQuery()) ? "on" : "off");
+        SYS_RENDER.Is_StaticShadowCache() ? "on" : "off");
     out += line;
     snprintf(line, sizeof(line), "%-28s %9s %9s %9s\n", "Scope", "Avg(ms)", "Min(ms)", "Max(ms)");
     out += line;
@@ -393,18 +389,6 @@ void CProfilerPanel::Draw_Toolbar()
         ImGui::SameLine();
         if (ImGui::Checkbox("Static Shadow Cache", &bOn))
             SYS_RENDER.Set_StaticShadowCache(bOn);
-    }
-    if (auto* pPhysics = SYS_COMPONENT.Bind_Processor<CPhysics_Processor>())
-    {
-        _bool bOn = pPhysics->Is_StaticGrid();
-        ImGui::SameLine();
-        if (ImGui::Checkbox("Physics Static Grid", &bOn))
-            pPhysics->Set_StaticGrid(bOn);
-
-        _bool bFast = pPhysics->Is_FastQuery();
-        ImGui::SameLine();
-        if (ImGui::Checkbox("Physics Fast Query", &bFast))
-            pPhysics->Set_FastQuery(bFast);
     }
 
     ImGui::SameLine();
