@@ -100,6 +100,8 @@ private :
 
 public :
     HRESULT Ready_ShadowRenderTargets(_uint iWidth, _uint iHeight);
+    HRESULT Set_ShadowFormat(DXGI_FORMAT eFormat);
+    DXGI_FORMAT Get_ShadowFormat() const;
 
     void Bind_StaticShadowRTV();
     void Bind_DynamicShadowRTV();

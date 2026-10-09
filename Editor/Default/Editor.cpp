@@ -125,32 +125,38 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         const _float fDT = SYS_CORE.Compute_SystemDT();
         fTimeAcc += fDT * g_fPlaySpeed;
 
-        if (fTimeAcc >= (Editor::CProfilerPanel::Is_FPS_Uncapped() ? 0.f : FRAME_DT))
+        /* 갱신(물리·입력·카메라)은 항상 60Hz. Uncap이면 그리기만 제한 없이 반복해 GPU 클럭을 안정시킨다 (측정용) */
+        const _bool bTick = (fTimeAcc >= FRAME_DT);
+
+        if (bTick || Editor::CProfilerPanel::Is_FPS_Uncapped())
         {
             SYS_PROFILER.Begin_Frame();
 
             static auto s_prev = Editor::CProfilerPanel::clock::now();
 
-            if (SYS_INPUT.Get_KeyDown('M'))
+            if (bTick)
             {
-                if (bCursorActive)
-                    while (ShowCursor(FALSE) >= 0);
-                else 
-                    while (ShowCursor(TRUE) < 0);
+                if (SYS_INPUT.Get_KeyDown('M'))
+                {
+                    if (bCursorActive)
+                        while (ShowCursor(FALSE) >= 0);
+                    else
+                        while (ShowCursor(TRUE) < 0);
 
-                bCursorActive = !bCursorActive;
-            }
-        
-            _float fDT = SYS_CORE.Compute_FrameDT() * g_fPlaySpeed;
+                    bCursorActive = !bCursorActive;
+                }
 
-            {   /* 월드 갱신 */
-                Editor::CProfilerPanel::CScope _update("World::Update");
-                pMainApp->Update(fDT, APP_MODE::EDITOR_EDIT);
-            }
+                _float fDT = SYS_CORE.Compute_FrameDT() * g_fPlaySpeed;
 
-            {   /* 에디터 갱신 */
-                Editor::CProfilerPanel::CScope _update("Editor::Update");
-                upMainPanel->Update();
+                {   /* 월드 갱신 */
+                    Editor::CProfilerPanel::CScope _update("World::Update");
+                    pMainApp->Update(fDT, APP_MODE::EDITOR_EDIT);
+                }
+
+                {   /* 에디터 갱신 */
+                    Editor::CProfilerPanel::CScope _update("Editor::Update");
+                    upMainPanel->Update();
+                }
             }
 
             {   /* 월드 렌더(SceneRTV) */
@@ -189,7 +195,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
             Editor::CProfilerPanel::Set_Frame_Time_External(frameMS);
 
-            fTimeAcc = 0.f;
+            if (bTick)
+                fTimeAcc = 0.f;
         }
     }
 

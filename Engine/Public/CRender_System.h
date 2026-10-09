@@ -180,8 +180,13 @@ public:
     void    Set_StaticShadowCache(_bool bEnable) { m_bStaticShadowCache = bEnable; }
     _bool   Is_StaticShadowCache() const { return m_bStaticShadowCache; }
 
+    /* 측정용 스위치: 끄면 예전 그림자 맵 포맷(RGBA32F, 픽셀당 16B). 켜면 RG32F(8B) */
+    void    Set_CompactShadowRT(_bool bEnable);
+    _bool   Is_CompactShadowRT() const;
+
 private:
     _bool   m_bStaticShadowCache = true;
+    _bool   m_bStaticShadowRefresh = false; /* 그림자 맵을 다시 만들어 캐시가 지워졌을 때 한 번 다시 그림 */
 };
 
 

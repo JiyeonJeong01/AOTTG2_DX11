@@ -820,7 +820,7 @@ HRESULT CGraphic_Device::Ready_ShadowRenderTargets(_uint iWidth, _uint iHeight)
         m_pDevice,
         iWidth,
         iHeight,
-        DXGI_FORMAT_R32G32B32A32_FLOAT,
+        m_eShadowFormat,
         &pStaticTexture,
         &pStaticRTV,
         &pStaticSRV)))
@@ -830,7 +830,7 @@ HRESULT CGraphic_Device::Ready_ShadowRenderTargets(_uint iWidth, _uint iHeight)
         m_pDevice,
         iWidth,
         iHeight,
-        DXGI_FORMAT_R32G32B32A32_FLOAT,
+        m_eShadowFormat,
         &pDynamicTexture,
         &pDynamicRTV,
         &pDynamicSRV)))
@@ -904,6 +904,15 @@ HRESULT CGraphic_Device::Ready_ShadowRenderTargets(_uint iWidth, _uint iHeight)
     m_iShadowH = iHeight;
 
     return S_OK;
+}
+
+HRESULT CGraphic_Device::Set_ShadowFormat(DXGI_FORMAT eFormat)
+{
+    if (eFormat == m_eShadowFormat)
+        return S_OK;
+
+    m_eShadowFormat = eFormat;
+    return Ready_ShadowRenderTargets(m_iShadowW, m_iShadowH);
 }
 
 void CGraphic_Device::Bind_StaticShadowRTV()

@@ -316,7 +316,7 @@ void CProfilerPanel::Copy_To_Clipboard()
     char line[256];
 
     const ImVec2 vDisplay = ImGui::GetIO().DisplaySize;
-    snprintf(line, sizeof(line), "GPU: %s | %s | Window %.0fx%.0f | FPS cap: %s | AvgWindow: %d\n",
+    snprintf(line, sizeof(line), "GPU: %s | %s | Window %.0fx%.0f | Render cap: %s (update 60Hz) | AvgWindow: %d\n",
         SYS_PROFILER.Get_Adapter_Name().c_str(), pszConfig,
         vDisplay.x, vDisplay.y, s_bUncapFPS ? "off" : "60", m_iAvgWindow);
     out += line;
@@ -325,9 +325,10 @@ void CProfilerPanel::Copy_To_Clipboard()
     out += line;
 
     auto* pMesh = SYS_COMPONENT.Bind_Processor<CMeshRenderer_Processor>();
-    snprintf(line, sizeof(line), "Switches: FrustumCull %s | StaticShadowCache %s  ('#' rows are counts, not ms)\n",
+    snprintf(line, sizeof(line), "Switches: FrustumCull %s | StaticShadowCache %s | CompactShadowRT %s  ('#' rows are counts, not ms)\n",
         (pMesh && pMesh->Is_FrustumCull()) ? "on" : "off",
-        SYS_RENDER.Is_StaticShadowCache() ? "on" : "off");
+        SYS_RENDER.Is_StaticShadowCache() ? "on" : "off",
+        SYS_RENDER.Is_CompactShadowRT() ? "on" : "off");
     out += line;
     snprintf(line, sizeof(line), "%-28s %9s %9s %9s\n", "Scope", "Avg(ms)", "Min(ms)", "Max(ms)");
     out += line;
@@ -372,7 +373,7 @@ void CProfilerPanel::Draw_Toolbar()
     ImGui::Checkbox("Show disabled", &m_bShowDisabled);
 
     ImGui::SameLine();
-    ImGui::Checkbox("Uncap FPS", &s_bUncapFPS);
+    ImGui::Checkbox("Uncap Render", &s_bUncapFPS); /* 그리기만 제한 해제. 게임 갱신은 60Hz 그대로 */
 
     /* 측정용 최적화 스위치: 끈 상태와 켠 상태를 같은 장면에서 비교 */
     ImGui::TextUnformatted("Optimizations:");
@@ -389,6 +390,11 @@ void CProfilerPanel::Draw_Toolbar()
         ImGui::SameLine();
         if (ImGui::Checkbox("Static Shadow Cache", &bOn))
             SYS_RENDER.Set_StaticShadowCache(bOn);
+
+        _bool bCompact = SYS_RENDER.Is_CompactShadowRT();
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Compact Shadow RT", &bCompact))
+            SYS_RENDER.Set_CompactShadowRT(bCompact);
     }
 
     ImGui::SameLine();

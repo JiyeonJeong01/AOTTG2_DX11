@@ -1763,6 +1763,34 @@ void CRender_System::Render_StaticShadow()
     Execute_Pass(RENDER_LAYER::SHADOW_STATIC);
 
     Unbind_PS_SRVs();
+
+    if (m_bStaticShadowRefresh) /* 다시 그렸으니 캐시 복구 */
+    {
+        m_bStaticShadowRefresh = false;
+        m_bStaticShadowRendered = true;
+    }
+}
+
+void CRender_System::Set_CompactShadowRT(_bool bEnable)
+{
+    const DXGI_FORMAT eFormat = bEnable ? DXGI_FORMAT_R32G32_FLOAT : DXGI_FORMAT_R32G32B32A32_FLOAT;
+    if (eFormat == SYS_CORE.Get_ShadowFormat())
+        return;
+
+    if (FAILED(SYS_CORE.Set_ShadowFormat(eFormat)))
+        return;
+
+    /* 그림자 맵을 새로 만들어 캐시된 정적 그림자가 사라짐 → 다음 프레임에 한 번 다시 그림 */
+    if (m_bStaticShadowRendered)
+    {
+        m_bStaticShadowRendered = false;
+        m_bStaticShadowRefresh = true;
+    }
+}
+
+_bool CRender_System::Is_CompactShadowRT() const
+{
+    return SYS_CORE.Get_ShadowFormat() == DXGI_FORMAT_R32G32_FLOAT;
 }
 
 void CRender_System::Render_DynamicShadow()

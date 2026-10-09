@@ -494,6 +494,16 @@ HRESULT CCore_System::Ready_ShadowRenderTargets(_uint iWidth, _uint iHeight)
     return m_pGraphic_Device->Ensure_ShadowRenderTargets(iWidth, iHeight);
 }
 
+HRESULT CCore_System::Set_ShadowFormat(DXGI_FORMAT eFormat)
+{
+    return m_pGraphic_Device ? m_pGraphic_Device->Set_ShadowFormat(eFormat) : E_FAIL;
+}
+
+DXGI_FORMAT CCore_System::Get_ShadowFormat() const
+{
+    return m_pGraphic_Device ? m_pGraphic_Device->Get_ShadowFormat() : DXGI_FORMAT_UNKNOWN;
+}
+
 void CCore_System::Bind_StaticShadowRTV()
 {
     m_pGraphic_Device->Bind_StaticShadowRTV();

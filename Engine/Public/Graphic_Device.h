@@ -43,6 +43,9 @@ public:
     void    Set_Viewport(_uint w, _uint h);            // 새로
     HRESULT Ensure_ShadowRenderTargets(_uint iWidth, _uint iHeight);
     HRESULT Ready_ShadowRenderTargets(_uint iWidth, _uint iHeight);
+    /* 그림자 맵 포맷을 바꾸고 다시 만든다 (측정 비교용) */
+    HRESULT Set_ShadowFormat(DXGI_FORMAT eFormat);
+    DXGI_FORMAT Get_ShadowFormat() const { return m_eShadowFormat; }
 public:
     HRESULT Ready_DeferredRenderTargets(_uint iWidth, _uint iHeight);
     HRESULT Ensure_DeferredRenderTargets(_uint iWidth, _uint iHeight);
@@ -144,6 +147,8 @@ private:
     ID3D11DepthStencilView* m_pShadowDSV = nullptr;
 
     _uint                       m_iShadowW = 0;
+    /* 라이팅은 .y(선형 깊이)만 읽고, 셰이더는 (z/w, w/far)만 쓴다 → 2채널이면 충분 */
+    DXGI_FORMAT                 m_eShadowFormat = DXGI_FORMAT_R32G32_FLOAT;
     _uint                       m_iShadowH = 0;
 
 public:
