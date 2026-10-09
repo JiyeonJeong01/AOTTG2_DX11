@@ -212,8 +212,9 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.lpszClassName = szWindowClass;
     wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
-    /* TODO NOTE WARN */
-    //SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    /* 창 생성 전에 DPI 인식을 정한다. ImGui가 창 생성 뒤에 바꾸면 창·스왑체인(논리 크기)과
+       이후 조회되는 크기(물리 크기)가 어긋나 화면 일부만 확대되어 보인다. */
+    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
     return RegisterClassExW(&wcex);
 }
