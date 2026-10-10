@@ -45,7 +45,7 @@ public:
     PARTICLE_ENTRY*     Get_Particle(uint32_t handle);
 
     const ASSET_GUID&       Find_GUID_By_Handle(ASSET_TYPE eType, _uint iHandle);
-    const std::string&      Find_Name_By_GUID(const ASSET_GUID& tGUID);
+    std::string             Find_Name_By_GUID(const ASSET_GUID& tGUID);
 
 
 public:

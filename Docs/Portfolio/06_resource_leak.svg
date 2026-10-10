@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" font-family="'Noto Sans KR','Malgun Gothic',sans-serif">
+  <rect width="860" height="300" fill="#ffffff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1f9d55"/></marker>
+  </defs>
+
+  <!-- 왼쪽: 문제 -->
+  <text x="30" y="36" font-size="18" font-weight="700" fill="#222">문제: 풀은 칸만 해제</text>
+
+  <text x="30" y="80" font-size="13" fill="#888">컴포넌트 풀</text>
+  <rect x="30" y="88" width="170" height="54" fill="#f1f1f1" stroke="#bbb" stroke-dasharray="5 4"/>
+  <text x="115" y="112" font-size="14" text-anchor="middle" fill="#999">Script 칸 (해제됨)</text>
+  <text x="115" y="132" font-size="13" text-anchor="middle" fill="#999">pState ●</text>
+
+  <text x="250" y="80" font-size="13" fill="#888">힙</text>
+  <rect x="250" y="88" width="150" height="54" rx="8" fill="#fdecea" stroke="#d1453b"/>
+  <text x="325" y="120" font-size="15" text-anchor="middle" fill="#222">new CPlayer</text>
+  <line x1="168" y1="128" x2="246" y2="118" stroke="#bbb" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a)"/>
+
+  <text x="30" y="180" font-size="14" fill="#d1453b" font-weight="700">✕ 칸은 비었지만 CPlayer는 아무도 delete 안 함 → 누수</text>
+
+  <line x1="430" y1="20" x2="430" y2="280" stroke="#e5e5e5" stroke-width="2"/>
+
+  <!-- 오른쪽: 해결 -->
+  <text x="460" y="36" font-size="18" font-weight="700" fill="#222">해결: 해제 직전 콜백</text>
+
+  <rect x="460" y="70" width="170" height="44" fill="#e8f0fe" stroke="#5b8def"/>
+  <text x="545" y="97" font-size="14" text-anchor="middle" fill="#222">풀: Deallocate</text>
+
+  <line x1="545" y1="114" x2="545" y2="150" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="555" y="138" font-size="13" fill="#555">OnDeallocate 알림</text>
+
+  <rect x="460" y="152" width="170" height="44" rx="8" fill="#fff" stroke="#1f9d55"/>
+  <text x="545" y="179" font-size="14" text-anchor="middle" fill="#222">Script Processor</text>
+
+  <line x1="630" y1="174" x2="686" y2="174" stroke="#1f9d55" stroke-width="2" marker-end="url(#ag)"/>
+  <rect x="690" y="152" width="140" height="44" rx="8" fill="#eaf7ef" stroke="#1f9d55"/>
+  <text x="760" y="179" font-size="14" text-anchor="middle" fill="#222">delete CPlayer</text>
+
+  <text x="460" y="240" font-size="14" fill="#1f9d55" font-weight="700">✓ 풀은 자원 종류를 몰라도 되고,</text>
+  <text x="460" y="262" font-size="14" fill="#1f9d55" font-weight="700">   정리는 자원을 아는 Processor가</text>
+</svg>

@@ -8,49 +8,49 @@
 NS_BEGIN(Engine)
 
 template <typename TScript>
-static void Script_Awake(void* pState, SCRIPT_CTX& tCTX)
+void Script_Awake(void* pState, SCRIPT_CTX& tCTX)
 {
     static_cast<TScript*>(pState)->Awake(&tCTX);
 }
 
 template <typename TScript>
-static void Script_Start(void* pState, SCRIPT_CTX& tCTX)
+void Script_Start(void* pState, SCRIPT_CTX& tCTX)
 {
     static_cast<TScript*>(pState)->Start(&tCTX);
 }
 
 template <typename TScript>
-static void Script_Tick_Priority(void* pState, SCRIPT_CTX& tCTX, _float fDT)
+void Script_Tick_Priority(void* pState, SCRIPT_CTX& tCTX, _float fDT)
 {
     static_cast<TScript*>(pState)->Priority_Update(&tCTX, fDT);
 }
 
 template <typename TScript>
-static void Script_Tick_Update(void* pState, SCRIPT_CTX& tCTX, _float fDT)
+void Script_Tick_Update(void* pState, SCRIPT_CTX& tCTX, _float fDT)
 {
     static_cast<TScript*>(pState)->Update(&tCTX, fDT);
 }
 
 template <typename TScript>
-static void Script_Tick_Late(void* pState, SCRIPT_CTX& tCTX, _float fDT)
+void Script_Tick_Late(void* pState, SCRIPT_CTX& tCTX, _float fDT)
 {
     static_cast<TScript*>(pState)->Late_Update(&tCTX, fDT);
 }
 
 template <typename TScript>
-static void* Script_Create()
+void* Script_Create()
 {
     return new TScript{};
 }
 
 template <typename TScript>
-static void Script_Destroy(void* pState)
+void Script_Destroy(void* pState)
 {
     delete static_cast<TScript*>(pState);
 }
 
 template <typename TScript>
-static void Fill_VTable_Default(SCRIPT_VTABLE& vt)
+void Fill_VTable_Default(SCRIPT_VTABLE& vt)
 {
     vt.Create = &Script_Create<TScript>;
     vt.Destroy = &Script_Destroy<TScript>;

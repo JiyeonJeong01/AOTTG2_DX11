@@ -537,7 +537,7 @@ const ASSET_GUID& CResource_System::Find_GUID_By_Handle(ASSET_TYPE eType, _uint 
     }
 }
 
-const std::string& CResource_System::Find_Name_By_GUID(const ASSET_GUID& tGUID)
+std::string CResource_System::Find_Name_By_GUID(const ASSET_GUID& tGUID)
 {
     static const std::string s_strInvalid = "<invalid>";
 
