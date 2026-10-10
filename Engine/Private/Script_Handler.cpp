@@ -1,5 +1,6 @@
 ﻿#include "Script_Handler.h"
 
+#include <sstream>
 #include "Asset_Registry.h"
 #include "Engine_Log.h"
 
@@ -106,10 +107,9 @@ HRESULT CScript_Handler::Generate(const std::filesystem::path& outCppPath)
         [](const ScriptInfo& a, const ScriptInfo& b) { return a.className < b.className; });
 
     /* NOTE : Script_Registry 생성하기 */
-    std::ofstream ofs(outCppPath, std::ios_base::binary);
-    IF_TRUE_RETURN_MSG_BREAK(!ofs.is_open(), E_FAIL, "Register script failed.");
+    std::ostringstream oss;
 
-    ofs <<
+    oss <<
         "// AUTO-GENERATED. DO NOT EDIT.\n"
         "#include \"Script_Registry.h\"\n"
         "#include \"Asset_Registry.h\"\n"
@@ -120,10 +120,10 @@ HRESULT CScript_Handler::Generate(const std::filesystem::path& outCppPath)
     for (const auto& s : scripts)
     {
         const std::string escapedHeader = Escape_Cpp_String(s.headerPath);
-        ofs << "#include \"" << escapedHeader << "\"\n";
+        oss << "#include \"" << escapedHeader << "\"\n";
     }
 
-    ofs <<
+    oss <<
         "\n"
         "NS_BEGIN(Client)"
         "\n"
@@ -135,16 +135,29 @@ HRESULT CScript_Handler::Generate(const std::filesystem::path& outCppPath)
     {
         const std::string escapedPath = Escape_Cpp_String(s.assetPath);
 
-        ofs <<
+        oss <<
             "    {\n"
             "        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path(\"" << escapedPath << "\");\n"
             "        handler.Register_VTable(guid, ScriptBinder<" << s.className << ">::Build());\n"
             "    }\n";
     }
 
-    ofs <<
+    oss <<
         "}\n"
         "NS_END";
+
+    /* 내용이 같으면 쓰지 않는다: 파일 수정 시간이 바뀌면 매 빌드마다 다시 컴파일되기 때문 */
+    const std::string strNew = oss.str();
+    {
+        std::ifstream ifs(outCppPath, std::ios_base::binary);
+        const std::string strOld{ std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>() };
+        if (strOld == strNew)
+            return S_OK;
+    }
+
+    std::ofstream ofs(outCppPath, std::ios_base::binary);
+    IF_TRUE_RETURN_MSG_BREAK(!ofs.is_open(), E_FAIL, "Register script failed.");
+    ofs << strNew;
 
     return S_OK;
 }
