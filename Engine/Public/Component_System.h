@@ -23,6 +23,9 @@ public :
 
     void Update_Debug();
 
+    /* 핸들이 가리키는 칸이 아직 pData와 같은 살아 있는 컴포넌트인지 (버전 + 할당 여부는 풀이 확인) */
+    _bool Is_Alive(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const void* pData);
+
 public : /* Component Processor */
     /* Create component with default value */
 	COMPONENT_HANDLE Create_Component_By_Type(COMPONENT_TYPE eComType, OBJECT_HANDLE hGameObject);

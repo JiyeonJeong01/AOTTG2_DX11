@@ -113,6 +113,21 @@ void CComponent_System::Build_RenderQueue(vector<DRAW_CMD>& cmds)
 
 }
 
+_bool CComponent_System::Is_Alive(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const void* pData)
+{
+    if (COM_TO_INT(eComType) >= COMPONENT_MAX)
+        return false;
+
+    CComponent_Processor* pProcessor = m_pComProcessors[COM_TO_PID(eComType)].get();
+    return pProcessor && pProcessor->Get_DataPtr(eComType, handle) == pData;
+}
+
+bool Component_Is_Alive(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const void* pData)
+{
+    CComponent_System* pSystem = CComponent_System::GetInstancePtr(); /* 종료 중 재생성 방지: GetInstance 대신 */
+    return pSystem && pSystem->Is_Alive(eComType, hComponent, pData);
+}
+
 void CComponent_System::Render()
 {
     IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::PHYSICS)], , "m_pComProcessor is nullptr");
