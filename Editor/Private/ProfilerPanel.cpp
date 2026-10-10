@@ -4,6 +4,8 @@
 #include <Component_System.h>
 #include <CRender_System.h>
 #include <MeshRenderer_Processor.h>
+#include <Component_System.inl>
+#include <Transform.h>
 
 #include <psapi.h>
 
@@ -342,6 +344,114 @@ void CProfilerPanel::Copy_To_Clipboard()
     ImGui::SetClipboardText(out.c_str());
 }
 
+/*
+    측정용: 컴포넌트 접근 방식 비교 (결과는 클립보드로)
+    1) 정확성: 해제 후 같은 칸이 재사용될 때, 예전 Is_Valid 로직과 현재 Is_Valid가 각각 무엇을 돌려주는지
+    2) 성능: 핸들로 매번 조회 / 캐싱한 포인터 / 포인터 + Is_Valid 의 접근 1회당 비용
+    실제 Transform 컴포넌트를 만들어 쓰고, 끝나기 전에 전부 제거한다.
+*/
+void CProfilerPanel::Run_Proxy_Test()
+{
+    using clk = std::chrono::steady_clock;
+    const OBJECT_HANDLE hDummy{};
+    std::string out;
+    char line[256];
+
+#ifdef _DEBUG
+    out += "Config: Debug (measure timings in Release)\n"; /* 출력은 영어: 한글 리터럴은 실행 문자셋(CP949)으로 들어가 클립보드에서 깨진다 */
+#else
+    out += "Config: Release\n";
+#endif
+
+    /* ---------- 1) 정확성: 해제 후 칸 재사용 ---------- */
+    {
+        const COMPONENT_HANDLE h1 = SYS_COMPONENT.Create_Component_By_Type(COMPONENT_TYPE::TRANSFORM, hDummy);
+        CTransform tOld = SYS_COMPONENT.Get_Proxy<CTransform>(COMPONENT_TYPE::TRANSFORM, h1);
+
+        SYS_COMPONENT.Remove_Component_By_Type(COMPONENT_TYPE::TRANSFORM, h1);
+        const COMPONENT_HANDLE h2 = SYS_COMPONENT.Create_Component_By_Type(COMPONENT_TYPE::TRANSFORM, hDummy); /* 빈 칸 목록은 LIFO → 같은 칸 재사용 */
+        CTransform tNew = SYS_COMPONENT.Get_Proxy<CTransform>(COMPONENT_TYPE::TRANSFORM, h2);
+
+        const bool bSameSlot = (tOld._Data() == tNew._Data());
+        const bool bLegacyValid = (tOld._Data() != nullptr && tOld.Get_Handle().Is_Valid()); /* 예전 Is_Valid 로직 */
+        const bool bCurrentValid = tOld.Is_Valid();
+
+        out += "[1] Stale proxy after slot reuse\n";
+        snprintf(line, sizeof(line), "  same slot reused      : %s (old handle v%u, new handle v%u)\n",
+            bSameSlot ? "yes" : "no", tOld.Get_Handle().Get_Version(), h2.Get_Version());
+        out += line;
+        snprintf(line, sizeof(line), "  legacy Is_Valid (old) : %s  <- freed component reported as valid\n", bLegacyValid ? "true" : "false");
+        out += line;
+        snprintf(line, sizeof(line), "  current Is_Valid (old): %s\n", bCurrentValid ? "true" : "false");
+        out += line;
+
+        SYS_COMPONENT.Remove_Component_By_Type(COMPONENT_TYPE::TRANSFORM, h2);
+    }
+
+    /* ---------- 2) 성능: 접근 방식별 비용 ---------- */
+    {
+        constexpr int N = 10000;
+        constexpr int ROUNDS = 100;
+
+        std::vector<COMPONENT_HANDLE> vecHandles;
+        std::vector<CTransform>       vecProxies;
+        vecHandles.reserve(N);
+        vecProxies.reserve(N);
+        for (int i = 0; i < N; ++i)
+        {
+            vecHandles.push_back(SYS_COMPONENT.Create_Component_By_Type(COMPONENT_TYPE::TRANSFORM, hDummy));
+            vecProxies.push_back(SYS_COMPONENT.Get_Proxy<CTransform>(COMPONENT_TYPE::TRANSFORM, vecHandles.back()));
+        }
+
+        auto Measure = [&](auto&& fnAccess) -> double
+        {
+            const auto t0 = clk::now();
+            for (int r = 0; r < ROUNDS; ++r)
+                for (int i = 0; i < N; ++i)
+                    fnAccess(i);
+            const double ns = std::chrono::duration<double, std::nano>(clk::now() - t0).count();
+            return ns / (double(N) * ROUNDS);
+        };
+
+        float fSink = 0.f; /* 최적화로 루프가 사라지지 않도록 결과를 모은다 */
+
+        const double nsHandle = Measure([&](int i)
+        {
+            CTransform tr = SYS_COMPONENT.Get_Proxy<CTransform>(COMPONENT_TYPE::TRANSFORM, vecHandles[i]);
+            tr->vPosition.x += 1.f;
+            fSink += tr->vPosition.x;
+        });
+        const double nsPointer = Measure([&](int i)
+        {
+            vecProxies[i]->vPosition.x += 1.f;
+            fSink += vecProxies[i]->vPosition.x;
+        });
+        const double nsChecked = Measure([&](int i)
+        {
+            if (!vecProxies[i].Is_Valid())
+                return;
+            vecProxies[i]->vPosition.x += 1.f;
+            fSink += vecProxies[i]->vPosition.x;
+        });
+
+        snprintf(line, sizeof(line), "[2] Access cost (%d components x %d rounds, ns per access)\n", N, ROUNDS);
+        out += line;
+        snprintf(line, sizeof(line), "  handle lookup every access : %7.2f ns\n", nsHandle);
+        out += line;
+        snprintf(line, sizeof(line), "  cached pointer             : %7.2f ns\n", nsPointer);
+        out += line;
+        snprintf(line, sizeof(line), "  cached pointer + Is_Valid  : %7.2f ns\n", nsChecked);
+        out += line;
+        snprintf(line, sizeof(line), "  (checksum %.0f)\n", fSink);
+        out += line;
+
+        for (const COMPONENT_HANDLE& h : vecHandles)
+            SYS_COMPONENT.Remove_Component_By_Type(COMPONENT_TYPE::TRANSFORM, h);
+    }
+
+    ImGui::SetClipboardText(out.c_str());
+}
+
 CProfilerPanel::PROGRESS_MEMORY CProfilerPanel::Get_Process_Memory()
 {
     PROCESS_MEMORY_COUNTERS_EX pmc{};
@@ -365,6 +475,10 @@ void CProfilerPanel::Draw_Toolbar()
     ImGui::SameLine();
     if (ImGui::Button("Copy"))
         Copy_To_Clipboard();
+
+    ImGui::SameLine();
+    if (ImGui::Button("Proxy Test"))
+        Run_Proxy_Test();
 
     ImGui::SameLine();
     ImGui::Checkbox("Sort by cost", &m_bSortByCost);

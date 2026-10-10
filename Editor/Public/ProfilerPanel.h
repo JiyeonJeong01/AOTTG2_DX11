@@ -66,6 +66,7 @@ private:
     void Reset_Stats();
     void Prune_Dead_Scopes();
     void Copy_To_Clipboard();
+    void Run_Proxy_Test();
 
     static void Add_Sample(const std::string& strName, double ms);
 
