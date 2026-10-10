@@ -2,7 +2,8 @@
 #include "Component_Processor.h"
 #include "Component_Pool.h"
 
-template<typename TProxy, COMPONENT_TYPE KType>
+/* PageSize: 풀 페이지 하나의 칸 수. 페이지는 필요할 때 늘어나므로 상한이 아니라 할당 단위다 */
+template<typename TProxy, COMPONENT_TYPE KType, uint32_t PageSize>
 class CComponent_Processor_Impl : public CComponent_Processor
 {
 	/* Ensure that the TProxy type is derived from CComponent_Proxy_Base  at compile-time! */
@@ -19,7 +20,7 @@ public:
     CComponent_Processor_Impl& operator=(CComponent_Processor_Impl&&) noexcept = default;
 
 protected:
-	CComponent_Pool<TProxy> m_Pool;
+	CComponent_Pool<TProxy, PageSize> m_Pool;
 
 public :
     COMPONENT_HANDLE Create_Component_Data(COMPONENT_TYPE eComType, OBJECT_HANDLE hObject) override

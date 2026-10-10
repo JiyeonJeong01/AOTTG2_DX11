@@ -77,7 +77,7 @@ private:
 
 private:
     CComponent_Pool<CCamera, 64>    m_CameraPool;
-    CComponent_Pool<CLight>     m_LightPool;
+    CComponent_Pool<CLight, 64> m_LightPool;
 
     CTransform_Processor*       m_pTransformProcessor{};
 

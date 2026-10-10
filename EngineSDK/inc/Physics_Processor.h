@@ -93,8 +93,8 @@ public :
     void                        Set_DrawMode(DEBUG_DRAW eDraw);
 private:
     CComponent_Pool<CCollider>          m_ColliderPool;
-    CComponent_Pool<CRigidbody>         m_RigidbodyPool;
-    CComponent_Pool<CSpringJoint>       m_SpringJointPool;
+    CComponent_Pool<CRigidbody, 128>    m_RigidbodyPool;
+    CComponent_Pool<CSpringJoint, 64>   m_SpringJointPool;
 
     std::vector<COLLIDER_PROXY_DATA>    m_ActivatedColliders;   /* Transient */
     std::unordered_set<PAIR_KEY, PAIR_KEY_HASHER>   m_CurPair;    /* 충돌 이벤트 */

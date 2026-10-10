@@ -94,9 +94,9 @@ private :
 private :
     CCanvasRenderer_Processor*  m_pCanvasProcessor{};
     CRectTransform_Processor*   m_pRectTransformProcessor{};
-    CComponent_Pool<CUIButton>  m_ButtonPool;
-    CComponent_Pool<CUIImage>   m_ImagePool;
-    CComponent_Pool<CUIText>    m_TextPool;
+    CComponent_Pool<CUIButton, 64>   m_ButtonPool;
+    CComponent_Pool<CUIImage, 128>   m_ImagePool;
+    CComponent_Pool<CUIText, 64>     m_TextPool;
 
 public :
     static std::unique_ptr<CUI_Processor> Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

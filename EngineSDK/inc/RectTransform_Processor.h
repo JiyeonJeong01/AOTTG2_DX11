@@ -4,7 +4,7 @@
 NS_BEGIN(Engine)
 
 class ENGINE_DLL CRectTransform_Processor final
-    : public CComponent_Processor_Impl<CRectTransform, COMPONENT_TYPE::RECT_TRANSFORM>
+    : public CComponent_Processor_Impl<CRectTransform, COMPONENT_TYPE::RECT_TRANSFORM, 128>
 {
     DEF_PROCESSOR_ID(PROCESSOR_ID::RECT_TRANSFORM)
 public:

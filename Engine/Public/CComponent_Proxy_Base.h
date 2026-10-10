@@ -3,7 +3,7 @@
 #include "Component_Struct.h"
 #include "Object_Struct.h"
 
-template <typename TProxy, COMPONENT_TYPE KType> class CComponent_Processor_Impl;
+template <typename TProxy, COMPONENT_TYPE KType, uint32_t PageSize = 1024> class CComponent_Processor_Impl;
 
 /**
  * Base class for all Component Proxies.

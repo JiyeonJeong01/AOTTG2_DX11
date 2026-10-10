@@ -10,7 +10,7 @@
 NS_BEGIN(Engine)
 
 
-class ENGINE_DLL CAnimator_Processor final : public CComponent_Processor_Impl<CAnimator, COMPONENT_TYPE::ANIMATOR>
+class ENGINE_DLL CAnimator_Processor final : public CComponent_Processor_Impl<CAnimator, COMPONENT_TYPE::ANIMATOR, 128>
 {
     DEF_PROCESSOR_ID(PROCESSOR_ID::ANIMATION)
 public:

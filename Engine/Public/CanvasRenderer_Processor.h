@@ -8,7 +8,7 @@ NS_BEGIN(Engine)
 
 class CRectTransform_Processor;
 
-class ENGINE_DLL CCanvasRenderer_Processor final : public CComponent_Processor_Impl<CCanvasRenderer, COMPONENT_TYPE::CANVAS_RENDERER>
+class ENGINE_DLL CCanvasRenderer_Processor final : public CComponent_Processor_Impl<CCanvasRenderer, COMPONENT_TYPE::CANVAS_RENDERER, 128>
 {
     DEF_PROCESSOR_ID(PROCESSOR_ID::CANVAS_RENDERER)
 public:

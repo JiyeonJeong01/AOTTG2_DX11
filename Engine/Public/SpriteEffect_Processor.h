@@ -8,7 +8,7 @@ NS_BEGIN(Engine)
 class CTransform_Processor;
 
 class ENGINE_DLL CSpriteEffect_Processor final
-    : public CComponent_Processor_Impl<CSpriteEffect, COMPONENT_TYPE::SPRITE_EFFECT>
+    : public CComponent_Processor_Impl<CSpriteEffect, COMPONENT_TYPE::SPRITE_EFFECT, 64>
 {
     DEF_PROCESSOR_ID(PROCESSOR_ID::SPRITE_EFFECT)
 
