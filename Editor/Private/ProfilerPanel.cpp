@@ -10,7 +10,7 @@
 NS_BEGIN(Editor)
 
 CProfilerPanel* CProfilerPanel::s_pActive = nullptr;
-bool            CProfilerPanel::s_bUncapFPS = true; /* 측정 기본: GPU 클럭이 출렁이지 않도록 제한 해제 */
+bool            CProfilerPanel::s_bUncapFPS = false; /* GPU 측정할 때만 켠다 (켜면 GPU 클럭이 안정됨) */
 
 struct CProfilerPanel::ProfilerRuntime
 {
