@@ -5,7 +5,7 @@
 
 template <typename TProxy, COMPONENT_TYPE KType, uint32_t PageSize = 1024> class CComponent_Processor_Impl;
 
-/* 핸들이 아직 같은 컴포넌트를 가리키는지 풀에 확인 (Component_System.cpp). 해제되었거나 칸이 재사용되었으면 false */
+/* 핸들이 아직 같은 컴포넌트를 가리키는지 풀에 확인 (CComponent_Proxy_Base.cpp). 해제되었거나 칸이 재사용되었으면 false */
 ENGINE_DLL bool Component_Is_Alive(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const void* pData);
 
 /**
