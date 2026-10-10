@@ -516,6 +516,49 @@ GameObject/Component 핸들 구조를 LithTech Jupiter(`HOBJECT` + `ILTServer`)�
 | A05 | 빈 슬롯 판정에 `INVALID_HANDLE_UINT`(Remove_Component)와 `INVALID_COMPONENT_SLOT`·리터럴 `0`(Get_Component_Handle_By_Type, Remove_All_Components)이 섞여 있다. 값은 같아 지금은 버그가 아니다. | 이름이 다른 두 상수가 같은 0이라는 계약을 코드에서 보장하는지 확인한다. | 상수 하나로 통일하거나 `static_assert(INVALID_HANDLE_UINT == Component::INVALID_COMPONENT_SLOT)`를 둔다. 면접에서 "빈 슬롯을 어떻게 표현하나"에 한 줄로 답할 수 있게 한다. |
 | A02, A04 | (면접 대비) LithTech Jupiter는 `HOBJECT`(불투명 포인터) + `LTObjRef`(삭제 알림을 받아 스스로 null이 되는 참조)로 오래된 참조를 막는다. 이 엔진은 index + version 비교로 막는다. | F.E.A.R. Public Tools SDK 헤더로 HOBJECT·LTObjRef의 실제 정의를 확인한다. 기억에 의존한 비교는 포트폴리오에 쓰지 않는다. | "삭제 알림 방식은 참조마다 등록·해제 비용이 들고, version 방식은 비교가 싸지만 위 ABA 한계가 있다"를 장단점으로 정리한다. |
 
+## 4-3. 스크립트·DLL 작업 중 나온 공부 항목 (2026-10-10)
+
+노션 스크립트 페이지를 정리하면서 코드를 고쳤고, 그 과정에서 설명할 수 있어야 하는 C++·빌드 개념이 나왔다. 4-1 표의 A09 첫 두 행(Tick 전부 등록, Start 위치)과 A08 세 번째 행(virtual과 VTable 중복)은 아래 수정으로 해결됐다.
+
+**이미 수정한 항목**
+- Script_Register.h 템플릿 thunk의 `static` 제거.
+- IScript 생명주기 virtual과 Client의 override·빈 함수 삭제. `requires`로 구현한 함수만 VTable에 채우고 Start는 별도 대기열로 옮김. 전투 씬 Tick 호출이 프레임당 534회에서 92회로 줄었다(빈 함수 호출 제거라 프레임 시간 차이는 측정 오차 수준).
+- `Find_Name_By_GUID`의 임시 객체 참조 반환(C4172) → 값 반환.
+- `Generate()`가 내용이 같으면 gen.cpp를 쓰지 않음.
+- Client를 정적 라이브러리에서 DLL로 전환. CMainApp을 없애고 Editor.cpp(LoadLibrary)와 Game.cpp(import 링크)로 옮김.
+- (2026-10-11) Editor Hot Reload. Edit 상태에서 버튼 하나로 씬 내리기 → Script 함수 주소 정리 → Client.dll 교체 → 같은 씬 파일 재로드. 기존 Script 수정과 새 Script 추가 모두 확인했다. 4-1 표 마지막 행(새 Script는 재빌드 후 재시작)이 해결됐다. 순서와 이유는 아래 Hot Reload 표에 정리했다.
+- Game.exe 정상화(Scene RT를 백버퍼로 복사, 고정 해상도), 2회차 Reload 카메라 버그(시네마틱·플레이어 카메라 우선순위 동률 + LIFO free list로 슬롯 순서 역전), 에디터 Reload가 이전 씬을 Play 첫 프레임까지 남기던 문제(Flush_PendingDestroy 누락).
+
+**설명할 수 있어야 하는 개념**
+
+| 관련 | 주제 | 이 프로젝트에서 나온 곳 | 설명할 수 있어야 하는 것 |
+|---|---|---|---|
+| A08 | 헤더 vs lib, 컴파일 vs 링크 | Client를 DLL로 바꾸자 Client가 Engine.lib를 직접 링크해야 했다. | 헤더는 선언(컴파일용), lib는 위치(링크용)다. 정적 라이브러리는 링크를 하지 않고 미해결 기호를 exe 링크 때 넘긴다. DLL은 스스로 링크를 끝낸 결과물이라 의존 lib를 직접 알아야 한다. |
+| A08 | import library와 싱글톤 | Engine.lib는 Engine.dll의 import library다. | import library는 코드가 아니라 "이 함수는 Engine.dll에 있다"는 목록이다. Editor와 Client.dll이 같은 Engine.dll 하나를 써서 SYS_* 싱글톤이 하나로 유지된다. Engine이 정적 라이브러리였다면 모듈마다 싱글톤이 따로 생긴다. |
+| A08 | 암시적 링크 vs 명시적 로드 | Game은 Client.lib(import)로 링크, Editor는 `LoadLibrary` + `GetProcAddress`. | 암시적 링크는 실행 시 자동 로드되고 프로세스가 끝날 때까지 파일이 잠긴다. 명시적 로드는 내렸다 올릴 수 있어 핫 리로드의 전제가 된다. |
+| A08 | `extern "C"`와 이름 장식 | `Client_Register_AllScripts`를 `extern "C" __declspec(dllexport)`로 내보낸다. | C++ 함수 이름은 네임스페이스·인자 타입이 붙어 장식(mangling)되므로 `GetProcAddress`로 찾으려면 C 링크로 내보낸다. |
+| A08 | 헤더 함수의 `static`, `inline`, 템플릿 | Script_Register.h의 `static` 템플릿, Client_Define.h의 `static unsigned int g_iWinSizeX`. | TU(.cpp 단위), 내부 링크(`static`, TU마다 사본, 주소가 다름), `inline`(하나로 합침), 템플릿은 원래 COMDAT으로 합쳐짐. DLL 경계에서는 모듈마다 사본이 생긴다. `g_iWinSizeX`는 Editor.cpp에서 바꿔도 다른 .cpp는 1920 그대로다(미수정). |
+| A08 | 함수 포인터 thunk와 인스턴스 | `fn(pState)` → `Script_Tick_Update<CPlayer>` → `CPlayer::Update`. | thunk는 타입당 하나, 어느 인스턴스인지는 pState가 정한다(멤버 함수의 숨은 `this`와 같은 원리). |
+| A08, A10 | 다중 상속과 `void*` 캐스팅 | IScript가 첫 번째 부모여야 하는 암묵적 제약(4-1 표에 있음, 면접용으로 유지). | 두 번째 이후 부모는 주소가 밀린다. `void*`를 거치면 컴파일러가 보정할 수 없다. 해결: `void*` → `TScript*` → `IScript*` 순서로 캐스팅하는 함수를 VTable에 두고, 필드 offset은 최종 클래스의 this 기준으로 계산한다. |
+| A09 | SFINAE vs `requires` | 구현 여부 감지에 C++20 `requires`를 썼다. | 두 방법 모두 "식이 유효한가"로 분기한다. SFINAE(`void_t` detection idiom)는 trait 구조체가 필요하고, `requires`는 한 줄이며 에러 메시지가 읽기 쉽다. C++20 프로젝트라 requires를 골랐다고 설명한다. |
+| A25 | 임시 객체 수명 | `const std::string&`로 `stem().string()`을 반환해 댕글링. | `std::string` 객체는 스택, 글자 버퍼는 힙(15자 이하는 SSO로 객체 안)에 있다. 임시가 사라지면 소멸자가 버퍼도 해제한다. 값 반환은 호출자 스택에 만들어지고(RVO), `const&`로 받으면 수명이 연장된다. 함수의 참조 반환에는 이 규칙이 적용되지 않는다. |
+| A25 | 증분 빌드와 파일 수정 시간 | gen.cpp를 매 실행마다 덮어써 매 빌드 재컴파일. | 빌드 시스템은 내용이 아니라 수정 시간을 비교한다. 내용이 같으면 쓰지 않는 것으로 해결했다. |
+
+**Hot Reload에서 설명할 수 있어야 하는 것**
+
+| 관련 | 주제 | 이 프로젝트에서 나온 곳 | 설명할 수 있어야 하는 것 |
+|---|---|---|---|
+| A08 | 왜 복사본을 로드하나 | Editor는 `Client.dll`을 `Client_hot_N.dll`로 복사해서 로드한다. | 로드된 DLL 파일은 잠겨서 다시 빌드(덮어쓰기)할 수 없다. 복사본을 로드하면 원본은 VS가 자유롭게 다시 만들 수 있다. 시작할 때 이전 실행이 남긴 복사본을 지운다. |
+| A08, A09 | 내리는 순서 | `CCore_System::Unload_Scripts` → `FreeLibrary` → 새 복사본 `LoadLibrary` → 등록 → `Restart`. | 이전 DLL의 코드를 가리키는 모든 것(Script 인스턴스, vt 복사본, TickList, 대기열, 컴포넌트 이벤트 람다)을 DLL이 살아 있을 때 정리해야 한다. `vt.Destroy`도 DLL 안의 함수라 FreeLibrary 뒤에는 부를 수 없다. |
+| A09, A19 | 왜 씬 단위로 내렸다 올리나 | Client 37개 파일이 Animator·Collider·UI 이벤트에 람다를 등록하고, 해제하는 곳은 시네마틱 3곳뿐이다. | 리스너를 하나씩 해제하게 만드는 대신 씬을 통째로 내리면 컴포넌트와 함께 리스너도 사라진다. 다시 만드는 일은 기존 씬 직렬화(필드 저장, ObjectRef 지연 연결)가 맡는다. Unity의 도메인 리로드와 같은 방식이다. |
+| A08 | 등록 맵 비우기 | `Register_VTable`은 이미 있는 GUID를 덮어쓰지 않는다. | 비우지 않으면 새 DLL을 등록해도 이전 DLL 주소가 남아 해제된 코드를 호출한다. `Clear_VTables`로 먼저 비운다. |
+| A09 | 안전장치 | `Reset_ScriptTypes`는 살아 있는 pState가 하나라도 있으면 false를 반환하고, 그러면 DLL을 내리지 않는다. | 씬 밖에 Script가 남는 경우(현재는 없음)를 감지해 크래시 대신 리로드를 거부한다. |
+| A25 | PDB 잠금 | Client Debug 링크의 PDB 이름을 빌드마다 바꾼다. | 디버거가 붙어 있으면 로드된 DLL의 PDB가 잠겨 링크가 실패한다. 대가로 `Client/Bin`에 PDB가 쌓인다. |
+| A25 | VS로 디버깅 중 빌드 불가 | 디버깅 중 빌드하면 VS가 디버깅을 중지(Editor 종료)한다. | Editor는 Ctrl+F5로 실행하고, 필요할 때 `프로세스에 연결`한다. |
+| A08 | 새 Script와 vcxproj | Editor가 만든 `.h/.cpp`가 vcxproj에 없어 LNK2019가 났다. | VS는 vcxproj에 적힌 파일만 컴파일한다. Editor가 Script를 만들 때 `Client.vcxproj`에 ClInclude/ClCompile을 추가한다(줄바꿈 형식 유지, filters는 건드리지 않음). |
+| 비교 | Unity와의 차이 | 질문으로 나올 수 있다. | Unity(Mono)는 한 번 올린 어셈블리를 내릴 수 없어 도메인 전체를 다시 올리거나, 도구들은 바뀐 함수만 컴파일해 진입점을 바꿔 끼운다(detour). C++ DLL은 내릴 수 있어서 모듈 교체가 가능하다. |
+| 한계 | 남은 것 | - | Engine 코드 변경은 재시작이 필요하다. 리로드는 씬 파일을 다시 읽으므로 저장하지 않은 편집과 Play 상태는 사라진다. |
+
 ## 5. 요청한 리팩토링 아이디어의 구체화
 
 ### R01. Pool의 페이지 크기를 템플릿으로 받기

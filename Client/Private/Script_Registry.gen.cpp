@@ -6,6 +6,7 @@
 
 #include "AbnormalTitan.h"
 #include "Attacher.h"
+#include "BoxHotReload.h"
 #include "CameraController.h"
 #include "CinematicCamera_Director.h"
 #include "CrawlerTitan.h"
@@ -51,6 +52,10 @@ void Register_AllScripts()
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\Attacher.script");
         handler.Register_VTable(guid, ScriptBinder<CAttacher>::Build());
+    }
+    {
+        ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\BoxHotReload.script");
+        handler.Register_VTable(guid, ScriptBinder<CBoxHotReload>::Build());
     }
     {
         ASSET_GUID guid = SYS_ASSET.Ensure_GUID_For_Path("C:\\Users\\delay\\Jusin\\AOTTG2_DX11\\Client\\Bin\\Assets\\Scripts\\CameraController.script");

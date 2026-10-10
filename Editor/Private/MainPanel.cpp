@@ -19,6 +19,7 @@
 #include "magic_enum.hpp"
 #include "Input_System.h"
 #include "CRender_System.h"
+#include "Client_Module.h"
 #pragma endregion
 
 NS_BEGIN(Editor)
@@ -637,6 +638,16 @@ void CMainPanel::Draw_Toolbar()
             m_bPlaying = false;
             SYS_EDITOR.Pause();
             SYS_CORE.Restart();
+        }
+
+        ImGui::SameLine();
+
+        /* Client만 다시 빌드한 뒤 누른다 : 씬을 내리고 Client.dll을 바꿔 끼운 뒤 같은 씬 파일을 다시 로드 */
+        if (ImGui::Button("Hot Reload", ImVec2(button_size + 30, 35)))
+        {
+            m_bPlaying = false;
+            SYS_EDITOR.Pause();
+            Editor::ClientModule::Reload();
         }
 
         ImGui::SameLine(0.f, 8.f);

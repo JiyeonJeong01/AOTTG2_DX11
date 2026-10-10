@@ -19,6 +19,8 @@
 #include "Graphic_Device.h"
 #include "Timer_System.h"
 #include "Physics_Processor.h"
+#include "Script_Processor.h"
+#include "Script_Handler.h"
 
 /* --- --- */
 #include "Scene.h"
@@ -162,7 +164,24 @@ void CCore_System::Update_Game_Engine(_float fDT)
 void CCore_System::Fixed_Update(_float fDT)
 {
     PROFILE_CPU("Physics::FixedUpdate");
-    SYS_COMPONENT.FixedUpdate(fDT);
+
+    /* 고정 시간 루프 : 실제 경과 시간을 누적해 FIXED_STEP 단위로만 물리를 진행한다.
+     * 프레임이 느려져도 물리 시간은 실제 시간과 같게 흐르고, 한 스텝의 dt는 항상 같다. */
+    m_fFixedAcc += fDT;
+
+    _uint iSteps = 0;
+    while (m_fFixedAcc >= FIXED_STEP && iSteps < MAX_FIXED_STEPS)
+    {
+        SYS_COMPONENT.FixedUpdate(FIXED_STEP);
+        m_fFixedAcc -= FIXED_STEP;
+        ++iSteps;
+    }
+
+    /* 한 프레임이 너무 길면(디버거 정지, 로딩) 따라잡지 않고 버린다. 안 버리면 다음 프레임이 더 길어지는 악순환 */
+    if (iSteps == MAX_FIXED_STEPS)
+        m_fFixedAcc = 0.f;
+
+    SYS_PROFILER.Set_Count("Physics/Steps", iSteps);
 }
 
 void CCore_System::Request_Step(_float fDT, CScene* pScene)
@@ -450,6 +469,22 @@ _bool CCore_System::Restart()
     SYS_GAMEOBJECT.Flush_PendingDestroy();
 
     return bResult;
+}
+
+_bool CCore_System::Unload_Scripts()
+{
+    /* 컴포넌트가 해제되면서 Script 인스턴스(vt.Destroy)와 컴포넌트 이벤트 리스너(Client 람다)도 함께 사라진다 */
+    SYS_GAMEOBJECT.Destroy_All_SceneObjects();
+    SYS_GAMEOBJECT.Flush_PendingDestroy();
+
+    CScript_Processor* pScript = SYS_COMPONENT.Bind_Processor<CScript_Processor>();
+    IF_NULL_RETURN_MSG_BREAK(pScript, false, "pScript is nullptr");
+
+    if (!pScript->Reset_ScriptTypes())
+        return false;
+
+    SYS_ASSET.Scripts().Clear_VTables();
+    return true;
 }
 
 void CCore_System::Set_DebugRender(DEBUG_DRAW eDraw)

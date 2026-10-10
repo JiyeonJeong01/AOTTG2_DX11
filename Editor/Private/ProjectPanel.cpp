@@ -6,6 +6,8 @@
 #include "Core_System.h"
 #include "Asset_Meta.h"
 #include "Create_Asset_Helper.h"
+#include "Client_Module.h"
+#include "Script_Handler.h"
 #include "Resource_System.h"
 
 NS_BEGIN(Editor)
@@ -1098,10 +1100,18 @@ _bool CProjectPanel::Create_Script_By_Name(const std::string& baseStem, std::fil
     if (!CCreate_Asset_Helper::Write_Script_Source_Files(headerPath, cppPath, header, cpp))
         return false;
 
+    if (!CCreate_Asset_Helper::Add_Script_To_Client_Project(headerPath, cppPath))
+        LOG_WARN("Client.vcxproj 등록 실패 : VS에서 새 .h/.cpp를 직접 추가하세요.");
+
     /* .script 생성 + GUID 보장 */
     const std::filesystem::path savePath = m_ScriptPath / (stem + ".script");
     if (!CCreate_Asset_Helper::Write_Script_Asset_File(savePath, className, headerPath))
         return false;
+
+    /* 등록 코드에 새 Script 반영 : Client를 빌드하고 Hot Reload 하면 에디터를 끄지 않고 쓸 수 있다
+     */
+    SYS_ASSET.Scripts().Cache_GUID(SYS_ASSET.Ensure_GUID_For_Path(savePath));
+    SYS_ASSET.Scripts().Generate(ClientModule::SCRIPT_REGISTRY_PATH);
 
     outCreatedPath = savePath;
     return true;

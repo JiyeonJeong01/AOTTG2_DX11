@@ -78,6 +78,7 @@ public: /* For.Scene_Handler */
     CScene* Get_CurrentScene();
     void    Set_CurrentScene(std::unique_ptr<CScene> pScene);
     _bool   Restart();
+    _bool   Unload_Scripts(); /* 핫 리로드 : 씬 오브젝트를 모두 내리고 Script 함수 주소를 버린다. 이후 Client.dll을 내려도 안전 */
 
 public : /* Debug */
     void    Set_DebugRender(DEBUG_DRAW eDraw);
@@ -94,6 +95,12 @@ private:
     _float                      m_fTimeAcc = 0.f;
     const _float                m_FIXED_DT = 0.02f;
     _bool                       m_bRestartSceneRequested = false;
+
+    /* 물리 고정 시간 루프. 게임 갱신이 60Hz라 1/60이면 보통 프레임당 1스텝 (보간 없이도 끊김 없음)
+     * ponytail: 렌더 보간 없음. 갱신 주기와 스텝이 어긋나면 보간(이전·현재 Transform 블렌드)을 추가할 것 */
+    static constexpr _float     FIXED_STEP = 1.f / 60.f;
+    static constexpr _uint      MAX_FIXED_STEPS = 5;
+    _float                      m_fFixedAcc = 0.f;
 
 private :
     void        Update_RuntimeEngine(_float fDT, CScene* pScene);

@@ -97,7 +97,7 @@ void CComponent_System::FixedUpdate(_float fDT)
 {
     IF_NULL_RETURN_MSG_BREAK(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::PHYSICS)], , "m_pComProcessor is nullptr");
 
-    To<CPhysics_Processor*>(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::PHYSICS)].get())->Fixed_Update(0.02f);
+    To<CPhysics_Processor*>(m_pComProcessors[PID_TO_INT(PROCESSOR_ID::PHYSICS)].get())->Fixed_Update(fDT);
 }
 
 void CComponent_System::Build_RenderQueue(vector<DRAW_CMD>& cmds)

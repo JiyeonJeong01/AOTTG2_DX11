@@ -29,6 +29,7 @@
     <ClCompile Include="..\..\ThirdParty\imgui_widgets.cpp" />
     <ClCompile Include="..\Private\CinematicPanel.cpp" />
     <ClCompile Include="..\Private\ConsolePanel.cpp" />
+    <ClCompile Include="..\Private\Client_Module.cpp" />
     <ClCompile Include="..\Private\Create_Asset_Helper.cpp" />
     <ClCompile Include="..\Private\Gizmo.cpp" />
     <ClCompile Include="..\Private\GUI_System.cpp" />
@@ -52,6 +53,7 @@
     <ClInclude Include="..\..\ThirdParty\magic_enum.hpp" />
     <ClInclude Include="..\Public\CinematicPanel.h" />
     <ClInclude Include="..\Public\ConsolePanel.h" />
+    <ClInclude Include="..\Public\Client_Module.h" />
     <ClInclude Include="..\Public\Create_Asset_Helper.h" />
     <ClInclude Include="..\Public\EditorPanel.h" />
     <ClInclude Include="..\Public\Editor_Define.h" />

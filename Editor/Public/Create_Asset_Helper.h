@@ -30,6 +30,11 @@ public: /* ---------- Script ---------- */
         const std::filesystem::path& headerPath
     );
 
+    /* Client.vcxproj에 새 .h/.cpp를 등록한다. 안 하면 VS가 컴파일하지 않아 gen.cpp에서 링크 에러(LNK2019)가 난다 */
+    static _bool Add_Script_To_Client_Project(
+        const std::filesystem::path& headerPath,
+        const std::filesystem::path& cppPath);
+
     static std::string Make_Script_File_From_Stem(const std::string& stem);
 
     static std::string Make_Unique_File_Stem_Impl(

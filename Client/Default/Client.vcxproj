@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\BoxHotReload.h" />
     <ClInclude Include="..\Publict\Equipment_Struct.h" />
     <ClInclude Include="..\Public\AbnormalTitan.h" />
     <ClInclude Include="..\Public\AbnormalTitanStateMachine.h" />
@@ -121,6 +122,7 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\BoxHotReload.cpp" />
     <ClCompile Include="..\Private\AbnormalTitan.cpp" />
     <ClCompile Include="..\Private\AbnormalTitanStateMachine.cpp" />
     <ClCompile Include="..\Private\AbnormalTitanState_Attack.cpp" />
@@ -317,6 +319,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../EngineSDK/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <!-- Hot Reload : 디버거가 로드한 DLL의 PDB를 잠그므로 빌드마다 이름을 바꾼다 -->
+      <ProgramDatabaseFile>$(OutDir)$(TargetName)_$([System.DateTime]::Now.ToString("HHmmssfff")).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y /I "$(OutDir)Client.dll" "$(SolutionDir)Game\Bin\"

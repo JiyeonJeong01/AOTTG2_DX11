@@ -4,6 +4,7 @@
 #include <Component_System.h>
 #include <CRender_System.h>
 #include <MeshRenderer_Processor.h>
+#include <Physics_Processor.h>
 #include <Component_System.inl>
 #include <Transform.h>
 
@@ -332,6 +333,13 @@ void CProfilerPanel::Copy_To_Clipboard()
         SYS_RENDER.Is_StaticShadowCache() ? "on" : "off",
         SYS_RENDER.Is_CompactShadowRT() ? "on" : "off");
     out += line;
+
+    if (auto* pPhysics = SYS_COMPONENT.Bind_Processor<CPhysics_Processor>())
+    {
+        snprintf(line, sizeof(line), "Physics: SolverIter %u | PenetrationOnce %s\n",
+            pPhysics->Get_SolverIterations(), pPhysics->Is_PenetrationOnce() ? "on" : "off");
+        out += line;
+    }
     snprintf(line, sizeof(line), "%-28s %9s %9s %9s\n", "Scope", "Avg(ms)", "Min(ms)", "Max(ms)");
     out += line;
 
@@ -509,6 +517,22 @@ void CProfilerPanel::Draw_Toolbar()
         ImGui::SameLine();
         if (ImGui::Checkbox("Compact Shadow RT", &bCompact))
             SYS_RENDER.Set_CompactShadowRT(bCompact);
+    }
+
+    /* Solver 비교 : 반복 횟수 1/4/8, 침투 보정을 반복마다 vs 반복 뒤 한 번 */
+    if (auto* pPhysics = SYS_COMPONENT.Bind_Processor<CPhysics_Processor>())
+    {
+        ImGui::TextUnformatted("Physics:");
+        ImGui::SameLine();
+        _int iIter = (_int)pPhysics->Get_SolverIterations();
+        ImGui::SetNextItemWidth(100.f);
+        if (ImGui::InputInt("Solver Iter", &iIter))
+            pPhysics->Set_SolverIterations((_uint)std::clamp(iIter, 1, 16));
+
+        ImGui::SameLine();
+        _bool bOnce = pPhysics->Is_PenetrationOnce();
+        if (ImGui::Checkbox("Penetration Once", &bOnce))
+            pPhysics->Set_PenetrationOnce(bOnce);
     }
 
     ImGui::SameLine();

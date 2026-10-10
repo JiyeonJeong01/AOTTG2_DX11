@@ -13,6 +13,7 @@
 #include "Asset_Registry.h"
 #include "Script_Handler.h"
 #include "GameObject_System.h"
+#include "Client_Module.h"
 
 #include "WindowResize_Event.h"
 
@@ -72,7 +73,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     ID3D11Device*        pDevice = nullptr;
     ID3D11DeviceContext* pContext = nullptr;
-    HMODULE              hClient = nullptr;
 
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_EDITOR, szWindowClass, MAX_LOADSTRING);
@@ -97,18 +97,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
 
     /* Script 등록 코드 생성 (내용이 같으면 쓰지 않는다) → Client.dll의 등록 함수 호출 */
-    if (FAILED(SYS_ASSET.Scripts().Generate("../../Client/Private/Script_Registry.gen.cpp")))
+    if (FAILED(SYS_ASSET.Scripts().Generate(Editor::ClientModule::SCRIPT_REGISTRY_PATH)))
         return FALSE;
 
-    hClient = LoadLibraryW(L"Client.dll");
-    using RegisterFn = void(*)();
-    RegisterFn pfnRegister = hClient ? reinterpret_cast<RegisterFn>(GetProcAddress(hClient, "Client_Register_AllScripts")) : nullptr;
-    if (nullptr == pfnRegister)
+    /* 원본이 아닌 복사본을 로드한다 : 에디터를 켠 채로 Client만 다시 빌드해 Hot Reload 할 수 있다 */
+    if (!Editor::ClientModule::Load())
     {
-        MessageBox(nullptr, L"Client.dll 또는 Client_Register_AllScripts를 찾지 못했습니다.", L"에러", MB_OK);
+        MessageBox(nullptr, L"Client.dll을 로드하지 못했습니다.", L"에러", MB_OK);
         return FALSE;
     }
-    pfnRegister();
 
     if (!CCore_System::GetInstancePtr())
     {
@@ -240,7 +237,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     Editor::CGUI_System::DestroyInstance();
     Shutdown_Engine(pDevice, pContext);
-    FreeLibrary(hClient); /* Script 인스턴스 · VTable이 모두 사라진 뒤에 내린다 */
+    Editor::ClientModule::Unload(); /* Script 인스턴스 · VTable이 모두 사라진 뒤에 내린다 */
 
     return (int)msg.wParam;
 }

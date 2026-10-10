@@ -206,6 +206,53 @@ std::string CCreate_Asset_Helper::Make_Unique_File_Stem_Single(const std::filesy
     }
 }
 
+_bool CCreate_Asset_Helper::Add_Script_To_Client_Project(const std::filesystem::path& headerPath, const std::filesystem::path& cppPath)
+{
+    const std::filesystem::path projPath = std::filesystem::path(Engine::ProjectConfig::CLIENT) / "Default" / "Client.vcxproj";
+
+    std::string strProj;
+    {
+        std::ifstream ifs(projPath, std::ios_base::binary);
+        if (!ifs.is_open())
+            return false;
+        strProj.assign(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>());
+    }
+
+    /* 파일의 줄바꿈(LF/CRLF)을 그대로 따른다 */
+    const std::string strNewLine = (strProj.find("\r\n") != std::string::npos) ? "\r\n" : "\n";
+
+    /* vcxproj 기준 상대 경로 : ..\Public\X.h */
+    auto To_ProjRelative = [&](const std::filesystem::path& p)
+        {
+            std::string s = Editor_Util::To_UTF8(std::filesystem::relative(p, projPath.parent_path()));
+            std::replace(s.begin(), s.end(), '/', '\\');
+            return s;
+        };
+
+    /* 같은 종류 항목의 첫 줄 앞에 끼워 넣는다 (이미 있으면 건너뜀) */
+    auto Insert_Item = [&](const std::string& strTag, const std::string& strRel) -> _bool
+        {
+            const std::string strItem = "<" + strTag + " Include=\"" + strRel + "\" />";
+            if (strProj.find(strItem) != std::string::npos)
+                return true;
+
+            const size_t iAnchor = strProj.find("<" + strTag + " Include=");
+            if (iAnchor == std::string::npos)
+                return false;
+
+            const size_t iLineStart = strProj.rfind('\n', iAnchor) + 1;
+            strProj.insert(iLineStart, "    " + strItem + strNewLine);
+            return true;
+        };
+
+    if (!Insert_Item("ClInclude", To_ProjRelative(headerPath)) ||
+        !Insert_Item("ClCompile", To_ProjRelative(cppPath)))
+        return false;
+
+    /* VS가 열려 있으면 "프로젝트가 외부에서 수정됨 → 다시 로드" 알림을 띄운다 */
+    return Write_Text_File(projPath, strProj);
+}
+
 _bool CCreate_Asset_Helper::Write_Text_File(const std::filesystem::path& p, const std::string& utf8)
 {
     std::error_code ec;

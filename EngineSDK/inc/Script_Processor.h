@@ -33,6 +33,9 @@ public:
 
     IScript* Get_Script_Instance(COMPONENT_HANDLE hScript);
 
+    /* 핫 리로드 : 살아 있는 Script가 없을 때만 타입별 VTable 복사본과 대기열을 비운다. 남아 있으면 false */
+    _bool   Reset_ScriptTypes();
+
 private :
     CScript_Handler* m_pScript_Handler{ };
     typedef struct tagTickCall

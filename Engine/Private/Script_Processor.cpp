@@ -277,6 +277,34 @@ IScript* CScript_Processor::Get_Script_Instance(COMPONENT_HANDLE hScript)
     return reinterpret_cast<IScript*>(pData->pState);
 }
 
+_bool CScript_Processor::Reset_ScriptTypes()
+{
+    /* 살아 있는 Script 인스턴스가 있으면 그 코드가 이전 Client.dll에 있으므로 내릴 수 없다 */
+    for (auto& upPage : m_Pool.GetPages())
+    {
+        for (uint32_t i = 0; i < m_Pool.Get_PageSize(); ++i)
+        {
+            if (upPage->Is_Allocated(i) && upPage->Get_Ptr(i)->pState)
+            {
+                LOG_ERROR("Reset_ScriptTypes failed : live script instance remains.");
+                return false;
+            }
+        }
+    }
+
+    /* GUID ↔ TypeID 매핑은 유지한다. 함수 주소만 버리고, 씬 로드 때 Initialize_From_Spec이 새 VTable을 다시 복사한다 */
+    for (auto& tType : m_Types)
+        tType.vt = SCRIPT_VTABLE{};
+
+    for (auto& vecTicks : m_Ticks)
+        vecTicks.clear();
+
+    m_PendingAwake_Script.clear();
+    m_PendingStart_Script.clear();
+
+    return true;
+}
+
 /* Initialzie_Componet_Spec 에서 바로 Spec으로 값 세팅 가능하게 데이터를 초기값으로 세팅/정리한다.
  * Script 컴포넌트의 경우 추가 이후 반드시 재빌드가 필요하고 그 때 Initialzie_Componet_Spec을 통해 적절한 데이터를 받아야 한다. */
 void CScript_Processor::Initialize_Component_Data(COMPONENT_HANDLE hComponent)

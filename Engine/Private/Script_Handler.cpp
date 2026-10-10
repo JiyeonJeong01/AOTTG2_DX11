@@ -37,6 +37,11 @@ void CScript_Handler::Register_VTable(const ASSET_GUID& tGUID, const SCRIPT_VTAB
         m_VTableMap[tGUID] = vt;
 }
 
+void CScript_Handler::Clear_VTables()
+{
+    m_VTableMap.clear(); /* Register_VTable은 이미 있는 GUID를 덮어쓰지 않으므로 다시 등록하기 전에 비운다 */
+}
+
 const SCRIPT_VTABLE* CScript_Handler::Find(const ASSET_GUID& tGUID) const
 {
     auto it = m_VTableMap.find(tGUID);

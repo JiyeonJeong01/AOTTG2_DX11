@@ -17,6 +17,7 @@ public:
     void Register_All_();
     void Cache_GUID(const ASSET_GUID& tGUID);
     void Register_VTable(const ASSET_GUID& tGUID, const SCRIPT_VTABLE& vt);
+    void Clear_VTables(); /* 핫 리로드 : 이전 Client.dll의 함수 주소를 모두 버린다 */
     const SCRIPT_VTABLE* Find(const ASSET_GUID& tGUID) const;
 
     static HRESULT Generate(const std::filesystem::path& outCppPath);
