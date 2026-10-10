@@ -373,6 +373,11 @@ HRESULT CCore_System::Present() const
 	return m_pGraphic_Device->Present();
 }
 
+void CCore_System::Copy_Scene_To_BackBuffer()
+{
+    m_pGraphic_Device->Copy_Scene_To_BackBuffer();
+}
+
 _float CCore_System::Compute_SystemDT() const
 {
 	return m_pTimer_Handler->Compute_SystemDT();
@@ -438,7 +443,13 @@ void CCore_System::Set_CurrentScene(std::unique_ptr<CScene> pScene)
 
 _bool CCore_System::Restart()
 {
-    return m_pScene_Handler->Restart();
+    const _bool bResult = m_pScene_Handler->Restart();
+
+    /* 이전 씬 오브젝트는 Destroy 예약만 된 상태. 게임 쪽 재시작(Process_RestartSceneRequest)처럼 바로 해제한다.
+     * 안 하면 Play 첫 프레임까지 이전 씬의 컴포넌트·Script가 새 씬과 함께 살아 있다. */
+    SYS_GAMEOBJECT.Flush_PendingDestroy();
+
+    return bResult;
 }
 
 void CCore_System::Set_DebugRender(DEBUG_DRAW eDraw)

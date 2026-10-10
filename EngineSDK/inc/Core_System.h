@@ -59,6 +59,7 @@ public :
     HRESULT     Clear_Specular_RTV(const _float4* pClearColor);
     HRESULT     Clear_PostProcess_RTV(const _float4* pClearColor);
 	HRESULT		Present() const;
+    void        Copy_Scene_To_BackBuffer(); /* Game.exe 전용 : 에디터는 SceneSRV를 ImGui로 띄운다 */
 
 
 public: /* For.Timer_Manager */

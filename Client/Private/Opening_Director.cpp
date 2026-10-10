@@ -21,6 +21,10 @@ void COpening_Director::Awake(void* pCtx)
         {
             m_pCinematicCam = pObject;
             m_camCinematic = m_pCinematicCam->Get_Component<CCamera>();
+
+            /* 평소에는 0. 연출 중에만 SYS_CINEMATIC이 255로 올렸다가 되돌린다.
+             * 1로 두면 플레이어 카메라(1)와 동률이 되어, 풀 슬롯 순서에 따라 시네마틱 카메라가 선택될 수 있다. */
+            m_camCinematic.Set_Priority(0);
         }
 
         pObject = GAME_INSTANCE.Find_GameObject(m_refScoutController.hObject);

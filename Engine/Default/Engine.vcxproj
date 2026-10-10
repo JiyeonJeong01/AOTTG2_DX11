@@ -131,6 +131,7 @@
     <PostBuildEvent>
       <Command>xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Client\Bin\"
 xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Game\Bin\"
+xcopy /Y /I "$(SolutionDir)ThirdParty\FMOD\fmod.dll" "$(SolutionDir)Game\Bin\"
 xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Editor\Bin\"
 xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Converter\Bin\"
 xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.lib" "$(SolutionDir)EngineSDK\lib\"

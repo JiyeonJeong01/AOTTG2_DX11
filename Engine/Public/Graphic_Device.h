@@ -22,6 +22,7 @@ public:
     HRESULT Clear_Scene_DSV();
 
 	HRESULT Present();
+    void    Copy_Scene_To_BackBuffer();
 
     void    Bind_DefaultRTV();
     void    Bind_SceneRTV();

@@ -353,6 +353,25 @@ HRESULT CGraphic_Device::Present()
 	return m_pSwapChain->Present(0, 0);
 }
 
+void CGraphic_Device::Copy_Scene_To_BackBuffer()
+{
+    if (nullptr == m_pSceneTexture || nullptr == m_pDefaultRTV)
+        return;
+
+    ID3D11Resource* pBackBuffer = nullptr;
+    m_pDefaultRTV->GetResource(&pBackBuffer);
+
+    /* CopyResource는 크기 · 포맷이 같아야 한다 (둘 다 R8G8B8A8_UNORM). Game은 백버퍼를 Scene RT와 같은 크기로 고정한다. */
+    D3D11_TEXTURE2D_DESC tBack{}, tScene{};
+    static_cast<ID3D11Texture2D*>(pBackBuffer)->GetDesc(&tBack);
+    m_pSceneTexture->GetDesc(&tScene);
+
+    if (tBack.Width == tScene.Width && tBack.Height == tScene.Height && tBack.Format == tScene.Format)
+        m_pDeviceContext->CopyResource(pBackBuffer, m_pSceneTexture);
+
+    Safe_Release(pBackBuffer);
+}
+
 void CGraphic_Device::Bind_SceneRTV()
 {
     m_pDeviceContext->OMSetRenderTargets(1, &m_pSceneRTV, m_pSceneDSV);
