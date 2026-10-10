@@ -17,10 +17,10 @@ public:
 
 public:
     void    Solve_Contacts(CONTACT_DESC* pInfo);
+    void    Solve_Impulse(CONTACT_DESC* pInfo);       /* 속도 : 반발 · 마찰 · 회전 */
+    void    Solve_Penetration(CONTACT_DESC* pInfo);   /* 위치 : 남은 겹침 해소 */
 
 private:
-    void    Solve_Impulse(CONTACT_DESC* pInfo);
-    void    Solve_Penetration(CONTACT_DESC* pInfo);
 
     void    Add_ImpulseAtPoint(RIGIDBODY_DATA* pBody, const _float3& vImpulse, const _float3& vPoint);
 

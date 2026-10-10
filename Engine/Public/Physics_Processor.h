@@ -91,6 +91,15 @@ public :
     const COLLIDER_PROXY_DATA*  Find_ActivatedCollider_ByHandle(COMPONENT_HANDLE hCollider) const;
     void                        Rebuild_Static_Grid();
     void                        Set_DrawMode(DEBUG_DRAW eDraw);
+
+    /* 측정용 : Solver 반복 횟수와 침투 보정 시점 비교 (프로파일러 패널에서 조절) */
+    void    Set_SolverIterations(_uint iCount) { m_iSolverIterations = (iCount < 1) ? 1 : iCount; }
+    _uint   Get_SolverIterations() const { return m_iSolverIterations; }
+    void    Set_PenetrationOnce(_bool bOnce) { m_bPenetrationOnce = bOnce; }
+    _bool   Is_PenetrationOnce() const { return m_bPenetrationOnce; }
+private:
+    _uint   m_iSolverIterations = 4;
+    _bool   m_bPenetrationOnce = true;   /* true : 반복은 속도(impulse)만, 위치(침투) 보정은 반복 뒤 한 번 */
 private:
     CComponent_Pool<CCollider>          m_ColliderPool;
     CComponent_Pool<CRigidbody, 128>    m_RigidbodyPool;

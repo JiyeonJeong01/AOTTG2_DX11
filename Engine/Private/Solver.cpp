@@ -224,8 +224,9 @@ void CSolver::Solve_Penetration(CONTACT_DESC* pInfo)
     Try_Get_Rigidbody_And_Transform(pInfo->pColA, &rigidbodyA, &transformA, &pBodyA);
     Try_Get_Rigidbody_And_Transform(pInfo->pColB, &rigidbodyB, &transformB, &pBodyB);
 
-    const _float fMoveWeightA = (pBodyA == nullptr) ? 0.f : 1.f;
-    const _float fMoveWeightB = (pBodyB == nullptr) ? 0.f : 1.f;
+    /* 역질량 비율로 나눈다 : STATIC · KINEMATIC · Rigidbody 없음은 0이라 움직이지 않고, 가벼운 쪽이 더 많이 밀린다 */
+    const _float fMoveWeightA = Get_InvMass(pBodyA);
+    const _float fMoveWeightB = Get_InvMass(pBodyB);
 
     const _float fTotalWeight = fMoveWeightA + fMoveWeightB;
     if (fTotalWeight <= 0.f)

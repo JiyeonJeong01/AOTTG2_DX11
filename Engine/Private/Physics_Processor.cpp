@@ -73,13 +73,28 @@ void CPhysics_Processor::Fixed_Update(_float fDT)
 
     /* 충돌 해결하기 */
     PROFILE_CPU("Physics::Solve");
-    for (_uint i = 0; i < 1; ++i)
+    for (_uint i = 0; i < m_iSolverIterations; ++i)
     {
         for (auto& contact : outContacts)
         {
             if (contact.pColA->bTrigger || contact.pColB->bTrigger)
                 continue;
-            m_upSolver->Solve_Contacts(&contact);
+
+            if (m_bPenetrationOnce)
+                m_upSolver->Solve_Impulse(&contact);
+            else
+                m_upSolver->Solve_Contacts(&contact);   /* impulse + 침투 보정을 반복마다 */
+        }
+    }
+
+    /* 침투 깊이는 반복 전에 계산한 값이라, 반복마다 위치를 옮기면 반복 횟수만큼 과보정된다 → 반복 뒤 한 번만 */
+    if (m_bPenetrationOnce)
+    {
+        for (auto& contact : outContacts)
+        {
+            if (contact.pColA->bTrigger || contact.pColB->bTrigger)
+                continue;
+            m_upSolver->Solve_Penetration(&contact);
         }
     }
 
