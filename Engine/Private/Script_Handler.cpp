@@ -144,7 +144,9 @@ HRESULT CScript_Handler::Generate(const std::filesystem::path& outCppPath)
 
     oss <<
         "}\n"
-        "NS_END";
+        "NS_END\n\n"
+        "/* Client.dll 경계 : Editor는 GetProcAddress, Game은 import로 이 이름을 찾는다 */\n"
+        "extern \"C\" __declspec(dllexport) void Client_Register_AllScripts() { Client::Register_AllScripts(); }\n";
 
     /* 내용이 같으면 쓰지 않는다: 파일 수정 시간이 바뀌면 매 빌드마다 다시 컴파일되기 때문 */
     const std::string strNew = oss.str();

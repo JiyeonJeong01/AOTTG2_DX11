@@ -1,12 +1,13 @@
 ﻿#include "framework.h"
 #include "Game.h"
-#include "MainApp.h"
+#include "Client_Define.h"
 
 #include "Core_System.h"
 #include "Event_System.h"
 #include "WindowResize_Event.h"
 #include "GameInstance.h"
 #include "CRender_System.h"
+#include "GameObject_System.h"
 
 #define MAX_LOADSTRING 100
 
@@ -26,6 +27,26 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
+/* Client.dll (import로 링크) */
+extern "C" __declspec(dllimport) void Client_Register_AllScripts();
+
+/* 시스템이 모두 살아 있을 때 씬 객체(스크립트 포함)를 정리하고, 그 다음 엔진 · Client.dll 순서로 내린다.
+   시스템 파괴 도중 스크립트 소멸자가 SYS_XXX 를 부르면 빈 싱글톤이 되살아난다. (구 CMainApp 소멸자) */
+static void Shutdown_Engine(ID3D11Device*& pDevice, ID3D11DeviceContext*& pContext)
+{
+    if (CGameObject_System::GetInstancePtr())
+    {
+        SYS_GAMEOBJECT.Destroy_All_SceneObjects();
+        SYS_GAMEOBJECT.Flush_PendingDestroy();
+    }
+
+    /* Initialize_Engine 이 AddRef 해서 넘겨준 참조 */
+    Safe_Release(pDevice);
+    Safe_Release(pContext);
+
+    CCore_System::DestroyInstance();
+}
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR    lpCmdLine,
@@ -34,7 +55,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    std::unique_ptr<Client::CMainApp> pMainApp = { nullptr };
+    ID3D11Device*        pDevice = nullptr;
+    ID3D11DeviceContext* pContext = nullptr;
 
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_GAME, szWindowClass, MAX_LOADSTRING);
@@ -55,9 +77,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     EngineDesc.hInst = g_hInst;
     EngineDesc.iViewportSize = {Client::g_iWinSizeX, Client::g_iWinSizeY }; /* 고정 해상도 1920 * 1080 */
 
-    pMainApp = Client::CMainApp::Create(EngineDesc);
-    if (nullptr == pMainApp)
+    if (FAILED(SYS_CORE.Initialize_Engine(EngineDesc, &pDevice, &pContext)))
         return FALSE;
+
+    Client_Register_AllScripts();
 
     if (!CCore_System::GetInstancePtr())
     {
@@ -122,7 +145,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
 
             const _float fDT = SYS_CORE.Compute_FrameDT();
-            pMainApp->Update(fDT, APP_MODE::GAME_PLAY);
+            SYS_CORE.Update_Game_Engine(fDT);
 
             /* --- Render : Scene RT에 그린 뒤 백버퍼로 복사 --- */
             SYS_CORE.Bind_SceneRTV();
@@ -130,7 +153,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             _float4 vClearColor = { 0.1f, 0.8f, 0.8f, 1.0f };
             SYS_CORE.Clear_Scene_Buffers(&vClearColor);
 
-            pMainApp->Render();
+            SYS_CORE.Draw();
 
             SYS_CORE.Copy_Scene_To_BackBuffer();
             SYS_CORE.Present();
@@ -155,7 +178,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
     }
 
-    pMainApp.reset(); /* 디바이스 참조 해제 + Core 파괴 */
+    Shutdown_Engine(pDevice, pContext);
 
     return (int)msg.wParam;
 }

@@ -106,9 +106,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Public\MainApp.h">
-      <Filter>MainApp</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Tester.h">
       <Filter>Test</Filter>
     </ClInclude>
@@ -411,9 +408,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Private\MainApp.cpp">
-      <Filter>MainApp</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Tester.cpp">
       <Filter>Test</Filter>
     </ClCompile>

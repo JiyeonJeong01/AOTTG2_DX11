@@ -1,6 +1,5 @@
 ﻿#include "Tester.h"
 #include "Engine_Log.h"
-#include "MainApp.h"
 #include "Event.h"
 #include "Camera.h"
 #include "Component_System.h"

@@ -86,7 +86,6 @@
     <ClInclude Include="..\Public\PlayerState_Resupply.h" />
     <ClInclude Include="..\Public\Player_SkillController.h" />
     <ClInclude Include="..\Public\Rope.h" />
-    <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\MainMenu_Controller.h" />
     <ClInclude Include="..\Public\ODM_Gear.h" />
     <ClInclude Include="..\Public\Player.h" />
@@ -180,7 +179,6 @@
     <ClCompile Include="..\Private\PlayerState_Resupply.cpp" />
     <ClCompile Include="..\Private\Player_SkillController.cpp" />
     <ClCompile Include="..\Private\Rope.cpp" />
-    <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\MainMenu_Controller.cpp" />
     <ClCompile Include="..\Private\ODM_Gear.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
@@ -236,13 +234,13 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -317,10 +315,12 @@
       <SubSystem>
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>../../EngineSDK/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /I "$(SolutionDir)Client\Bin\Client.lib" "$(SolutionDir)Game\Bin\"
-xcopy /Y /I "$(SolutionDir)Client\Bin\Client.lib" "$(SolutionDir)Editor\Bin\"</Command>
+      <Command>xcopy /Y /I "$(OutDir)Client.dll" "$(SolutionDir)Game\Bin\"
+xcopy /Y /I "$(OutDir)Client.dll" "$(SolutionDir)Editor\Bin\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -339,7 +339,12 @@ xcopy /Y /I "$(SolutionDir)Client\Bin\Client.lib" "$(SolutionDir)Editor\Bin\"</C
       <SubSystem>
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>../../EngineSDK/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y /I "$(OutDir)Client.dll" "$(SolutionDir)Editor\Bin\Release\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

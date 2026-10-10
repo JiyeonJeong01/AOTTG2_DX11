@@ -186,3 +186,6 @@ void Register_AllScripts()
     }
 }
 NS_END
+
+/* Client.dll 경계 : Editor는 GetProcAddress, Game은 import로 이 이름을 찾는다 */
+extern "C" __declspec(dllexport) void Client_Register_AllScripts() { Client::Register_AllScripts(); }

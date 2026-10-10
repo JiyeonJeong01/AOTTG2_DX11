@@ -1,7 +1,7 @@
 ﻿#define _EDITOR
 #include "framework.h"
 #include "Editor.h"
-#include "MainApp.h"
+#include "Client_Define.h"
 #include "GUI_System.h"
 #include "MainPanel.h"
 #include "ProfilerPanel.h"
@@ -10,6 +10,9 @@
 #include "Event_System.h"
 #include "Input_System.h"
 #include "Profiler.h"
+#include "Asset_Registry.h"
+#include "Script_Handler.h"
+#include "GameObject_System.h"
 
 #include "WindowResize_Event.h"
 
@@ -36,6 +39,23 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
+/* 시스템이 모두 살아 있을 때 씬 객체(스크립트 포함)를 정리하고, 그 다음 엔진 · Client.dll 순서로 내린다.
+   시스템 파괴 도중 스크립트 소멸자가 SYS_XXX 를 부르면 빈 싱글톤이 되살아난다. (구 CMainApp 소멸자) */
+static void Shutdown_Engine(ID3D11Device*& pDevice, ID3D11DeviceContext*& pContext)
+{
+    if (CGameObject_System::GetInstancePtr())
+    {
+        SYS_GAMEOBJECT.Destroy_All_SceneObjects();
+        SYS_GAMEOBJECT.Flush_PendingDestroy();
+    }
+
+    /* Initialize_Engine 이 AddRef 해서 넘겨준 참조 */
+    Safe_Release(pDevice);
+    Safe_Release(pContext);
+
+    CCore_System::DestroyInstance();
+}
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR    lpCmdLine,
@@ -50,7 +70,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    unique_ptr<Client::CMainApp> pMainApp = { nullptr };
+    ID3D11Device*        pDevice = nullptr;
+    ID3D11DeviceContext* pContext = nullptr;
+    HMODULE              hClient = nullptr;
 
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_EDITOR, szWindowClass, MAX_LOADSTRING);
@@ -71,9 +93,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     EngineDesc.hInst = g_hInst;
     EngineDesc.iViewportSize = { Client::g_iWinSizeX, Client::g_iWinSizeY };
 
-    pMainApp = Client::CMainApp::Create(EngineDesc);
-    if (nullptr == pMainApp)
+    if (FAILED(SYS_CORE.Initialize_Engine(EngineDesc, &pDevice, &pContext)))
         return FALSE;
+
+    /* Script 등록 코드 생성 (내용이 같으면 쓰지 않는다) → Client.dll의 등록 함수 호출 */
+    if (FAILED(SYS_ASSET.Scripts().Generate("../../Client/Private/Script_Registry.gen.cpp")))
+        return FALSE;
+
+    hClient = LoadLibraryW(L"Client.dll");
+    using RegisterFn = void(*)();
+    RegisterFn pfnRegister = hClient ? reinterpret_cast<RegisterFn>(GetProcAddress(hClient, "Client_Register_AllScripts")) : nullptr;
+    if (nullptr == pfnRegister)
+    {
+        MessageBox(nullptr, L"Client.dll 또는 Client_Register_AllScripts를 찾지 못했습니다.", L"에러", MB_OK);
+        return FALSE;
+    }
+    pfnRegister();
 
     if (!CCore_System::GetInstancePtr())
     {
@@ -150,7 +185,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
                 {   /* 월드 갱신 */
                     Editor::CProfilerPanel::CScope _update("World::Update");
-                    pMainApp->Update(fDT, APP_MODE::EDITOR_EDIT);
+                    SYS_CORE.Update_Editor_Engine(fDT);
                 }
 
                 {   /* 에디터 갱신 */
@@ -165,7 +200,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 SYS_CORE.Bind_SceneRTV();
                 _float4 g_vClearColor = { 0.1f, 0.8f, 0.8f, 1.0f };
                 SYS_CORE.Clear_Scene_Buffers(&g_vClearColor);
-                pMainApp->Render();
+                SYS_CORE.Draw();
             }
 
             {   /* 에디터 렌더 */
@@ -204,7 +239,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         upMainPanel.reset();
 
     Editor::CGUI_System::DestroyInstance();
-    pMainApp.reset(); /* 디바이스 참조 해제 + Core 파괴 */
+    Shutdown_Engine(pDevice, pContext);
+    FreeLibrary(hClient); /* Script 인스턴스 · VTable이 모두 사라진 뒤에 내린다 */
 
     return (int)msg.wParam;
 }
