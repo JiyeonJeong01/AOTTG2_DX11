@@ -58,12 +58,6 @@ void CResupplyStation::Update(void* pCtx, _float fDT)
     Try_Interact();
 }
 
-void CResupplyStation::Late_Update(void* pCtx, _float fDT)
-{
-    UNREFERENCED_PARAMETER(pCtx);
-    UNREFERENCED_PARAMETER(fDT);
-}
-
 _float3 CResupplyStation::Get_UIWorldPosition() const
 {
     if (!m_trUIPivot.Is_Valid())

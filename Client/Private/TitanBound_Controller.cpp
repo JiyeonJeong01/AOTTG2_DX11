@@ -121,18 +121,6 @@ void CTitanBound_Controller::Awake(void* pCtx)
     }
 }
 
-void CTitanBound_Controller::Start(void* pCtx)
-{
-}
-
-void CTitanBound_Controller::Priority_Update(void* pCtx, _float fDT)
-{
-}
-
-void CTitanBound_Controller::Update(void* pCtx, _float fDT)
-{
-}
-
 void CTitanBound_Controller::Late_Update(void* pCtx, _float fDT)
 {
     UNREFERENCED_PARAMETER(pCtx);

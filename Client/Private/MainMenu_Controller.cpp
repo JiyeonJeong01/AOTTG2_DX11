@@ -22,11 +22,6 @@ void CMainMenu_Controller::Awake(void* pCtx)
     m_bCached = false;
 }
 
-void CMainMenu_Controller::Start(void* pCtx)
-{
-    UNREFERENCED_PARAMETER(pCtx);
-}
-
 void CMainMenu_Controller::Priority_Update(void* pCtx, _float fDT)
 {
     UNREFERENCED_PARAMETER(pCtx);

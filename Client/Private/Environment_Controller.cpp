@@ -24,18 +24,6 @@ void CEnvironment_Controller::Awake(void* pCtx)
     m_pBlockWater = SYS_RESOURCE.Get_PerObjectParamBlock(m_hPerObjBlockWater);
 }
 
-void CEnvironment_Controller::Start(void* pCtx)
-{
-}
-
-void CEnvironment_Controller::Priority_Update(void* pCtx, _float fDT)
-{
-}
-
-void CEnvironment_Controller::Update(void* pCtx, _float fDT)
-{
-}
-
 void CEnvironment_Controller::Late_Update(void* pCtx, _float fDT)
 {
     if (m_pBlockWater == nullptr)

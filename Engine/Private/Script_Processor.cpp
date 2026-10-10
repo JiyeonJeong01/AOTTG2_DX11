@@ -3,6 +3,7 @@
 #include "Component_Spec.h"
 #include "Asset_Registry.h"
 #include "Script_Handler.h"
+#include "Profiler.h"
 
 CScript_Processor::~CScript_Processor()
 {
@@ -40,6 +41,7 @@ HRESULT CScript_Processor::Initialize()
 void CScript_Processor::Update(_float fDT)
 {
     Flush_PendingAwake();
+    Flush_PendingStart();
 
     /* Priority_Update */
     {
@@ -49,12 +51,11 @@ void CScript_Processor::Update(_float fDT)
             const auto h = ticks[i].hScript;
             SCRIPT_DATA* pData = m_Pool.Get_Data_By_Handle(h);
             if (!pData || !pData->bEnable) continue;
+            if ((pData->iFlags & SCRIPT_FLAG_STARTED) == 0) continue;
 
             const uint32_t iTypeID = pData->iTypeID;
             if (iTypeID == 0 || iTypeID >= m_Types.size())
                 continue;
-
-            Ensure_Start(*pData, m_Types[iTypeID]);
 
             if (ticks[i].fn)
                 ticks[i].fn(pData->pState, m_ctx, fDT);
@@ -71,6 +72,7 @@ void CScript_Processor::Update(_float fDT)
             if (!pData) continue;
 
             if (!pData->bEnable) continue;
+            if ((pData->iFlags & SCRIPT_FLAG_STARTED) == 0) continue;
 
             /* TODO Priority를 통과했다면 여기서부터는 지워도 될 거 같은데 확인해보기 */
             const uint32_t typeId = pData->iTypeID;
@@ -90,6 +92,7 @@ void CScript_Processor::Update(_float fDT)
         if (!pData) continue;
 
         if (!pData->bEnable) continue;
+        if ((pData->iFlags & SCRIPT_FLAG_STARTED) == 0) continue;
 
         const uint32_t typeId = pData->iTypeID;
         if (typeId == 0 || typeId >= m_Types.size()) continue;
@@ -196,7 +199,11 @@ void CScript_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hCo
         if (!pData->pState) /* State가 없으면 만들어주기 */
             Create_State_If_Needed(hComponent, pData);
         else
+        {
+            if ((pData->iFlags & SCRIPT_FLAG_STARTED) == 0)
+                m_PendingStart_Script.push_back(PENDING_SCRIPT{ hComponent, pData->iTypeID });
             Add_To_TickLists(hComponent, *pData);
+        }
     }
     else
     {
@@ -291,10 +298,9 @@ void CScript_Processor::Ensure_Awake(SCRIPT_DATA& tData, SCRIPT_TYPE_INFO& tType
     if (!tData.pState)
         return;
 
+    tData.iFlags |= SCRIPT_FLAG_AWOKEN;
     if (tTypeInfo.vt.Awake)
         tTypeInfo.vt.Awake(tData.pState, m_ctx);
-
-    tData.iFlags |= SCRIPT_FLAG_AWOKEN;
 }
 
 void CScript_Processor::Ensure_Start(SCRIPT_DATA& tData, SCRIPT_TYPE_INFO& tTypeInfo)
@@ -304,9 +310,9 @@ void CScript_Processor::Ensure_Start(SCRIPT_DATA& tData, SCRIPT_TYPE_INFO& tType
     if (!tData.pState)
         return;
 
+    tData.iFlags |= SCRIPT_FLAG_STARTED;
     if (tTypeInfo.vt.Start)
         tTypeInfo.vt.Start(tData.pState, m_ctx);
-    tData.iFlags |= SCRIPT_FLAG_STARTED;
 }
 
 void CScript_Processor::Add_To_TickLists(COMPONENT_HANDLE hScript, const SCRIPT_DATA& tData)
@@ -378,11 +384,13 @@ void CScript_Processor::Create_State_If_Needed(COMPONENT_HANDLE hScript, SCRIPT_
         pData->pState = vt.Create();
         SCAST(IScript*, pData->pState)->Set_Owner(pData->hObject);
 
-        if (vt.Awake)
-            m_PendingAwake_Script.push_back(PENDING_SCRIPT{ hScript, typeId });
+        m_PendingAwake_Script.push_back(PENDING_SCRIPT{ hScript, typeId });
 
         if (pData->bEnable)
+        {
+            m_PendingStart_Script.push_back(PENDING_SCRIPT{ hScript, typeId });
             Add_To_TickLists(hScript, *pData);
+        }
     }
 }
 
@@ -415,29 +423,45 @@ void CScript_Processor::Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, SCRIP
 
 void CScript_Processor::Flush_PendingAwake()
 {
-    for (auto script : m_PendingAwake_Script)
+    std::vector<PENDING_SCRIPT> pending;
+    pending.swap(m_PendingAwake_Script);
+    for (const auto& script : pending)
     {
-        if (script.iTypeIndex >= m_Types.size())
+        if (script.iTypeIndex == 0 || script.iTypeIndex >= m_Types.size())
             continue;
 
         SCRIPT_DATA* pData = m_Pool.Get_Data_By_Handle(script.hScript);
-        if (!pData)
+        if (!pData || pData->iTypeID != script.iTypeIndex)
             continue;
 
-        if (!pData->pState)
-            continue;
-
-        if (!m_Types[script.iTypeIndex].vt.Awake)
-            continue;
-
-        auto& vt = m_Types[script.iTypeIndex].vt;
-        if (!vt.Awake)
-            continue;
-
-        vt.Awake(pData->pState, m_ctx);
-        pData->iFlags |= SCRIPT_FLAG_AWOKEN;
+        Ensure_Awake(*pData, m_Types[script.iTypeIndex]);
     }
-    m_PendingAwake_Script.clear();
+}
+
+void CScript_Processor::Flush_PendingStart()
+{
+    std::vector<PENDING_SCRIPT> pending;
+    pending.swap(m_PendingStart_Script);
+    for (const auto& script : pending)
+    {
+        if (script.iTypeIndex == 0 || script.iTypeIndex >= m_Types.size())
+            continue;
+
+        SCRIPT_DATA* pData = m_Pool.Get_Data_By_Handle(script.hScript);
+        if (!pData || !pData->pState || !pData->bEnable || pData->iTypeID != script.iTypeIndex)
+            continue;
+        if ((pData->iFlags & SCRIPT_FLAG_STARTED) != 0)
+            continue;
+
+        /* Awake/Start 중 생성된 Script는 다음 Awake 처리 이후 시작한다. */
+        if ((pData->iFlags & SCRIPT_FLAG_AWOKEN) == 0)
+        {
+            m_PendingStart_Script.push_back(script);
+            continue;
+        }
+
+        Ensure_Start(*pData, m_Types[script.iTypeIndex]);
+    }
 }
 
 

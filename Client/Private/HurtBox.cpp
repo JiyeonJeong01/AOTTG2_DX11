@@ -19,22 +19,6 @@ void CHurtBox::Awake(void* pCtx)
     IF_NULL_RETURN_MSG_BREAK(m_goHurtBox, , "m_goHurtBox is nullptr");
 }
 
-void CHurtBox::Start(void* pCtx)
-{
-}
-
-void CHurtBox::Priority_Update(void* pCtx, _float fDT)
-{
-}
-
-void CHurtBox::Update(void* pCtx, _float fDT)
-{
-}
-
-void CHurtBox::Late_Update(void* pCtx, _float fDT)
-{
-}
-
 void CHurtBox::Try_ApplyHit(const HIT_INFO& tHitBox)
 {
     CGameObject* pHurtBox = GAME_INSTANCE.Find_GameObject(m_hObject);

@@ -52,6 +52,7 @@ private :
     SCRIPT_CTX m_ctx{};
 
     std::vector<PENDING_SCRIPT>             m_PendingAwake_Script; /* 에디터 런타임 등록 시, 즉시 Awake 실행 되는 문제 */
+    std::vector<PENDING_SCRIPT>             m_PendingStart_Script;
 
     std::unordered_map<ASSET_GUID, TypeID, ASSET_GUID_HASHER>   m_GuidToTypeID;
     std::vector<ASSET_GUID>                                     m_TypeIDToGUID;
@@ -69,6 +70,7 @@ private :
     void Reset_Data(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData);
     void Reset_Data_On_Deallocate(COMPONENT_HANDLE hScript, SCRIPT_DATA* pData);
     void Flush_PendingAwake();
+    void Flush_PendingStart();
 
 public:
     static std::unique_ptr<CScript_Processor> Create();

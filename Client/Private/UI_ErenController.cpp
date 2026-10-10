@@ -3,11 +3,6 @@
 
 NS_BEGIN(Client)
 
-void CUI_ErenController::Awake(void* pCtx)
-{
-    UNREFERENCED_PARAMETER(pCtx);
-}
-
 void CUI_ErenController::Start(void* pCtx)
 {
     UNREFERENCED_PARAMETER(pCtx);
@@ -41,12 +36,6 @@ void CUI_ErenController::Start(void* pCtx)
     m_fDelayElapsed = 0.f;
 
     Apply_LifeClipRect();
-}
-
-void CUI_ErenController::Priority_Update(void* pCtx, _float fDT)
-{
-    UNREFERENCED_PARAMETER(pCtx);
-    UNREFERENCED_PARAMETER(fDT);
 }
 
 void CUI_ErenController::Update(void* pCtx, _float fDT)

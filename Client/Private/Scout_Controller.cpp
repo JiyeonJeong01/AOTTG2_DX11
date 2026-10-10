@@ -15,14 +15,6 @@ void CScout_Controller::Awake(void* pCtx)
     Enable_Object(true);
 }
 
-void CScout_Controller::Start(void* pCtx)
-{
-}
-
-void CScout_Controller::Priority_Update(void* pCtx, _float fDT)
-{
-}
-
 void CScout_Controller::Update(void* pCtx, _float fDT)
 {
     if (SYS_INPUT.Get_KeyDown(VK_F1))
@@ -33,10 +25,6 @@ void CScout_Controller::Update(void* pCtx, _float fDT)
     {
         Start_RescueDialogue();
     }
-}
-
-void CScout_Controller::Late_Update(void* pCtx, _float fDT)
-{
 }
 
 void CScout_Controller::Ready_Opening()

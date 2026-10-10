@@ -23,11 +23,6 @@ void CCinematicCamera_Director::Awake(void* pCtx)
     IF_TRUE_RETURN_MSG_BREAK(!bSuccess, , "ending load failed");
 }
 
-void CCinematicCamera_Director::Start(void* pCtx)
-{
-
-}
-
 void CCinematicCamera_Director::Priority_Update(void* pCtx, _float fDT)
 {
     SYS_CINEMATIC.Update(fDT);
@@ -39,10 +34,6 @@ void CCinematicCamera_Director::Update(void* pCtx, _float fDT)
     {
         SYS_CINEMATIC.Play("ending", m_camCinematic);
     }
-}
-
-void CCinematicCamera_Director::Late_Update(void* pCtx, _float fDT)
-{
 }
 
 NS_END;

@@ -19,23 +19,6 @@ CGameObject* CFreeCam::Find_FreeCam()
     return m_goFreeCam;
 }
 
-void CFreeCam::Awake(void* pCtx)
-{
-}
-
-void CFreeCam::Start(void* pCtx)
-{
-
-}
-
-void CFreeCam::Priority_Update(void* pCtx, _float fDT)
-{
-}
-
-void CFreeCam::Update(void* pCtx, _float fDT)
-{
-}
-
 void CFreeCam::Late_Update(void* pCtx, _float fDT)
 {
     if (nullptr == m_goFreeCam)

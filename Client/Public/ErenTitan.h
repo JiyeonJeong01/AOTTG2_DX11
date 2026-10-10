@@ -24,12 +24,10 @@ public :
     CErenTitan();
     ~CErenTitan() override;
 public:
-    void Awake(void* pCtx) override;
-    void Start(void* pCtx) override;
+    void Awake(void* pCtx);
+    void Start(void* pCtx);
 
-    void Priority_Update(void* pCtx, _float fDT) override;
-    void Update(void* pCtx, _float fDT) override;
-    void Late_Update(void* pCtx, _float fDT) override;
+    void Update(void* pCtx, _float fDT);
 
 private :
     /* ----- Utils ----- */

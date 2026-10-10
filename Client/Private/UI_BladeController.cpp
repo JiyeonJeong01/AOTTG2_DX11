@@ -5,11 +5,6 @@
 
 NS_BEGIN(Client)
 
-void CUI_BladeController::Awake(void* pCtx)
-{
-    UNREFERENCED_PARAMETER(pCtx);
-}
-
 void CUI_BladeController::Start(void* pCtx)
 {
     UNREFERENCED_PARAMETER(pCtx);
@@ -34,18 +29,6 @@ void CUI_BladeController::Start(void* pCtx)
         m_crRemain[i] = goBladeRemain->Get_Component<CCanvasRenderer>();
         IF_TRUE_RETURN_MSG_BREAK(!m_crRemain[i].Is_Valid(), , "m_crRemain[i] is invalid");
     }
-}
-
-void CUI_BladeController::Priority_Update(void* pCtx, _float fDT)
-{
-    UNREFERENCED_PARAMETER(pCtx);
-    UNREFERENCED_PARAMETER(fDT);
-}
-
-void CUI_BladeController::Update(void* pCtx, _float fDT)
-{
-    UNREFERENCED_PARAMETER(pCtx);
-    UNREFERENCED_PARAMETER(fDT);
 }
 
 void CUI_BladeController::Late_Update(void* pCtx, _float fDT)

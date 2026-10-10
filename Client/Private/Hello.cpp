@@ -9,10 +9,6 @@
 
 NS_BEGIN(Client)
 
-void CHello::Awake(void* pCtx)
-{
-}
-
 void CHello::Start(void* pCtx)
 {
     Engine::CGameObject* pObject = SYS_GAMEOBJECT.Get_Wrapper(m_hObject);
@@ -51,10 +47,6 @@ void CHello::Start(void* pCtx)
     m_mr->hPerObjectParams = m_hPerObjBlock;
 }
 
-void CHello::Priority_Update(void* pCtx, _float fDT)
-{
-}
-
 void CHello::Update(void* pCtx, _float fDT)
 {
     auto* flag = SYS_RESOURCE.Get_PerObjectParamBlock(m_hPerObjBlock);
@@ -91,10 +83,6 @@ void CHello::Update(void* pCtx, _float fDT)
     {
         flag->block.Set_Float4("g_CutFlag", { 0.f, 0.f, 0.f, 0.f });
     }
-}
-
-void CHello::Late_Update(void* pCtx, _float fDT)
-{
 }
 
 void CHello::Move(_float fDT)

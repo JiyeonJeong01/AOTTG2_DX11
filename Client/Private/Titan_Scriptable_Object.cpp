@@ -17,24 +17,6 @@ void CTitan_Scriptable_Object::Start(void* pCtx)
     Sync_To_SO();
 }
 
-void CTitan_Scriptable_Object::Priority_Update(void* pCtx, _float fDT)
-{
-    UNREFERENCED_PARAMETER(pCtx);
-    UNREFERENCED_PARAMETER(fDT);
-}
-
-void CTitan_Scriptable_Object::Update(void* pCtx, _float fDT)
-{
-    UNREFERENCED_PARAMETER(pCtx);
-    UNREFERENCED_PARAMETER(fDT);
-}
-
-void CTitan_Scriptable_Object::Late_Update(void* pCtx, _float fDT)
-{
-    UNREFERENCED_PARAMETER(pCtx);
-    UNREFERENCED_PARAMETER(fDT);
-}
-
 const TITAN_SCRIPTABLE_OBJECT& CTitan_Scriptable_Object::Get_Data() const
 {
     return m_tSO;

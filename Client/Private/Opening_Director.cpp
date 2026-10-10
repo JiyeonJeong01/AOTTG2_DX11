@@ -121,10 +121,6 @@ void COpening_Director::Start(void* pCtx)
     }
 }
 
-void COpening_Director::Priority_Update(void* pCtx, _float fDT)
-{
-}
-
 void COpening_Director::Update(void* pCtx, _float fDT)
 {
     if (!m_trBoat.Is_Valid())
@@ -152,10 +148,6 @@ void COpening_Director::Update(void* pCtx, _float fDT)
         Update_TitanBorne(fDT);
         break;
     }
-}
-
-void COpening_Director::Late_Update(void* pCtx, _float fDT)
-{
 }
 
 void COpening_Director::Enter_State(OPENING_STATE eState)

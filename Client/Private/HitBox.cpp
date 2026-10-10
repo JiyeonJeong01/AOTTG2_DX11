@@ -29,22 +29,6 @@ void CHitBox::Awake(void* pCtx)
     m_trHitBox = m_goHitBox->Get_Component<CTransform>();
 }
 
-void CHitBox::Start(void* pCtx)
-{
-}
-
-void CHitBox::Priority_Update(void* pCtx, _float fDT)
-{
-}
-
-void CHitBox::Update(void* pCtx, _float fDT)
-{
-}
-
-void CHitBox::Late_Update(void* pCtx, _float fDT)
-{
-}
-
 CGameObject* CHitBox::Get_HitBoxObject() const
 {
     return m_goHitBox;

@@ -17,23 +17,10 @@ void CUI_HitController::Awake(void* pCtx)
     Reset_KillTextPosition();
 }
 
-void CUI_HitController::Start(void* pCtx)
-{
-}
-
-void CUI_HitController::Priority_Update(void* pCtx, _float fDT)
-{
-
-}
-
 void CUI_HitController::Update(void* pCtx, _float fDT)
 {
     Update_BloodEffect(fDT);
     Update_KillTextEffect(fDT);
-}
-
-void CUI_HitController::Late_Update(void* pCtx, _float fDT)
-{
 }
 
 void CUI_HitController::On_PlayerHitTitan()

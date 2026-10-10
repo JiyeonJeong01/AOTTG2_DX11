@@ -27,14 +27,6 @@ void CCameraController::Awake(void* pCtx)
     m_fTargetPitchDegree = m_fPitchDegree;
 }
 
-void CCameraController::Start(void* pCtx)
-{
-}
-
-void CCameraController::Priority_Update(void* pCtx, _float fDT)
-{
-}
-
 void CCameraController::Update(void* pCtx, _float fDT)
 {
     /* 예외 처리 */

@@ -318,10 +318,6 @@ CODM_Gear::~CODM_Gear()
 {
 }
 
-void CODM_Gear::Awake(void* pCtx)
-{
-}
-
 void CODM_Gear::Start(void* pCtx)
 {
     Find_Owner();
@@ -333,10 +329,6 @@ void CODM_Gear::Start(void* pCtx)
 
     m_upLeftRope->Set_MaxLength(m_fRopeMaxDist);
     m_upRightRope->Set_MaxLength(m_fRopeMaxDist);
-}
-
-void CODM_Gear::Priority_Update(void* pCtx, _float fDT)
-{
 }
 
 void CODM_Gear::Update(void* pCtx, _float fDT)
@@ -416,11 +408,6 @@ void CODM_Gear::Update(void* pCtx, _float fDT)
         m_tGas.fCurrent -= fDT;
         m_tGas.fCurrent = fmaxf(m_tGas.fCurrent, 0.f);
     }
-}
-
-void CODM_Gear::Late_Update(void* pCtx, _float fDT)
-{
-
 }
 
 

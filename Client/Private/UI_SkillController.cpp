@@ -92,10 +92,6 @@ void CUI_SkillController::Start(void* pCtx)
     Refresh_AllCoolDownUI();
 }
 
-void CUI_SkillController::Priority_Update(void* pCtx, _float fDT)
-{
-}
-
 void CUI_SkillController::Update(void* pCtx, _float fDT)
 {
     if (SYS_INPUT.Get_KeyDown('I'))

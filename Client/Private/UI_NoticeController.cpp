@@ -30,24 +30,12 @@ void CUI_NoticeController::Awake(void* pCtx)
     m_bPlaying = false;
 }
 
-void CUI_NoticeController::Start(void* pCtx)
-{
-}
-
-void CUI_NoticeController::Priority_Update(void* pCtx, _float fDT)
-{
-}
-
 void CUI_NoticeController::Update(void* pCtx, _float fDT)
 {
     if (!m_bPlaying)
         return;
 
     Update_NoticeState(fDT);
-}
-
-void CUI_NoticeController::Late_Update(void* pCtx, _float fDT)
-{
 }
 
 void CUI_NoticeController::Show_Notice(NOTICE_TYPE eType, _float fDelayTime)

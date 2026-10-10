@@ -86,18 +86,6 @@ void CErenSequenceDirector::Start(void* pCtx)
         __debugbreak();
 }
 
-void CErenSequenceDirector::Priority_Update(void* pCtx, _float fDT)
-{
-    IScript::Priority_Update(pCtx, fDT);
-}
-
-void CErenSequenceDirector::Late_Update(void* pCtx, _float fDT)
-{
-    IScript::Late_Update(pCtx, fDT);
-
-
-}
-
 void CErenSequenceDirector::Update(void* pCtx, _float fDT)
 {
     UNREFERENCED_PARAMETER(pCtx);

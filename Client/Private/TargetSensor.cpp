@@ -39,11 +39,6 @@ void CTargetSensor::Awake(void* pCtx)
 
 }
 
-void CTargetSensor::Start(void* pCtx)
-{
-    IScript::Start(pCtx);
-}
-
 void CTargetSensor::Priority_Update(void* pCtx, _float fDT)
 {
     /* 수동 업데이트 필요 */
@@ -56,16 +51,6 @@ void CTargetSensor::Priority_Update(void* pCtx, _float fDT)
     }
 
     m_tDisplacement = Detect_Target(m_goTarget);
-}
-
-void CTargetSensor::Update(void* pCtx, _float fDT)
-{
-    IScript::Update(pCtx, fDT);
-}
-
-void CTargetSensor::Late_Update(void* pCtx, _float fDT)
-{
-    IScript::Late_Update(pCtx, fDT);
 }
 
 void CTargetSensor::Set_Target(Engine::CGameObject* goTarget)

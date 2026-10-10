@@ -18,11 +18,11 @@ void CCreate_Asset_Helper::Build_Script_Source(const std::string& className,
     outHeader += "class " + className + " : public IScript\n";
     outHeader += "{\n";
     outHeader += "public:\n";
-    outHeader += "    void Awake(void* pCtx) override;\n";
-    outHeader += "    void Start(void* pCtx) override;\n\n";
-    outHeader += "    void Priority_Update(void* pCtx, _float fDT) override;\n";
-    outHeader += "    void Update(void* pCtx, _float fDT) override;\n";
-    outHeader += "    void Late_Update(void* pCtx, _float fDT) override;\n";
+    outHeader += "    void Awake(void* pCtx);\n";
+    outHeader += "    void Start(void* pCtx);\n\n";
+    outHeader += "    void Priority_Update(void* pCtx, _float fDT);\n";
+    outHeader += "    void Update(void* pCtx, _float fDT);\n";
+    outHeader += "    void Late_Update(void* pCtx, _float fDT);\n";
     outHeader += "};\n\n";
     outHeader += "NS_END;\n";
 

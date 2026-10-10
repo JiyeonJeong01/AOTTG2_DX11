@@ -22,12 +22,10 @@ private :
     CUI_ErenController*     m_pErenUI = nullptr;
 
 public:
-    void Awake(void* pCtx) override;
-    void Start(void* pCtx) override;
+    void Start(void* pCtx);
 
-    void Priority_Update(void* pCtx, _float fDT) override;
-    void Update(void* pCtx, _float fDT) override;
-    void Late_Update(void* pCtx, _float fDT) override;
+    void Priority_Update(void* pCtx, _float fDT);
+    void Late_Update(void* pCtx, _float fDT);
 
     void Enable_HUD(_bool bEnable);
 

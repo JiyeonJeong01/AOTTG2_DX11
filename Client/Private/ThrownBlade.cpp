@@ -1,10 +1,5 @@
 ﻿#include "ThrownBlade.h"
 
-void CThrownBlade::Awake(void* pCtx)
-{
-    
-}
-
 void CThrownBlade::Start(void* pCtx)
 {
     m_pThrownBlade = GAME_INSTANCE.Find_GameObject(m_hObject);
@@ -14,16 +9,6 @@ void CThrownBlade::Start(void* pCtx)
 
     CCollider cldr = m_pThrownBlade->Get_Component<CCollider>();
     cldr->OnTriggerEnter.Add_Listener(&CThrownBlade::On_TriggerEnter, this);
-}
-
-void CThrownBlade::Priority_Update(void* pCtx, _float fDT)
-{
-
-}
-
-void CThrownBlade::Update(void* pCtx, _float fDT)
-{
-
 }
 
 void CThrownBlade::Late_Update(void* pCtx, _float fDT)

@@ -4,10 +4,6 @@
 
 NS_BEGIN(Client)
 
-void CUI_GasController::Awake(void* pCtx)
-{
-}
-
 void CUI_GasController::Start(void* pCtx)
 {
     CGameObject* goLeftGasFill = GAME_INSTANCE.Find_GameObject(m_refLeftGasFill.hObject);
@@ -21,14 +17,6 @@ void CUI_GasController::Start(void* pCtx)
     IF_TRUE_RETURN_MSG_BREAK(!m_crRightGasFill.Is_Valid(), , "m_crRightGasFill is invalid");
 
     m_fLeftCurSizePx = m_fRightCurSizePx = m_fTotalSizePx; /* 184.f */ 
-}
-
-void CUI_GasController::Priority_Update(void* pCtx, _float fDT)
-{
-}
-
-void CUI_GasController::Update(void* pCtx, _float fDT)
-{
 }
 
 void CUI_GasController::Late_Update(void* pCtx, _float fDT)

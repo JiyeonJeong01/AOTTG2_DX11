@@ -8,12 +8,10 @@ NS_BEGIN(Client)
 class CCinematicCamera_Director : public IScript
 {
 public:
-    void Awake(void* pCtx) override;
-    void Start(void* pCtx) override;
+    void Awake(void* pCtx);
 
-    void Priority_Update(void* pCtx, _float fDT) override;
-    void Update(void* pCtx, _float fDT) override;
-    void Late_Update(void* pCtx, _float fDT) override;
+    void Priority_Update(void* pCtx, _float fDT);
+    void Update(void* pCtx, _float fDT);
 
 private :
     CCamera m_camCinematic{};

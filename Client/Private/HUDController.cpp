@@ -11,11 +11,6 @@
 
 NS_BEGIN(Client)
 
-void CHUDController::Awake(void* pCtx)
-{
-
-}
-
 void CHUDController::Start(void* pCtx)
 {
     CGameObject* pOwner = GAME_INSTANCE.Find_GameObject(m_hObject);
@@ -69,10 +64,6 @@ void CHUDController::Priority_Update(void* pCtx, _float fDT)
 
         m_bInitialized = true;
     }
-}
-
-void CHUDController::Update(void* pCtx, _float fDT)
-{
 }
 
 void CHUDController::Late_Update(void* pCtx, _float fDT)

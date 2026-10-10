@@ -116,11 +116,6 @@ void CErenTitan::Start(void* pCtx)
     IF_NULL_RETURN_MSG_BREAK(m_pVFX_Manager, , "m_pVFX_Manager is nullptr");
 }
 
-void CErenTitan::Priority_Update(void* pCtx, _float fDT)
-{
-
-}
-
 void CErenTitan::Update(void* pCtx, _float fDT)
 {
     Update_FootDust();
@@ -156,10 +151,6 @@ void CErenTitan::Update(void* pCtx, _float fDT)
     }
 
 
-}
-
-void CErenTitan::Late_Update(void* pCtx, _float fDT)
-{
 }
 
 void CErenTitan::Move_To(_fvector vDir, _float fDT, _float fSpeed)

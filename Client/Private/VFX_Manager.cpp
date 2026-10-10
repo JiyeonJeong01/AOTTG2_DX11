@@ -170,10 +170,6 @@ void CVFX_Manager::Start(void* pCtx)
     Disable_Pool(m_vecHit05Pool);
 }
 
-void CVFX_Manager::Priority_Update(void* pCtx, _float fDT)
-{
-}
-
 void CVFX_Manager::Update(void* pCtx, _float fDT)
 {
     Update_PoolFinished(m_vecHit01Pool);
@@ -185,10 +181,6 @@ void CVFX_Manager::Update(void* pCtx, _float fDT)
     Update_PoolFinished(m_vecSlideSparkPool);
     Update_PoolFinished(m_vecFootDustPool);
     Update_PoolFinished(m_vecSignalFlarePool);
-}
-
-void CVFX_Manager::Late_Update(void* pCtx, _float fDT)
-{
 }
 
 void CVFX_Manager::Cache_Object(SCRIPT_OBJECT_REF& refObj, std::vector<VFX_OBJECT>& vecPool)

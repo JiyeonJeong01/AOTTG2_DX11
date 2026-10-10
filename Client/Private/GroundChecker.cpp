@@ -34,20 +34,6 @@ void CGroundChecker::Awake(void* pCtx)
     m_colChecker->OnTriggerExit.Add_Listener(&CGroundChecker::OnTriggerExit, this);
 }
 
-void CGroundChecker::Start(void* pCtx)
-{
-}
-
-void CGroundChecker::Priority_Update(void* pCtx, _float fDT)
-{
-
-}
-
-void CGroundChecker::Update(void* pCtx, _float fDT)
-{
-
-}
-
 void CGroundChecker::Late_Update(void* pCtx, _float fDT)
 {
     /* transform 동기화 */

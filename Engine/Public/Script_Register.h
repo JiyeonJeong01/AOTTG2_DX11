@@ -55,12 +55,17 @@ void Fill_VTable_Default(SCRIPT_VTABLE& vt)
     vt.Create = &Script_Create<TScript>;
     vt.Destroy = &Script_Destroy<TScript>;
 
-    vt.Awake = &Script_Awake<TScript>;
-    vt.Start = &Script_Start<TScript>;
+    if constexpr (requires(TScript& s, void* pCtx) { s.Awake(pCtx); })
+        vt.Awake = &Script_Awake<TScript>;
+    if constexpr (requires(TScript& s, void* pCtx) { s.Start(pCtx); })
+        vt.Start = &Script_Start<TScript>;
 
-    vt.Tick[SCAST(uint8_t, SCRIPT_TICK::PRIORITY)] = &Script_Tick_Priority<TScript>;
-    vt.Tick[SCAST(uint8_t, SCRIPT_TICK::UPDATE)] = &Script_Tick_Update<TScript>;
-    vt.Tick[SCAST(uint8_t, SCRIPT_TICK::LATE)] = &Script_Tick_Late<TScript>;
+    if constexpr (requires(TScript& s, SCRIPT_CTX* c, _float dt) { s.Priority_Update(c, dt); })
+        vt.Tick[SCAST(uint8_t, SCRIPT_TICK::PRIORITY)] = &Script_Tick_Priority<TScript>;
+    if constexpr (requires(TScript& s, SCRIPT_CTX* c, _float dt) { s.Update(c, dt); })
+        vt.Tick[SCAST(uint8_t, SCRIPT_TICK::UPDATE)] = &Script_Tick_Update<TScript>;
+    if constexpr (requires(TScript& s, SCRIPT_CTX* c, _float dt) { s.Late_Update(c, dt); })
+        vt.Tick[SCAST(uint8_t, SCRIPT_TICK::LATE)] = &Script_Tick_Late<TScript>;
 }
 
 template <typename TScript>

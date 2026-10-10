@@ -68,13 +68,6 @@ class ENGINE_DLL IScript
 public:
     virtual ~IScript() = default;
 
-    virtual void Awake(void* pCtx) { (void)pCtx; }
-    virtual void Start(void* pCtx) { (void)pCtx; }
-
-    virtual void Priority_Update(void* pCtx, _float fDT) { (void)pCtx; (void)fDT; }
-    virtual void Update(void* pCtx, _float fDT) { (void)pCtx; (void)fDT; }
-    virtual void Late_Update(void* pCtx, _float fDT) { (void)pCtx; (void)fDT; }
-
 public :
     virtual const SCRIPT_REFLECTION_INFO* Get_Reflection_Info() const
     {

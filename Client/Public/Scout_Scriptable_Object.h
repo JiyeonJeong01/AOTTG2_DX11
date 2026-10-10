@@ -10,11 +10,6 @@ public:
     ~CScout_Scriptable_Object() override;
 
 public:
-    void Awake(void* pCtx) override;
-    void Start(void* pCtx) override;
-    void Priority_Update(void* pCtx, _float fDT) override;
-    void Update(void* pCtx, _float fDT) override;
-    void Late_Update(void* pCtx, _float fDT) override;
 
 public:
     SCOUT_BEHAVIOR Get_Behavior() const;

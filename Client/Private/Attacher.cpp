@@ -27,23 +27,6 @@ void CAttacher::Awake(void* pCtx)
     Register_Attach(m_tAttachObject);
 }
 
-void CAttacher::Start(void* pCtx)
-{
-    UNREFERENCED_PARAMETER(pCtx);
-}
-
-void CAttacher::Priority_Update(void* pCtx, _float fDT)
-{
-    UNREFERENCED_PARAMETER(pCtx);
-    UNREFERENCED_PARAMETER(fDT);
-}
-
-void CAttacher::Update(void* pCtx, _float fDT)
-{
-    UNREFERENCED_PARAMETER(pCtx);
-    UNREFERENCED_PARAMETER(fDT);
-}
-
 void CAttacher::Late_Update(void* pCtx, _float fDT)
 {
     UNREFERENCED_PARAMETER(pCtx);

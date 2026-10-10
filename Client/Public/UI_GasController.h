@@ -11,12 +11,9 @@ NS_BEGIN(Client)
 class CUI_GasController : public IScript
 {
 public:
-    void Awake(void* pCtx) override;
-    void Start(void* pCtx) override;
+    void Start(void* pCtx);
 
-    void Priority_Update(void* pCtx, _float fDT) override;
-    void Update(void* pCtx, _float fDT) override;
-    void Late_Update(void* pCtx, _float fDT) override;
+    void Late_Update(void* pCtx, _float fDT);
 
 public :
     void Bind_PlayerContext(const PLAYER_CONTEXT& tContext);
