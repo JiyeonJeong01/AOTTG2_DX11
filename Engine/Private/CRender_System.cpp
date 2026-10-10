@@ -127,6 +127,11 @@ void CRender_System::Priority_Update()
 {
     bSubmittedThisFrame = false;
 
+    /* 갱신 중 제출되는 라인 메시(로프 · 트레일)와 스피드라인은 다음 갱신이 시작될 때 비운다.
+       그리기 직후 비우면, 갱신 없이 그리기만 반복하는 프레임(Uncap Render)에서 깜빡인다. */
+    m_PendingDrawCmds.clear();
+    m_tPendingSpeedLine = {};
+
     m_upRenderContext->Update();
 
     m_matView = m_upRenderContext->Get_View();
@@ -419,7 +424,7 @@ void CRender_System::Execute_RenderQueue()
         Execute_Pass(RENDER_LAYER::UI);
     }
 
-    m_PendingDrawCmds.clear();
+    /* m_PendingDrawCmds는 여기서 지우지 않는다: 갱신 1회에 그리기가 여러 번일 수 있음 (Priority_Update에서 지움) */
 }
 
 void CRender_System::Render_GBuffer()
@@ -756,7 +761,6 @@ void CRender_System::Render_SpeedLinePass()
     pRectMesh->Draw(m_pContext);
 
     Unbind_PS_SRVs();
-    m_tPendingSpeedLine = {};
 }
 
 
