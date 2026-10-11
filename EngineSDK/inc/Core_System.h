@@ -96,14 +96,18 @@ private:
     const _float                m_FIXED_DT = 0.02f;
     _bool                       m_bRestartSceneRequested = false;
 
-    /* 물리 고정 시간 루프. 게임 갱신이 60Hz라 1/60이면 보통 프레임당 1스텝 (보간 없이도 끊김 없음)
-     * ponytail: 렌더 보간 없음. 갱신 주기와 스텝이 어긋나면 보간(이전·현재 Transform 블렌드)을 추가할 것 */
+    /* 물리 고정 시간 루프. 게임 갱신이 60Hz라 1/60이면 프레임당 1스텝
+     * ponytail: 렌더 보간 없음. 갱신 주기가 60Hz가 아니면 보간(이전·현재 Transform 블렌드)을 추가할 것 */
     static constexpr _float     FIXED_STEP = 1.f / 60.f;
+    /* 메인 루프가 이미 60Hz로 틱하므로, 틱 하나(±반 스텝)는 정확히 물리 1스텝으로 본다.
+     * 2스텝 이상은 프레임이 실제로 밀렸을 때(1.5 스텝 이상)만 돈다 */
+    static constexpr _float     FIXED_STEP_SNAP = FIXED_STEP * 0.5f;
     static constexpr _uint      MAX_FIXED_STEPS = 5;
     _float                      m_fFixedAcc = 0.f;
 
 private :
     void        Update_RuntimeEngine(_float fDT, CScene* pScene);
+    _float      Clamp_FrameDT(_float fDT) const;
     void        Process_RestartSceneRequest();
 
 public :

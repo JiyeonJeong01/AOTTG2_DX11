@@ -88,10 +88,10 @@ const PLAYER_INPUT_COMMAND& CPlayer_InputController::Update_InputCommand()
     if (SYS_INPUT.Get_Key(VK_SPACE))
         m_tInputCommand.bRopeReelHeld = true;
 
-    //if (SYS_INPUT.Get_KeyDown(VK_LBUTTON))
-    //    m_tInputCommand.bNormalAttackPressed = true;
-    //if (SYS_INPUT.Get_KeyDown(VK_RBUTTON))
-    //    m_tInputCommand.bStrongAttackPressed = true;
+    if (SYS_INPUT.Get_KeyDown(VK_LBUTTON))
+        m_tInputCommand.bNormalAttackPressed = true;
+    if (SYS_INPUT.Get_KeyDown(VK_RBUTTON))
+        m_tInputCommand.bStrongAttackPressed = true;
 
     if (SYS_INPUT.Get_KeyDown('F'))
         m_tInputCommand.bInteract = true;

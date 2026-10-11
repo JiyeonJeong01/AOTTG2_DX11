@@ -22,24 +22,6 @@ void CODM_Gear::Handle_RopeState(CRope::ROPE_STATE eState, SIDE eSide)
         SYS_SOUND.PlayForceSFX(L"ODMGear_Anchored", CHANNEL_5, 0.8f);
         SYS_SOUND.PlayLoopSFX(L"ODMGear_Gas_Loop", CHANNEL_6, 1.f);
 
-        _vector vDiff = XMLoadFloat3(&m_vAnchor) - m_tr.Get_StateXM(STATE::POSITION);
-        _float3 vDir;
-        XMStoreFloat3(&vDir, XMVector3Normalize(vDiff));
-
-        {
-            _float3 vLinearVel = m_rb->vLinearVel;
-            _vector vLinearVelXM = XMLoadFloat3(&vLinearVel);
-
-            const _float fToward = XMVectorGetX(XMVector3Dot(vLinearVelXM, XMVector3Normalize(vDiff)));
-
-            if (fToward < 0.f)
-            {
-                _vector vAnchorDir = XMVector3Normalize(vDiff);
-                vLinearVelXM = vLinearVelXM - vAnchorDir * (fToward * 0.9f);
-                XMStoreFloat3(&m_rb->vLinearVel, vLinearVelXM);
-            }
-        }
-
         m_sj.Set_Enable(true);
         m_sj.Set_Anchor(m_vAnchor);
         m_sj.Set_UseSpring(true);
@@ -277,8 +259,7 @@ void CODM_Gear::Set_ReelBoost(_bool bEnable)
     if (m_flagUsingSide == 0)
         return;
 
-    m_sj.Set_UseSpring(true);
-
+    /* 스프링은 로프가 꽂힐 때(ANCHORED) 켠다. 날아가는 중에 켜면 이전 앵커로 당겨진다 */
     if (m_bReelBoost)
     {
         m_sj.Set_Spring(m_fForceSpringReel);

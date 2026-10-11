@@ -125,6 +125,8 @@ HRESULT CCore_System::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11Dev
 
 void CCore_System::Update_Editor_Engine(_float fDT)
 {
+    fDT = Clamp_FrameDT(fDT);
+
     CScene* pScene = m_pScene_Handler->Get_CurrentScene();
     if (!pScene) return;
 
@@ -150,6 +152,8 @@ void CCore_System::Update_Editor_Engine(_float fDT)
 
 void CCore_System::Update_Game_Engine(_float fDT)
 {
+    fDT = Clamp_FrameDT(fDT);
+
     CScene* pScene = nullptr;
     //CScene* pScene = m_pScene_Handler->Get_CurrentScene();
     //if (!pScene) return;
@@ -161,12 +165,26 @@ void CCore_System::Update_Game_Engine(_float fDT)
     Fixed_Update(fDT);
 }
 
+_float CCore_System::Clamp_FrameDT(_float fDT) const
+{
+    /* 브레이크포인트 · 로딩으로 한 프레임이 길어져도, 갱신과 물리가 같은 시간(최대 MAX_FIXED_STEPS 스텝)만 진행하도록 자른다.
+     * 안 자르면 물리는 5스텝만 도는데 스크립트 · 애니메이션은 몇 초를 한 번에 진행해 서로 어긋난다 */
+    return (std::min)(fDT, FIXED_STEP * MAX_FIXED_STEPS);
+}
+
 void CCore_System::Fixed_Update(_float fDT)
 {
     PROFILE_CPU("Physics::FixedUpdate");
 
     /* 고정 시간 루프 : 실제 경과 시간을 누적해 FIXED_STEP 단위로만 물리를 진행한다.
      * 프레임이 느려져도 물리 시간은 실제 시간과 같게 흐르고, 한 스텝의 dt는 항상 같다. */
+
+    /* 메인 루프의 60Hz 틱은 fTimeAcc를 0으로 리셋해 매 틱이 1/60보다 조금씩 길고, Present 대기에 따라 흔들린다.
+     * 그 차이가 물리 누산기에 쌓이면 가끔 0스텝 → 2스텝 프레임이 생기고 화면에서 한 틱 끊긴다.
+     * 그래서 틱 하나(1/60 ± 반 스텝)는 정확히 한 스텝으로 본다 */
+    if (fabsf(fDT - FIXED_STEP) < FIXED_STEP_SNAP)
+        fDT = FIXED_STEP;
+
     m_fFixedAcc += fDT;
 
     _uint iSteps = 0;
