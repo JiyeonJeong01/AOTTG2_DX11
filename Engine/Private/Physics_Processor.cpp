@@ -252,8 +252,9 @@ void CPhysics_Processor::Process_SpringJoints(_float fDT)
             /* 앵커 방향 축에서의 속도 성분 */
             const _float fV = XMVectorGetX(XMVector3Dot(vLinearVel, vN));
 
-            /* F = -k x - c v */
-            const _float fForceMag = (-pData->fSpring * fX) - (pData->fDamper * fV);
+            /* F = -k x - c v
+             * 로프는 당기기만 한다 : 앵커로 빠르게 다가가면 감쇠 항이 스프링보다 커져 밀어내는 힘이 되므로 0에서 자른다 */
+            const _float fForceMag = (std::min)(0.f, (-pData->fSpring * fX) - (pData->fDamper * fV));
             _vector vForce = vN * fForceMag;
 
             _float3 vForce3{};
