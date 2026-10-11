@@ -99,7 +99,7 @@ public :
         return Event.Add_Listener(pFunc, pObj);
     }
 
-    /* 이벤트 콜백 안에서 호출하지 않는다. (Invoke 순회 중 삭제) */
+    /* 이벤트 콜백 안에서 호출해도 안전하다 (CEvent가 순회가 끝난 뒤 지운다) */
     void Unsubscribe_CinematicEvent(const std::string& strClipName, CINEMATIC_EVENT_TYPE eType, ListenerID iID);
 
 public:

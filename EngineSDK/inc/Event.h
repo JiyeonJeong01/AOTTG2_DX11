@@ -43,23 +43,47 @@ public:
     void Remove_Listener(ListenerID iID)
     {
         auto it = m_listeners.find(iID);
-        if (it != m_listeners.end())
+        if (it == m_listeners.end())
+            return;
+
+        /* Invoke 순회 중(콜백 안에서 해제)에는 지우지 않고 비워만 둔다. 순회가 끝나면 한꺼번에 지운다 */
+        if (m_iInvokeDepth > 0)
         {
-            m_listeners.erase(it);
+            it->second = nullptr;
+            m_bPendingErase = true;
+            return;
         }
+
+        m_listeners.erase(it);
     }
 
     void Invoke(Args... args)
     {
+        ++m_iInvokeDepth;
         for (auto const& [id, handler] : m_listeners)
         {
             if (handler)
                 handler(args...);
         }
+        --m_iInvokeDepth;
+
+        if (m_iInvokeDepth == 0 && m_bPendingErase)
+        {
+            std::erase_if(m_listeners, [](const auto& pair) { return !pair.second; });
+            m_bPendingErase = false;
+        }
     }
 
     void Clear()
     {
+        if (m_iInvokeDepth > 0)
+        {
+            for (auto& [id, handler] : m_listeners)
+                handler = nullptr;
+            m_bPendingErase = true;
+            return;
+        }
+
         m_listeners.clear();
     }
 
@@ -71,6 +95,9 @@ public:
 private:
     std::map<ListenerID, Listener> m_listeners;
     ListenerID m_iNextID = 0;
+
+    uint32_t m_iInvokeDepth = 0;    /* 콜백 안에서 다시 Invoke할 수 있어 깊이로 센다 */
+    bool     m_bPendingErase = false;
 };
 
 NS_END
