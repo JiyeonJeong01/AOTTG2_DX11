@@ -32,15 +32,11 @@ typedef struct ENGINE_DLL tagUITextData
 
 } UI_TEXT_DATA;
 
-class ENGINE_DLL CUIText final : public CComponent_Proxy_Base<UI_TEXT_DATA, CUIText, COMPONENT_TYPE::UI_TEXT>
+class ENGINE_DLL CUIText final : public CComponent_Proxy_Base<UI_TEXT_DATA, COMPONENT_TYPE::UI_TEXT>
 {
-public:
-    using ProcessorType = CUI_Processor;
-
 public:
     CUIText() : CComponent_Proxy_Base() {}
     CUIText(DataType* pData, COMPONENT_HANDLE handle) : CComponent_Proxy_Base(pData, handle) {}
-    ~CUIText() override = default;
 
 public:
     void Set_CanvasRenderer(COMPONENT_HANDLE hCanvas);

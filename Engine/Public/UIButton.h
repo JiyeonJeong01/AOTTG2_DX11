@@ -38,17 +38,13 @@ typedef ENGINE_DLL struct tagUIButtonData
 
 } UI_BUTTON_DATA;
 
-class ENGINE_DLL CUIButton final : public CComponent_Proxy_Base<UI_BUTTON_DATA, CUIButton, COMPONENT_TYPE::UI_BUTTON>
+class ENGINE_DLL CUIButton final : public CComponent_Proxy_Base<UI_BUTTON_DATA, COMPONENT_TYPE::UI_BUTTON>
 {
-public:
-    using ProcessorType = CUI_Processor;
-
 public:
     CUIButton() : CComponent_Proxy_Base() {}
     CUIButton(DataType* pData, COMPONENT_HANDLE handle)
         : CComponent_Proxy_Base(pData, handle) {
     }
-    ~CUIButton() override = default;
 
     void Set_TargetCanvas(COMPONENT_HANDLE hCanvas);
     void Set_RectTransform(COMPONENT_HANDLE hRectTransform);

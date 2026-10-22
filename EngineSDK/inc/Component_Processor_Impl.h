@@ -7,7 +7,7 @@ template<typename TProxy, COMPONENT_TYPE KType, uint32_t PageSize>
 class CComponent_Processor_Impl : public CComponent_Processor
 {
 	/* Ensure that the TProxy type is derived from CComponent_Proxy_Base  at compile-time! */
-	static_assert(std::is_base_of_v<CComponent_Proxy_Base<typename TProxy::DataType, TProxy, TProxy::ComponentType>, TProxy>,
+	static_assert(std::is_base_of_v<CComponent_Proxy_Base<typename TProxy::DataType, TProxy::ComponentType>, TProxy>,
 		"Error: TProxy must inherit from CComponent_Proxy_Base!");
 
 public:

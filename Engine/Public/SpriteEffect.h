@@ -38,12 +38,11 @@ typedef struct ENGINE_DLL tagSpriteEffectData final
 
 
 class ENGINE_DLL CSpriteEffect final
-: public CComponent_Proxy_Base<SPRITE_EFFECT_DATA, CSpriteEffect, COMPONENT_TYPE::SPRITE_EFFECT>
+: public CComponent_Proxy_Base<SPRITE_EFFECT_DATA, COMPONENT_TYPE::SPRITE_EFFECT>
 {
 public:
     CSpriteEffect();
     CSpriteEffect(DataType* pData, COMPONENT_HANDLE hComponent);
-    virtual ~CSpriteEffect() override = default;
 
 
 public:

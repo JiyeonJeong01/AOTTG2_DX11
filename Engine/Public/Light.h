@@ -26,12 +26,11 @@ typedef struct ENGINE_DLL tagLightData
     _bool     dirty = true;
 } LIGHT_DATA;
 
-class ENGINE_DLL CLight final : public CComponent_Proxy_Base<LIGHT_DATA, CLight, COMPONENT_TYPE::LIGHT>
+class ENGINE_DLL CLight final : public CComponent_Proxy_Base<LIGHT_DATA, COMPONENT_TYPE::LIGHT>
 {
 public:
     CLight() : CComponent_Proxy_Base() {}
     CLight(DataType* pData, COMPONENT_HANDLE handle) : CComponent_Proxy_Base(pData, handle) {}
-    ~CLight() override = default;
 
 public:
     void Set_Enabled(_bool bEnable);

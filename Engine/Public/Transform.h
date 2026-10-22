@@ -22,12 +22,11 @@ typedef struct ENGINE_DLL tagTransformData final
 
 class CTransform_Processor;
 
-class ENGINE_DLL CTransform final : public CComponent_Proxy_Base<TRANSFORM_DATA, CTransform, COMPONENT_TYPE::TRANSFORM>
+class ENGINE_DLL CTransform final : public CComponent_Proxy_Base<TRANSFORM_DATA, COMPONENT_TYPE::TRANSFORM>
 {
 public:
     CTransform() : CComponent_Proxy_Base() { }
     CTransform(DataType* pData, COMPONENT_HANDLE handle)  : CComponent_Proxy_Base(pData, handle) { }
-    ~CTransform() override = default;
 
 public :
     void                Translate(_fvector vWorldDir, SPACE eSpace = SPACE::LOCAL);

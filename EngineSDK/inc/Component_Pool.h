@@ -12,6 +12,8 @@ public:
 
     /* Memory Layout Constants for Paging System */
     static constexpr uint32_t PageSize_Value = PageSize;
+
+private:
     static constexpr uint32_t PAGE_SIZE = PageSize_Value;
     static constexpr uint32_t PAGE_OFFSET_MASK = PAGE_SIZE - 1; /* % */
     static constexpr uint32_t BITSET_WIDTH = 64;
@@ -25,13 +27,11 @@ private:
             ++shift;
         return shift;
     }
-
-public:
     static constexpr uint32_t PAGE_SHIFT = Calculate_PageShift(PAGE_SIZE);
-
+public:
     /* Ensure that the TProxy type is derived from CComponent_Proxy_Base at compile-time */
     static_assert(
-        std::is_base_of_v<CComponent_Proxy_Base<typename TProxy::DataType, TProxy, TProxy::ComponentType>, TProxy>,
+        std::is_base_of_v<CComponent_Proxy_Base<typename TProxy::DataType, TProxy::ComponentType>, TProxy>,
         "Error: TProxy must inherit from CComponent_Proxy_Base!");
 
     /* Alias for the raw data type managed by this pool */
@@ -71,14 +71,14 @@ public:
         }
     };
 
-    static_assert((PAGE_SIZE& (PAGE_SIZE - 1)) == 0, "PAGE_SIZE must be a power of two.");
+    static_assert((PAGE_SIZE & (PAGE_SIZE - 1)) == 0, "PAGE_SIZE must be a power of two.");
     static_assert((1u << PAGE_SHIFT) == PAGE_SIZE, "PAGE_SHIFT must match PAGE_SIZE.");
 
     CComponent_Pool() = default;
     CComponent_Pool(const CComponent_Pool&) = delete;
     CComponent_Pool& operator=(const CComponent_Pool&) = delete;
-    CComponent_Pool(CComponent_Pool&&) noexcept = default;
-    CComponent_Pool& operator=(CComponent_Pool&&) noexcept = default;
+    CComponent_Pool(CComponent_Pool&&) = delete;
+    CComponent_Pool& operator=(CComponent_Pool&&) = delete;
 
     ~CComponent_Pool()
 	{
@@ -107,8 +107,8 @@ public:
 
         if (!m_freeIndices.empty()) 
         {
-            iGlobalIndex = m_freeIndices.back();
-            m_freeIndices.pop_back();
+            iGlobalIndex = m_freeIndices.front();
+            m_freeIndices.pop_front();
         }
         else 
         {
@@ -165,7 +165,8 @@ public:
         /* Invalidate handle */
         pPage->iVersion[iOffset]++;
         pPage->Set_Deallocated(iOffset);
-        m_freeIndices.push_back(iIndex);
+        if (pPage->iVersion[iOffset] <= Component::MAX_VERSION) /* 버전을 다 쓴 칸은 재사용하지 않음 */
+            m_freeIndices.push_back(iIndex);
     }
 
     /**
@@ -202,11 +203,6 @@ public:
         return m_pages;
     }
 
-    static constexpr uint32_t Get_PageSize()
-    {
-        return PageSize_Value;
-    }
-
 public :
     template <typename TProc>
     ListenerID Subscribe_OnDeallocate(void(TProc::*func)(COMPONENT_HANDLE, DATA_T*), TProc* pProc)
@@ -216,7 +212,7 @@ public :
 
 private:
     std::vector<std::unique_ptr<PAGE>> m_pages{};
-    std::vector<uint32_t>    m_freeIndices{};
+    std::deque<uint32_t>    m_freeIndices{};
     uint32_t            m_iNextIndex = 1; /* 0 is invalid handle */
 
     CEvent<COMPONENT_HANDLE, DATA_T*>     m_OnDeallocate{};

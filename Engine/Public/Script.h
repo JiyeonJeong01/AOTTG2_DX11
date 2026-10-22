@@ -54,12 +54,11 @@ typedef struct tagScriptData
     uint8_t         pad[3] = {};
 } SCRIPT_DATA;
 
-class ENGINE_DLL CScript : public CComponent_Proxy_Base<SCRIPT_DATA, CScript, COMPONENT_TYPE::SCRIPT>
+class ENGINE_DLL CScript : public CComponent_Proxy_Base<SCRIPT_DATA, COMPONENT_TYPE::SCRIPT>
 {
 public:
     CScript() : CComponent_Proxy_Base() {}
     CScript(DataType* pData, COMPONENT_HANDLE handle) : CComponent_Proxy_Base(pData, handle) {}
-    ~CScript() override = default;
 };
 
 

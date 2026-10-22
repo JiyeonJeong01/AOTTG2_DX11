@@ -71,14 +71,13 @@ typedef struct ENGINE_DLL tagColliderData final
 
 } COLLIDER_DATA;
 
-class ENGINE_DLL CCollider final : public CComponent_Proxy_Base<COLLIDER_DATA, CCollider, COMPONENT_TYPE::COLLIDER>
+class ENGINE_DLL CCollider final : public CComponent_Proxy_Base<COLLIDER_DATA, COMPONENT_TYPE::COLLIDER>
 {
 public:
     CCollider() : CComponent_Proxy_Base() {}
     CCollider(DataType* pData, COMPONENT_HANDLE handle)
         : CComponent_Proxy_Base(pData, handle) {
     }
-    ~CCollider() override = default;
 
 public:
     _bool Get_OnCol() const;

@@ -30,12 +30,11 @@ typedef struct ENGINE_DLL tagCanvasRendererData final
 } CANVAS_RENDERER_DATA;
 
 class ENGINE_DLL CCanvasRenderer final
-    : public CComponent_Proxy_Base<CANVAS_RENDERER_DATA, CCanvasRenderer, COMPONENT_TYPE::CANVAS_RENDERER>
+    : public CComponent_Proxy_Base<CANVAS_RENDERER_DATA, COMPONENT_TYPE::CANVAS_RENDERER>
 {
 public:
     CCanvasRenderer();
     CCanvasRenderer(DataType* pData, COMPONENT_HANDLE handle);
-    virtual ~CCanvasRenderer() override = default;
 
 public:
     // Settings

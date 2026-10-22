@@ -215,7 +215,7 @@ void CPhysics_Processor::Process_SpringJoints(_float fDT)
             if (!pData || !pData->bEnable || !pData->bUseSpring)
                 continue;
             CRigidbody rigidbody = m_RigidbodyPool.Get_Proxy(pData->hRigidbody);
-            if (!rigidbody.Is_Valid())
+            if (!rigidbody._Data())
                 continue;
             if (false == rigidbody->bEnable|| rigidbody->eBodyType != BODY_TYPE::DYNAMIC)
                 continue;

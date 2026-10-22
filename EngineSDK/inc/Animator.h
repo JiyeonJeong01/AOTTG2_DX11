@@ -39,14 +39,13 @@ typedef struct ENGINE_DLL tagAnimatorData
 
 } ANIMATOR_DATA;
 
-class ENGINE_DLL CAnimator :  public CComponent_Proxy_Base<ANIMATOR_DATA, CAnimator, COMPONENT_TYPE::ANIMATOR>
+class ENGINE_DLL CAnimator :  public CComponent_Proxy_Base<ANIMATOR_DATA, COMPONENT_TYPE::ANIMATOR>
 {
 public:
     CAnimator() : CComponent_Proxy_Base() {}
     CAnimator(DataType* pData, COMPONENT_HANDLE handle)
         : CComponent_Proxy_Base(pData, handle) {
     }
-    ~CAnimator() override = default;
 
 
     void                Set_Loop(_bool bLoop, const std::string& strAnimClip);

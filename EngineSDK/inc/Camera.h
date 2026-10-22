@@ -28,12 +28,11 @@ typedef struct ENGINE_DLL tagCameraData
     _bool    dirty = true;
 } CAMERA_DATA;
 
-class ENGINE_DLL CCamera final : public CComponent_Proxy_Base<CAMERA_DATA, CCamera, COMPONENT_TYPE::CAMERA>
+class ENGINE_DLL CCamera final : public CComponent_Proxy_Base<CAMERA_DATA, COMPONENT_TYPE::CAMERA>
 {
 public:
     CCamera() : CComponent_Proxy_Base() {}
     CCamera(DataType* pData, COMPONENT_HANDLE handle) : CComponent_Proxy_Base(pData, handle) {}
-    ~CCamera() override = default;
 public:
     void Set_Priority(uint8_t iPriority);
     void Set_Ortho(_bool bOrthographic);

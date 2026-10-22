@@ -10,24 +10,19 @@ ENGINE_DLL bool Component_Is_Alive(COMPONENT_TYPE eComType, COMPONENT_HANDLE hCo
 
 /**
  * Base class for all Component Proxies.
- * Uses CRTP (Curiously Recurring Template Pattern) to bind Data and Proxy types.
- * @tparam DATA_T  The raw struct containing component data (e.g., CTransform_Data)
- * @tparam TProxy_T The actual derived proxy class (e.g., CTransform_Proxy)
+ * @tparam DATA_T  The raw struct containing component data (e.g., TRANSFORM_DATA)
  */
-template <typename DATA_T, typename TProxy_T, COMPONENT_TYPE KType>
+template <typename DATA_T, COMPONENT_TYPE KType>
 class CComponent_Proxy_Base
 {
 public:
     /* Expose types for the Component System's type traits and Pool allocation */
     using DataType = DATA_T;
-    using ProcessorType = CComponent_Processor_Impl<TProxy_T, KType>;
     static constexpr COMPONENT_TYPE ComponentType = KType;
 
     CComponent_Proxy_Base() = default;
     explicit CComponent_Proxy_Base(COMPONENT_TYPE eType) : m_eComType(eType) {}
     CComponent_Proxy_Base(DataType* pData, COMPONENT_HANDLE handle) : m_hHandle(handle), m_pData(pData){}
-    virtual ~CComponent_Proxy_Base() {}
-
 
     void Initialize(COMPONENT_HANDLE hHandle, DataType* pData) noexcept
     {

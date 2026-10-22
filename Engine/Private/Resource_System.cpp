@@ -184,7 +184,7 @@ uint32_t CResource_System::Load_Mesh(const ASSET_GUID& tGUID)
     auto pRec = SYS_ASSET.Find(tGUID);
     if (!pRec || pRec->eType != ASSET_TYPE::MESH)
     {
-        if (pRec->eType == ASSET_TYPE::MODEL) /* .model이 .mesh 경로로 들어오는 경우 LoadModel로 다시 보내준다. */
+        if (pRec && pRec->eType == ASSET_TYPE::MODEL) /* .model이 .mesh 경로로 들어오는 경우 LoadModel로 다시 보내준다. */
             return Load_Model(tGUID);
         _DEBUG_ERROR_BREAK("such guid not exists");
         return INVALID_HANDLE_UINT;
@@ -208,7 +208,7 @@ uint32_t CResource_System::Load_Mesh(const ASSET_GUID& tGUID)
     m_Meshes.push_back(std::move(entry));
     m_MeshGUIDMap[tGUID] = handle;
 
-    return (handle & ASSET_TAG_MESH); /* MSB = 0 */
+    return Make_MeshHandle(handle); /* MSB = 0 */
 }
 
 uint32_t CResource_System::Load_Model(const ASSET_GUID& tGUID)

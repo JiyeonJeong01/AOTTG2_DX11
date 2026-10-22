@@ -10,7 +10,7 @@ CScript_Processor::~CScript_Processor()
     /* pState 는 vt.Create 로 new 한 스크립트(void*)라 풀이 파괴될 때 같이 지워지지 않는다. */
     for (auto& upPage : m_Pool.GetPages())
     {
-        for (uint32_t i = 0; i < m_Pool.Get_PageSize(); ++i)
+        for (uint32_t i = 0; i < decltype(m_Pool)::PageSize_Value; ++i)
         {
             if (!upPage->Is_Allocated(i))
                 continue;
@@ -282,7 +282,7 @@ _bool CScript_Processor::Reset_ScriptTypes()
     /* 살아 있는 Script 인스턴스가 있으면 그 코드가 이전 Client.dll에 있으므로 내릴 수 없다 */
     for (auto& upPage : m_Pool.GetPages())
     {
-        for (uint32_t i = 0; i < m_Pool.Get_PageSize(); ++i)
+        for (uint32_t i = 0; i < decltype(m_Pool)::PageSize_Value; ++i)
         {
             if (upPage->Is_Allocated(i) && upPage->Get_Ptr(i)->pState)
             {

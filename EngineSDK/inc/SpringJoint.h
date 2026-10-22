@@ -27,12 +27,11 @@ typedef struct tagSpringJointData final
 
 } SPRING_JOINT_DATA;
 
-class ENGINE_DLL CSpringJoint final : public CComponent_Proxy_Base<SPRING_JOINT_DATA, CSpringJoint, COMPONENT_TYPE::SPRING_JOINT>
+class ENGINE_DLL CSpringJoint final : public CComponent_Proxy_Base<SPRING_JOINT_DATA, COMPONENT_TYPE::SPRING_JOINT>
 {
 public:
     CSpringJoint() : CComponent_Proxy_Base()  {  }
     CSpringJoint(DataType* pData, COMPONENT_HANDLE handle) : CComponent_Proxy_Base(pData, handle)  { }
-    ~CSpringJoint() override = default;
 
 public:
     void        Set_UseSpring(_bool bUseSpring);

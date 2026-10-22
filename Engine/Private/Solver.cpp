@@ -57,12 +57,6 @@ void CSolver::Solve_Impulse(CONTACT_DESC* pInfo)
 
     const _float3 vPoint = pInfo->vPoint;
 
-    /* --------------------------------------------------------------------------------
-     * TODO : 테스트 필요한 부분
-     * TODO : 현재 vPenetrateN를 법선처럼 사용하고 있다. 이 값은 A가 B를 침투하는 방향이다.
-     * TODO : 모든 충돌 케이스에서 올바른 contact normal은 아닐 수 있다.
-       ------------------------------------------------------------------------------- */
-
     /* -------------------------- Solve Normal -------------------------- */
     const _float3 vResolveN_A = pInfo->vResolveN_A;
     _float3 vNorm; /* A가 B로 침범하는 방향 */

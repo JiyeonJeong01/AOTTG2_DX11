@@ -58,7 +58,7 @@ typedef struct tagRigidbodyData final
 } RIGIDBODY_DATA;
 
 class ENGINE_DLL CRigidbody final
-    : public CComponent_Proxy_Base<RIGIDBODY_DATA, CRigidbody, COMPONENT_TYPE::RIGIDBODY>
+    : public CComponent_Proxy_Base<RIGIDBODY_DATA, COMPONENT_TYPE::RIGIDBODY>
 {
 public:
     CRigidbody()
@@ -70,8 +70,6 @@ public:
         : CComponent_Proxy_Base(pData, handle)
     {
     }
-
-    ~CRigidbody() override = default;
 
 public:
     void        Set_Shape(SHAPE eShape);
