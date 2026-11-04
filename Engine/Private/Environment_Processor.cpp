@@ -227,12 +227,12 @@ void CEnvironment_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDL
     _DEBUG_WARN("CEnvironment_Processor::Remove_Component - unsupported component type");
 }
 
-void* CEnvironment_Processor::Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) noexcept
+void* CEnvironment_Processor::Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const uint32_t** ppVersion) noexcept
 {
     switch (eComType)
     {
-    case COMPONENT_TYPE::CAMERA:  return m_CameraPool.Get_Data_By_Handle(hComponent);
-    case COMPONENT_TYPE::LIGHT: return m_LightPool.Get_Data_By_Handle(hComponent);
+    case COMPONENT_TYPE::CAMERA:  return m_CameraPool.Get_Data_By_Handle(hComponent, ppVersion);
+    case COMPONENT_TYPE::LIGHT: return m_LightPool.Get_Data_By_Handle(hComponent, ppVersion);
     default: return nullptr;
     }
 }

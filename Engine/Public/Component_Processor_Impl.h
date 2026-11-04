@@ -43,10 +43,10 @@ public :
 		m_Pool.Deallocate(hComponent);
 	}
 
-    void* Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) noexcept override
+    void* Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const uint32_t** ppVersion = nullptr) noexcept override
     {
         if (eComType != KType) return nullptr;
-        return m_Pool.Get_Data_By_Handle(hComponent);
+        return m_Pool.Get_Data_By_Handle(hComponent, ppVersion);
     }
 
     TProxy Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent)

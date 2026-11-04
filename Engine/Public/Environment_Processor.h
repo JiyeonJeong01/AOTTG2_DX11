@@ -33,7 +33,7 @@ public:
     HRESULT             Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const COMPONENT_SPEC_BASE* pSpec) override;
     std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) override;
     void                Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable) override;
-    void*               Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) noexcept override;
+    void*               Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const uint32_t** ppVersion = nullptr) noexcept override;
 
 public:
     template<typename TProxy>

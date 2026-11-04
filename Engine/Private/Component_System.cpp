@@ -18,10 +18,14 @@
 
 IMPLEMENT_SINGLETON(CComponent_System)
 
-
+bool g_bComponent_Pools_Alive = false;
 
 CComponent_System::CComponent_System() = default;
-CComponent_System::~CComponent_System() = default;
+CComponent_System::~CComponent_System()
+{
+    /* 멤버(프로세서·풀)가 파괴되기 전에 내린다: 해제 콜백 중의 Is_Valid가 사라질 페이지를 읽지 않도록 */
+    g_bComponent_Pools_Alive = false;
+}
 
 
 HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -55,6 +59,8 @@ HRESULT CComponent_System::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext
         = CUI_Processor::Create(m_pDevice, m_pContext);
     m_pComProcessors[PID_TO_INT(PROCESSOR_ID::SPRITE_EFFECT)]
         = CSpriteEffect_Processor::Create(m_pDevice, m_pContext);
+
+    g_bComponent_Pools_Alive = true; /* 풀은 프로세서 생성과 함께 존재한다 */
 
     for (auto& proc : m_pComProcessors)
     {

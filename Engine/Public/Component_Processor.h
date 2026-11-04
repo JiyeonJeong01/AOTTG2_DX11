@@ -23,7 +23,7 @@ public :
     virtual HRESULT             Initialize_From_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE handle, const COMPONENT_SPEC_BASE* pSpec) = 0;
     virtual std::unique_ptr<COMPONENT_SPEC_BASE> Build_Spec(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) = 0;
     virtual void                Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, _bool bEnable) = 0;
-    virtual void*               Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) noexcept = 0;
+    virtual void*               Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const uint32_t** ppVersion = nullptr) noexcept = 0; /* ppVersion: Is_Valid 빠른 경로용 버전 칸 주소 */
 
     virtual                     PROCESSOR_ID Get_PID() const noexcept = 0;
 protected :

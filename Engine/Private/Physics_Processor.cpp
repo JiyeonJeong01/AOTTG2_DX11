@@ -835,13 +835,13 @@ void CPhysics_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hC
     _DEBUG_WARN("CPhysics_Processor::Remove_Component - unsupported component type");
 }
 
-void* CPhysics_Processor::Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) noexcept
+void* CPhysics_Processor::Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const uint32_t** ppVersion) noexcept
 {
     switch (eComType)
     {
-    case COMPONENT_TYPE::COLLIDER:  return m_ColliderPool.Get_Data_By_Handle(hComponent);
-    case COMPONENT_TYPE::RIGIDBODY:  return m_RigidbodyPool.Get_Data_By_Handle(hComponent);
-    case COMPONENT_TYPE::SPRING_JOINT:  return m_SpringJointPool.Get_Data_By_Handle(hComponent);
+    case COMPONENT_TYPE::COLLIDER:  return m_ColliderPool.Get_Data_By_Handle(hComponent, ppVersion);
+    case COMPONENT_TYPE::RIGIDBODY:  return m_RigidbodyPool.Get_Data_By_Handle(hComponent, ppVersion);
+    case COMPONENT_TYPE::SPRING_JOINT:  return m_SpringJointPool.Get_Data_By_Handle(hComponent, ppVersion);
     default: return nullptr;
     }
 }

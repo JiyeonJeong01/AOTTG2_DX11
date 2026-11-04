@@ -299,13 +299,13 @@ void CUI_Processor::Set_Enable(COMPONENT_TYPE eComType, COMPONENT_HANDLE hCompon
     _DEBUG_WARN("CUI_Processor::Remove_Component - unsupported component type");
 }
 
-void* CUI_Processor::Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent) noexcept
+void* CUI_Processor::Get_DataPtr(COMPONENT_TYPE eComType, COMPONENT_HANDLE hComponent, const uint32_t** ppVersion) noexcept
 {
     switch (eComType)
     {
-    case COMPONENT_TYPE::UI_IMAGE:      return m_ImagePool.Get_Data_By_Handle(hComponent);
-    case COMPONENT_TYPE::UI_BUTTON:     return m_ButtonPool.Get_Data_By_Handle(hComponent);
-    case COMPONENT_TYPE::UI_TEXT:       return m_TextPool.Get_Data_By_Handle(hComponent);
+    case COMPONENT_TYPE::UI_IMAGE:      return m_ImagePool.Get_Data_By_Handle(hComponent, ppVersion);
+    case COMPONENT_TYPE::UI_BUTTON:     return m_ButtonPool.Get_Data_By_Handle(hComponent, ppVersion);
+    case COMPONENT_TYPE::UI_TEXT:       return m_TextPool.Get_Data_By_Handle(hComponent, ppVersion);
     default: return nullptr;
     }
 }

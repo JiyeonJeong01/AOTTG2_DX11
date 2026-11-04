@@ -5,6 +5,7 @@
 #include <CRender_System.h>
 #include <MeshRenderer_Processor.h>
 #include <Physics_Processor.h>
+#include <Transform_Processor.h>
 #include <Component_System.inl>
 #include <Transform.h>
 
@@ -383,6 +384,7 @@ void CProfilerPanel::Run_Proxy_Test()
         const bool bSameSlot = (tOld._Data() == tNew._Data());
         const bool bLegacyValid = (tOld._Data() != nullptr && tOld.Get_Handle().Is_Valid()); /* 예전 Is_Valid 로직 */
         const bool bCurrentValid = tOld.Is_Valid();
+        const bool bPoolQueryValid = Component_Is_Alive(COMPONENT_TYPE::TRANSFORM, tOld.Get_Handle(), tOld._Data()); /* 이전 Is_Valid 경로 */
 
         out += "[1] Stale proxy after slot reuse\n";
         snprintf(line, sizeof(line), "  same slot reused      : %s (old handle v%u, new handle v%u)\n",
@@ -391,6 +393,8 @@ void CProfilerPanel::Run_Proxy_Test()
         snprintf(line, sizeof(line), "  legacy Is_Valid (old) : %s  <- freed component reported as valid\n", bLegacyValid ? "true" : "false");
         out += line;
         snprintf(line, sizeof(line), "  current Is_Valid (old): %s\n", bCurrentValid ? "true" : "false");
+        out += line;
+        snprintf(line, sizeof(line), "  pool query (old)      : %s  <- must match current\n", bPoolQueryValid ? "true" : "false");
         out += line;
 
         SYS_COMPONENT.Remove_Component_By_Type(COMPONENT_TYPE::TRANSFORM, h2);
@@ -423,12 +427,6 @@ void CProfilerPanel::Run_Proxy_Test()
 
         float fSink = 0.f; /* 최적화로 루프가 사라지지 않도록 결과를 모은다 */
 
-        const double nsHandle = Measure([&](int i)
-        {
-            CTransform tr = SYS_COMPONENT.Get_Proxy<CTransform>(COMPONENT_TYPE::TRANSFORM, vecHandles[i]);
-            tr->vPosition.x += 1.f;
-            fSink += tr->vPosition.x;
-        });
         const double nsPointer = Measure([&](int i)
         {
             vecProxies[i]->vPosition.x += 1.f;
@@ -441,14 +439,53 @@ void CProfilerPanel::Run_Proxy_Test()
             vecProxies[i]->vPosition.x += 1.f;
             fSink += vecProxies[i]->vPosition.x;
         });
+        const double nsCheckedSlow = Measure([&](int i) /* 이전 Is_Valid: 풀에 다시 조회해 주소 비교 */
+        {
+            CTransform& tr = vecProxies[i];
+            if (!Component_Is_Alive(COMPONENT_TYPE::TRANSFORM, tr.Get_Handle(), tr._Data()))
+                return;
+            tr->vPosition.x += 1.f;
+            fSink += tr->vPosition.x;
+        });
+        const double nsHandle = Measure([&](int i)
+        {
+            CTransform tr = SYS_COMPONENT.Get_Proxy<CTransform>(COMPONENT_TYPE::TRANSFORM, vecHandles[i]);
+            tr->vPosition.x += 1.f;
+            fSink += tr->vPosition.x;
+        });
+
+        /* 원인 분리: 같은 프로세서 호출에서 버전 주소 전달 여부만 다르다 (volatile: 컴파일러가 가상 호출을 없애지 못하게) */
+        CComponent_Processor* volatile pBase = SYS_COMPONENT.Bind_Processor<CTransform_Processor>();
+        const double nsNoVersion = Measure([&](int i)
+        {
+            void* p = pBase->Get_DataPtr(COMPONENT_TYPE::TRANSFORM, vecHandles[i]);
+            CTransform tr(static_cast<TRANSFORM_DATA*>(p), vecHandles[i]);
+            tr->vPosition.x += 1.f;
+            fSink += tr->vPosition.x;
+        });
+        const double nsWithVersion = Measure([&](int i)
+        {
+            const uint32_t* pVersion = nullptr;
+            void* p = pBase->Get_DataPtr(COMPONENT_TYPE::TRANSFORM, vecHandles[i], &pVersion);
+            CTransform tr(static_cast<TRANSFORM_DATA*>(p), vecHandles[i]);
+            tr.Bind_Version(pVersion);
+            tr->vPosition.x += 1.f;
+            fSink += tr->vPosition.x;
+        });
 
         snprintf(line, sizeof(line), "[2] Access cost (%d components x %d rounds, ns per access)\n", N, ROUNDS);
         out += line;
         snprintf(line, sizeof(line), "  handle lookup every access : %7.2f ns\n", nsHandle);
         out += line;
+        snprintf(line, sizeof(line), "  processor, no version      : %7.2f ns\n", nsNoVersion);
+        out += line;
+        snprintf(line, sizeof(line), "  processor, with version    : %7.2f ns\n", nsWithVersion);
+        out += line;
         snprintf(line, sizeof(line), "  cached pointer             : %7.2f ns\n", nsPointer);
         out += line;
-        snprintf(line, sizeof(line), "  cached pointer + Is_Valid  : %7.2f ns\n", nsChecked);
+        snprintf(line, sizeof(line), "  cached pointer + Is_Valid  : %7.2f ns (version compare)\n", nsChecked);
+        out += line;
+        snprintf(line, sizeof(line), "  cached pointer + pool query: %7.2f ns (previous Is_Valid)\n", nsCheckedSlow);
         out += line;
         snprintf(line, sizeof(line), "  (checksum %.0f)\n", fSink);
         out += line;

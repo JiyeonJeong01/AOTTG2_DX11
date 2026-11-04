@@ -175,14 +175,23 @@ public:
     TProxy Get_Proxy(COMPONENT_HANDLE handle) noexcept
     {
         /* Create and return a Proxy object initialized with the raw data address */
-        DATA_T* pRawData = Get_Data_By_Handle(handle);
+        /* 모든 경로가 같은 변수를 반환해야 복사가 생기지 않는다 */
+        TProxy proxy(nullptr, COMPONENT_HANDLE{});
 
-        IF_NULL_RETURN_MSG_BREAK(pRawData, TProxy(nullptr, COMPONENT_HANDLE{}), "Can't find such data!");
-        return TProxy(pRawData, handle);
+        const uint32_t* pVersion = nullptr;
+        DATA_T* pRawData = Get_Data_By_Handle(handle, &pVersion);
+
+        IF_NULL_RETURN_MSG_BREAK(pRawData, proxy, "Can't find such data!");
+        proxy.Initialize(handle, pRawData);
+        proxy.Bind_Version(pVersion);
+        return proxy;
     }
 
-    /* Retrieve the raw data pointer for internal processing. */
-    DATA_T* Get_Data_By_Handle(COMPONENT_HANDLE handle) noexcept
+    /*
+        Retrieve the raw data pointer for internal processing.
+        ppVersion: 이 칸의 버전 주소. 페이지는 힙에 고정되어 있어 Proxy가 캐싱해도 된다 (Is_Valid 빠른 경로).
+    */
+    DATA_T* Get_Data_By_Handle(COMPONENT_HANDLE handle, const uint32_t** ppVersion = nullptr) noexcept
 	{
         const uint32_t iIndex = handle.Get_Index();
         uint32_t iPageIndex = iIndex >> PAGE_SHIFT;
@@ -195,6 +204,8 @@ public:
         if (pPage->iVersion[iOffset] != handle.Get_Version() || !pPage->Is_Allocated(iOffset))
             return nullptr;
 
+        if (ppVersion)
+            *ppVersion = &pPage->iVersion[iOffset];
         return pPage->Get_Ptr(iOffset);
     }
 

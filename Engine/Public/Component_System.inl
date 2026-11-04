@@ -12,15 +12,21 @@ TProxy CComponent_System::Get_Proxy(COMPONENT_TYPE eComType, COMPONENT_HANDLE ha
     const uint32_t iComIdx = COM_TO_INT(eComType);
     const uint32_t iProcIdx = COM_TO_PID(eComType);
 
+    /* 모든 경로가 같은 변수를 반환해야 복사가 생기지 않는다 */
+    TProxy proxy(nullptr, COMPONENT_HANDLE{});
+
     IF_TRUE_RETURN_MSG_BREAK((iComIdx >= COMPONENT_MAX || !m_pComProcessors[iProcIdx]),
-        TProxy(nullptr, COMPONENT_HANDLE{}),
+        proxy,
         "Processor not registered for this component type.");
 
     CComponent_Processor* pBase = m_pComProcessors[iProcIdx].get();
-    void* p = pBase->Get_DataPtr(eComType, handle);
-    IF_NULL_RETURN_MSG_BREAK(p, TProxy(nullptr, COMPONENT_HANDLE{}), "Get_DataPtr returned null");
+    const uint32_t* pVersion = nullptr;
+    void* p = pBase->Get_DataPtr(eComType, handle, &pVersion);
+    IF_NULL_RETURN_MSG_BREAK(p, proxy, "Get_DataPtr returned null");
 
-    return TProxy(SCAST(typename TProxy::DataType*, p), handle);
+    proxy.Initialize(handle, SCAST(typename TProxy::DataType*, p));
+    proxy.Bind_Version(pVersion);
+    return proxy;
 }
 
 template <typename TProxy, typename TSpec>
